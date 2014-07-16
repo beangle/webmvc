@@ -14,5 +14,9 @@
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.beangle.webmvc</groupId>
+      <artifactId>beangle-webmvc-core</artifactId>
+    </dependency>
   </dependencies>
 </project>
