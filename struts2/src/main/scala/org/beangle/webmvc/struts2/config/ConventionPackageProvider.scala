@@ -1,4 +1,4 @@
-package org.beangle.webmvc.convention.config
+package org.beangle.webmvc.struts2.config
 
 import java.lang.reflect.{Method, Modifier}
 import java.{util => ju}
@@ -18,19 +18,18 @@ import com.opensymphony.xwork2.config.entities.{ActionConfig, PackageConfig, Res
 import com.opensymphony.xwork2.inject.Inject
 import com.opensymphony.xwork2.util.classloader.ReloadingClassLoader
 import com.opensymphony.xwork2.util.finder.{ClassLoaderInterface, ClassLoaderInterfaceDelegate}
+import org.apache.struts2.StrutsConstants
 /**
- * <p>
  * This class is a configuration provider for the XWork configuration system. This is really the
  * only way to truly handle loading of the packages, actions and results correctly.
- * </p>
  */
 class ConventionPackageProvider(val configuration: Configuration, val actionFinder: ActionFinder) extends PackageProvider with Logging {
 
   private var actionPackages = new collection.mutable.ListBuffer[String]
   private var actionSuffix: String = "Action"
 
-  @Inject("struts.devMode")
-  var devMode = false
+  @Inject(StrutsConstants.STRUTS_DEVMODE)
+  var devMode = "false"
 
   private var reloadingClassLoader: ReloadingClassLoader = _
 
@@ -71,7 +70,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
   @throws(classOf[ConfigurationException])
   def loadPackages() {
     registry.addDefaults(defaultBundleNames.split(","): _*)
-    registry.reloadable = java.lang.Boolean.valueOf(reloadBundles)
+    registry.reloadable = java.lang.Boolean.parseBoolean(reloadBundles)
     var watch = new Stopwatch(true)
     profileService.profiles foreach { profile =>
       if (profile.actionScan) actionPackages += profile.actionPattern
@@ -109,7 +108,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     }
   }
 
-  protected def isReloadEnabled(): Boolean = devMode
+  protected def isReloadEnabled(): Boolean = devMode == "true"
 
   protected def createActionConfig(pkgCfg: PackageConfig.Builder, action: Action, actionClass: Class[_],
     beanName: String): Boolean = {
@@ -237,9 +236,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     return createCount
   }
 
-  def needsReload(): Boolean = devMode
-
-  def getActionBuilder(): ActionBuilder = actionBuilder
+  def needsReload(): Boolean = devMode == "true"
 
   def setActionBuilder(actionNameBuilder: ActionBuilder) {
     this.actionBuilder = actionNameBuilder

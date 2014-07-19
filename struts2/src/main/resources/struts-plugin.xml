@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+ "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+  <constant name="struts.serve.static" value="true"/>
+  <constant name="struts.serve.static.browserCache" value="true"/>
+  <constant name="struts.i18n.encoding" value="UTF-8"/>
+  <constant name="struts.disableRequestAttributeValueStackLookup" value="true"/>
+  
+  <!--默认i18n和配置文件不重复加载-->
+  <constant name="struts.devMode" value="false"/>
+  <constant name="struts.configuration.xml.reload" value="false"/>
+  <constant name="beangle.i18n.reload" value="false"/>
+  <constant name="beangle.i18n.resources" value="beangle,application"/>
+  <constant name="beangle.convention.action.suffix" value="Action"/>
+  <constant name="beangle.convention.default.parent.package" value="beangle"/>
+  <constant name="beangle.convention.preloadftl" value="true"/>
+  <!-- max 50M -->
+  <constant name="struts.multipart.maxSize" value="52428800"/>
+  <constant name="struts.mapper.class" value="beangle"/>
+  <constant name="struts.objectFactory" value="beangle" />
+  <constant name="struts.staticContentLoader" value="beangle" />
+
+  <package name="beangle" extends="struts-default">
+    <interceptors>
+      <interceptor name="beangle" class="org.beangle.struts2.interceptor.BeangleInterceptor"/>
+      <interceptor-stack name="beangleStack">
+        <interceptor-ref name="beangle"/>
+      </interceptor-stack>
+    </interceptors>
+    <default-interceptor-ref name="beangleStack"/>
+  </package>
+
+  <bean type="org.beangle.commons.text.i18n.spi.TextBundleRegistry" class="org.beangle.commons.text.i18n.impl.DefaultTextBundleRegistry"  scope="singleton"/>
+  <bean type="org.beangle.commons.text.i18n.spi.TextFormater" class="org.beangle.commons.text.i18n.impl.DefaultTextFormater"  scope="singleton"/>
+
+  <bean type="com.opensymphony.xwork2.UnknownHandler" class="org.beangle.webmvc.struts2.ConventionResultHandler"/>
+  <!--mapper-->
+  <bean type="org.apache.struts2.dispatcher.mapper.ActionMapper" name="beangle" class="org.beangle.webmvc.struts2.dispatcher.ConventionActionMapper"/>
+
+  <!--config-->
+  <bean type="com.opensymphony.xwork2.config.PackageProvider" name="beangle" class="org.beangle.webmvc.struts2.config.ConventionPackageProvider"/>
+
+  <!--result-->
+  <bean type="org.beangle.webmvc.struts2.factory.ResultBuilder" class="org.beangle.webmvc.struts2.factory.DefaultResultBuilder"/>
+
+  <!--router-->
+  <bean type="org.beangle.webmvc.route.ActionBuilder" class="org.beangle.webmvc.route.impl.DefaultActionBuilder"/>
+  <bean type="org.beangle.webmvc.route.ViewMapper" class="org.beangle.webmvc.route.impl.DefaultViewMapper"/>
+  <bean type="org.beangle.webmvc.route.ProfileService" class="org.beangle.webmvc.route.impl.ProfileServiceImpl"/>
+
+  <bean type="com.opensymphony.xwork2.ObjectFactory" name="beangle" class="org.beangle.webmvc.struts2.BeangleObjectFactory" />
+  <bean type="com.opensymphony.xwork2.factory.ResultFactory" name="beangle" class="org.beangle.webmvc.struts2.factory.BeangleResultFactory" />
+  
+  <constant name="struts.freemarker.manager.classname" value="org.beangle.webmvc.struts2.view.BeangleFreemarkerManager"/>
+  <bean name="beangle" class="org.beangle.webmvc.struts2.view.BeangleFreemarkerManager"/>
+</struts>

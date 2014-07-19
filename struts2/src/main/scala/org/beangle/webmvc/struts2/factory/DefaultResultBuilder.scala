@@ -24,9 +24,6 @@ import org.beangle.webmvc.route.ProfileService
  */
 trait ResultBuilder {
 
-  /**
-   * Return build result
-   */
   def build(resultCode: String, actionConfig: ActionConfig, context: ActionContext): Result
 }
 

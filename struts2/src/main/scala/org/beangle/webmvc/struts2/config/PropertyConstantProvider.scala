@@ -19,8 +19,8 @@ class PropertyConstantProvider extends ConfigurationProvider with Logging {
   override def register(builder:ContainerBuilder, props:LocatableProperties):Unit = {
     val properties = System.getProperties()
     val keys = properties.propertyNames()
-    while (keys.hasMoreElements()) {
-      val key:String = keys.nextElement().asInstanceOf[String]
+    while (keys.hasMoreElements) {
+      val key:String = keys.nextElement.asInstanceOf[String]
       if (null != props.getProperty(key)) {
         val value = properties.getProperty(key)
         props.setProperty(key, value, null)

@@ -12,7 +12,7 @@ import com.opensymphony.xwork2.inject.Inject
  *
  * @author chaostone
  */
-class BeangleResultHandler extends UnknownHandler {
+class ConventionResultHandler extends UnknownHandler {
 
   @Inject
   protected var resultBuilder: ResultBuilder = _

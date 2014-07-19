@@ -47,11 +47,6 @@
         <version>${data.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.beangle.data</groupId>
-        <artifactId>beangle-data-jpa</artifactId>
-        <version>${data.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.beangle.webmvc</groupId>
         <artifactId>beangle-webmvc-core</artifactId>
         <version>${project.version}</version>

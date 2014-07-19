@@ -1,24 +1,32 @@
 package org.beangle.webmvc.struts2.factory
 
-import java.{util => ju}
-import org.apache.struts2.views.freemarker.{FreemarkerManager, FreemarkerResult}
-import com.opensymphony.xwork2.{ObjectFactory, Result}
+import java.{ util => ju }
+
+import org.apache.struts2.views.freemarker.{ FreemarkerManager, FreemarkerResult }
+
+import com.opensymphony.xwork2.{ ObjectFactory, Result }
 import com.opensymphony.xwork2.config.entities.ResultConfig
 import com.opensymphony.xwork2.factory.ResultFactory
 import com.opensymphony.xwork2.inject.Inject
-import com.opensymphony.xwork2.util.reflection.{ReflectionException, ReflectionExceptionHandler, ReflectionProvider}
-import java.{util => ju}
-import scala.collection.JavaConversions.asScalaSet
+import com.opensymphony.xwork2.util.reflection.{ ReflectionException, ReflectionExceptionHandler, ReflectionProvider }
 
+/**
+ * 为freemaker做优化
+ */
 class BeangleResultFactory extends ResultFactory {
 
   protected var freemarkerManager: FreemarkerManager = _
   protected var objectFactory: ObjectFactory = _
   protected var reflectionProvider: ReflectionProvider = _
 
-  /**
-   * 为freemaker做优化
-   */
+  @Inject
+  def this(objectFactory: ObjectFactory, freemarkerManager: FreemarkerManager, reflectionProvider: ReflectionProvider) {
+    this()
+    this.objectFactory = objectFactory
+    this.freemarkerManager = freemarkerManager
+    this.reflectionProvider = reflectionProvider
+  }
+
   def buildResult(resultConfig: ResultConfig, extraContext: ju.Map[String, Object]): Result = {
     val resultClassName: String = resultConfig.getClassName()
     if (resultClassName != null) {
@@ -47,20 +55,4 @@ class BeangleResultFactory extends ResultFactory {
       }
     } else null
   }
-
-  @Inject
-  def setFreemarkerManager(freemarkerManager: FreemarkerManager): Unit = {
-    this.freemarkerManager = freemarkerManager
-  }
-
-  @Inject
-  def setObjectFactory(objectFactory: ObjectFactory): Unit = {
-    this.objectFactory = objectFactory
-  }
-
-  @Inject
-  def setReflectionProvider(reflectionProvider: ReflectionProvider): Unit = {
-    this.reflectionProvider = reflectionProvider
-  }
-
 }

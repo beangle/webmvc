@@ -54,7 +54,7 @@ class ActionSupport extends Logging {
   }
 
   protected final def forward(action: Action): String = {
-    ContextHolder.context.put("dispatch_action", action)
+    ContextHolder.context.attribute("dispatch_action", action)
     "chain:dispatch_action"
   }
 
@@ -74,7 +74,7 @@ class ActionSupport extends Logging {
 
   protected final def redirect(action: Action, message: String): String = {
     if (Strings.isNotEmpty(message)) addFlashMessage(message)
-    ContextHolder.context.put("dispatch_action", action)
+    ContextHolder.context.attribute("dispatch_action", action)
     "redirectAction:dispatch_action"
   }
 
@@ -157,7 +157,7 @@ class ActionSupport extends Logging {
   protected final def getRemoteAddr(): String = RequestUtils.getIpAddr(request)
 
   protected final def put(key: String, value: Object) {
-    ContextHolder.context.put(key, value)
+    ContextHolder.context.attribute(key, value)
   }
 
   protected final def getAll(paramName: String) = Params.getAll(paramName)
@@ -171,9 +171,9 @@ class ActionSupport extends Logging {
     if (value.isEmpty) defaultValue else Params.converter.convert(value.get, defaultValue.getClass())
   }
 
-  protected final def getAttribute(name: String): Any = ContextHolder.context(name)
+  protected final def getAttribute(name: String): Any = ContextHolder.context.attribute(name)
 
-  protected final def getAttribute[T](name: String, clazz: Class[T]): T = ContextHolder.context(name).asInstanceOf[T]
+  protected final def getAttribute[T](name: String, clazz: Class[T]): T = ContextHolder.context.attribute(name).asInstanceOf[T]
 
   protected final def get[T](name: String, clazz: Class[T]) = Params.get(name, clazz)
 
