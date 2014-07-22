@@ -25,10 +25,10 @@ import org.apache.struts2.dispatcher.mapper.ActionMapper
 import org.apache.struts2.dispatcher.multipart.MultiPartRequest
 import org.apache.struts2.views.freemarker.FreemarkerManager
 import org.apache.struts2.views.velocity.VelocityManager
-import org.beangle.commons.lang.{ClassLoaders, Objects}
+import org.beangle.commons.lang.{ ClassLoaders, Objects }
 import org.beangle.webmvc.action.ActionSupport
 import org.beangle.webmvc.struts2.config.helper.S2ConfigurationHelper
-import com.opensymphony.xwork2.{ActionContext, ActionProxyFactory, ObjectFactory, TextProvider}
+import com.opensymphony.xwork2.{ ActionContext, ActionProxyFactory, ObjectFactory, TextProvider }
 import com.opensymphony.xwork2.conversion.ObjectTypeDeterminer
 import com.opensymphony.xwork2.conversion.impl.XWorkConverter
 import com.opensymphony.xwork2.inject.Container
@@ -39,7 +39,7 @@ import java.util.Collections
 class IndexAction extends ActionSupport {
 
   import IndexAction._
-  
+
   protected def getConfigHelper(): S2ConfigurationHelper = {
     return ActionContext.getContext().getContainer().getInstance(classOf[S2ConfigurationHelper])
   }
@@ -75,6 +75,7 @@ class IndexAction extends ActionSupport {
     put("actionNames", configHelper.getActionNames(namespace))
     try {
       val clazz = configHelper.getObjectFactory().getClassInstance(config.getClassName())
+      //FIXME too ugly,erase some meta property(class classLoader canonicalName ...)
       put("properties", configHelper.getReflectionProvider().getPropertyDescriptors(clazz))
     } catch {
       case e: Throwable =>
@@ -86,8 +87,7 @@ class IndexAction extends ActionSupport {
     put("detailView", get("detailView", "results"))
     put("extension", extension)
     put("config", config)
-    put("example",Collections.unmodifiableList(Collections.singletonList(3L)))
-    //val results = config.getResults().values();
+    //FIMXE cannot write ${config.result.values()} why
     put("results", config.getResults.values())
     put("namespace", namespace)
     put("actionName", actionName)

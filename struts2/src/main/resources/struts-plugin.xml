@@ -35,22 +35,13 @@
   <bean type="org.beangle.commons.text.i18n.spi.TextFormater" class="org.beangle.commons.text.i18n.impl.DefaultTextFormater"  scope="singleton"/>
 
   <bean type="com.opensymphony.xwork2.UnknownHandler" class="org.beangle.webmvc.struts2.ConventionResultHandler"/>
-  <!--mapper-->
   <bean type="org.apache.struts2.dispatcher.mapper.ActionMapper" name="beangle" class="org.beangle.webmvc.struts2.dispatcher.ConventionActionMapper"/>
-
-  <!--config-->
   <bean type="com.opensymphony.xwork2.config.PackageProvider" name="beangle" class="org.beangle.webmvc.struts2.config.ConventionPackageProvider"/>
-
-  <!--result-->
-  <bean type="org.beangle.webmvc.struts2.factory.ResultBuilder" class="org.beangle.webmvc.struts2.factory.DefaultResultBuilder"/>
-
-  <!--router-->
   <bean type="org.beangle.webmvc.route.RouteService" class="org.beangle.webmvc.route.impl.RouteServiceImpl"/>
 
   <bean type="com.opensymphony.xwork2.ObjectFactory" name="beangle" class="org.beangle.webmvc.struts2.BeangleObjectFactory" />
   <bean type="com.opensymphony.xwork2.factory.ResultFactory" name="beangle" class="org.beangle.webmvc.struts2.factory.BeangleResultFactory" />
   
   <constant name="struts.freemarker.manager.classname" value="org.beangle.webmvc.struts2.view.BeangleFreemarkerManager"/>
-  <bean name="beangle" class="org.beangle.webmvc.struts2.view.BeangleFreemarkerManager"/>
   <bean type="org.apache.struts2.views.TagLibraryModelProvider" name="b" class="org.beangle.webmvc.struts2.view.BeangleStrutsTagLibrary" />
 </struts>

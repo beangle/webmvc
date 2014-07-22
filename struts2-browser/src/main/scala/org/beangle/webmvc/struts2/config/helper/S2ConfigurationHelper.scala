@@ -68,6 +68,7 @@ class S2ConfigurationHelper {
   }
 
   def getJarProperties(): List[Map[String, String]] = {
+    //FIXME add similar resolver to beangle
     val resolver = new ResolverUtil()
     resolver.findNamedResource("pom.properties", "META-INF/maven");
     val urls = resolver.getResources()
