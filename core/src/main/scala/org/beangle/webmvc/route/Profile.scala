@@ -187,13 +187,3 @@ class MatchInfo( var start: Int = -1) {
 
   override def toString(): String = reserved.toString()
 }
-
-trait ProfileService {
-
-  def getProfile(className: String): Profile
-
-  def getProfile(clazz: Class[_]): Profile
-
-  def profiles: List[Profile]
-
-}

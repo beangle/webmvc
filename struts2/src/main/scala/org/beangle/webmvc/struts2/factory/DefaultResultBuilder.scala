@@ -15,7 +15,7 @@ import org.beangle.webmvc.view.freemarker.TemplateFinderByConfig
 import org.beangle.webmvc.route.ViewMapper
 import org.beangle.webmvc.route.ActionBuilder
 import org.beangle.webmvc.route.Action
-import org.beangle.webmvc.route.ProfileService
+import org.beangle.webmvc.route.RouteService
 
 /**
  * 为构建自定义的结果，抽象出的一个接口
@@ -35,25 +35,17 @@ class DefaultResultBuilder extends ResultBuilder with Logging {
 
   protected var configuration: Configuration = _
 
-  protected var viewMapper: ViewMapper = _
-
-  protected var profileService: ProfileService = _
-
-  protected var actionBuilder: ActionBuilder = _
+  protected var routeService: RouteService = _
 
   private var templateFinder: TemplateFinderByConfig = _
 
   @Inject
-  def this(configuration: Configuration, objectFactory: ObjectFactory,
-    freemarkerManager: FreemarkerManager, profileService: ProfileService, actionBuilder: ActionBuilder,
-    viewMapper: ViewMapper) = {
+  def this(configuration: Configuration, objectFactory: ObjectFactory, freemarkerManager: FreemarkerManager, routeService: RouteService) = {
     this()
     this.objectFactory = objectFactory
     this.configuration = configuration
-    this.profileService = profileService
-    this.actionBuilder = actionBuilder
-    this.viewMapper = viewMapper
-    this.templateFinder = new TemplateFinderByConfig(freemarkerManager.getConfig(), viewMapper)
+    this.routeService = routeService
+    this.templateFinder = new TemplateFinderByConfig(freemarkerManager.getConfig(), routeService.viewMapper)
     val typeExtensions = Map(("freemarker", "ftl"), ("velocity", "vm"), ("dispatcher", "jsp"))
     val pc = configuration.getPackageConfig("struts-default")
     val resTypeConfigs = new collection.mutable.HashMap[String, ResultTypeConfig]
@@ -63,7 +55,7 @@ class DefaultResultBuilder extends ResultBuilder with Logging {
       typeExtensions.get(name).foreach { extension => resTypeConfigs.put(extension, rtc) }
       resTypeConfigs.put(name, rtc)
     }
-    this.resultTypeConfigs = resultTypeConfigs.toMap
+    this.resultTypeConfigs = resTypeConfigs.toMap
   }
 
   def build(resultCode: String, actionConfig: ActionConfig, context: ActionContext): Result = {
@@ -77,9 +69,9 @@ class DefaultResultBuilder extends ResultBuilder with Logging {
       if (isEmpty(newResultCode)) newResultCode = "index"
 
       val buf = new StringBuilder()
-      buf.append(viewMapper.getViewPath(className, methodName, newResultCode))
+      buf.append(routeService.mapView(className, methodName, newResultCode))
       buf.append('.')
-      buf.append(profileService.getProfile(className).viewExtension)
+      buf.append(routeService.getProfile(className).viewExtension)
       path = buf.toString()
       cfg = resultTypeConfigs("freemarker")
       return buildResult(newResultCode, cfg, context, buildResultParams(path, cfg))
@@ -144,7 +136,7 @@ class DefaultResultBuilder extends ResultBuilder with Logging {
     ActionContext.getContext().getContextMap().get("dispatch_action") match {
       case action: Action => {
         if (null != action.clazz) {
-          val newAction = actionBuilder.build(action.clazz)
+          val newAction = routeService.buildAction(action.clazz)
           action.name = newAction.name
           action.namespace = newAction.namespace
         }

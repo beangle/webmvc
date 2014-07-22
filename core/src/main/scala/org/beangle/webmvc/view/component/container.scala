@@ -34,30 +34,20 @@ class Iframe(context: ComponentContext) extends ClosingUIBean(context) {
 
 class Tab(context: ComponentContext) extends ClosingUIBean(context) {
   var href: String = _
-  var target: String = _
   var label: String = _
 
   override def evaluateParams() {
     if (null != href) href = render(href)
     if (null != label) label = getText(label)
-    generateIdIfEmpty()
     val tabs = findAncestor(classOf[Tabs])
-    if (null != tabs) tabs.addTab(this)
-  }
-
-  override def doEnd(writer: Writer, body: String): Boolean = {
-    if (null == target) {
-      this.target = id + "_target"
-      super.doEnd(writer, body)
-    } else {
-      false
-    }
+    if (Strings.isEmpty(id)) id = tabs.id + "_tab" + tabs.tabs.size
+    tabs.addTab(this)
   }
 }
 
 class Tabs(context: ComponentContext) extends ClosingUIBean(context) {
-  
-  var selectedTab: String = _
+
+  var selected: Int = 0
   val tabs = new collection.mutable.ListBuffer[Tab]
 
   def addTab(tab: Tab) {

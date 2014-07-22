@@ -35,5 +35,4 @@ abstract class AbstractModels(val context: ComponentContext, request: HttpServle
     }
     return model
   }
-
 }

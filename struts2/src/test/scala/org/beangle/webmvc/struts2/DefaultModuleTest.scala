@@ -1,6 +1,5 @@
 package org.beangle.webmvc.struts2
 
-import org.beangle.commons.lang.Locales
 import org.junit.runner.RunWith
 import org.scalatest.{ FunSpec, Matchers }
 import org.scalatest.junit.JUnitRunner

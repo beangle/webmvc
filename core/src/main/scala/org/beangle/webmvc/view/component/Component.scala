@@ -26,7 +26,7 @@ class Component(val context: ComponentContext) {
    * @return the component if found, <tt>null</tt> if not.
    */
   protected final def findAncestor[T <: Component](clazz: Class[T]): T = {
-    context.findAncestor(clazz)
+    context.find(clazz)
   }
 
   /**

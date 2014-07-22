@@ -1,4 +1,4 @@
-package org.beangle.struts2.interceptor
+package org.beangle.webmvc.struts2.interceptor
 
 import org.apache.struts2.StrutsStatics.{ HTTP_REQUEST, HTTP_RESPONSE }
 import org.beangle.webmvc.context.{ ActionContext, ContextHolder, Flash }

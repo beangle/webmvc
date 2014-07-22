@@ -1,11 +1,9 @@
 package org.beangle.webmvc.route.impl
 
 import org.beangle.commons.lang.Strings
-import org.beangle.webmvc.route.Constants
-import org.beangle.webmvc.route.{ProfileService}
-import org.beangle.webmvc.route.ViewMapper
+import org.beangle.webmvc.route.{Constants, RouteService, ViewMapper}
 
-class DefaultViewMapper(val profileServie: ProfileService) extends ViewMapper {
+class DefaultViewMapper(val routeService: RouteService) extends ViewMapper {
 
   private val methodViews = Map(("search", "list"), ("query", "list"),
     ("edit", "form"), ("home", "index"), ("execute", "index"), ("add", "new"))
@@ -21,7 +19,7 @@ class DefaultViewMapper(val profileServie: ProfileService) extends ViewMapper {
           methodName
         } else viewName
       }
-      val profile = profileServie.getProfile(className)
+      val profile = routeService.getProfile(className)
       if (null == profile) { throw new RuntimeException("no convention profile for " + className) }
       val buf = new StringBuilder()
       if (profile.viewPathStyle.equals(Constants.FULL_VIEWPATH)) {

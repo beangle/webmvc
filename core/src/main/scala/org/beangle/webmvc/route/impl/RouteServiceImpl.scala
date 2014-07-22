@@ -1,15 +1,15 @@
 package org.beangle.webmvc.route.impl
 
 import java.net.URL
-import java.{util => ju}
-
+import java.{ util => ju }
 import org.beangle.commons.bean.PropertyUtils
 import org.beangle.commons.io.IOs
-import org.beangle.commons.lang.{ClassLoaders, Strings}
+import org.beangle.commons.lang.{ ClassLoaders, Strings }
 import org.beangle.commons.logging.Logging
-import org.beangle.webmvc.route.{Profile, ProfileService}
+import org.beangle.webmvc.route.{ Profile, RouteService }
+import org.beangle.webmvc.route.Action
 
-object ProfileServiceImpl extends Logging {
+object RouteServiceImpl extends Logging {
 
   val defaultProfile = loadDefaultProfile()
 
@@ -18,7 +18,7 @@ object ProfileServiceImpl extends Logging {
    */
   def loadProfiles(): List[Profile] = {
     val profiles = new collection.mutable.ListBuffer[Profile]
-    ClassLoaders.getResources("META-INF/beangle/convention-route.properties", classOf[ProfileServiceImpl]).foreach { url =>
+    ClassLoaders.getResources("META-INF/beangle/convention-route.properties", classOf[RouteService]).foreach { url =>
       profiles ++= buildProfiles(url, false)
     }
     profiles.toList
@@ -26,7 +26,7 @@ object ProfileServiceImpl extends Logging {
 
   /**加载META-INF/convention-default.properties*/
   private def loadDefaultProfile(): Profile = {
-    val convention_default = ClassLoaders.getResource("META-INF/beangle/convention-default.properties", classOf[ProfileServiceImpl])
+    val convention_default = ClassLoaders.getResource("META-INF/beangle/convention-default.properties", classOf[RouteService])
     if (null == convention_default) { throw new RuntimeException("cannot find convention-default.properties!") }
     buildProfiles(convention_default, true)(0)
   }
@@ -72,19 +72,19 @@ object ProfileServiceImpl extends Logging {
   }
 
   private def populateAttr(profile: Profile, attr: String, props: Map[String, String]) {
-    var value = props.get(profile.name + "." + attr).orNull
-    try {
-      if (null == value) value = PropertyUtils.getProperty(defaultProfile, attr)
-      PropertyUtils.copyProperty(profile, attr, value)
-    } catch {
-      case e: Exception => error(s"error attr ${attr} for profile")
+    props.get(profile.name + "." + attr) match {
+      case Some(v) => PropertyUtils.copyProperty(profile, attr, v)
+      case None => PropertyUtils.copyProperty(profile, attr, PropertyUtils.getProperty(defaultProfile, attr))
     }
   }
 }
 
-class ProfileServiceImpl extends ProfileService with Logging {
+class RouteServiceImpl extends RouteService with Logging {
 
-  val profiles: List[Profile] = ProfileServiceImpl.loadProfiles
+  val viewMapper = new DefaultViewMapper(this)
+  val actionBuilder = new DefaultActionBuilder(this)
+
+  val profiles: List[Profile] = RouteServiceImpl.loadProfiles
 
   // 匹配缓存[String,Profile]
   private val cache = new ju.concurrent.ConcurrentHashMap[String, Profile]
@@ -103,7 +103,7 @@ class ProfileServiceImpl extends ProfileService with Logging {
       }
     }
     if (matched == null) {
-      matched = ProfileServiceImpl.defaultProfile
+      matched = RouteServiceImpl.defaultProfile
     }
     cache.put(className, matched)
     debug(s"${className} match profile:${matched}")
@@ -112,6 +112,19 @@ class ProfileServiceImpl extends ProfileService with Logging {
 
   def getProfile(clazz: Class[_]): Profile = {
     getProfile(clazz.getName())
+  }
+  /**
+   * 默认类名对应的控制器名称(含有扩展名)
+   */
+  def buildAction(className: String): Action = {
+    actionBuilder.build(className)
+  }
+
+  /**
+   * viewname -> 页面路径的映射
+   */
+  def mapView(className: String, methodName: String, viewName: String): String = {
+    viewMapper.getViewPath(className, methodName, viewName)
   }
 
 }

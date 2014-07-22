@@ -1,12 +1,11 @@
 package org.beangle.webmvc.view.freemarker
 
-import java.io.{FileNotFoundException, IOException}
+import java.io.{ FileNotFoundException, IOException }
 
 import org.beangle.webmvc.route.ViewMapper
 
 import freemarker.cache.TemplateLoader
 import freemarker.template.Configuration
-
 
 /**
  * Try to find template
@@ -15,20 +14,9 @@ import freemarker.template.Configuration
  */
 trait TemplateFinder {
   def find(actionClass: Class[_], method: String, viewName: String, extention: String): String
-
 }
 
-class TemplateFinderByConfig extends TemplateFinder {
-
-  private var configuration: Configuration = _
-
-  private var viewMapper: ViewMapper = _
-
-  def this(configuration: Configuration, viewMapper: ViewMapper) = {
-    this()
-    this.configuration = configuration
-    this.viewMapper = viewMapper
-  }
+class TemplateFinderByConfig(configuration: Configuration, viewMapper: ViewMapper) extends TemplateFinder {
 
   def find(actionClass: Class[_], method: String, viewName: String, extention: String): String = {
     var path: String = null
@@ -55,15 +43,14 @@ class TemplateFinderByConfig extends TemplateFinder {
   }
 }
 
-
-class TemplateFinderByLoader(val loader:TemplateLoader, val viewMapper:ViewMapper ) extends TemplateFinder{
+class TemplateFinderByLoader(val loader: TemplateLoader, val viewMapper: ViewMapper) extends TemplateFinder {
 
   private val missings = new collection.mutable.HashSet[String]()
 
-  def find(actionClass:Class[_], method:String, viewName:String, extention:String):String = {
-    var path:String = null
-    var superClass:Class[_] = actionClass
-    var source:Object = null
+  def find(actionClass: Class[_], method: String, viewName: String, extention: String): String = {
+    var path: String = null
+    var superClass: Class[_] = actionClass
+    var source: Object = null
     var breakWhile = false
     do {
       val buf = new StringBuilder()
@@ -77,13 +64,13 @@ class TemplateFinderByLoader(val loader:TemplateLoader, val viewMapper:ViewMappe
           source = loader.findTemplateSource(templateName)
           if (null != source) loader.closeTemplateSource(source)
           else missings.add(templateName)
-        } catch{
-          case e:IOException =>
-          breakWhile = true
+        } catch {
+          case e: IOException =>
+            breakWhile = true
         }
       }
-      if(!breakWhile) superClass = superClass.getSuperclass()
+      if (!breakWhile) superClass = superClass.getSuperclass()
     } while (!breakWhile && null == source && !superClass.equals(classOf[Object]) && !superClass.isPrimitive())
-    if(null == source) null else path
+    if (null == source) null else path
   }
 }

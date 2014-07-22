@@ -2,7 +2,7 @@ package org.beangle.webmvc.route
 
 import java.net.URLEncoder
 
-import org.beangle.commons.lang.{Objects, Strings}
+import org.beangle.commons.lang.{ Objects, Strings }
 import Action._
 object Action {
   def to(clazz: Class[_]): Action = new Action(clazz, null)
@@ -44,7 +44,7 @@ class Action(var namespace: String, var name: String, val clazz: String, var met
 
   private var extention: String = _
 
-  val parameters = new collection.mutable.HashMap[String,String]
+  val parameters = new collection.mutable.HashMap[String, String]
 
   def this(method: String) {
     this(null, null, null, method)
@@ -92,7 +92,6 @@ class Action(var namespace: String, var name: String, val clazz: String, var met
     this
   }
 
-  
   def param(key: String, value: String): Action = {
     parameters.put(key, value)
     this
@@ -131,20 +130,13 @@ class Action(var namespace: String, var name: String, val clazz: String, var met
 
   def getUri(): String = {
     val buf = new StringBuilder(25)
-    if (null == namespace || namespace.length() == 1) {
-      buf.append('/')
-    } else {
-      buf.append(namespace).append('/')
-    }
-    if (null != name) {
-      buf.append(name)
-    }
-    if (Strings.isNotEmpty(method)) {
-      buf.append('!').append(method)
-    }
-    if (null != extention) {
-      buf.append('.').append(extention)
-    }
+    if (null == namespace || namespace.length() == 1) buf.append('/')
+    else buf.append(namespace).append('/')
+    
+    if (null != name) buf.append(name)
+    if (Strings.isNotEmpty(method)) buf.append('!').append(method)
+    if (null != extention) buf.append('.').append(extention)
+
     if (null != parameters && parameters.size > 0) {
       var first = true
       for ((key, value) <- parameters) {
@@ -167,13 +159,4 @@ class Action(var namespace: String, var name: String, val clazz: String, var met
   override def toString(): String =
     Objects.toStringBuilder(this).add("namespace", namespace).add("name", name).add("method", method)
       .add("params", parameters).toString()
-}
-
-trait ActionBuilder {
-
-  /**
-   * 默认类名对应的控制器名称(含有扩展名)
-   */
-  def build(className: String): Action
-
 }

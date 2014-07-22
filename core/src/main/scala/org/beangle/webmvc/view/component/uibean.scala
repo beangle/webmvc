@@ -1,12 +1,12 @@
 package org.beangle.webmvc.view.component
 
 import java.io.Writer
-
-import org.beangle.commons.lang.{Chars, Strings}
+import org.beangle.commons.lang.{ Chars, Strings }
 import org.beangle.webmvc.context.ContextHolder
-
 import javax.servlet.http.HttpServletRequest
-
+import org.beangle.commons.web.util.RequestUtils
+import org.beangle.commons.bean.PropertyUtils
+import java.{ util => ju }
 //FIXME
 object UIBean {
   private val NumberFormat = "{0,number,#.##}"
@@ -54,19 +54,17 @@ class UIBean(context: ComponentContext) extends Component(context) {
 
   protected final def requestParameter(name: String): String = request.getParameter(name)
 
-  //  protected def getValue(obj: Object, property: String): Object = {
-  //    stack.push(obj)
-  //    try {
-  //      val value = stack.findValue(property)
-  //      if (value.isInstanceOf[Number]) { return MessageFormat.format(NumberFormat, value) }
-  //      return value
-  //    } finally {
-  //      stack.pop()
-  //    }
-  //  }
+  protected def getValue(obj: Any, property: String): Any = {
+    obj match {
+      case null => null
+      case map: collection.Map[String, _] => map.get(property).orNull
+      case javaMap: ju.Map[_, _] => javaMap.get(property)
+      case o: AnyRef => PropertyUtils.getProperty(o, property)
+    }
+  }
 
   protected final def render(uri: String): String = {
-    context.uriRender.render(request.getServletPath(), uri)
+    context.uriRender.render(RequestUtils.getServletPath(request), uri)
   }
 
   protected final def generateIdIfEmpty(): Unit = {
@@ -78,9 +76,8 @@ class UIBean(context: ComponentContext) extends Component(context) {
    */
   protected final def processLabel(label: String, name: String): String = {
     if (null != label) {
-      if (Strings.isEmpty(label)) return null
-      else return getText(label)
-    } else return getText(name)
+      if (Strings.isEmpty(label)) null else getText(label)
+    } else getText(name)
   }
 }
 

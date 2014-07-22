@@ -1,12 +1,9 @@
 package org.beangle.webmvc.route.impl
 
 import org.beangle.commons.lang.Strings
-import org.beangle.webmvc.route.Constants
-import org.beangle.webmvc.route.Action
-import org.beangle.webmvc.route.ActionBuilder
-import org.beangle.webmvc.route.ProfileService
+import org.beangle.webmvc.route.{Action, ActionBuilder, Constants, RouteService}
 
-class DefaultActionBuilder(val profileService: ProfileService) extends ActionBuilder {
+class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder {
 
   /**
    * 根据class对应的profile获得ctl/action类中除去后缀后的名字。<br>
@@ -17,7 +14,7 @@ class DefaultActionBuilder(val profileService: ProfileService) extends ActionBui
    * @param className
    */
   def build(className: String): Action = {
-    val profile = profileService.getProfile(className)
+    val profile = routeService.getProfile(className)
     val sb = new StringBuilder()
     // namespace
     sb.append(profile.uriPath)

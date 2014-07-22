@@ -1,61 +1,62 @@
 package org.beangle.webmvc.struts2.config
 
-import java.lang.reflect.{Method, Modifier}
-import java.{util => ju}
+import java.lang.reflect.{ Method, Modifier }
 
 import scala.collection.JavaConversions.seqAsJavaList
 
-import org.beangle.commons.inject.Container
-import org.beangle.commons.lang.{Objects, Strings}
+import org.beangle.commons.inject.ContainerAware
+import org.beangle.commons.lang.{ Objects, Strings }
 import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.i18n.spi.TextBundleRegistry
-import org.beangle.webmvc.route.{Action, ActionBuilder, ActionFinder, ContainerActionFinder, Profile, ProfileService, ViewMapper}
+import org.beangle.webmvc.route.{ Action, ActionBuilder, ActionFinder, ContainerActionFinder, Profile, RouteService }
 
-import com.opensymphony.xwork2.{ActionContext, ObjectFactory}
-import com.opensymphony.xwork2.config.{Configuration, ConfigurationException, PackageProvider}
-import com.opensymphony.xwork2.config.entities.{ActionConfig, PackageConfig, ResultConfig}
+import org.apache.struts2.StrutsConstants
+
+import com.opensymphony.xwork2.{ ActionContext, ObjectFactory }
+import com.opensymphony.xwork2.config.{ Configuration, ConfigurationException, PackageProvider }
+import com.opensymphony.xwork2.config.entities.{ ActionConfig, PackageConfig, ResultConfig }
 import com.opensymphony.xwork2.inject.Inject
 import com.opensymphony.xwork2.util.classloader.ReloadingClassLoader
-import com.opensymphony.xwork2.util.finder.{ClassLoaderInterface, ClassLoaderInterfaceDelegate}
-import org.apache.struts2.StrutsConstants
+import com.opensymphony.xwork2.util.finder.{ ClassLoaderInterface, ClassLoaderInterfaceDelegate }
+
 /**
+ * FIXME add annotation support
  * This class is a configuration provider for the XWork configuration system. This is really the
  * only way to truly handle loading of the packages, actions and results correctly.
  */
 class ConventionPackageProvider(val configuration: Configuration, val actionFinder: ActionFinder) extends PackageProvider with Logging {
 
   private var actionPackages = new collection.mutable.ListBuffer[String]
-  private var actionSuffix: String = "Action"
+
+  @Inject("beangle.convention.action.suffix")
+  var actionSuffix: String = "Action"
 
   @Inject(StrutsConstants.STRUTS_DEVMODE)
   var devMode = "false"
+
+  @Inject
+  var routeService: RouteService = _
+
+  @Inject
+  var registry: TextBundleRegistry = _
+
+  @Inject("beangle.i18n.resources")
+  var defaultBundleNames: String = _
+
+  @Inject("beangle.i18n.reload")
+  var reloadBundles: String = "false"
+
+  @Inject("beangle.convention.preloadftl")
+  var preloadftl: String = "true"
 
   private var reloadingClassLoader: ReloadingClassLoader = _
 
   private var defaultParentPackage: String = "beangle"
 
   @Inject
-  protected var viewMapper: ViewMapper = _
-
-  @Inject
-  protected var profileService: ProfileService = _
-
-  @Inject
-  protected var actionBuilder: ActionBuilder = _
-
-  @Inject
-  protected var registry: TextBundleRegistry = _
-
-  @Inject("beangle.i18n.resources")
-  protected var defaultBundleNames: String = _
-
-  @Inject("beangle.i18n.reload")
-  private var reloadBundles: String = "false"
-
-  @Inject
   def this(configuration: Configuration, objectFactory: ObjectFactory) {
-    this(configuration, new ContainerActionFinder(objectFactory.buildBean(classOf[Container], new ju.HashMap[String, Object]).asInstanceOf[Container]))
+    this(configuration, new ContainerActionFinder(objectFactory.asInstanceOf[ContainerAware].container))
   }
 
   protected def initReloadClassLoader() {
@@ -72,7 +73,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     registry.addDefaults(defaultBundleNames.split(","): _*)
     registry.reloadable = java.lang.Boolean.parseBoolean(reloadBundles)
     var watch = new Stopwatch(true)
-    profileService.profiles foreach { profile =>
+    routeService.profiles foreach { profile =>
       if (profile.actionScan) actionPackages += profile.actionPattern
     }
     if (actionPackages.isEmpty) { return }
@@ -82,8 +83,8 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     var newActions: Int = 0
     var actionTypes = actionFinder.getActions(new ActionFinder.Test(actionSuffix, actionPackages))
     for ((actionClass, value) <- actionTypes) {
-      var profile = profileService.getProfile(actionClass.getName())
-      var action = actionBuilder.build(actionClass.getName())
+      var profile = routeService.getProfile(actionClass.getName())
+      var action = routeService.buildAction(actionClass.getName())
       var packageConfig = getPackageConfig(profile, packageConfigs, action, actionClass)
       if (createActionConfig(packageConfig, action, actionClass, value)) newActions += 1
     }
@@ -126,42 +127,40 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
       import scala.collection.JavaConversions._
       actionConfig.addResultConfigs(buildResultConfigs(actionClass))
       pkgCfg.addActionConfig(actionName, actionConfig.build())
-      debug("Add ${pkgCfg.getNamespace()}/${actionName} for ${actionClass.getName()} in ${pkgCfg.getName()}")
+      debug(s"Add ${pkgCfg.getNamespace()}/${actionName} for ${actionClass.getName()} in ${pkgCfg.getName()}")
     }
     create
   }
 
   protected def shouldGenerateResult(m: Method): Boolean = {
-    if (classOf[String].equals(m.getReturnType()) && m.getParameterTypes().length == 0
-      && Modifier.isPublic(m.getModifiers()) && !Modifier.isStatic(m.getModifiers())) {
+    if (classOf[String].equals(m.getReturnType()) && m.getParameterTypes.length == 0
+      && Modifier.isPublic(m.getModifiers) && !Modifier.isStatic(m.getModifiers)) {
       var name = m.getName().toLowerCase()
-      if (Strings.contains(name, "save") || Strings.contains(name, "remove")
-        || Strings.contains(name, "export") || Strings.contains(name, "import")
-        || Strings.contains(name, "execute") || Strings.contains(name, "toString")) { false }
-      true
+      !(name.startsWith("save") || name.startsWith("remove")
+        || name.startsWith("export") || name.startsWith("import")
+        || name.startsWith("execute") || name.startsWith("tostring") || name.startsWith("get") || Strings.contains(name, "$"))
+    } else {
+      false
     }
-    false
   }
 
   protected def buildResultConfigs(clazz: Class[_]): Seq[ResultConfig] = {
     var configs = new collection.mutable.ListBuffer[ResultConfig]
-    if (null == profileService) configs
-    var extention = profileService.getProfile(clazz.getName()).viewExtension
+
+    if (preloadftl == "false" || null == routeService) configs
+    var extention = routeService.getProfile(clazz.getName()).viewExtension
     if (!extention.endsWith("ftl")) configs
     var resultTypeConfig = configuration.getPackageConfig("struts-default")
       .getAllResultTypeConfigs().get("freemarker")
-    for (m <- clazz.getMethods()) {
-      if (classOf[String].equals(m.getReturnType()) && m.getParameterTypes().length == 0
-        && Modifier.isPublic(m.getModifiers()) && !Modifier.isStatic(m.getModifiers())) {
-        var name = m.getName()
-        if (shouldGenerateResult(m)) {
-          var buf = new StringBuilder()
-          buf.append(viewMapper.getViewPath(clazz.getName(), name, name))
-          buf.append('.')
-          buf.append(extention)
-          configs += new ResultConfig.Builder(name, resultTypeConfig.getClassName()).addParam(
-            resultTypeConfig.getDefaultResultParam(), buf.toString()).build()
-        }
+    for (m <- clazz.getMethods) {
+      var name = m.getName()
+      if (shouldGenerateResult(m)) {
+        var buf = new StringBuilder()
+        buf.append(routeService.mapView(clazz.getName(), name, name))
+        buf.append('.')
+        buf.append(extention)
+        configs += new ResultConfig.Builder(name, resultTypeConfig.getClassName()).addParam(
+          resultTypeConfig.getDefaultResultParam(), buf.toString()).build()
       }
     }
     configs
@@ -238,23 +237,4 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   def needsReload(): Boolean = devMode == "true"
 
-  def setActionBuilder(actionNameBuilder: ActionBuilder) {
-    this.actionBuilder = actionNameBuilder
-  }
-
-  def setViewMapper(viewMapper: ViewMapper) {
-    this.viewMapper = viewMapper
-  }
-
-  def setProfileService(profileService: ProfileService) {
-    this.profileService = profileService
-  }
-
-  def setRegistry(registry: TextBundleRegistry) {
-    this.registry = registry
-  }
-
-  def setDefaultBundleNames(defaultBundleNames: String) {
-    this.defaultBundleNames = defaultBundleNames
-  }
 }

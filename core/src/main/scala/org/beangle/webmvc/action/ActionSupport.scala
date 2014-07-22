@@ -4,14 +4,14 @@ import java.net.URL
 
 import scala.reflect.ClassTag
 
-import org.beangle.commons.lang.{Chars, ClassLoaders, Strings}
+import org.beangle.commons.lang.{ Chars, ClassLoaders, Strings }
 import org.beangle.commons.logging.Logging
-import org.beangle.commons.web.util.{CookieUtils, RequestUtils}
-import org.beangle.webmvc.context.{ActionMessages, ContextHolder, Flash}
+import org.beangle.commons.web.util.{ CookieUtils, RequestUtils }
+import org.beangle.webmvc.context.{ ActionMessages, ContextHolder, Flash }
 import org.beangle.webmvc.route.Action
 import org.beangle.webmvc.helper.Params
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 object ActionSupport {
   /**
@@ -34,10 +34,11 @@ object ActionSupport {
   val INPUT = "input"
 
 }
+
 class ActionSupport extends Logging {
 
   @throws(classOf[Exception])
-  def index(): String = forward("index")
+  def index(): String = forward()
 
   /**
    * A default implementation that does nothing an returns "success".
@@ -46,7 +47,7 @@ class ActionSupport extends Logging {
   @throws(classOf[Exception])
   def execute(): String = forward(new Action(null: Class[_], "index"))
 
-  protected final def forward(view: String = "this") = view
+  protected final def forward(view: String = ActionSupport.SUCCESS) = view
 
   protected final def forward(view: String, message: String) = {
     addMessage(getText(message))
@@ -81,23 +82,6 @@ class ActionSupport extends Logging {
   final def getText(aTextName: String): String = ContextHolder.context.textResource(aTextName).get
 
   final def getText(key: String, defaultValue: String, args: Object*): String = ContextHolder.context.textResource(key, defaultValue, args)
-
-  //  final def getTextResource(locale: Locale): TextResource = ContextHolder.context.textResource(getLocale())
-  //    val context = ActionContext.getContext()
-  //    val textResource: TextResource = {
-  //      val contextTextResource = context.get("textResource").asInstanceOf[TextResource]
-  //      if (contextTextResource == null) {
-  //        val localLocale = if (locale == null) getLocale() else locale
-  //        val container = ActionContext.getContext().getContainer()
-  //        val formater = container.getInstance(classOf[TextFormater])
-  //        val registry = container.getInstance(classOf[TextBundleRegistry])
-  //        val newTextResource = new ActionTextResource(getClass(), localLocale, registry, formater, context.getValueStack())
-  //        context.put("textResource", newTextResource)
-  //        newTextResource
-  //      } else contextTextResource
-  //    }
-  //    textResource
-  //  }
 
   protected final def getTextInternal(msgKey: String, args: Object*): String = {
     if (Strings.isEmpty(msgKey)) null
@@ -154,7 +138,7 @@ class ActionSupport extends Logging {
     else messages.errors.toList
   }
 
-  protected final def getRemoteAddr(): String = RequestUtils.getIpAddr(request)
+  protected def getRemoteAddr(): String = RequestUtils.getIpAddr(request)
 
   protected final def put(key: String, value: Object) {
     ContextHolder.context.attribute(key, value)

@@ -12,7 +12,7 @@ import org.beangle.webmvc.view.template.Theme
 import org.beangle.webmvc.view.template.Themes
 import org.beangle.webmvc.context.ContextHolder
 import org.beangle.commons.bean.PropertyUtils
-
+import java.{ util => ju }
 object Grid {
 
   class Filter(context: ComponentContext) extends ClosingUIBean(context) {
@@ -40,14 +40,14 @@ object Grid {
     val table = findAncestor(classOf[Grid])
     val var_index = table.`var` + "_index"
     var index = -1
-    var curObj: Object = _
+    var curObj: Any = _
     var innerTr: Option[Boolean] = None
-    
-    private val iterator: Iterator[Object] = {
-      val iterator = table.items.asInstanceOf[Iterable[Object]].iterator
-      if (!iterator.hasNext) {
-        List(null).iterator
-      } else iterator
+
+    private val iterator: Iterator[Any] = {
+      table.items match {
+        case iterbl: Iterable[_] => if (iterbl.iterator.hasNext) iterbl.iterator else List(null).iterator
+        case javaIter: ju.Collection[_] => collection.JavaConversions.asScalaIterator(javaIter.iterator())
+      }
     }
 
     def isHasTr(): Boolean = {
@@ -121,7 +121,7 @@ object Grid {
     /**
      * find value of row.obj's property
      */
-    def getValue(): Object = PropertyUtils.getProperty(row.curObj, property)
+    def getValue(): Any = getValue(row.curObj, property)
 
     def setTitle(title: String) {
       this.title = title

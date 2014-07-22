@@ -13,17 +13,12 @@ class ComponentContext(val uriRender: ActionUriRender, val idGenerator: UIIdGene
 
   /**
    * Finds the nearest ancestor of this component stack.
-   * FIXME for scala stack list
-   * @param clazz the class to look for, or if assignable from.
-   * @return the component if found, <tt>null</tt> if not.
    */
-  def findAncestor[T <: Component](clazz: Class[T]): T = {
-    val size = components.size
-    Range(0, size - 1) foreach { i =>
-      val component = components(size - i - 2)
-      if (clazz == component.getClass()) return component.asInstanceOf[T]
+  def find[T <: Component](clazz: Class[T]): T = {
+    components.find { component => clazz == component.getClass } match {
+      case Some(c) => c.asInstanceOf[T]
+      case None => throw new RuntimeException(s"Cannot find ancestor of type ${clazz.getName}")
     }
-    return null.asInstanceOf[T]
   }
 
   def pop(): Component = {

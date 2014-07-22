@@ -22,8 +22,9 @@ abstract class AbstractTemplateEngine extends TemplateEngine with Logging {
     val start = template.indexOf('/', 1) + 1
     val end = template.lastIndexOf('/')
 
-    val parentTheme = getThemeProps(template.substring(start, end)).get("parent").asInstanceOf[String]
-    if (null == parentTheme) return null
-    return Strings.concat(template.substring(0, start), parentTheme, template.substring(end))
+    getThemeProps(template.substring(start, end)).get("parent") match {
+      case Some(parentTheme) => Strings.concat(template.substring(0, start), parentTheme, template.substring(end))
+      case None => null
+    }
   }
 }

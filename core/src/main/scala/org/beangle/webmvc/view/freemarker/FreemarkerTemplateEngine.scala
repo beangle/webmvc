@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest
  */
 class FreemarkerTemplateEngine extends AbstractTemplateEngine with Logging with Initializing {
 
-  protected val config = new Configuration()
+  protected val config = buildConfig()
   private val templateModelAttribute = ".freemarker.TemplateModel"
   protected var tagLibraries: Map[String, TagLibrary] = Map.empty
   protected var container: Container = _
@@ -52,7 +52,8 @@ class FreemarkerTemplateEngine extends AbstractTemplateEngine with Logging with 
    * <li>Disable auto imports and includes
    * </ul>
    */
-  def buildConfig() {
+  def buildConfig(): Configuration = {
+    val config = new Configuration()
     config.setTemplateLoader(new HierarchicalTemplateLoader(this, new BeangleClassTemplateLoader()))
     // Disable freemarker localized lookup
     config.setLocalizedLookup(false)
@@ -67,6 +68,7 @@ class FreemarkerTemplateEngine extends AbstractTemplateEngine with Logging with 
     // Disable auto imports and includes
     config.setAutoImports(new HashMap(0))
     config.setAutoIncludes(new ArrayList(0))
+    config
   }
 
   /**

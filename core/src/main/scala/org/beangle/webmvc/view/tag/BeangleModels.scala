@@ -1,15 +1,15 @@
 package org.beangle.webmvc.view.tag
 
 import java.io.StringWriter
-
+import java.{ util => ju }
 import org.beangle.commons.collection.page.Page
 import org.beangle.webmvc.context.ContextHolder
 import org.beangle.webmvc.view.component.{ Agent, Anchor, Checkbox, Checkboxes, ComponentContext, Css, Date, Dialog, Div, Email, Field, Foot, Form, Formfoot, Grid }
 import org.beangle.webmvc.view.component.{ Head, Iframe, Messages, Module, Navitem, Navmenu, Pagebar, Password, Radio, Radios, Reset, Select, Select2, Startend, Submit, Tab, Tabs, Textarea, Textfield, Textfields, Toolbar, Validity }
 import org.beangle.webmvc.view.component.Grid.{ Bar, Boxcol, Col, Filter, Row, Treecol }
-
 import freemarker.template.utility.StringUtil
 import javax.servlet.http.HttpServletRequest
+import org.beangle.webmvc.view.UITheme
 
 class BeangleModels(context: ComponentContext, request: HttpServletRequest) extends AbstractModels(context, request) {
 
@@ -17,8 +17,14 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   def url(url: String) = context.uriRender.render(request.getServletPath, url)
 
-  def Now() = new java.util.Date()
+  def now = new ju.Date
 
+  val uitheme = {
+    val base = request.getContextPath
+    val location = if (base.length() < 2) "/static/themes/"
+    else base + "/static/themes/"
+    new UITheme(location)
+  }
   /**
    * query string and form control
    */
@@ -57,37 +63,37 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   def head = get(classOf[Head])
 
-  def Dialog: TagModel = get(classOf[Dialog])
+  def dialog: TagModel = get(classOf[Dialog])
 
-  def Css: TagModel = get(classOf[Css])
+  def css: TagModel = get(classOf[Css])
 
-  def Iframe: TagModel = get(classOf[Iframe])
+  def iframe: TagModel = get(classOf[Iframe])
 
-  def Foot: TagModel = get(classOf[Foot])
+  def foot: TagModel = get(classOf[Foot])
 
-  def Form: TagModel = get(classOf[Form])
+  def form: TagModel = get(classOf[Form])
 
-  def Formfoot: TagModel = get(classOf[Formfoot])
+  def formfoot: TagModel = get(classOf[Formfoot])
 
-  def Submit: TagModel = get(classOf[Submit])
+  def submit: TagModel = get(classOf[Submit])
 
-  def Reset: TagModel = get(classOf[Reset])
+  def reset: TagModel = get(classOf[Reset])
 
-  def Toolbar: TagModel = get(classOf[Toolbar])
+  def toolbar: TagModel = get(classOf[Toolbar])
 
-  def Tabs: TagModel = get(classOf[Tabs])
+  def tabs: TagModel = get(classOf[Tabs])
 
-  def Tab: TagModel = get(classOf[Tab])
+  def tab: TagModel = get(classOf[Tab])
 
-  def Grid: TagModel = get(classOf[Grid])
+  def grid: TagModel = get(classOf[Grid])
 
-  def Gridbar: TagModel = get(classOf[Bar])
+  def gridbar: TagModel = get(classOf[Bar])
 
-  def Filter: TagModel = get(classOf[Filter])
+  def filter: TagModel = get(classOf[Filter])
 
-  def Row: TagModel = get(classOf[Row])
+  def row: TagModel = get(classOf[Row])
 
-  def Col: TagModel = {
+  def col: TagModel = {
     var model = models.get(classOf[Col])
     if (null == model) {
       // just for performance
@@ -99,15 +105,15 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
     return model
   }
 
-  def Treecol: TagModel = get(classOf[Treecol])
+  def treecol: TagModel = get(classOf[Treecol])
 
-  def Boxcol: TagModel = get(classOf[Boxcol])
+  def boxcol: TagModel = get(classOf[Boxcol])
 
-  def Pagebar: TagModel = get(classOf[Pagebar])
+  def pagebar: TagModel = get(classOf[Pagebar])
 
-  def Password: TagModel = get(classOf[Password])
+  def password: TagModel = get(classOf[Password])
 
-  def A: TagModel = {
+  def a: TagModel = {
     var model = models.get(classOf[Anchor])
     if (null == model) {
       model = new TagModel(context) {

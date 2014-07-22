@@ -1,4 +1,4 @@
-package org.beangle.webmvcx.struts2.util
+package org.beangle.webmvc.struts2.util
 
 import org.beangle.commons.script.{ EvaluationException, ExpressionEvaluator }
 

@@ -46,7 +46,6 @@ class BeangleFreemarkerManager extends FreemarkerManager with Logging {
       if (null != key && null != value) addSetting(key, value)
     }
     info(s"Freemarker properties:$properties")
-
   }
 
   @throws(classOf[TemplateException])

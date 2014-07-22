@@ -8,6 +8,8 @@ import org.beangle.commons.inject.PropertySource
 import org.beangle.commons.lang.ClassLoaders
 import java.net.URL
 import org.beangle.commons.io.IOs
+import javax.xml.parsers.SAXParserFactory
+import org.beangle.commons.lang.Strings
 
 class DefaultModule extends AbstractBindModule with PropertySource {
 
@@ -36,8 +38,9 @@ class DefaultModule extends AbstractBindModule with PropertySource {
 
   private def filterContants(url: URL, constants: collection.mutable.HashMap[String, String]): Unit = {
     if (null == url) return
-    val is = url.openStream
-    scala.xml.XML.load(is) \\ "constant" foreach { constantElem =>
+    val is = url.openStream()
+    val struts = "<struts>" + Strings.substringBetween(IOs.readString(is), "<struts>", "</struts>") + "</struts>"
+    xml.XML.loadString(struts) \\ "constant" foreach { constantElem =>
       constants.put((constantElem \ "@name").text, (constantElem \ "@value").text)
     }
     is.close()

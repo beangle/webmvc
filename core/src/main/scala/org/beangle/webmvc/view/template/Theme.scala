@@ -4,10 +4,11 @@ import org.beangle.commons.lang.Strings
 import com.sun.xml.internal.ws.wsdl.writer.document.Import
 
 /**
- * FIXME mutable => immutable
+ * FIXME 1.mutable => immutable
+ *       2. build theme hierarchy relation
  */
 object Themes {
-  val Default = this("xml")
+  val Default = new Theme("html5")
   /**
    * Default tagName corresponding TagClass
    *
@@ -25,7 +26,7 @@ object Themes {
       val theme = new Theme(name)
       themes.put(name, theme)
       theme
-    });
+    })
   }
 
   def getTemplateName(clazz: Class[_]): String = {
