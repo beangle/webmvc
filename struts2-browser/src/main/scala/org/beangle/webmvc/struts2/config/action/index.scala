@@ -33,6 +33,7 @@ import com.opensymphony.xwork2.conversion.ObjectTypeDeterminer
 import com.opensymphony.xwork2.conversion.impl.XWorkConverter
 import com.opensymphony.xwork2.inject.Container
 import java.util.Collections
+import org.beangle.commons.lang.reflect.BeanManifest
 /**
  * @author chaostone
  */
@@ -44,26 +45,20 @@ class IndexAction extends ActionSupport {
     return ActionContext.getContext().getContainer().getInstance(classOf[S2ConfigurationHelper])
   }
 
-  override def index(): String = {
-    val configHelper = getConfigHelper()
-    val namespaces = configHelper.getNamespaces()
-    if (namespaces.size == 0) {
-      addError("There are no namespaces in this configuration")
-      return "error"
-    }
-    val namespace = get("namespace", "")
-
-    put("namespace", namespace)
-    put("actionNames", configHelper.getActionNames(namespace).toList.sorted)
-    put("namespaces", namespaces)
-    return forward()
-  }
-
   def actions(): String = {
     val configHelper = getConfigHelper()
-    var namespace = get("namespace", "")
-    put("namespace", namespace)
-    put("actionNames", configHelper.getActionNames(namespace).toList.sorted)
+    get("namespace") match {
+      case Some(namespace) =>
+        put("namespace", namespace)
+        put("actionNames", configHelper.getActionNames(namespace).toList.sorted)
+      case None =>
+        val namespaces = configHelper.getNamespaces()
+        if (namespaces.size == 0) {
+          addError("There are no namespaces in this configuration")
+          return "error"
+        }
+        put("namespaces", namespaces)
+    }
     return forward()
   }
 
@@ -75,8 +70,7 @@ class IndexAction extends ActionSupport {
     put("actionNames", configHelper.getActionNames(namespace))
     try {
       val clazz = configHelper.getObjectFactory().getClassInstance(config.getClassName())
-      //FIXME too ugly,erase some meta property(class classLoader canonicalName ...)
-      put("properties", configHelper.getReflectionProvider().getPropertyDescriptors(clazz))
+      put("properties", BeanManifest.get(clazz).getters.values.filterNot(m => m.method.getName.contains("$")))
     } catch {
       case e: Throwable =>
         error("Unable to get properties for action " + actionName, e)

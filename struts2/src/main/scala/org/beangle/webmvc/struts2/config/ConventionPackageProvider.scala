@@ -1,27 +1,26 @@
 package org.beangle.webmvc.struts2.config
 
 import java.lang.reflect.{ Method, Modifier }
-
 import scala.collection.JavaConversions.seqAsJavaList
-
 import org.beangle.commons.inject.ContainerAware
 import org.beangle.commons.lang.{ Objects, Strings }
 import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.i18n.spi.TextBundleRegistry
 import org.beangle.webmvc.route.{ Action, ActionBuilder, ActionFinder, ContainerActionFinder, Profile, RouteService }
-
 import org.apache.struts2.StrutsConstants
-
 import com.opensymphony.xwork2.{ ActionContext, ObjectFactory }
 import com.opensymphony.xwork2.config.{ Configuration, ConfigurationException, PackageProvider }
 import com.opensymphony.xwork2.config.entities.{ ActionConfig, PackageConfig, ResultConfig }
 import com.opensymphony.xwork2.inject.Inject
 import com.opensymphony.xwork2.util.classloader.ReloadingClassLoader
 import com.opensymphony.xwork2.util.finder.{ ClassLoaderInterface, ClassLoaderInterfaceDelegate }
+import org.beangle.webmvc.annotation.noaction
+import org.beangle.webmvc.annotation.action
+import org.beangle.webmvc.annotation.results
+import org.beangle.webmvc.annotation.result
 
 /**
- * FIXME add annotation support
  * This class is a configuration provider for the XWork configuration system. This is really the
  * only way to truly handle loading of the packages, actions and results correctly.
  */
@@ -125,7 +124,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     }
     if (create) {
       import scala.collection.JavaConversions._
-      actionConfig.addResultConfigs(buildResultConfigs(actionClass))
+      actionConfig.addResultConfigs(buildResultConfigs(actionClass, pkgCfg))
       pkgCfg.addActionConfig(actionName, actionConfig.build())
       debug(s"Add ${pkgCfg.getNamespace()}/${actionName} for ${actionClass.getName()} in ${pkgCfg.getName()}")
     }
@@ -134,7 +133,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   protected def shouldGenerateResult(m: Method): Boolean = {
     if (classOf[String].equals(m.getReturnType()) && m.getParameterTypes.length == 0
-      && Modifier.isPublic(m.getModifiers) && !Modifier.isStatic(m.getModifiers)) {
+      && Modifier.isPublic(m.getModifiers) && !Modifier.isStatic(m.getModifiers) && null == m.getAnnotation(classOf[noaction])) {
       var name = m.getName().toLowerCase()
       !(name.startsWith("save") || name.startsWith("remove")
         || name.startsWith("export") || name.startsWith("import")
@@ -144,23 +143,44 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     }
   }
 
-  protected def buildResultConfigs(clazz: Class[_]): Seq[ResultConfig] = {
+  protected def buildResultConfigs(clazz: Class[_], pcb: PackageConfig.Builder): Seq[ResultConfig] = {
     var configs = new collection.mutable.ListBuffer[ResultConfig]
-
-    if (preloadftl == "false" || null == routeService) configs
-    var extention = routeService.getProfile(clazz.getName()).viewExtension
-    if (!extention.endsWith("ftl")) configs
-    var resultTypeConfig = configuration.getPackageConfig("struts-default")
-      .getAllResultTypeConfigs().get("freemarker")
-    for (m <- clazz.getMethods) {
-      var name = m.getName()
-      if (shouldGenerateResult(m)) {
-        var buf = new StringBuilder()
-        buf.append(routeService.mapView(clazz.getName(), name, name))
-        buf.append('.')
-        buf.append(extention)
-        configs += new ResultConfig.Builder(name, resultTypeConfig.getClassName()).addParam(
-          resultTypeConfig.getDefaultResultParam(), buf.toString()).build()
+    // load annotation results
+    var results = new Array[result](0)
+    val rs = clazz.getAnnotation(classOf[results])
+    if (null == rs) {
+      val an = clazz.getAnnotation(classOf[action])
+      if (null != an) results = an.results()
+    } else {
+      results = rs.value()
+    }
+    val annotationResults = new collection.mutable.HashSet[String]
+    if (null != results) {
+      for (result <- results) {
+        var resultType = result.`type`()
+        if (Strings.isEmpty(resultType)) resultType = "dispatcher"
+        val rtc = pcb.getResultType(resultType)
+        val rcb = new ResultConfig.Builder(result.name(), rtc.getClassName())
+        if (null != rtc.getDefaultResultParam()) rcb.addParam(rtc.getDefaultResultParam(), result.location())
+        configs.add(rcb.build())
+        annotationResults.add(result.name())
+      }
+    }
+    // load ftl convension results
+    var extention = routeService.getProfile(clazz.getName).viewExtension
+    if (preloadftl == "true" && extention.endsWith("ftl")) {
+      var resultTypeConfig = configuration.getPackageConfig("struts-default")
+        .getAllResultTypeConfigs().get("freemarker")
+      for (m <- clazz.getMethods) {
+        var name = m.getName()
+        if (shouldGenerateResult(m)) {
+          var buf = new StringBuilder()
+          buf.append(routeService.mapView(clazz.getName(), name, name))
+          buf.append('.')
+          buf.append(extention)
+          configs += new ResultConfig.Builder(name, resultTypeConfig.getClassName()).addParam(
+            resultTypeConfig.getDefaultResultParam(), buf.toString()).build()
+        }
       }
     }
     configs

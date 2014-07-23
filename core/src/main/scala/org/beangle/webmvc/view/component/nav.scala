@@ -12,6 +12,7 @@ class Toolbar(context: ComponentContext) extends ClosingUIBean(context) {
     }
   }
 }
+
 class Navmenu(context: ComponentContext) extends ClosingUIBean(context) {
   var title: String = _
   /** 是有已经有标签卡被选中了 */

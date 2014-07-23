@@ -49,7 +49,7 @@ class Component(val context: ComponentContext) {
   final def parameterString: String = {
     val sb = new StringBuilder(parameters.size * 10)
     for ((key, value) <- parameters) {
-      sb.append(" ").append(if ("cssClass".equals(key)) "class" else key).append("=\"").append(value.toString()).append("\"")
+      sb.append(" ").append(key).append("=\"").append(value.toString).append("\"")
     }
     sb.toString
   }

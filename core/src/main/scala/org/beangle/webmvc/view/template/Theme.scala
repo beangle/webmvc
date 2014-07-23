@@ -8,7 +8,7 @@ import com.sun.xml.internal.ws.wsdl.writer.document.Import
  *       2. build theme hierarchy relation
  */
 object Themes {
-  val Default = new Theme("html5")
+  val Default = new Theme("html")
   /**
    * Default tagName corresponding TagClass
    *

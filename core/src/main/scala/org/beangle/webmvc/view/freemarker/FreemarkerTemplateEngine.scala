@@ -87,7 +87,6 @@ class FreemarkerTemplateEngine extends AbstractTemplateEngine with Logging with 
 
   /**
    * componentless model(one per request)
-   * //FIXME
    */
   private def buildModel(component: Component): SimpleHash = {
     val context = ContextHolder.context

@@ -74,8 +74,8 @@
         <tbody>
         [#list properties as prop]
          <tr>
-          <td>${prop.name}</td>
-          <td>${prop.propertyType.name}</td>
+          <td>${prop.method.name}</td>
+          <td>${prop.method.returnType.name}</td>
          </tr>
         [/#list]
       </tbody>

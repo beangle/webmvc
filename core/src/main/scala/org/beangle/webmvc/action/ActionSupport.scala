@@ -4,14 +4,15 @@ import java.net.URL
 
 import scala.reflect.ClassTag
 
-import org.beangle.commons.lang.{ Chars, ClassLoaders, Strings }
+import org.beangle.commons.lang.{Chars, ClassLoaders, Strings}
 import org.beangle.commons.logging.Logging
-import org.beangle.commons.web.util.{ CookieUtils, RequestUtils }
-import org.beangle.webmvc.context.{ ActionMessages, ContextHolder, Flash }
-import org.beangle.webmvc.route.Action
+import org.beangle.commons.web.util.{CookieUtils, RequestUtils}
+import org.beangle.webmvc.annotation.noaction
+import org.beangle.webmvc.context.{ActionMessages, ContextHolder, Flash}
 import org.beangle.webmvc.helper.Params
+import org.beangle.webmvc.route.Action
 
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 object ActionSupport {
   /**
@@ -92,38 +93,26 @@ class ActionSupport extends Logging {
     }
   }
 
-  /**
-   * Add action message.
-   */
-  protected final def addMessage(msgKey: String, args: Object*) {
+  protected final def addMessage(msgKey: String, args: Object*): Unit = {
     ContextHolder.context.flash.addMessageNow(getTextInternal(msgKey, args))
   }
 
-  /**
-   * Add action error.
-   */
-  protected final def addError(msgKey: String, args: Object*) {
+  protected final def addError(msgKey: String, args: Object*): Unit = {
     ContextHolder.context.flash.addErrorNow(getTextInternal(msgKey, args))
   }
 
-  /**
-   * Add error to next action.
-   */
-  protected final def addFlashError(msgKey: String, args: Object*) {
+  protected final def addFlashError(msgKey: String, args: Object*): Unit = {
     ContextHolder.context.flash.addError(getTextInternal(msgKey, args))
   }
 
-  /**
-   * Add message to next action.
-   */
-  protected final def addFlashMessage(msgKey: String, args: Object*) {
+  protected final def addFlashMessage(msgKey: String, args: Object*): Unit = {
     ContextHolder.context.flash.addMessage(getTextInternal(msgKey, args))
   }
 
   /**
    * 获得action消息<br>
    */
-  final def getActionMessages(): List[String] = {
+  protected final def actionMessages: List[String] = {
     val messages = ContextHolder.context.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
     if (null == messages) List()
     else messages.messages.toList
@@ -132,13 +121,14 @@ class ActionSupport extends Logging {
   /**
    * 获得aciton错误消息<br>
    */
-  final def getActionErrors(): List[String] = {
+  protected final def actionErrors: List[String] = {
     val messages = ContextHolder.context.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
     if (null == messages) List()
     else messages.errors.toList
   }
 
-  protected def getRemoteAddr(): String = RequestUtils.getIpAddr(request)
+  @noaction
+  protected def remoteAddr: String = RequestUtils.getIpAddr(request)
 
   protected final def put(key: String, value: Object) {
     ContextHolder.context.attribute(key, value)

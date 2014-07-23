@@ -17,6 +17,8 @@ class UIBean(context: ComponentContext) extends Component(context) {
 
   var id: String = _
 
+  var cssClass: String = _
+  
   override def end(writer: Writer, body: String): Boolean = {
     evaluateParams()
     mergeTemplate(writer)
