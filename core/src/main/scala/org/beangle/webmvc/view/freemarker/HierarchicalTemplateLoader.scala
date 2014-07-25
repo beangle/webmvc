@@ -1,10 +1,12 @@
 package org.beangle.webmvc.view.freemarker
 
 import java.io.Reader
-import freemarker.cache.TemplateLoader
-import org.beangle.webmvc.view.template.AbstractTemplateEngine
 
-class HierarchicalTemplateLoader(templateEngine: AbstractTemplateEngine, loader: TemplateLoader) extends TemplateLoader {
+import org.beangle.webmvc.view.template.Themes
+
+import freemarker.cache.TemplateLoader
+
+class HierarchicalTemplateLoader(loader: TemplateLoader) extends TemplateLoader {
 
   def findTemplateSource(name: String): Object = {
     var resource = name
@@ -14,7 +16,7 @@ class HierarchicalTemplateLoader(templateEngine: AbstractTemplateEngine, loader:
       searched.add(resource)
       var break = false
       do {
-        resource = templateEngine.getParentTemplate(resource)
+        resource = Themes.getParentTemplate(resource)
         if (null == resource || searched.contains(resource)) break = true
         else {
           source = loader.findTemplateSource(resource)

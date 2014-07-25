@@ -94,8 +94,7 @@ class ClosingUIBean(context: ComponentContext) extends UIBean(context) {
   override final def usesBody(): Boolean = true
 
   override final def end(writer: Writer, body: String): Boolean = {
-    val again = doEnd(writer, body)
-    again
+    doEnd(writer, body)
   }
 
   def doEnd(writer: Writer, body: String): Boolean = {

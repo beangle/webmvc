@@ -54,7 +54,7 @@ class FreemarkerTemplateEngine extends AbstractTemplateEngine with Logging with 
    */
   def buildConfig(): Configuration = {
     val config = new Configuration()
-    config.setTemplateLoader(new HierarchicalTemplateLoader(this, new BeangleClassTemplateLoader()))
+    config.setTemplateLoader(new HierarchicalTemplateLoader(new BeangleClassTemplateLoader()))
     // Disable freemarker localized lookup
     config.setLocalizedLookup(false)
     config.setEncoding(config.getLocale(), "UTF-8")

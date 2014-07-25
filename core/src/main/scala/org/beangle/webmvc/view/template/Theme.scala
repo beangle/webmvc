@@ -2,51 +2,55 @@ package org.beangle.webmvc.view.template
 
 import org.beangle.commons.lang.Strings
 import com.sun.xml.internal.ws.wsdl.writer.document.Import
+import org.beangle.commons.lang.ClassLoaders
+import org.beangle.commons.io.IOs
+import org.beangle.commons.io.ResourcePatternResolver
 
-/**
- * FIXME 1.mutable => immutable
- *       2. build theme hierarchy relation
- */
 object Themes {
+
   val Default = new Theme("html")
-  /**
-   * Default tagName corresponding TagClass
-   *
-   * @see getTemplateName
-   */
-  private val tagTemplateNames = new collection.mutable.HashMap[Class[_], String]
 
-  /**
-   * Registe all theme
-   */
-  val themes = new collection.mutable.HashMap[String, Theme]
+  val themes = loadThemeProps()
 
-  def apply(name: String): Theme = {
-    themes.get(name).getOrElse({
-      val theme = new Theme(name)
-      themes.put(name, theme)
-      theme
-    })
+  def getParentTemplate(template: String): String = {
+    val start = template.indexOf('/', 1) + 1
+    val end = template.lastIndexOf('/')
+
+    themes(template.substring(start, end)).parent match {
+      case Some(parentTheme) => Strings.concat(template.substring(0, start), parentTheme, template.substring(end))
+      case None => null
+    }
   }
 
-  def getTemplateName(clazz: Class[_]): String = {
-    tagTemplateNames.get(clazz).getOrElse({
-      val name = Strings.uncapitalize(clazz.getSimpleName())
-      tagTemplateNames.put(clazz, name)
-      name
-    })
+  private def loadThemeProps(): Map[String, Theme] = {
+    val themePropMap = new collection.mutable.HashMap[String, Theme]
+    val resolver = new ResourcePatternResolver
+    val urls = resolver.getResources("template/*/theme.properties")
+    urls foreach { url =>
+      val themeName = Strings.substringBetween(url.getPath(), "template/", "/theme.properties")
+      val theme = new Theme(themeName)
+      theme.parent = IOs.readJavaProperties(url).get("parent")
+      themePropMap.put(themeName, theme)
+    }
+    themePropMap.toMap
+  }
+
+  def apply(name: String): Theme = {
+    themes(name)
   }
 
 }
 
 /**
- * name: Theme's name ,xml,list,xhtml etc.
+ * name: Theme's name ,html,list,xhtml etc.
  */
 class Theme(val name: String) {
 
+  var parent: Option[String] = None
+
   def getTemplatePath(clazz: Class[_], suffix: String): String = {
     val sb = new StringBuilder(20)
-    sb.append("/template/").append(name).append('/').append(Themes.getTemplateName(clazz)).append(suffix)
+    sb.append("/template/").append(name).append('/').append(Strings.uncapitalize(clazz.getSimpleName)).append(suffix)
     sb.toString()
   }
 

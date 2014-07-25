@@ -28,6 +28,7 @@ import com.opensymphony.xwork2.util.ResolverUtil
 import com.opensymphony.xwork2.util.reflection.{ ReflectionContextFactory, ReflectionProvider }
 import com.opensymphony.xwork2.validator.ActionValidatorManager
 import scala.collection.JavaConversions._
+import org.beangle.commons.io.ResourcePatternResolver
 /**
  * @author chaostone
  */
@@ -68,10 +69,8 @@ class S2ConfigurationHelper {
   }
 
   def getJarProperties(): List[Map[String, String]] = {
-    //FIXME add similar resolver to beangle
-    val resolver = new ResolverUtil()
-    resolver.findNamedResource("pom.properties", "META-INF/maven");
-    val urls = resolver.getResources()
+    val resolver = new ResourcePatternResolver
+    val urls = resolver.getResources("classpath*:META-INF/maven/**/pom.properties")
     val poms = new collection.mutable.ListBuffer[Map[String, String]]
     urls foreach { url =>
       poms += IOs.readJavaProperties(url)

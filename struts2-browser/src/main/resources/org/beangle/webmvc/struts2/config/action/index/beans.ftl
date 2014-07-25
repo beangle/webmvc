@@ -3,7 +3,7 @@
 [@b.grid items=beans?sort_by("typ") var="bean" caption="Struts Beans"]
   [@b.row]
     [@b.col title="Index" width="5%"]${bean_index+1}[/@]
-    [@b.col title="Type" width="30%" property="type"/]
+    [@b.col title="Type" width="30%" property="typ"/]
     [@b.col title="Constant Name"  width="20%" property="constant"/]
     [@b.col title="Alias" width="5%"  property="alias"/]
     [@b.col title="Implementation" width="40%" property="impl"/]
