@@ -1,14 +1,17 @@
 package org.beangle.webmvc.struts2.interceptor
 
-import org.apache.struts2.StrutsStatics.{ HTTP_REQUEST, HTTP_RESPONSE }
-import org.beangle.webmvc.context.{ ActionContext, ContextHolder, Flash }
+import java.io.File
 
-import com.opensymphony.xwork2.ActionInvocation
+import org.apache.struts2.StrutsStatics.{ HTTP_REQUEST, HTTP_RESPONSE }
+import org.apache.struts2.dispatcher.multipart.MultiPartRequestWrapper
+import org.beangle.commons.lang.Arrays.{ isBlank, isEmpty }
+import org.beangle.webmvc.context.{ ActionContext, ContextHolder }
+
+import com.opensymphony.xwork2.{ ActionContext => XworkContext, ActionInvocation }
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor
-import com.opensymphony.xwork2.{ ActionContext => XworkContext }
+
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
-//FIXME missing file upload feature
 @SerialVersionUID(8451445989084058881L)
 class BeangleInterceptor extends AbstractInterceptor {
 
@@ -17,26 +20,60 @@ class BeangleInterceptor extends AbstractInterceptor {
     val ctx = invocation.getInvocationContext
     val request = ctx.get(HTTP_REQUEST).asInstanceOf[HttpServletRequest]
     val response = ctx.get(HTTP_RESPONSE).asInstanceOf[HttpServletResponse]
-    val context = new ActionContext(request, response, params)
+    val context = new ActionContext(request, response, getParams(request))
     ContextHolder.contexts.set(context)
-    var result = invocation.invoke()
+    val result = invocation.invoke()
     val flash = context.flash
     if (null != flash) flash.nextToNow()
-    return result
+    result
   }
 
-  private def params: Map[String, Any] = {
+  private def getParams(request: HttpServletRequest): Map[String, Any] = {
     val context = ContextHolder.context
     val itor = XworkContext.getContext().getParameters().entrySet().iterator()
     val paramsBuilder = new collection.mutable.HashMap[String, Any]
     while (itor.hasNext) {
       val entry = itor.next()
-      var value:Any = entry.getValue
-      if (value.getClass.isArray) {
-        val arrayValue = value.asInstanceOf[Array[Any]]
-        if (arrayValue.length == 1) value = arrayValue(0)
+      paramsBuilder.put(entry.getKey(), entry.getValue)
+    }
+    request match {
+      case mp: MultiPartRequestWrapper => paramsBuilder ++= getUploads(mp)
+      case _ =>
+    }
+    paramsBuilder.toMap
+  }
+
+  def getUploads(mp: MultiPartRequestWrapper): Map[String, Any] = {
+    val paramsBuilder = new collection.mutable.HashMap[String, Any]
+    // bind allowed Files
+    val fileParameterNames = mp.getFileParameterNames
+    if (null == fileParameterNames) return Map.empty
+
+    while (fileParameterNames.hasMoreElements()) {
+      // get the value of this input tag
+      val inputName = fileParameterNames.nextElement()
+
+      // get the content type
+      val contentType = mp.getContentTypes(inputName)
+      val fileName = mp.getFileNames(inputName)
+      val files = mp.getFiles(inputName)
+
+      if (!isBlank(contentType) && !isBlank(fileName) && !isEmpty(files)) {
+        val acceptedFiles = new collection.mutable.ListBuffer[File]
+        val acceptedContentTypes = new collection.mutable.ListBuffer[String]
+        val acceptedFileNames = new collection.mutable.ListBuffer[String]
+        val contentTypeName = inputName + "ContentType"
+        val fileNameName = inputName + "FileName"
+
+        for (index <- 0 until files.length) {
+          acceptedFiles += files(index)
+          acceptedContentTypes += contentType(index)
+          acceptedFileNames += fileName(index)
+        }
+        paramsBuilder.put(inputName, acceptedFiles.toArray)
+        paramsBuilder.put(contentTypeName, acceptedContentTypes.toArray)
+        paramsBuilder.put(fileNameName, acceptedFileNames.toArray)
       }
-      paramsBuilder.put(entry.getKey(), value)
     }
     paramsBuilder.toMap
   }
