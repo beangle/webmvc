@@ -21,6 +21,7 @@
   <modules>
     <module>core</module>
     <module>struts2</module>
+    <module>springmvc</module>
     <module>bootstrap</module>
     <module>struts2-browser</module>
   </modules>

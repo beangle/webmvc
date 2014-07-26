@@ -74,14 +74,14 @@ class IndexAction extends ActionSupport {
     val config = configHelper.getActionConfig(namespace, actionName)
     put("actionNames", configHelper.getActionNames(namespace))
     try {
-      val clazz = configHelper.getObjectFactory().getClassInstance(config.getClassName())
+      val clazz = configHelper.objectFactory.getClassInstance(config.getClassName())
       put("properties", BeanManifest.get(clazz).getters.values.filterNot(m => m.method.getName.contains("$")))
     } catch {
       case e: Throwable =>
         error("Unable to get properties for action " + actionName, e)
         addError("Unable to retrieve action properties: " + e.toString())
     }
-    var extension: String = configHelper.getContainer().getInstance(classOf[String], StrutsConstants.STRUTS_ACTION_EXTENSION)
+    var extension: String = configHelper.container.getInstance(classOf[String], StrutsConstants.STRUTS_ACTION_EXTENSION)
     if (extension != null && extension.indexOf(",") > -1) extension = extension.substring(0, extension.indexOf(","))
     put("detailView", get("detailView", "results"))
     put("extension", extension)
@@ -95,7 +95,7 @@ class IndexAction extends ActionSupport {
 
   def beans(): String = {
     val configHelper = getConfigHelper()
-    val container = configHelper.getContainer()
+    val container = configHelper.container
     val bindings = new collection.mutable.HashSet[Binding]
     addBinding(bindings, container, classOf[ObjectFactory], StrutsConstants.STRUTS_OBJECTFACTORY)
     addBinding(bindings, container, classOf[XWorkConverter], StrutsConstants.STRUTS_XWORKCONVERTER)
@@ -144,8 +144,8 @@ class IndexAction extends ActionSupport {
   def consts(): String = {
     val configHelper = getConfigHelper()
     val consts = new collection.mutable.HashMap[String, String]
-    for (key <- configHelper.getContainer().getInstanceNames(classOf[String])) {
-      consts.put(key, configHelper.getContainer().getInstance(classOf[String], key))
+    for (key <- configHelper.container.getInstanceNames(classOf[String])) {
+      consts.put(key, configHelper.container.getInstance(classOf[String], key))
     }
     put("consts", consts)
     return forward()
@@ -158,14 +158,6 @@ class IndexAction extends ActionSupport {
     return forward()
   }
 
-  def stripPackage(clazz: String): String = {
-    clazz.substring(clazz.lastIndexOf('.') + 1)
-  }
-
-  def stripPackage(clazz: Class[_]): String = {
-    clazz.getName().substring(clazz.getName().lastIndexOf('.') + 1)
-  }
-
   private def getClassInstance(clazz: String): Class[_] = {
     try {
       return ClassLoaders.loadClass(clazz)
@@ -173,6 +165,13 @@ class IndexAction extends ActionSupport {
       case e: Throwable =>
     }
     null
+  }
+  def stripPackage(clazz: String): String = {
+    clazz.substring(clazz.lastIndexOf('.') + 1)
+  }
+
+  def stripPackage(clazz: Class[_]): String = {
+    clazz.getName().substring(clazz.getName().lastIndexOf('.') + 1)
   }
 
 }
