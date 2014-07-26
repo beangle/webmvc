@@ -104,8 +104,8 @@ object Grid {
           if (Strings.isNotEmpty(body)) {
             writer.append(body)
           } else if (null != property) {
-            var `val` = getValue()
-            if (null != `val`) writer.append(StringUtil.XMLEncNA(`val`.toString()))
+            val value = getValue()
+            if (null != value) writer.append(StringUtil.XMLEncNA(value.toString()))
           }
           writer.append("</td>")
         } catch {

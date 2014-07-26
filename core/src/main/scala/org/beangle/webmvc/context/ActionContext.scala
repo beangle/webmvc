@@ -49,8 +49,6 @@ class ActionContext(val request: HttpServletRequest, val response: HttpServletRe
 
   private val temp = new collection.mutable.HashMap[String, Any]
 
-  //def apply(name: String): Any = request.getAttribute(name)
-
   def attribute(name: String, value: Any): Unit = {
     request.setAttribute(name, value)
   }
@@ -62,7 +60,7 @@ class ActionContext(val request: HttpServletRequest, val response: HttpServletRe
   }
 
   def attribute[T](name: String): T = {
-    request.getAttribute("name").asInstanceOf[T]
+    request.getAttribute(name).asInstanceOf[T]
   }
 
   def temp(name: String, value: Any): Unit = {
@@ -70,7 +68,7 @@ class ActionContext(val request: HttpServletRequest, val response: HttpServletRe
   }
 
   def temp[T](name: String): T = {
-    temp.get("name").orNull.asInstanceOf[T]
+    temp.get(name).orNull.asInstanceOf[T]
   }
 
   def flash: Flash = {

@@ -34,6 +34,7 @@ import com.opensymphony.xwork2.conversion.impl.XWorkConverter
 import com.opensymphony.xwork2.inject.Container
 import java.util.Collections
 import org.beangle.commons.lang.reflect.BeanManifest
+import org.beangle.webmvc.route.Action
 /**
  * @author chaostone
  */
@@ -43,6 +44,10 @@ class IndexAction extends ActionSupport {
 
   protected def getConfigHelper(): S2ConfigurationHelper = {
     return ActionContext.getContext().getContainer().getInstance(classOf[S2ConfigurationHelper])
+  }
+
+  override def index(): String = {
+    return forward(new Action(this, "actions"))
   }
 
   def actions(): String = {

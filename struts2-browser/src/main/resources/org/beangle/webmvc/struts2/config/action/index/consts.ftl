@@ -1,5 +1,6 @@
 [#ftl/]
 [@b.head/]
+[#include "nav.ftl"/]
 [#assign keys = consts?keys?sort]
 [@b.grid items=keys var="const" caption="Struts Constants"]
   [@b.row]

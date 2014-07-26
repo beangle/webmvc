@@ -5,11 +5,12 @@ import java.{ util => ju }
 import org.beangle.commons.collection.page.Page
 import org.beangle.webmvc.context.ContextHolder
 import org.beangle.webmvc.view.component.{ Agent, Anchor, Checkbox, Checkboxes, ComponentContext, Css, Date, Dialog, Div, Email, Field, Foot, Form, Formfoot, Grid }
-import org.beangle.webmvc.view.component.{ Head, Iframe, Messages, Module, Navitem, Navmenu, Pagebar, Password, Radio, Radios, Reset, Select, Select2, Startend, Submit, Tab, Tabs, Textarea, Textfield, Textfields, Toolbar, Validity }
+import org.beangle.webmvc.view.component.{ Head, Iframe, Messages, Module, Navitem, Navbar, Pagebar, Password, Radio, Radios, Reset, Select, Select2, Startend, Submit, Tab, Tabs, Textarea, Textfield, Textfields, Toolbar, Validity }
 import org.beangle.webmvc.view.component.Grid.{ Bar, Boxcol, Col, Filter, Row, Treecol }
 import freemarker.template.utility.StringUtil
 import javax.servlet.http.HttpServletRequest
 import org.beangle.webmvc.view.UITheme
+import org.beangle.webmvc.view.component.Navbar
 
 class BeangleModels(context: ComponentContext, request: HttpServletRequest) extends AbstractModels(context, request) {
 
@@ -146,7 +147,7 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   def module: TagModel = get(classOf[Module])
 
-  def navmenu: TagModel = get(classOf[Navmenu])
+  def navbar: TagModel = get(classOf[Navbar])
 
   def navitem: TagModel = get(classOf[Navitem])
 

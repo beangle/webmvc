@@ -11,8 +11,9 @@ object PopulateHelper {
   var metadata: EntityMetadata = Containers.root.getBean(classOf[EntityMetadata]).head
 
   var populator = new ConvertPopulator
-  private   final def getType(clazz:Class[_]):EntityType ={
-    metadata.getType(clazz).getOrElse(new EntityType(clazz,clazz.getName, "id"))
+
+  final def getType(clazz: Class[_]): EntityType = {
+    metadata.getType(clazz).getOrElse(new EntityType(clazz, clazz.getName, "id"))
   }
   /**
    * 将request中的参数设置到clazz对应的bean。

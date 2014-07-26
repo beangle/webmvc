@@ -1,0 +1,7 @@
+[#ftl]
+[@b.navbar title="Struts Configuration Browser"]
+  [@b.navitem href="!index"]Actions[/@]
+  [@b.navitem href="!consts"]Constants[/@]
+  [@b.navitem href="!beans"]Beans[/@]
+  [@b.navitem href="!jars"]Jars[/@]
+[/@]

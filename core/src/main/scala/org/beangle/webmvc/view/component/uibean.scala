@@ -1,24 +1,21 @@
 package org.beangle.webmvc.view.component
 
 import java.io.Writer
-import org.beangle.commons.lang.{ Chars, Strings }
-import org.beangle.webmvc.context.ContextHolder
-import javax.servlet.http.HttpServletRequest
-import org.beangle.commons.web.util.RequestUtils
+import java.{util => ju}
+
 import org.beangle.commons.bean.PropertyUtils
-import java.{ util => ju }
-//FIXME
-object UIBean {
-  private val NumberFormat = "{0,number,#.##}"
-}
+import org.beangle.commons.lang.{Chars, Strings}
+import org.beangle.commons.web.util.RequestUtils
+import org.beangle.webmvc.context.ContextHolder
+
+import javax.servlet.http.HttpServletRequest
 
 class UIBean(context: ComponentContext) extends Component(context) {
-  import UIBean._
 
   var id: String = _
 
   var cssClass: String = _
-  
+
   override def end(writer: Writer, body: String): Boolean = {
     evaluateParams()
     mergeTemplate(writer)

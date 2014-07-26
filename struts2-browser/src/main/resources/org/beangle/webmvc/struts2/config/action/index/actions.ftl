@@ -1,4 +1,6 @@
 [#ftl]
+[@b.head/]
+
 [#if Parameters['namespace']??]
 <h4>Actions in [#if namespace == ""] default namespace [#else] ${namespace} [/#if]</h4>
   <ul>
@@ -7,7 +9,7 @@
   [/#list]
   </ul>
 [#else]
-
+[#include "nav.ftl"/]
 <div class="container">
   <div class="row">
    <div class="col-md-2">
@@ -22,3 +24,4 @@
   </div>
 </div>
 [/#if]
+[@b.foot/]

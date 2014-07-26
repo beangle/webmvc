@@ -3,17 +3,16 @@ package org.beangle.webmvc.struts2
 import org.apache.struts2.ServletActionContext
 import org.apache.struts2.dispatcher.ServletRedirectResult
 import org.apache.struts2.views.freemarker.FreemarkerManager
-import org.beangle.commons.lang.Strings.{contains, isBlank, isEmpty, isNotEmpty, substringAfter, substringBefore}
+import org.beangle.commons.lang.Strings.{ contains, isBlank, isEmpty, isNotEmpty, substringAfter, substringBefore }
 import org.beangle.commons.web.util.RequestUtils.getServletPath
-import org.beangle.webmvc.route.{Action, RouteService}
+import org.beangle.webmvc.route.{ Action, RouteService }
 import org.beangle.webmvc.view.freemarker.TemplateFinderByConfig
-
-import com.opensymphony.xwork2.{ActionContext, ObjectFactory, Result, UnknownHandler, XWorkException}
+import com.opensymphony.xwork2.{ ActionContext, ObjectFactory, Result, UnknownHandler, XWorkException }
 import com.opensymphony.xwork2.config.Configuration
-import com.opensymphony.xwork2.config.entities.{ActionConfig, ResultConfig, ResultTypeConfig}
+import com.opensymphony.xwork2.config.entities.{ ActionConfig, ResultConfig, ResultTypeConfig }
 import com.opensymphony.xwork2.inject.Inject
-
 import javax.servlet.http.HttpServletRequest
+import org.beangle.webmvc.context.ContextHolder
 
 /**
  * 实现action到result之间的路由和处理<br>
@@ -124,7 +123,8 @@ class ConventionResultHandler extends UnknownHandler {
    * 依据跳转路径进行构建
    */
   private def buildAction(path: String): Action = {
-    ActionContext.getContext().getContextMap().get("dispatch_action") match {
+    val dispatch: Object = ContextHolder.context.temp("dispatch_action")
+    dispatch match {
       case action: Action => {
         if (null != action.clazz) {
           val newAction = routeService.buildAction(action.clazz)

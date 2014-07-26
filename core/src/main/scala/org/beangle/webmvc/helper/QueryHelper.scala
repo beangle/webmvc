@@ -2,7 +2,6 @@ package org.beangle.webmvc.helper
 
 import java.text.{ ParseException, SimpleDateFormat }
 import java.{ util => ju }
-
 import org.beangle.commons.bean.PropertyUtils
 import org.beangle.commons.collection.page.{ Page, PageLimit }
 import org.beangle.commons.lang.{ Numbers, Strings }
@@ -11,12 +10,12 @@ import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.dao.Condition
 import org.beangle.data.model.meta.EntityType
 import org.slf4j.LoggerFactory
-
 import javax.servlet.http.HttpServletRequest
+import org.beangle.commons.logging.Logging
+import org.beangle.data.model.Entity
+import org.beangle.webmvc.context.ContextHolder
 
-object QueryHelper {
-
-  protected val logger = LoggerFactory.getLogger(this.getClass)
+object QueryHelper extends Logging {
 
   val PAGENO = "pageNo"
 
@@ -32,8 +31,7 @@ object QueryHelper {
    * 把entity alias的别名的参数转换成条件.<br>
    *
    * @param entityQuery
-   * @param exclusiveAttrNames
-   *          以entityQuery中alias开头的属性串
+   * @param exclusiveAttrNames   以entityQuery中alias开头的属性串
    */
   def populateConditions(entityQuery: OqlBuilder[_], exclusiveAttrNames: String) {
     entityQuery.where(extractConditions(entityQuery.entityClass, entityQuery.alias,
@@ -48,15 +46,14 @@ object QueryHelper {
    * @param exclusiveAttrNames
    */
   def extractConditions(clazz: Class[_], prefix: String, exclusiveAttrNames: String): List[Condition] = {
-    var entity: Object = null
+    var entity: Entity[_] = null
     var newClazz: Class[_] = null
+    var entityType = PopulateHelper.getType(clazz)
     try {
       if (clazz.isInterface()) {
-        //FIXME Model is undefined
-        var entityType = new EntityType(null, null, null) //Model.getType(clazz.getName())
         newClazz = entityType.entityClass
       }
-      entity = clazz.newInstance().asInstanceOf[Object]
+      entity = clazz.newInstance().asInstanceOf[Entity[_]]
     } catch {
       case e: Exception => throw new RuntimeException("[RequestUtil.extractConditions]: error in in initialize " + clazz)
     }
@@ -70,8 +67,7 @@ object QueryHelper {
           if (RESERVED_NULL && "null".equals(strValue)) {
             conditions += new Condition(prefix + "." + attr + " is null")
           } else {
-            //FIXME Model is undefined
-            //Model.getPopulator().populateValue(entity, Model.getType(entity.getClass()), attr, strValue)
+            PopulateHelper.populator.populate(entity, entityType, attr, strValue)
             var setValue = PropertyUtils.getProperty(entity, attr)
             if (null != setValue) {
               if (setValue.isInstanceOf[String]) {
@@ -83,7 +79,7 @@ object QueryHelper {
             }
           }
         } catch {
-          case e: Exception => logger.error("Error populate entity " + prefix + "'s attribute " + attr, e)
+          case e: Exception => error("Error populate entity " + prefix + "'s attribute " + attr, e)
         }
       }
     }
@@ -112,9 +108,7 @@ object QueryHelper {
     if (Strings.isNotBlank(pageSize)) {
       pagesize = Numbers.toInt(pageSize.trim())
     } else {
-      //FIXME CANNOT UNDERSTAND
-      var request: HttpServletRequest = null //ServletActionContext.getRequest()
-      pageSize = CookieUtils.getCookieValue(request, PAGESIZE)
+      pageSize = CookieUtils.getCookieValue(ContextHolder.context.request, PAGESIZE)
       if (Strings.isNotEmpty(pageSize)) pagesize = Numbers.toInt(pageSize)
     }
     if (pagesize < 1) Page.DefaultPageSize else pagesize
@@ -149,9 +143,7 @@ object QueryHelper {
       gc.set(ju.Calendar.DAY_OF_YEAR, gc.get(ju.Calendar.DAY_OF_YEAR) + 1)
       edate = gc.getTime()
     }
-    //FIXME QUERY NOT DEFINE GETALIAS FUNCTION
-    var objAttr = ""
-    (if (null == alias) query.alias else alias) + "." + attr
+    var objAttr = (if (null == alias) query.alias else alias) + "." + attr
     if (null != sdate && null == edate) {
       query.where(objAttr + " >=:sdate", sdate)
     } else if (null != sdate && null != edate) {

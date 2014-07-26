@@ -1,5 +1,6 @@
 package org.beangle.webmvc.view.component
 
+import org.beangle.commons.collection.page.Page
 import org.beangle.commons.lang.Strings
 
 class Toolbar(context: ComponentContext) extends ClosingUIBean(context) {
@@ -13,7 +14,7 @@ class Toolbar(context: ComponentContext) extends ClosingUIBean(context) {
   }
 }
 
-class Navmenu(context: ComponentContext) extends ClosingUIBean(context) {
+class Navbar(context: ComponentContext) extends ClosingUIBean(context) {
   var title: String = _
   /** 是有已经有标签卡被选中了 */
   var selected = false
@@ -34,24 +35,24 @@ class Navmenu(context: ComponentContext) extends ClosingUIBean(context) {
   /**
    * 去除后缀比较是否是同一个resource(action!method)
    */
-  private def sameAction(first: String): Boolean = {
-    val firstSb = new StringBuilder(Strings.substringBefore(first, "."))
+  private def sameAction(path: String): Boolean = {
+    val firstSb = new StringBuilder(Strings.substringBefore(path, "."))
     if (-1 == firstSb.lastIndexOf("!")) firstSb.append("!index")
     firstSb.toString().equals(uri)
   }
 }
 
-class Navitem(context: ComponentContext) extends UIBean(context) {
-  var title: String = _
+class Navitem(context: ComponentContext) extends ClosingUIBean(context) {
   var href: String = _
   var onclick: String = _
   var target: String = _
   var selected = false
 
   override def evaluateParams() {
-    this.href = render(this.href)
-    title = getText(title)
-    this.selected = findAncestor(classOf[Navmenu]).isSelected(this.href)
+    if (null != href) {
+      this.href = render(this.href)
+      this.selected = findAncestor(classOf[Navbar]).isSelected(this.href)
+    }
     if (null == onclick) {
       if (null != target) {
         onclick = Strings.concat("return bg.Go(this,'", target, "')")
@@ -62,8 +63,6 @@ class Navitem(context: ComponentContext) extends UIBean(context) {
     }
   }
 }
-
-import org.beangle.commons.collection.page.Page
 class Pagebar(context: ComponentContext) extends UIBean(context) {
   var page: Page[_] = _
 }

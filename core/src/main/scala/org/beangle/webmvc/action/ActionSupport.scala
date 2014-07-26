@@ -56,7 +56,7 @@ class ActionSupport extends Logging {
   }
 
   protected final def forward(action: Action): String = {
-    ContextHolder.context.attribute("dispatch_action", action)
+    ContextHolder.context.temp("dispatch_action", action)
     "chain:dispatch_action"
   }
 
@@ -76,7 +76,7 @@ class ActionSupport extends Logging {
 
   protected final def redirect(action: Action, message: String): String = {
     if (Strings.isNotEmpty(message)) addFlashMessage(message)
-    ContextHolder.context.attribute("dispatch_action", action)
+    ContextHolder.context.temp("dispatch_action", action)
     "redirectAction:dispatch_action"
   }
 

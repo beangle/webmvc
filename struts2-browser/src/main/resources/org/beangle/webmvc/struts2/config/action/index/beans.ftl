@@ -1,5 +1,6 @@
 [#ftl/]
 [@b.head/]
+[#include "nav.ftl"/]
 [@b.grid items=beans?sort_by("typ") var="bean" caption="Struts Beans"]
   [@b.row]
     [@b.col title="Index" width="5%"]${bean_index+1}[/@]
