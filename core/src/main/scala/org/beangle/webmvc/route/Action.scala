@@ -132,7 +132,7 @@ class Action(var namespace: String, var name: String, val clazz: String, var met
     val buf = new StringBuilder(25)
     if (null == namespace || namespace.length() == 1) buf.append('/')
     else buf.append(namespace).append('/')
-    
+
     if (null != name) buf.append(name)
     if (Strings.isNotEmpty(method)) buf.append('!').append(method)
     if (null != extention) buf.append('.').append(extention)
@@ -160,3 +160,6 @@ class Action(var namespace: String, var name: String, val clazz: String, var met
     Objects.toStringBuilder(this).add("namespace", namespace).add("name", name).add("method", method)
       .add("params", parameters).toString()
 }
+
+case class ActionMapping(namespace: String, name: String, method: String)
+

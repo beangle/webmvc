@@ -20,8 +20,7 @@ class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder
     sb.append(profile.uriPath)
     if (Constants.SHORT_URI.equals(profile.uriPathStyle)) {
       val simpleName = className.substring(className.lastIndexOf('.') + 1)
-      sb.append(Strings.uncapitalize(simpleName.substring(0, simpleName.length()
-        - profile.actionSuffix.length)))
+      sb.append(Strings.uncapitalize(simpleName.substring(0, simpleName.length - profile.actionSuffix.length)))
     } else if (Constants.SIMPLE_URI.equals(profile.uriPathStyle)) {
       sb.append(profile.getInfix(className))
     } else if (Constants.SEO_URI.equals(profile.uriPathStyle)) {

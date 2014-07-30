@@ -2,12 +2,13 @@ package org.beangle.webmvc.route.impl
 
 import java.net.URL
 import java.{ util => ju }
-import org.beangle.commons.bean.PropertyUtils
+import org.beangle.commons.bean.PropertyUtils.{ copyProperty, getProperty }
 import org.beangle.commons.io.IOs
 import org.beangle.commons.lang.{ ClassLoaders, Strings }
 import org.beangle.commons.logging.Logging
-import org.beangle.webmvc.route.{ Profile, RouteService }
-import org.beangle.webmvc.route.Action
+import org.beangle.webmvc.route.{ Action, Profile, RouteService, RequestMapper, ActionMapping }
+import javax.servlet.http.HttpServletRequest
+import org.beangle.commons.web.util.RequestUtils
 
 object RouteServiceImpl extends Logging {
 
@@ -73,8 +74,8 @@ object RouteServiceImpl extends Logging {
 
   private def populateAttr(profile: Profile, attr: String, props: Map[String, String]) {
     props.get(profile.name + "." + attr) match {
-      case Some(v) => PropertyUtils.copyProperty(profile, attr, v)
-      case None => PropertyUtils.copyProperty(profile, attr, PropertyUtils.getProperty(defaultProfile, attr))
+      case Some(v) => if (Strings.isBlank(v)) copyProperty(profile, attr, null) else copyProperty(profile, attr, v)
+      case None => copyProperty(profile, attr, getProperty(defaultProfile, attr))
     }
   }
 }
@@ -126,5 +127,54 @@ class RouteServiceImpl extends RouteService with Logging {
   def mapView(className: String, methodName: String, viewName: String): String = {
     viewMapper.getViewPath(className, methodName, viewName)
   }
+}
 
+//FIXME support restfull url
+class DefaultURIResolver extends RequestMapper {
+  val DefaultMethod = "index"
+  val MethodParam = "_method"
+
+  def resolve(request: HttpServletRequest): ActionMapping = {
+    val uri = RequestUtils.getServletPath(request)
+    val lastSlash = uri.lastIndexOf("/")
+    val data =
+      if (lastSlash == -1) {
+        ("", uri)
+      } else if (lastSlash == 0) {
+        ("/", uri.substring(lastSlash + 1))
+      } else {
+        // Simply select the namespace as everything before the last slash
+        (uri.substring(0, lastSlash), uri.substring(lastSlash + 1))
+      }
+    val namespace = data._1
+    val name = data._2
+
+    // process ! . 
+    var i = 0
+    var bangIdx = -1
+    var lastIdx = name.length
+    val chars = new Array[Char](name.length)
+    name.getChars(0, name.length, chars, 0)
+    var continue = true
+    while (i < chars.length && continue) {
+      var c = chars(i)
+      if ('!' == c) bangIdx = i
+      else if (';' == c || '.' == c) {
+        lastIdx = i
+        continue = false
+      }
+      i += 1
+    }
+
+    if (-1 == bangIdx) {
+      ActionMapping(namespace, name.substring(0, lastIdx), determinMethod(request))
+    } else {
+      ActionMapping(namespace, name.substring(0, bangIdx), name.substring(bangIdx + 1, lastIdx))
+    }
+  }
+
+  private def determinMethod(request: HttpServletRequest): String = {
+    val method = request.getParameter(MethodParam)
+    if (null == method) DefaultMethod else method
+  }
 }

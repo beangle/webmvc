@@ -1,5 +1,7 @@
 package org.beangle.webmvc.route
 
+import javax.servlet.http.HttpServletRequest
+
 object Constants {
   // 路径分割符
   val separator = '/'
@@ -52,4 +54,8 @@ trait ActionBuilder {
    * 默认类名对应的控制器名称(含有扩展名)
    */
   def build(className: String): Action
+}
+
+trait RequestMapper {
+  def resolve(request: HttpServletRequest): ActionMapping
 }
