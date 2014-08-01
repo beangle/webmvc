@@ -1,20 +1,14 @@
-package org.beangle.webmvc.spring.mvc
+package org.beangle.webmvc.spring.mvc.view
 
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig
-import org.beangle.data.model.annotation.config
-import org.beangle.webmvc.view.freemarker.Configurations
-import javax.servlet.ServletContext
-import freemarker.ext.jsp.TaglibFactory
-import freemarker.template.ObjectWrapper
-import freemarker.template.TemplateException
-import freemarker.cache.TemplateLoader
-import freemarker.template.Configuration
-import org.beangle.webmvc.view.freemarker.BeangleObjectWrapper
 import org.beangle.commons.logging.Logging
-import freemarker.template.TemplateExceptionHandler
+import org.beangle.webmvc.view.freemarker.{ BeangleObjectWrapper, Configurations }
 import org.springframework.web.context.ServletContextAware
 
-class BeangleFreeMarkerConfigurer extends FreeMarkerConfig with Logging with ServletContextAware {
+import freemarker.ext.jsp.TaglibFactory
+import freemarker.template.{ Configuration, TemplateExceptionHandler }
+import javax.servlet.ServletContext
+
+class FreeMarkerConfigurer extends org.springframework.web.servlet.view.freemarker.FreeMarkerConfig with Logging with ServletContextAware {
   val config = new Configuration()
 
   disableFreemarkerLogger()

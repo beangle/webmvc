@@ -225,15 +225,11 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   /**
    * Determine all the index handling actions and results based on this logic:
-   * 1. Loop over all the namespaces such as /foo and see if it has an action
-   * named index 2. If an action doesn't exists in the parent namespace of the
-   * same name, create an action in the parent namespace of the same name as
-   * the namespace that points to the index action in the namespace. e.g. /foo
-   * -> /foo/index 3. Create the action in the namespace for empty string if
-   * it doesn't exist. e.g. /foo/ the action is "" and the namespace is /foo
+   * 
+   * - Loop over all the namespaces such as /foo and see if it has an action named index 
+   * - If an action doesn't exists in the parent namespace of the same name, create an action in the parent namespace of the same name as the namespace that points to the index action in the namespace. e.g. /foo -> /foo/index
+   * - 3. Create the action in the namespace for empty string if it doesn't exist. e.g. /foo/ the action is "" and the namespace is /foo
    *
-   * @param packageConfigs
-   *          Used to store the actions.
    */
   protected def buildIndexActions(packageConfigs: collection.mutable.Map[String, PackageConfig.Builder]): Int = {
     var createCount = 0
@@ -247,7 +243,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
       var pkgConfig = byNamespace(namespace)
       var indexActionConfig = pkgConfig.build().getAllActionConfigs().get("index")
       if (pkgConfig.build().getAllActionConfigs().get("") == null) {
-        debug(s"Creating index ActionConfig with an action name of [] for the action class ${indexActionConfig.getClassName}")
+        debug(s"Creating index actionconfig for ${indexActionConfig.getClassName}")
         pkgConfig.addActionConfig("", indexActionConfig)
         createCount += 1
       }

@@ -22,14 +22,13 @@ class ConventionHandlerAdapter(routeService: RouteService) extends HandlerAdapte
   override def handle(request: HttpServletRequest, response: HttpServletResponse, handler: Object): ModelAndView = {
     val am = request.getAttribute(ActionMappingName).asInstanceOf[ActionMapping]
     request.removeAttribute(ActionMappingName)
-    val method = handler.getClass().getMethod(am.method)
+    val clazz = handler.getClass
+    val method = clazz.getMethod(am.method)
     val result = method.invoke(handler).toString
     if (Strings.contains(result, ":")) {
       null
     } else {
-      import scala.collection.JavaConversions._
-      val view = routeService.mapView(handler.getClass.getName, am.method, result.toString())
-      new ModelAndView(view, new java.util.HashMap[String, String])
+      new ModelAndView(routeService.mapView(clazz.getName, am.method, result), null)
     }
   }
 

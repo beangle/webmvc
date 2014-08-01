@@ -4,8 +4,10 @@ import org.beangle.commons.inject.bind.AbstractBindModule
 import org.beangle.webmvc.route.impl.RouteServiceImpl
 import org.beangle.webmvc.spring.handler.ConventionHandlerMapping
 import org.beangle.webmvc.spring.handler.ConventionHandlerAdapter
-import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver
-import org.beangle.webmvc.spring.mvc.BeangleFreeMarkerConfigurer
+import org.beangle.webmvc.spring.mvc.view.FreeMarkerConfigurer
+import org.beangle.webmvc.spring.mvc.view.FreeMarkerViewResolver
+import org.beangle.webmvc.view.freemarker.FreemarkerTemplateEngine
+import org.beangle.webmvc.view.tag.BeangleTagLibrary
 
 class DefaultModule extends AbstractBindModule {
 
@@ -20,6 +22,9 @@ class DefaultModule extends AbstractBindModule {
       .property("exposeRequestAttributes", true)
       .property("exposeSessionAttributes", true)
 
-    bind("freeMarkerConfig", classOf[BeangleFreeMarkerConfigurer])
+    bind("freeMarkerConfig", classOf[FreeMarkerConfigurer])
+
+    bind(classOf[FreemarkerTemplateEngine])
+    bind("b", classOf[BeangleTagLibrary])
   }
 }
