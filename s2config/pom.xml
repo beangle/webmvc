@@ -4,7 +4,7 @@
     <artifactId>beangle-webmvc-parent</artifactId>
     <version>4.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>beangle-webmvc-struts2-browser</artifactId>
+  <artifactId>beangle-webmvc-s2config</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMvc Struts2 Config Browser</name>

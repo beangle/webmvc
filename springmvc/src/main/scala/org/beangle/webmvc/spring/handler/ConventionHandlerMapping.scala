@@ -40,7 +40,7 @@ class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetec
   protected override def getHandlerInternal(request: HttpServletRequest): Object = {
     val am = resolver.resolve(request)
     request.setAttribute(ActionMappingName, am)
-    lookupHandler(am.namespace + "/" + am.name, request);
+    lookupHandler(am.namespace + "/" + am.name, request)
   }
 
   protected override def buildPathExposingHandler(rawHandler: Object, bestMatchingPattern: String,

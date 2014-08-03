@@ -23,7 +23,7 @@
     <module>struts2</module>
     <module>springmvc</module>
     <module>bootstrap</module>
-    <module>struts2-browser</module>
+    <module>s2config</module>
   </modules>
 
   <dependencyManagement>

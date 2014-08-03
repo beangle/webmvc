@@ -5,7 +5,7 @@
 <h4>Actions in [#if namespace == ""] default namespace [#else] ${namespace} [/#if]</h4>
   <ul>
   [#list actionNames as name]
-  <li>[@b.a href="!config?namespace=${namespace}&actionName=${name}" target="action_content"]&nbsp;${name}&nbsp;[/@]</li>
+  <li>[@b.a href="!action?namespace=${namespace}&actionName=${name}" target="action_content"]&nbsp;${name}&nbsp;[/@]</li>
   [/#list]
   </ul>
 [#else]
