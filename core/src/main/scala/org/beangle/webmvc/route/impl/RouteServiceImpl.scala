@@ -117,8 +117,8 @@ class RouteServiceImpl extends RouteService with Logging {
   /**
    * 默认类名对应的控制器名称(含有扩展名)
    */
-  def buildAction(className: String): Action = {
-    actionBuilder.build(className)
+  def buildAction(clazz: Class[_]): Action = {
+    actionBuilder.build(clazz)
   }
 
   /**

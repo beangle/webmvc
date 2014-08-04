@@ -84,7 +84,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     var actionTypes = actionFinder.getActions(new ActionFinder.Test(actionSuffix, actionPackages))
     for ((actionClass, value) <- actionTypes) {
       var profile = routeService.getProfile(actionClass.getName())
-      var action = routeService.buildAction(actionClass.getName())
+      var action = routeService.buildAction(actionClass)
       var packageConfig = getPackageConfig(profile, packageConfigs, action, actionClass)
       if (createActionConfig(packageConfig, action, actionClass, value)) newActions += 1
     }
@@ -111,8 +111,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   protected def isReloadEnabled(): Boolean = devMode == "true"
 
-  protected def createActionConfig(pkgCfg: PackageConfig.Builder, action: Action, actionClass: Class[_],
-    beanName: String): Boolean = {
+  protected def createActionConfig(pkgCfg: PackageConfig.Builder, action: Action, actionClass: Class[_], beanName: String): Boolean = {
     var actionConfig = new ActionConfig.Builder(pkgCfg.getName(), action.name, beanName)
     actionConfig.methodName(action.method)
     var actionName = action.name
