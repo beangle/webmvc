@@ -26,13 +26,13 @@ import org.apache.struts2.dispatcher.mapper.ActionMapper
 import org.apache.struts2.dispatcher.multipart.MultiPartRequest
 import org.apache.struts2.views.freemarker.FreemarkerManager
 import org.apache.struts2.views.velocity.VelocityManager
-import org.beangle.commons.lang.{ClassLoaders, Objects}
+import org.beangle.commons.lang.{ ClassLoaders, Objects }
 import org.beangle.commons.lang.reflect.BeanManifest
 import org.beangle.webmvc.action.ActionSupport
 import org.beangle.webmvc.route.Action
 import org.beangle.webmvc.struts2.action.helper.S2ConfigurationHelper
 
-import com.opensymphony.xwork2.{ActionContext, ActionProxyFactory, ObjectFactory, TextProvider}
+import com.opensymphony.xwork2.{ ActionContext, ActionProxyFactory, ObjectFactory, TextProvider }
 import com.opensymphony.xwork2.conversion.ObjectTypeDeterminer
 import com.opensymphony.xwork2.conversion.impl.XWorkConverter
 import com.opensymphony.xwork2.inject.Container
@@ -42,8 +42,8 @@ import com.opensymphony.xwork2.inject.Container
 class ConfigAction extends ActionSupport {
 
   import ConfigAction._
-  
-  protected def getConfigHelper(): S2ConfigurationHelper = {
+
+  private def getConfigHelper(): S2ConfigurationHelper = {
     return ActionContext.getContext().getContainer().getInstance(classOf[S2ConfigurationHelper])
   }
 
@@ -65,7 +65,7 @@ class ConfigAction extends ActionSupport {
         }
         put("namespaces", namespaces)
     }
-    return forward()
+    forward()
   }
 
   def action(): String = {
@@ -91,7 +91,7 @@ class ConfigAction extends ActionSupport {
     put("results", config.getResults.values())
     put("namespace", namespace)
     put("actionName", actionName)
-    return forward()
+    forward()
   }
 
   def beans(): String = {
@@ -110,7 +110,7 @@ class ConfigAction extends ActionSupport {
     addBinding(bindings, container, classOf[VelocityManager], StrutsConstants.STRUTS_VELOCITY_MANAGER_CLASSNAME)
     addBinding(bindings, container, classOf[UrlRenderer], StrutsConstants.STRUTS_URL_RENDERER)
     put("beans", bindings)
-    return forward()
+    forward()
   }
 
   private def addBinding(bindings: collection.mutable.Set[Binding], container: Container, typ: Class[_], constName: String): Unit = {
@@ -135,11 +135,11 @@ class ConfigAction extends ActionSupport {
     var instName = "Class unable to be loaded"
     try {
       val inst = container.getInstance(typ, name)
-      instName = inst.getClass().getName()
+      if (null != inst) instName = inst.getClass().getName()
     } catch {
-      case e: Throwable => // Ignoring beans unable to be loaded
+      case e: Throwable =>
     }
-    return instName
+    instName
   }
 
   def consts(): String = {
@@ -149,14 +149,14 @@ class ConfigAction extends ActionSupport {
       consts.put(key, configHelper.container.getInstance(classOf[String], key))
     }
     put("consts", consts)
-    return forward()
+    forward()
   }
 
   def jars(): String = {
     val configHelper = getConfigHelper()
     put("jarPoms", configHelper.getJarProperties())
     put("pluginsLoaded", ClassLoaders.getResources("struts-plugin.xml"))
-    return forward()
+    forward()
   }
 
   private def getClassInstance(clazz: String): Class[_] = {
