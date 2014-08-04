@@ -1,8 +1,8 @@
 package org.beangle.webmvc.struts2.factory
 
-import java.{util => ju}
+import java.{ util => ju }
 
-import org.beangle.commons.inject.{Container, ContainerAware}
+import org.beangle.commons.inject.{ Container, ContainerAware }
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.helper.ContainerHelper
 
@@ -20,12 +20,10 @@ class BeangleObjectFactory extends ObjectFactory with ContainerAware with Loggin
    */
   @throws(classOf[Exception])
   override def buildBean(beanName: String, extraContext: ju.Map[String, Object], injectInternal: Boolean): Object = {
-    if (container.contains(beanName)) {
-      val bean: Object = container.getBean(beanName).get
-      if (injectInternal) injectInternalBeans(bean)
-      bean
-    } else {
-      buildBean(getClassInstance(beanName), extraContext)
+    val opBean: Option[Object] = container.getBean(beanName)
+    opBean match {
+      case Some(bean) => bean
+      case None => buildBean(getClassInstance(beanName), extraContext)
     }
   }
 
