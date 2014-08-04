@@ -19,7 +19,7 @@ object RouteServiceImpl extends Logging {
    */
   def loadProfiles(): List[Profile] = {
     val profiles = new collection.mutable.ListBuffer[Profile]
-    ClassLoaders.getResources("META-INF/beangle/convention-route.properties", classOf[RouteService]).foreach { url =>
+    ClassLoaders.getResources("META-INF/beangle/convention-route.properties").foreach { url =>
       profiles ++= buildProfiles(url, false)
     }
     profiles.toList
@@ -27,7 +27,7 @@ object RouteServiceImpl extends Logging {
 
   /**加载META-INF/convention-default.properties*/
   private def loadDefaultProfile(): Profile = {
-    val convention_default = ClassLoaders.getResource("META-INF/beangle/convention-default.properties", classOf[RouteService])
+    val convention_default = ClassLoaders.getResource("META-INF/beangle/convention-default.properties")
     if (null == convention_default) { throw new RuntimeException("cannot find convention-default.properties!") }
     buildProfiles(convention_default, true)(0)
   }

@@ -1,10 +1,11 @@
 package org.beangle.webmvc.view.tag
 
+import org.beangle.webmvc.helper.ContainerHelper
 import org.beangle.webmvc.view.bean.{ DefaultActionUriRender, IndexableIdGenerator }
 import org.beangle.webmvc.view.component.ComponentContext
 import org.beangle.webmvc.view.freemarker.FreemarkerTemplateEngine
+
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.commons.inject.Containers
 
 /**
  * Beangle tag Library
@@ -22,7 +23,7 @@ class BeangleTagLibrary extends TagLibrary {
     val idGenerator = new IndexableIdGenerator(String.valueOf(Math.abs(fullpath.hashCode)))
 
     val uriRender = new DefaultActionUriRender(suffix)
-    val templateEngine = Containers.root.getBean(classOf[FreemarkerTemplateEngine]).orNull
+    val templateEngine = ContainerHelper.get.getBean(classOf[FreemarkerTemplateEngine]).orNull
     val componentContext = new ComponentContext(uriRender, idGenerator, templateEngine)
     new BeangleModels(componentContext, req)
   }

@@ -1,32 +1,19 @@
-package org.beangle.webmvc.struts2
+package org.beangle.webmvc.struts2.factory
 
 import java.{util => ju}
 
-import org.beangle.commons.inject.{Container, ContainerAware, Containers}
+import org.beangle.commons.inject.{Container, ContainerAware}
 import org.beangle.commons.logging.Logging
+import org.beangle.webmvc.helper.ContainerHelper
 
 import com.opensymphony.xwork2.ObjectFactory
 import com.opensymphony.xwork2.factory.ResultFactory
 import com.opensymphony.xwork2.inject.Inject
-import org.apache.struts2.StrutsConstants
-import javax.servlet.ServletContext
 
 @SerialVersionUID(-1733081389212973935L)
 class BeangleObjectFactory extends ObjectFactory with ContainerAware with Logging {
 
-  var container: Container = _
-
-  /**
-   * Constructs the object factory
-   * @since 2.1.3
-   */
-  @Inject
-  def this(@Inject servletContext: ServletContext, @Inject(StrutsConstants.STRUTS_DEVMODE) devMode: String) {
-    this()
-    container = Containers.root
-    if (container == null) error("Cannot find beangle context from ServletContext")
-  }
-
+  var container: Container = ContainerHelper.get
   /**
    * Looks up beans using application context before falling back to the method defined
    * in the {@link ObjectFactory}.

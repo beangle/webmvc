@@ -21,16 +21,16 @@ class DefaultModule extends AbstractBindModule with PropertySource {
   override def properties: collection.Map[String, String] = {
     val constants = new collection.mutable.HashMap[String, String]
     //1. read default.properties
-    constants ++= IOs.readJavaProperties(ClassLoaders.getResource("org/apache/struts2/default.properties", getClass).openStream())
+    constants ++= IOs.readJavaProperties(ClassLoaders.getResource("org/apache/struts2/default.properties").openStream())
 
     //2. read struts-plugin.xml
-    ClassLoaders.getResources("struts-plugin.xml", getClass) foreach { url =>
+    ClassLoaders.getResources("struts-plugin.xml") foreach { url =>
       filterContants(url, constants)
     }
 
     //3. read struts.xml and struts.properties
-    filterContants(ClassLoaders.getResource("struts.xml", getClass), constants)
-    val finalProperties = ClassLoaders.getResource("struts.properties", getClass)
+    filterContants(ClassLoaders.getResource("struts.xml"), constants)
+    val finalProperties = ClassLoaders.getResource("struts.properties")
     if (null != finalProperties)
       constants ++= IOs.readJavaProperties(finalProperties.openStream())
     constants

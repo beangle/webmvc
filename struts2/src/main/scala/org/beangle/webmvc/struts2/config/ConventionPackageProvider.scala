@@ -1,24 +1,25 @@
 package org.beangle.webmvc.struts2.config
 
 import java.lang.reflect.{ Method, Modifier }
+
 import scala.collection.JavaConversions.seqAsJavaList
+
 import org.beangle.commons.inject.ContainerAware
 import org.beangle.commons.lang.{ Objects, Strings }
 import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.i18n.spi.TextBundleRegistry
-import org.beangle.webmvc.route.{ Action, ActionBuilder, ActionFinder, ContainerActionFinder, Profile, RouteService }
+import org.beangle.webmvc.annotation.{ action, noaction, result, results }
+import org.beangle.webmvc.route.{ Action, ActionFinder, ContainerActionFinder, Profile, RouteService }
+
 import org.apache.struts2.StrutsConstants
+
 import com.opensymphony.xwork2.{ ActionContext, ObjectFactory }
 import com.opensymphony.xwork2.config.{ Configuration, ConfigurationException, PackageProvider }
 import com.opensymphony.xwork2.config.entities.{ ActionConfig, PackageConfig, ResultConfig }
 import com.opensymphony.xwork2.inject.Inject
 import com.opensymphony.xwork2.util.classloader.ReloadingClassLoader
 import com.opensymphony.xwork2.util.finder.{ ClassLoaderInterface, ClassLoaderInterfaceDelegate }
-import org.beangle.webmvc.annotation.noaction
-import org.beangle.webmvc.annotation.action
-import org.beangle.webmvc.annotation.results
-import org.beangle.webmvc.annotation.result
 
 /**
  * This class is a configuration provider for the XWork configuration system. This is really the
@@ -225,8 +226,8 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   /**
    * Determine all the index handling actions and results based on this logic:
-   * 
-   * - Loop over all the namespaces such as /foo and see if it has an action named index 
+   *
+   * - Loop over all the namespaces such as /foo and see if it has an action named index
    * - If an action doesn't exists in the parent namespace of the same name, create an action in the parent namespace of the same name as the namespace that points to the index action in the namespace. e.g. /foo -> /foo/index
    * - 3. Create the action in the namespace for empty string if it doesn't exist. e.g. /foo/ the action is "" and the namespace is /foo
    *

@@ -27,8 +27,8 @@ class BeangleClassTemplateLoader(prefixStr: String = null) extends URLTemplateLo
   val prefix = PrefixProcessor.process(prefixStr)
 
   protected def getURL(name: String): URL = {
-    var url = ClassLoaders.getResource(name, getClass())
-    if (null != prefix && null == url) url = ClassLoaders.getResource(name + prefix, getClass())
+    var url = ClassLoaders.getResource(name)
+    if (null != prefix && null == url) url = ClassLoaders.getResource(name + prefix)
     url
   }
 

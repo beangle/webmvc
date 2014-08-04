@@ -1,14 +1,13 @@
 package org.beangle.webmvc.helper
 
-import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
-import org.beangle.data.model.util.ConvertPopulator
-import org.beangle.data.model.Entity
 import org.beangle.commons.lang.Strings
-import org.beangle.commons.inject.Containers
+import org.beangle.data.model.Entity
+import org.beangle.data.model.meta.{EntityMetadata, EntityType}
+import org.beangle.data.model.util.ConvertPopulator
 
 object PopulateHelper {
 
-  var metadata: EntityMetadata = Containers.root.getBean(classOf[EntityMetadata]).head
+  var metadata: EntityMetadata = ContainerHelper.get.getBean(classOf[EntityMetadata]).head
 
   var populator = new ConvertPopulator
 

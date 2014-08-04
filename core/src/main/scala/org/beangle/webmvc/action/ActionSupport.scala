@@ -189,7 +189,7 @@ class ActionSupport extends Logging {
   }
 
   protected final def getResource(name: String): URL = {
-    val url = ClassLoaders.getResource(name, getClass())
+    val url = ClassLoaders.getResource(name)
     if (url == null) error(s"Cannot load template $name")
     url
   }

@@ -155,7 +155,7 @@ class ConfigAction extends ActionSupport {
   def jars(): String = {
     val configHelper = getConfigHelper()
     put("jarPoms", configHelper.getJarProperties())
-    put("pluginsLoaded", ClassLoaders.getResources("struts-plugin.xml", classOf[ConfigAction]))
+    put("pluginsLoaded", ClassLoaders.getResources("struts-plugin.xml"))
     return forward()
   }
 

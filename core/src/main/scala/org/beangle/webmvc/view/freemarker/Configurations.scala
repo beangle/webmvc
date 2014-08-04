@@ -56,11 +56,11 @@ object Configurations {
   def loadSetting(): Map[String, String] = {
     val properties = new collection.mutable.HashMap[String, String]
     // 1. first META-INF/freemarker.properties
-    for (url <- ClassLoaders.getResources("META-INF/freemarker.properties", getClass))
+    for (url <- ClassLoaders.getResources("META-INF/freemarker.properties"))
       properties ++= IOs.readJavaProperties(url)
 
     // 2. second global freemarker.properties
-    for (url <- ClassLoaders.getResources("freemarker.properties", getClass()))
+    for (url <- ClassLoaders.getResources("freemarker.properties"))
       properties ++= IOs.readJavaProperties(url)
 
     // 3. system properties
