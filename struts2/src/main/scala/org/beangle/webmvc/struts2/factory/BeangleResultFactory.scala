@@ -41,8 +41,7 @@ class BeangleResultFactory extends ResultFactory {
           import scala.collection.JavaConversions.asScalaSet
           params.entrySet().foreach { paramEntry =>
             try {
-              reflectionProvider.setProperty(paramEntry.getKey(), paramEntry.getValue(), result,
-                extraContext, true)
+              reflectionProvider.setProperty(paramEntry.getKey(), paramEntry.getValue(), result, extraContext, true)
             } catch {
               case ex: ReflectionException => {
                 if (result.isInstanceOf[ReflectionExceptionHandler])

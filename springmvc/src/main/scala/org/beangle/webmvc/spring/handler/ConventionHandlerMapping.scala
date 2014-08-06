@@ -1,8 +1,8 @@
 package org.beangle.webmvc.spring.handler
 
-import java.{util => ju}
+import java.{ util => ju }
 
-import org.beangle.webmvc.route.{ActionFinder, RouteService}
+import org.beangle.webmvc.route.{ ActionFinder, RouteService }
 import org.beangle.webmvc.route.impl.DefaultURIResolver
 import org.beangle.webmvc.spring.handler.Constants.ActionMappingName
 import org.springframework.web.servlet.HandlerExecutionChain
@@ -30,8 +30,9 @@ class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetec
    * generate url for handler
    */
   protected override def determineUrlsForHandler(beanName: String): Array[String] = {
-    if (test(beanName)) {
-      val action = routeService.buildAction(beanName)
+    val bean = getApplicationContext().getBean(beanName)
+    if (test(bean.getClass.getName)) {
+      val action = routeService.buildAction(bean.getClass,null)
       action.method = null
       Array(action.getUri)
     } else null

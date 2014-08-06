@@ -20,7 +20,7 @@ package org.beangle.webmvc.struts2.action
 
 import scala.collection.JavaConversions.asScalaSet
 
-import org.apache.struts2.StrutsConstants
+import org.apache.struts2.StrutsConstants.{ STRUTS_ACTIONPROXYFACTORY, STRUTS_ACTION_EXTENSION, STRUTS_FREEMARKER_MANAGER_CLASSNAME, STRUTS_MAPPER_CLASS, STRUTS_MULTIPART_PARSER, STRUTS_OBJECTFACTORY, STRUTS_OBJECTFACTORY_ACTIONFACTORY, STRUTS_OBJECTFACTORY_RESULTFACTORY, STRUTS_OBJECTTYPEDETERMINER, STRUTS_URL_RENDERER, STRUTS_VELOCITY_MANAGER_CLASSNAME, STRUTS_XWORKCONVERTER, STRUTS_XWORKTEXTPROVIDER }
 import org.apache.struts2.components.UrlRenderer
 import org.apache.struts2.dispatcher.mapper.ActionMapper
 import org.apache.struts2.dispatcher.multipart.MultiPartRequest
@@ -35,6 +35,7 @@ import org.beangle.webmvc.struts2.action.helper.S2ConfigurationHelper
 import com.opensymphony.xwork2.{ ActionContext, ActionProxyFactory, ObjectFactory, TextProvider }
 import com.opensymphony.xwork2.conversion.ObjectTypeDeterminer
 import com.opensymphony.xwork2.conversion.impl.XWorkConverter
+import com.opensymphony.xwork2.factory.{ ActionFactory, ResultFactory }
 import com.opensymphony.xwork2.inject.Container
 /**
  * @author chaostone
@@ -82,7 +83,7 @@ class ConfigAction extends ActionSupport {
         error("Unable to get properties for action " + actionName, e)
         addError("Unable to retrieve action properties: " + e.toString())
     }
-    var extension: String = configHelper.container.getInstance(classOf[String], StrutsConstants.STRUTS_ACTION_EXTENSION)
+    var extension: String = configHelper.container.getInstance(classOf[String], STRUTS_ACTION_EXTENSION)
     if (extension != null && extension.indexOf(",") > -1) extension = extension.substring(0, extension.indexOf(","))
     put("detailView", get("detailView", "results"))
     put("extension", extension)
@@ -98,35 +99,32 @@ class ConfigAction extends ActionSupport {
     val configHelper = getConfigHelper()
     val container = configHelper.container
     val bindings = new collection.mutable.HashSet[Binding]
-    addBinding(bindings, container, classOf[ObjectFactory], StrutsConstants.STRUTS_OBJECTFACTORY)
-    addBinding(bindings, container, classOf[XWorkConverter], StrutsConstants.STRUTS_XWORKCONVERTER)
-    addBinding(bindings, container, classOf[TextProvider], StrutsConstants.STRUTS_XWORKTEXTPROVIDER)
-    addBinding(bindings, container, classOf[ActionProxyFactory], StrutsConstants.STRUTS_ACTIONPROXYFACTORY)
-    addBinding(bindings, container, classOf[ObjectTypeDeterminer], StrutsConstants.STRUTS_OBJECTTYPEDETERMINER)
-    addBinding(bindings, container, classOf[ActionMapper], StrutsConstants.STRUTS_MAPPER_CLASS)
-    addBinding(bindings, container, classOf[MultiPartRequest], StrutsConstants.STRUTS_MULTIPART_PARSER)
-    addBinding(bindings, container, classOf[FreemarkerManager],
-      StrutsConstants.STRUTS_FREEMARKER_MANAGER_CLASSNAME)
-    addBinding(bindings, container, classOf[VelocityManager], StrutsConstants.STRUTS_VELOCITY_MANAGER_CLASSNAME)
-    addBinding(bindings, container, classOf[UrlRenderer], StrutsConstants.STRUTS_URL_RENDERER)
+    addBinding(bindings, container, classOf[ObjectFactory], STRUTS_OBJECTFACTORY)
+    addBinding(bindings, container, classOf[XWorkConverter], STRUTS_XWORKCONVERTER)
+    addBinding(bindings, container, classOf[TextProvider], STRUTS_XWORKTEXTPROVIDER)
+    addBinding(bindings, container, classOf[ActionProxyFactory], STRUTS_ACTIONPROXYFACTORY)
+    addBinding(bindings, container, classOf[ObjectTypeDeterminer], STRUTS_OBJECTTYPEDETERMINER)
+    addBinding(bindings, container, classOf[ActionMapper], STRUTS_MAPPER_CLASS)
+    addBinding(bindings, container, classOf[MultiPartRequest], STRUTS_MULTIPART_PARSER)
+    addBinding(bindings, container, classOf[FreemarkerManager], STRUTS_FREEMARKER_MANAGER_CLASSNAME)
+    addBinding(bindings, container, classOf[VelocityManager], STRUTS_VELOCITY_MANAGER_CLASSNAME)
+    addBinding(bindings, container, classOf[UrlRenderer], STRUTS_URL_RENDERER)
+    addBinding(bindings, container, classOf[ActionFactory], STRUTS_OBJECTFACTORY_ACTIONFACTORY)
+    addBinding(bindings, container, classOf[ResultFactory], STRUTS_OBJECTFACTORY_RESULTFACTORY)
     put("beans", bindings)
     forward()
   }
 
   private def addBinding(bindings: collection.mutable.Set[Binding], container: Container, typ: Class[_], constName: String): Unit = {
     var chosenName = container.getInstance(classOf[String], constName)
-    if (chosenName == null) {
-      chosenName = "struts"
-    }
+    if (chosenName == null) chosenName = "struts"
     val names = container.getInstanceNames(typ)
     if (null != names) {
       if (!names.contains(chosenName)) {
-        bindings.add(new Binding(typ.getName(), getInstanceClassName(container, typ, "default"),
-          chosenName, constName, true))
+        bindings.add(new Binding(typ.getName(), getInstanceClassName(container, typ, "default"), chosenName, constName, true))
       }
       for (name <- names) {
-        if (!"default".equals(name)) bindings.add(new Binding(typ.getName, getInstanceClassName(container,
-          typ, name), name, constName, name.equals(chosenName)))
+        if (!"default".equals(name)) bindings.add(new Binding(typ.getName, getInstanceClassName(container, typ, name), name, constName, name.equals(chosenName)))
       }
     }
   }
@@ -181,15 +179,9 @@ object ConfigAction {
   class Binding(val typ: String, val impl: String, val alias: String, val constant: String, val isDefault: Boolean) extends Ordered[Binding] {
 
     override def compare(b2: Binding): Int = {
-      var ret = 0
-      if (isDefault) {
-        ret = -1
-      } else if (b2.isDefault) {
-        ret = 1
-      } else {
-        ret = alias.compareTo(b2.alias)
-      }
-      ret
+      if (isDefault) -1
+      else if (b2.isDefault) 1
+      else alias.compareTo(b2.alias)
     }
   }
   class PropertyInfo(val name: String, val typ: Class[_], val value: Object) extends Ordered[PropertyInfo] {

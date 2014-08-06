@@ -33,7 +33,9 @@ trait RouteService {
   /**
    * 默认类名对应的控制器名称(含有扩展名)
    */
-  def buildAction(clazz: Class[_]): Action
+  def buildAction(clazz: Class[_], method: String = null): Action
+
+  def buildActions(clazz: Class[_]): Seq[Action]
 
   /**
    * viewname -> 页面路径的映射
@@ -53,7 +55,9 @@ trait ActionBuilder {
   /**
    * 默认类名对应的控制器名称(含有扩展名)
    */
-  def build(clazz: Class[_]): Action
+  def build(clazz: Class[_], method: String): Action
+
+  def build(clazz: Class[_]): Seq[Action]
 }
 
 trait RequestMapper {

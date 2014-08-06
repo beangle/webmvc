@@ -3,6 +3,9 @@ package org.beangle.webmvc.route.impl
 import org.beangle.commons.lang.Strings.{ substringBeforeLast, unCamel, uncapitalize }
 import org.beangle.webmvc.annotation.action
 import org.beangle.webmvc.route.{ Action, ActionBuilder, Constants, RouteService }
+import org.beangle.webmvc.route.Profile
+import org.beangle.commons.lang.reflect.ClassInfo
+import org.beangle.webmvc.annotation.path
 
 class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder {
 
@@ -11,12 +14,28 @@ class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder
    * 如果对应profile中是uriStyle,那么类中只保留简单类名，去掉后缀，并且小写第一个字母。<br>
    * 否则加上包名，其中的.编成URI路径分割符。包名不做其他处理。<br>
    * 复杂URL,以/开始
-   *
-   * @param className
    */
-  def build(clazz: Class[_]): Action = {
-    val className = clazz.getName
+  def build(clazz: Class[_], method: String): Action = {
+    val profile = routeService.getProfile(clazz.getName)
+    new Action(buildAction(clazz, profile), if (null == method) profile.defaultMethod else method).extention(profile.uriExtension)
+  }
 
+  def build(clazz: Class[_]): Seq[Action] = {
+    val profile = routeService.getProfile(clazz.getName)
+    val sb = buildAction(clazz, profile)
+    val actions = new collection.mutable.ListBuffer[Action]
+    ClassInfo.get(clazz).getMethods foreach { minfo =>
+      val ann = minfo.method.getAnnotation(classOf[path])
+      if (null != ann) {
+        actions += new Action(sb + ann.value(), minfo.method.getName).extention(profile.uriExtension)
+      }
+    }
+    actions += new Action(sb, profile.defaultMethod).extention(profile.uriExtension)
+    actions
+  }
+
+  private def buildAction(clazz: Class[_], profile: Profile): String = {
+    val className = clazz.getName
     val profile = routeService.getProfile(className)
     val ann = clazz.getAnnotation(classOf[action])
     val sb = new StringBuilder()
@@ -46,7 +65,6 @@ class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder
         sb.append(name.substring(1))
       }
     }
-    new Action(sb.toString(), profile.defaultMethod).extention(profile.uriExtension)
+    sb.toString
   }
-
 }

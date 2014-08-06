@@ -1,9 +1,7 @@
 package org.beangle.webmvc.struts2.config
 
 import java.lang.reflect.{ Method, Modifier }
-
 import scala.collection.JavaConversions.seqAsJavaList
-
 import org.beangle.commons.inject.ContainerAware
 import org.beangle.commons.lang.{ Objects, Strings }
 import org.beangle.commons.lang.time.Stopwatch
@@ -11,15 +9,14 @@ import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.i18n.spi.TextBundleRegistry
 import org.beangle.webmvc.annotation.{ action, noaction, result, results }
 import org.beangle.webmvc.route.{ Action, ActionFinder, ContainerActionFinder, Profile, RouteService }
-
 import org.apache.struts2.StrutsConstants
-
 import com.opensymphony.xwork2.{ ActionContext, ObjectFactory }
 import com.opensymphony.xwork2.config.{ Configuration, ConfigurationException, PackageProvider }
 import com.opensymphony.xwork2.config.entities.{ ActionConfig, PackageConfig, ResultConfig }
 import com.opensymphony.xwork2.inject.Inject
 import com.opensymphony.xwork2.util.classloader.ReloadingClassLoader
 import com.opensymphony.xwork2.util.finder.{ ClassLoaderInterface, ClassLoaderInterfaceDelegate }
+import com.opensymphony.xwork2.factory.ActionFactory
 
 /**
  * This class is a configuration provider for the XWork configuration system. This is really the
@@ -55,8 +52,8 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
   private var defaultParentPackage: String = "beangle"
 
   @Inject
-  def this(configuration: Configuration, objectFactory: ObjectFactory) {
-    this(configuration, new ContainerActionFinder(objectFactory.asInstanceOf[ContainerAware].container))
+  def this(configuration: Configuration, actionFactory: ActionFactory) {
+    this(configuration, new ContainerActionFinder(actionFactory.asInstanceOf[ContainerAware].container))
   }
 
   protected def initReloadClassLoader() {
@@ -84,9 +81,10 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     var actionTypes = actionFinder.getActions(new ActionFinder.Test(actionSuffix, actionPackages))
     for ((actionClass, value) <- actionTypes) {
       var profile = routeService.getProfile(actionClass.getName())
-      var action = routeService.buildAction(actionClass)
-      var packageConfig = getPackageConfig(profile, packageConfigs, action, actionClass)
-      if (createActionConfig(packageConfig, action, actionClass, value)) newActions += 1
+      routeService.buildActions(actionClass) foreach { action =>
+        var packageConfig = getPackageConfig(profile, packageConfigs, action, actionClass)
+        if (createActionConfig(packageConfig, action, actionClass, value)) newActions += 1
+      }
     }
     newActions += buildIndexActions(packageConfigs)
     // Add the new actions to the configuration
@@ -188,36 +186,25 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   protected def getPackageConfig(profile: Profile, packageConfigs: collection.mutable.Map[String, PackageConfig.Builder], action: Action, actionClass: Class[_]): PackageConfig.Builder = {
     // 循环查找父包
-    var actionPkg = actionClass.getPackage().getName()
+    var actionPkg = actionClass.getPackage.getName
     var parentPkg: PackageConfig = null
     var ifContinue = true
     while (Strings.contains(actionPkg, '.') && ifContinue) {
       parentPkg = configuration.getPackageConfig(actionPkg)
-      if (null != parentPkg) {
-        ifContinue = false
-      } else {
-        actionPkg = Strings.substringBeforeLast(actionPkg, ".")
-      }
+      if (null != parentPkg) ifContinue = false else actionPkg = Strings.substringBeforeLast(actionPkg, ".")
     }
     if (null == parentPkg) {
       actionPkg = defaultParentPackage
       parentPkg = configuration.getPackageConfig(actionPkg)
     }
     if (parentPkg == null) {
-      throw new ConfigurationException("Unable to locate parent package ["
-        + actionClass.getPackage().getName() + "]")
+      throw new ConfigurationException(s"Unable to locate parent package [${actionClass.getPackage.getName}]")
     }
     var actionPackage = actionClass.getPackage().getName()
     var pkgConfig: PackageConfig.Builder = packageConfigs.get(actionPackage).orNull
     if (pkgConfig == null) {
       var myPkg = configuration.getPackageConfig(actionPackage)
-      if (null != myPkg) {
-        pkgConfig = new PackageConfig.Builder(myPkg)
-      } else {
-        pkgConfig = new PackageConfig.Builder(actionPackage).namespace(action.namespace).addParent(
-          parentPkg)
-        debug(s"Created package config named ${actionPackage} with a namespace ${action.namespace}")
-      }
+      pkgConfig = if (null != myPkg) new PackageConfig.Builder(myPkg) else new PackageConfig.Builder(actionPackage).namespace(action.namespace).addParent(parentPkg)
       packageConfigs.put(actionPackage, pkgConfig)
     }
     pkgConfig

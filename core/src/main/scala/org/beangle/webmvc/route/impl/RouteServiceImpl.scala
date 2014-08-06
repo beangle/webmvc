@@ -117,10 +117,13 @@ class RouteServiceImpl extends RouteService with Logging {
   /**
    * 默认类名对应的控制器名称(含有扩展名)
    */
-  def buildAction(clazz: Class[_]): Action = {
-    actionBuilder.build(clazz)
+  def buildAction(clazz: Class[_], method: String = null): Action = {
+    actionBuilder.build(clazz, method)
   }
 
+  def buildActions(clazz: Class[_]): Seq[Action] = {
+    actionBuilder.build(clazz)
+  }
   /**
    * viewname -> 页面路径的映射
    */

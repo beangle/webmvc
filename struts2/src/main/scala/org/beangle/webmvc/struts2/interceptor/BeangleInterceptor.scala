@@ -1,16 +1,15 @@
 package org.beangle.webmvc.struts2.interceptor
 
 import java.io.File
-
 import org.apache.struts2.StrutsStatics.{ HTTP_REQUEST, HTTP_RESPONSE }
 import org.apache.struts2.dispatcher.multipart.MultiPartRequestWrapper
 import org.beangle.commons.lang.Arrays.{ isBlank, isEmpty }
 import org.beangle.webmvc.context.{ ActionContext, ContextHolder }
-
 import com.opensymphony.xwork2.{ ActionContext => XworkContext, ActionInvocation }
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor
-
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import com.opensymphony.xwork2.config.entities.ActionConfig
+import org.beangle.commons.collection.Collections
 
 @SerialVersionUID(8451445989084058881L)
 class BeangleInterceptor extends AbstractInterceptor {
@@ -20,7 +19,8 @@ class BeangleInterceptor extends AbstractInterceptor {
     val ctx = invocation.getInvocationContext
     val request = ctx.get(HTTP_REQUEST).asInstanceOf[HttpServletRequest]
     val response = ctx.get(HTTP_RESPONSE).asInstanceOf[HttpServletResponse]
-    val context = new ActionContext(request, response, getParams(request))
+    val config = invocation.getProxy().getConfig()
+    val context = new ActionContext(request, response, getParams(request, config))
     ContextHolder.contexts.set(context)
     val result = invocation.invoke()
     val flash = context.flash
@@ -28,18 +28,17 @@ class BeangleInterceptor extends AbstractInterceptor {
     result
   }
 
-  private def getParams(request: HttpServletRequest): Map[String, Any] = {
+  private def getParams(request: HttpServletRequest, config: ActionConfig): Map[String, Any] = {
     val context = ContextHolder.context
-    val itor = XworkContext.getContext().getParameters().entrySet().iterator()
     val paramsBuilder = new collection.mutable.HashMap[String, Any]
-    while (itor.hasNext) {
-      val entry = itor.next()
-      paramsBuilder.put(entry.getKey(), entry.getValue)
-    }
+    Collections.putAll(paramsBuilder, request.getParameterMap)
+
     request match {
       case mp: MultiPartRequestWrapper => paramsBuilder ++= getUploads(mp)
       case _ =>
     }
+
+    if (!config.getParams.isEmpty) Collections.putAll(paramsBuilder, config.getParams)
     paramsBuilder.toMap
   }
 

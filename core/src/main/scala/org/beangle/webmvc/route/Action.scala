@@ -38,7 +38,7 @@ object Action {
   }
 }
 
-class Action(var namespace: String, var name: String, val clazz: String, var method: String) {
+class Action(var namespace: String, var name: String, val clazz: Class[_], var method: String) {
 
   var path: String = _
 
@@ -51,15 +51,15 @@ class Action(var namespace: String, var name: String, val clazz: String, var met
   }
 
   def this(ctlObj: Object, method: String) {
-    this(null, null, if (ctlObj != null) ctlObj.getClass().getName() else null, method)
+    this(null, null, if (ctlObj != null) ctlObj.getClass() else null, method)
   }
 
   def this(clazz: Class[_], method: String) {
-    this(null, null, if (null != clazz) clazz.getName() else null, method)
+    this(null, null, if (null != clazz) clazz else null, method)
   }
 
   def this(clazz: Class[_], method: String, params: String) {
-    this(null, null, if (null != clazz) clazz.getName() else null, method)
+    this(null, null, if (null != clazz) clazz else null, method)
     this.params(params)
   }
 
