@@ -48,7 +48,7 @@ class ConfigAction extends ActionSupport {
     return ActionContext.getContext().getContainer().getInstance(classOf[S2ConfigurationHelper])
   }
 
-  override def index(): String = {
+  def index(): String = {
     return forward(new Action(this, "actions"))
   }
 

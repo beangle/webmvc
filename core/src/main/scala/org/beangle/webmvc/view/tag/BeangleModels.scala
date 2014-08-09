@@ -2,21 +2,22 @@ package org.beangle.webmvc.view.tag
 
 import java.io.StringWriter
 import java.{ util => ju }
+
 import org.beangle.commons.collection.page.Page
 import org.beangle.webmvc.context.ContextHolder
+import org.beangle.webmvc.view.UITheme
 import org.beangle.webmvc.view.component.{ Agent, Anchor, Checkbox, Checkboxes, ComponentContext, Css, Date, Dialog, Div, Email, Field, Foot, Form, Formfoot, Grid }
-import org.beangle.webmvc.view.component.{ Head, Iframe, Messages, Module, Navitem, Navbar, Pagebar, Password, Radio, Radios, Reset, Select, Select2, Startend, Submit, Tab, Tabs, Textarea, Textfield, Textfields, Toolbar, Validity }
+import org.beangle.webmvc.view.component.{ Head, Iframe, Messages, Module, Navbar, Navitem, Pagebar, Password, Radio, Radios, Reset, Select, Select2, Startend, Submit, Tab, Tabs, Textarea, Textfield, Textfields, Toolbar, Validity }
 import org.beangle.webmvc.view.component.Grid.{ Bar, Boxcol, Col, Filter, Row, Treecol }
+
 import freemarker.template.utility.StringUtil
 import javax.servlet.http.HttpServletRequest
-import org.beangle.webmvc.view.UITheme
-import org.beangle.webmvc.view.component.Navbar
 
 class BeangleModels(context: ComponentContext, request: HttpServletRequest) extends AbstractModels(context, request) {
 
   val textResource = ContextHolder.context.textResource
 
-  def url(url: String) = context.uriRender.render(request.getServletPath, url)
+  def url(url: String) = context.uriRender.render(ContextHolder.context.actionMapping, url)
 
   def now = new ju.Date
 

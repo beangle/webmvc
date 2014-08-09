@@ -149,31 +149,35 @@ class HierarchicalUrlMapper extends RequestMapper {
 
   def resolve(request: HttpServletRequest): Option[ActionMapping] = {
     val uri = RequestUtils.getServletPath(request)
-    val lastSlashIdx = uri.lastIndexOf('/')
     var bangIdx, dotIdx = -1
-    var i = lastSlashIdx + 2
-    var chars = new Array[Char](uri.length)
-    uri.getChars(0, chars.length, chars, 0)
+    val lastSlashIdx = uri.lastIndexOf('/')
     val sb = new jl.StringBuilder(uri.length + 10)
-    while (i < chars.length && dotIdx == -1) {
-      var c = chars(i)
-      if ('!' == c) bangIdx = i
-      else if ('.' == c) dotIdx = i
-      i += 1
-    }
-    sb.append(chars)
-    if (dotIdx > 0) sb.delete(dotIdx, sb.length)
-    if (bangIdx > 0) sb.setCharAt(bangIdx, '/')
-    else {
-      val method = determinMethod(request)
-      if (-1 == sb.indexOf(method, lastSlashIdx + 1)) sb.append('/').append(method)
+    if (lastSlashIdx == uri.length - 1) {
+      sb.append(uri).append(determineMethod(request, DefaultMethod))
+    } else {
+      var i = lastSlashIdx + 2
+      var chars = new Array[Char](uri.length)
+      uri.getChars(0, chars.length, chars, 0)
+      while (i < chars.length && dotIdx == -1) {
+        var c = chars(i)
+        if ('!' == c) bangIdx = i
+        else if ('.' == c) dotIdx = i
+        i += 1
+      }
+      sb.append(chars)
+      if (dotIdx > 0) sb.delete(dotIdx, sb.length)
+      if (bangIdx > 0) sb.setCharAt(bangIdx, '/')
+      else {
+        val method = determineMethod(request, null)
+        if (null != method && -1 == sb.indexOf(method, lastSlashIdx + 1)) sb.append('/').append(method)
+      }
     }
     mappings.resolve(sb.toString)
   }
 
-  private def determinMethod(request: HttpServletRequest): String = {
+  private def determineMethod(request: HttpServletRequest, defaultMethod: String): String = {
     val method = request.getParameter(MethodParam)
-    if (null == method) DefaultMethod else method
+    if (null == method) defaultMethod else method
   }
 }
 
@@ -211,7 +215,7 @@ class ActionMappings {
             case (k, v) =>
               urlParams.put(v, parts(k))
           }
-          Some(ActionMapping(m.url, m.handler, m.params ++ urlParams))
+          Some(ActionMapping(m.url, m.handler, m.namespace,m.name,m.params ++ urlParams))
         } else Some(m)
       case None => None
     }

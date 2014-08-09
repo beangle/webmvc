@@ -1,6 +1,6 @@
 package org.beangle.webmvc.action
 
-import java.{util => ju}
+import java.{ util => ju }
 
 import org.beangle.commons.collection.Order
 import org.beangle.commons.config.property.PropertyConfig
@@ -8,8 +8,8 @@ import org.beangle.commons.lang.Strings
 import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
 import org.beangle.data.model.bean.UpdatedBean
-import org.beangle.data.model.dao.{GeneralDao, QueryBuilder}
-import org.beangle.data.model.meta.{EntityMetadata, EntityType}
+import org.beangle.data.model.dao.{ GeneralDao, QueryBuilder }
+import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
 import org.beangle.webmvc.helper.Params
 
 class EntityDrivenAction extends EntityActionSupport {
@@ -41,7 +41,7 @@ class EntityDrivenAction extends EntityActionSupport {
   /**
    * main page
    */
-  override def index(): String = {
+  def index(): String = {
     indexSetting()
     forward()
   }

@@ -41,7 +41,8 @@ class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetec
         val methods = classInfo.getMethods(action.method)
         if (methods.size == 1) {
           val pattern = action.getUri()
-          resolver.add(ActionMapping(pattern, MethodHandler(bean, methods.head.method), null))
+          //FIXME namespace,actionName
+          resolver.add(ActionMapping(pattern, MethodHandler(bean, methods.head.method), null, null, null))
           patterns += pattern
         }
       }

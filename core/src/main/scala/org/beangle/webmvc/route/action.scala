@@ -161,18 +161,19 @@ class Action(val clazz: Class[_], var namespace: String, var name: String, var m
       .add("params", parameters).toString()
 }
 
-case class ActionMapping(url: String, handler: Handler, params: Map[String, Any]) {
+case class ActionMapping(url: String, handler: Handler, namespace: String, name: String, params: Map[String, Any]) {
   val isPattern = url.contains("{") || url.contains("*")
 }
 
 object ActionMapping {
   /**
-   * /{project}
+   * /{project} etc.
    */
   @inline
   def matcherName(name: String): String = {
     if (name.charAt(0) == '{' && name.charAt(name.length - 1) == '}') "*" else name
   }
+
   def parse(pattern: String): Map[Integer, String] = {
     var parts = Strings.split(pattern, "/")
     var params = new collection.mutable.HashMap[Integer, String]
@@ -189,3 +190,5 @@ object ActionMapping {
     params.toMap
   }
 }
+
+

@@ -142,13 +142,9 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
           // build all action to action mappings
           val classInfo = ClassInfo.get(actionClass)
           routeService.buildActions(actionClass) foreach { action =>
-            val methods = classInfo.getMethods(action.method)
-            if (methods.size == 1) {
-              val pattern = action.getUri('/')
-              println(pattern)
-              val mappingConfig = Map((ActionContext.URLParams, ActionMapping.parse(pattern)), ("namespace", action.namespace), ("name", action.name))
-              mapper.asInstanceOf[HierarchicalUrlMapper].add(ActionMapping(pattern, MethodHandler(objectContainer.getBean(beanName).get, methods.head.method), mappingConfig))
-            }
+            val method = classInfo.getMethods(action.method).head.method
+            addAction2Mapper(action, beanName, method)
+            if (action.method == "index") addAction2Mapper(action.method(null), beanName, method)
           }
         }
       }
@@ -167,6 +163,13 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
     info(s"Action scan completed,create ${newActions} action(override ${overrideActions}) in ${watch}.")
     templateFinder = null
+  }
+
+  private def addAction2Mapper(action: Action, beanName: String, method: Method): Unit = {
+    val pattern = action.getUri('/')
+    val bean: Object = objectContainer.getBean(beanName).get
+    val mappingConfig = Map(ActionContext.URLParams -> ActionMapping.parse(pattern))
+    mapper.asInstanceOf[HierarchicalUrlMapper].add(ActionMapping(pattern, MethodHandler(bean, method), action.namespace, action.name, mappingConfig))
   }
 
   protected def getClassLoaderInterface(): ClassLoaderInterface = {
@@ -204,11 +207,11 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   protected def shouldGenerateResult(m: Method): Boolean = {
     if (classOf[String].equals(m.getReturnType()) && m.getParameterTypes.length == 0
-      && Modifier.isPublic(m.getModifiers) && !Modifier.isStatic(m.getModifiers) && null == m.getAnnotation(classOf[noaction])) {
+      && null == m.getAnnotation(classOf[noaction])) {
       var name = m.getName().toLowerCase()
       !(name.startsWith("save") || name.startsWith("remove")
         || name.startsWith("export") || name.startsWith("import")
-        || name.startsWith("execute") || name.startsWith("tostring") || name.startsWith("get") || Strings.contains(name, "$"))
+        || name.startsWith("get") || Strings.contains(name, "$"))
     } else {
       false
     }
@@ -241,7 +244,8 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     var suffix = routeService.getProfile(clazz.getName).viewSuffix
     if (preloadftl == "true" && suffix.endsWith(".ftl")) {
       var resultTypeConfig = configuration.getPackageConfig("struts-default").getAllResultTypeConfigs().get("freemarker")
-      for (m <- clazz.getMethods) {
+      ClassInfo.get(clazz).getMethods foreach { mi =>
+        val m = mi.method
         var name = m.getName()
         if (!annotationResults.contains(name) && shouldGenerateResult(m)) {
           val path = templateFinder.find(clazz, DefaultViewMapper.defaultView(name, name), suffix)

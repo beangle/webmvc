@@ -4,15 +4,15 @@ import java.net.URL
 
 import scala.reflect.ClassTag
 
-import org.beangle.commons.lang.{Chars, ClassLoaders, Strings}
+import org.beangle.commons.lang.{ Chars, ClassLoaders, Strings }
 import org.beangle.commons.logging.Logging
-import org.beangle.commons.web.util.{CookieUtils, RequestUtils}
+import org.beangle.commons.web.util.{ CookieUtils, RequestUtils }
 import org.beangle.webmvc.annotation.noaction
-import org.beangle.webmvc.context.{ActionMessages, ContextHolder, Flash}
+import org.beangle.webmvc.context.{ ActionMessages, ContextHolder, Flash }
 import org.beangle.webmvc.helper.Params
 import org.beangle.webmvc.route.Action
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 object ActionSupport {
   /**
@@ -37,16 +37,6 @@ object ActionSupport {
 }
 
 class ActionSupport extends Logging {
-
-  @throws(classOf[Exception])
-  def index(): String = forward()
-
-  /**
-   * A default implementation that does nothing an returns "success".
-   * Subclasses should override this method to provide their business logic.
-   */
-  @throws(classOf[Exception])
-  def execute(): String = forward(new Action(null: Class[_], "index"))
 
   protected final def forward(view: String = ActionSupport.SUCCESS) = view
 
@@ -112,6 +102,7 @@ class ActionSupport extends Logging {
   /**
    * 获得action消息<br>
    */
+  @noaction
   protected final def actionMessages: List[String] = {
     val messages = ContextHolder.context.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
     if (null == messages) List()
@@ -121,7 +112,8 @@ class ActionSupport extends Logging {
   /**
    * 获得aciton错误消息<br>
    */
-  protected[action] final def actionErrors: List[String] = {
+  @noaction
+  protected final def actionErrors: List[String] = {
     val messages = ContextHolder.context.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
     if (null == messages) List()
     else messages.errors.toList
@@ -194,8 +186,10 @@ class ActionSupport extends Logging {
     url
   }
 
+  @noaction
   protected final def request: HttpServletRequest = ContextHolder.context.request
 
+  @noaction
   protected final def response: HttpServletResponse = ContextHolder.context.response
 
 }

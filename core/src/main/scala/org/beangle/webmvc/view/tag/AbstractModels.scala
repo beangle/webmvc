@@ -21,7 +21,7 @@ import org.beangle.webmvc.context.ActionContext
 import org.beangle.webmvc.context.ContextHolder
 
 /**
- * New taglibrary.Try to find genertor ,urlrender textresource.
+ * New taglibrary.
  */
 abstract class AbstractModels(val context: ComponentContext, request: HttpServletRequest) {
 

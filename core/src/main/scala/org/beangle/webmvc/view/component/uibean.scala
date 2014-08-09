@@ -5,7 +5,6 @@ import java.{util => ju}
 
 import org.beangle.commons.bean.PropertyUtils
 import org.beangle.commons.lang.{Chars, Strings}
-import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.context.ContextHolder
 
 import javax.servlet.http.HttpServletRequest
@@ -63,7 +62,7 @@ class UIBean(context: ComponentContext) extends Component(context) {
   }
 
   protected final def render(uri: String): String = {
-    context.uriRender.render(RequestUtils.getServletPath(request), uri)
+    context.uriRender.render(ContextHolder.context.actionMapping, uri)
   }
 
   protected final def generateIdIfEmpty(): Unit = {

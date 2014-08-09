@@ -7,6 +7,9 @@ import org.beangle.webmvc.route.Profile
 import org.beangle.commons.lang.reflect.ClassInfo
 import org.beangle.webmvc.annotation.path
 import org.beangle.commons.lang.Strings
+import java.lang.reflect.Method
+import org.beangle.commons.lang.Arrays
+import org.beangle.webmvc.annotation.noaction
 
 class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder {
 
@@ -27,16 +30,25 @@ class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder
     val result = buildAction(clazz, profile)
     val actions = new collection.mutable.ListBuffer[Action]
     //FIXME too many method
-    ClassInfo.get(clazz).getMethods foreach { minfo =>
-      val methodName = minfo.method.getName
-      if (!methodName.startsWith("get")) {
-        val ann = minfo.method.getAnnotation(classOf[path])
-        actions += new Action(clazz, result._1, result._2, (if (null != ann) ann.value() else methodName)).suffix(profile.uriSuffix)
-      }
+    ClassInfo.get(clazz).methods foreach {
+      case (methodName, minfos) =>
+        if (minfos.size == 1) {
+          val method = minfos.head.method
+          if (isActionMethod(method)) {
+            val ann = method.getAnnotation(classOf[path])
+            actions += new Action(clazz, result._1, result._2, (if (null != ann) ann.value() else methodName)).suffix(profile.uriSuffix)
+          }
+        }
     }
-    //FIXME already have index
-    actions += new Action(clazz, result._1, result._2, profile.defaultMethod).suffix(profile.uriSuffix)
     actions
+  }
+
+  private def isActionMethod(method: Method): Boolean = {
+    val methodName = method.getName
+    if (methodName.startsWith("get") || methodName.startsWith("debug") || methodName.contains("$")) return false
+    if (null != method.getAnnotation(classOf[noaction])) return false
+    if (method.getParameterTypes.length == 0) return true
+    method.getParameterAnnotations().exists(annArray => !Arrays.isBlank(annArray))
   }
 
   private def buildAction(clazz: Class[_], profile: Profile): Tuple2[String, String] = {

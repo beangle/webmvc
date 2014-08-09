@@ -36,13 +36,11 @@ class ConventionActionMapper extends DefaultActionMapper with ActionMapper {
 
         val am = new ActionMapping()
         val params = m.params
-        am.setNamespace(params("namespace").toString)
-        am.setName(params("name").toString)
+        am.setNamespace(m.namespace)
+        am.setName(m.name)
         am.setMethod(m.handler.asInstanceOf[MethodHandler].method.getName)
         am
-      case None =>
-        ContextHolder.contexts.remove()
-        null
+      case None => null
     }
   }
 
