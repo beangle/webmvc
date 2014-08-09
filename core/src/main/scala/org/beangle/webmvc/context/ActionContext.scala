@@ -14,7 +14,7 @@ object ContextHolder {
 
 object ActionContext {
 //  val ActionMappingKey = "_action_mapping"
-  val URLParamIndexes = "_url_param_indexes"
+  val URLParams = "_url_params"
 }
 
 class ActionContext(val request: HttpServletRequest, var response: HttpServletResponse, val params: Map[String, Any]) {

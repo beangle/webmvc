@@ -173,19 +173,19 @@ object ActionMapping {
   def matcherName(name: String): String = {
     if (name.charAt(0) == '{' && name.charAt(name.length - 1) == '}') "*" else name
   }
-  def parse(pattern: String): Map[String, Integer] = {
+  def parse(pattern: String): Map[Integer, String] = {
     var parts = Strings.split(pattern, "/")
-    var paramIndexes = new collection.mutable.HashMap[String, Integer]
+    var params = new collection.mutable.HashMap[Integer, String]
     var i = 0
     while (i < parts.length) {
       val p = parts(i)
       if (p.charAt(0) == '{' && p.charAt(p.length - 1) == '}') {
-        paramIndexes.put(p.substring(1, p.length - 1), Integer.valueOf(i))
+        params.put(Integer.valueOf(i), p.substring(1, p.length - 1))
       } else if (p == "*") {
-        paramIndexes.put(String.valueOf(i), Integer.valueOf(i))
+        params.put(Integer.valueOf(i), String.valueOf(i))
       }
       i += 1
     }
-    paramIndexes.toMap
+    params.toMap
   }
 }

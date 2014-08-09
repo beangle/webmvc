@@ -146,7 +146,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
             if (methods.size == 1) {
               val pattern = action.getUri('/')
               println(pattern)
-              val mappingConfig = Map((ActionContext.URLParamIndexes, ActionMapping.parse(pattern)), ("namespace", action.namespace), ("name", action.name))
+              val mappingConfig = Map((ActionContext.URLParams, ActionMapping.parse(pattern)), ("namespace", action.namespace), ("name", action.name))
               mapper.asInstanceOf[HierarchicalUrlMapper].add(ActionMapping(pattern, MethodHandler(objectContainer.getBean(beanName).get, methods.head.method), mappingConfig))
             }
           }

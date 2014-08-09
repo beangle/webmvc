@@ -207,7 +207,7 @@ class ActionMappings {
       case Some(m) =>
         if (m.isPattern) {
           val urlParams = new collection.mutable.HashMap[String, String]
-          m.params.get(ActionContext.URLParamIndexes).asInstanceOf[Map[Integer, String]] foreach {
+          m.params(ActionContext.URLParams).asInstanceOf[Map[Integer, String]] foreach {
             case (k, v) =>
               urlParams.put(v, parts(k))
           }
