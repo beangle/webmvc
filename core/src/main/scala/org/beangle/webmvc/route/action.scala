@@ -38,11 +38,11 @@ object Action {
   }
 }
 
-class Action(var namespace: String, var name: String, val clazz: Class[_], var method: String) {
+class Action(val clazz: Class[_], var namespace: String, var name: String, var method: String) {
 
   var path: String = _
 
-  private var extention: String = _
+  var suffix: String = _
 
   val parameters = new collection.mutable.HashMap[String, String]
 
@@ -51,24 +51,24 @@ class Action(var namespace: String, var name: String, val clazz: Class[_], var m
   }
 
   def this(ctlObj: Object, method: String) {
-    this(null, null, if (ctlObj != null) ctlObj.getClass() else null, method)
+    this(if (ctlObj != null) ctlObj.getClass() else null, null, null, method)
   }
 
   def this(clazz: Class[_], method: String) {
-    this(null, null, if (null != clazz) clazz else null, method)
+    this(clazz, null, null, method)
   }
 
   def this(clazz: Class[_], method: String, params: String) {
-    this(null, null, if (null != clazz) clazz else null, method)
+    this(clazz, null, null, method)
     this.params(params)
   }
 
-  def this(actionName: String, method: String) {
-    this(if (actionName == null) null else parse(actionName)(0), if (actionName == null) null else parse(actionName)(1), null, method)
+  def this(url: String, method: String) {
+    this(null, if (url == null) null else parse(url)(0), if (url == null) null else parse(url)(1), method)
   }
 
-  def this(actionName: String, method: String, params: String) {
-    this(if (actionName == null) null else parse(actionName)(0), if (actionName == null) null else parse(actionName)(1), null, method)
+  def this(url: String, method: String, params: String) {
+    this(null, if (url == null) null else parse(url)(0), if (url == null) null else parse(url)(1), method)
     this.params(params)
   }
 
@@ -87,8 +87,8 @@ class Action(var namespace: String, var name: String, val clazz: Class[_], var m
     this
   }
 
-  def extention(extention: String): Action = {
-    this.extention = extention
+  def suffix(suffix: String): Action = {
+    this.suffix = suffix
     this
   }
 
@@ -128,14 +128,14 @@ class Action(var namespace: String, var name: String, val clazz: Class[_], var m
     this
   }
 
-  def getUri(): String = {
+  def getUri(methodSeparator: Char = '!'): String = {
     val buf = new StringBuilder(25)
     if (null == namespace || namespace.length() == 1) buf.append('/')
     else buf.append(namespace).append('/')
 
     if (null != name) buf.append(name)
-    if (Strings.isNotEmpty(method)) buf.append('!').append(method)
-    if (null != extention) buf.append('.').append(extention)
+    if (Strings.isNotEmpty(method)) buf.append(methodSeparator).append(method)
+    if (null != suffix) buf.append(suffix)
 
     if (null != parameters && parameters.size > 0) {
       var first = true
@@ -161,5 +161,31 @@ class Action(var namespace: String, var name: String, val clazz: Class[_], var m
       .add("params", parameters).toString()
 }
 
-case class ActionMapping(namespace: String, name: String, method: String)
+case class ActionMapping(url: String, handler: Handler, params: Map[String, Any]) {
+  val isPattern = url.contains("{") || url.contains("*")
+}
 
+object ActionMapping {
+  /**
+   * /{project}
+   */
+  @inline
+  def matcherName(name: String): String = {
+    if (name.charAt(0) == '{' && name.charAt(name.length - 1) == '}') "*" else name
+  }
+  def parse(pattern: String): Map[String, Integer] = {
+    var parts = Strings.split(pattern, "/")
+    var paramIndexes = new collection.mutable.HashMap[String, Integer]
+    var i = 0
+    while (i < parts.length) {
+      val p = parts(i)
+      if (p.charAt(0) == '{' && p.charAt(p.length - 1) == '}') {
+        paramIndexes.put(p.substring(1, p.length - 1), Integer.valueOf(i))
+      } else if (p == "*") {
+        paramIndexes.put(String.valueOf(i), Integer.valueOf(i))
+      }
+      i += 1
+    }
+    paramIndexes.toMap
+  }
+}

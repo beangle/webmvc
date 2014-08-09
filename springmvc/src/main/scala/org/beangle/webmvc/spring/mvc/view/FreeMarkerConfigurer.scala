@@ -11,15 +11,7 @@ import javax.servlet.ServletContext
 class FreeMarkerConfigurer extends org.springframework.web.servlet.view.freemarker.FreeMarkerConfig with Logging with ServletContextAware {
   val config = new Configuration()
 
-  disableFreemarkerLogger()
-
-  protected def disableFreemarkerLogger(): Unit = {
-    try {
-      freemarker.log.Logger.selectLoggerLibrary(freemarker.log.Logger.LIBRARY_NONE)
-    } catch {
-      case t: Exception => t.printStackTrace()
-    }
-  }
+  Configurations.disableFreemarkerLogger()
 
   override def getConfiguration(): Configuration = {
     config

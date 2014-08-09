@@ -1,18 +1,23 @@
 package org.beangle.webmvc.struts2
 
+import scala.collection.JavaConversions.{ asScalaSet, mapAsJavaMap, mapAsScalaMap }
+
 import org.apache.struts2.ServletActionContext
 import org.apache.struts2.dispatcher.ServletRedirectResult
 import org.apache.struts2.views.freemarker.FreemarkerManager
 import org.beangle.commons.lang.Strings.{ contains, isBlank, isEmpty, isNotEmpty, substringAfter, substringBefore }
 import org.beangle.commons.web.util.RequestUtils.getServletPath
+import org.beangle.webmvc.context.ContextHolder
 import org.beangle.webmvc.route.{ Action, RouteService }
+import org.beangle.webmvc.route.impl.DefaultViewMapper
 import org.beangle.webmvc.view.freemarker.TemplateFinderByConfig
+
 import com.opensymphony.xwork2.{ ActionContext, ObjectFactory, Result, UnknownHandler, XWorkException }
 import com.opensymphony.xwork2.config.Configuration
 import com.opensymphony.xwork2.config.entities.{ ActionConfig, ResultConfig, ResultTypeConfig }
 import com.opensymphony.xwork2.inject.Inject
+
 import javax.servlet.http.HttpServletRequest
-import org.beangle.webmvc.context.ContextHolder
 
 /**
  * 实现action到result之间的路由和处理<br>
@@ -39,13 +44,13 @@ class ConventionResultHandler extends UnknownHandler {
     this.configuration = configuration
     this.routeService = routeService
     this.templateFinder = new TemplateFinderByConfig(freemarkerManager.getConfig(), routeService.viewMapper)
-    val typeExtensions = Map(("freemarker", "ftl"), ("velocity", "vm"), ("dispatcher", "jsp"))
+    val types = Map(("freemarker", ".ftl"), ("velocity", ".vm"), ("dispatcher", ".jsp"))
     val pc = configuration.getPackageConfig("struts-default")
     val resTypeConfigs = new collection.mutable.HashMap[String, ResultTypeConfig]
     import scala.collection.JavaConversions.asScalaSet
     for (name <- pc.getAllResultTypeConfigs().keySet()) {
       val rtc = pc.getAllResultTypeConfigs().get(name)
-      typeExtensions.get(name).foreach { extension => resTypeConfigs.put(extension, rtc) }
+      types.get(name).foreach { suffix => resTypeConfigs.put(suffix, rtc) }
       resTypeConfigs.put(name, rtc)
     }
     this.resultTypeConfigs = resTypeConfigs.toMap
@@ -58,16 +63,20 @@ class ConventionResultHandler extends UnknownHandler {
     var newResultCode = resultCode
     // first route by common result
     if (!contains(newResultCode, ':')) {
-      val className = context.getActionInvocation().getProxy().getAction().getClass().getName()
+      val actionClass = context.getActionInvocation().getProxy().getAction().getClass
+      val className = actionClass.getName()
       val methodName = context.getActionInvocation().getProxy().getMethod()
       if (isEmpty(newResultCode)) newResultCode = "index"
-
-      val buf = new StringBuilder()
-      buf.append(routeService.mapView(className, methodName, newResultCode))
-      buf.append('.')
-      buf.append(routeService.getProfile(className).viewExtension)
-      path = buf.toString()
-      cfg = resultTypeConfigs("freemarker")
+      val viewName = DefaultViewMapper.defaultView(methodName, newResultCode)
+      val suffix = routeService.getProfile(className).viewSuffix
+      if (".ftl" == suffix) path = templateFinder.find(actionClass, viewName, suffix)
+      if (null == path) {
+        val buf = new StringBuilder()
+        buf.append(routeService.mapView(className, DefaultViewMapper.defaultView(methodName, newResultCode)))
+        buf.append(suffix)
+        path = buf.toString
+      }
+      cfg = resultTypeConfigs(suffix)
       return buildResult(newResultCode, cfg, context, buildResultParams(path, cfg))
     } else {
       // by prefix
@@ -131,15 +140,11 @@ class ConventionResultHandler extends UnknownHandler {
           action.name = newAction.name
           action.namespace = newAction.namespace
         }
-        if (isBlank(action.name)) {
-          action.path(getServletPath(ServletActionContext.getRequest()))
-        }
+        if (isBlank(action.name)) action.path(getServletPath(ServletActionContext.getRequest()))
         action
       }
       case _ => {
-        val newPath = if (path.startsWith("?")) {
-          getServletPath(ServletActionContext.getRequest()) + path
-        } else path
+        val newPath = if (path.startsWith("?")) getServletPath(ServletActionContext.getRequest()) + path else path
         new Action(newPath, null)
       }
     }

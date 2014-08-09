@@ -1,14 +1,15 @@
 package org.beangle.webmvc.route.impl
 
 import java.net.URL
-import java.{ util => ju }
+import java.{ util => ju, lang => jl }
 import org.beangle.commons.bean.PropertyUtils.{ copyProperty, getProperty }
 import org.beangle.commons.io.IOs
 import org.beangle.commons.lang.{ ClassLoaders, Strings }
 import org.beangle.commons.logging.Logging
-import org.beangle.webmvc.route.{ Action, Profile, RouteService, RequestMapper, ActionMapping }
-import javax.servlet.http.HttpServletRequest
 import org.beangle.commons.web.util.RequestUtils
+import org.beangle.webmvc.route.{ Action, ActionMapping, Handler, Profile, RequestMapper, RouteService }
+import javax.servlet.http.HttpServletRequest
+import org.beangle.webmvc.context.ActionContext
 
 object RouteServiceImpl extends Logging {
 
@@ -61,12 +62,12 @@ object RouteServiceImpl extends Logging {
       val profile = new Profile(name, actionPattern)
       populateAttr(profile, "actionSuffix", props)
       populateAttr(profile, "viewPath", props)
-      populateAttr(profile, "viewExtension", props)
+      populateAttr(profile, "viewSuffix", props)
       populateAttr(profile, "viewPathStyle", props)
       populateAttr(profile, "defaultMethod", props)
       populateAttr(profile, "uriPath", props)
       populateAttr(profile, "uriPathStyle", props)
-      populateAttr(profile, "uriExtension", props)
+      populateAttr(profile, "uriSuffix", props)
       populateAttr(profile, "actionScan", props)
       profile
     }
@@ -127,57 +128,107 @@ class RouteServiceImpl extends RouteService with Logging {
   /**
    * viewname -> 页面路径的映射
    */
-  def mapView(className: String, methodName: String, viewName: String): String = {
-    viewMapper.getViewPath(className, methodName, viewName)
+  def mapView(className: String, viewName: String): String = {
+    viewMapper.map(className, viewName)
   }
 }
 
-//FIXME support restfull url
-class DefaultURIResolver extends RequestMapper {
+class HierarchicalUrlMapper extends RequestMapper {
+  private val mappings = new ActionMappings
+
   val DefaultMethod = "index"
   val MethodParam = "_method"
 
-  def resolve(request: HttpServletRequest): ActionMapping = {
-    val uri = RequestUtils.getServletPath(request)
-    val lastSlash = uri.lastIndexOf("/")
-    val data =
-      if (lastSlash == -1) {
-        ("", uri)
-      } else if (lastSlash == 0) {
-        ("/", uri.substring(lastSlash + 1))
-      } else {
-        // Simply select the namespace as everything before the last slash
-        (uri.substring(0, lastSlash), uri.substring(lastSlash + 1))
-      }
-    val namespace = data._1
-    val name = data._2
+  def add(mapping: ActionMapping): Unit = {
+    mappings.add(mapping)
+  }
 
-    // process ! . 
-    var i = 0
-    var bangIdx = -1
-    var lastIdx = name.length
-    val chars = new Array[Char](name.length)
-    name.getChars(0, name.length, chars, 0)
-    var continue = true
-    while (i < chars.length && continue) {
+  def resolve(uri: String): Option[ActionMapping] = {
+    mappings.resolve(uri)
+  }
+
+  def resolve(request: HttpServletRequest): Option[ActionMapping] = {
+    val uri = RequestUtils.getServletPath(request)
+    val lastSlashIdx = uri.lastIndexOf('/')
+    var bangIdx, dotIdx = -1
+    var i = lastSlashIdx + 2
+    var chars = new Array[Char](uri.length)
+    uri.getChars(0, chars.length, chars, 0)
+    val sb = new jl.StringBuilder(uri.length + 10)
+    while (i < chars.length && dotIdx == -1) {
       var c = chars(i)
       if ('!' == c) bangIdx = i
-      else if (';' == c || '.' == c) {
-        lastIdx = i
-        continue = false
-      }
+      else if ('.' == c) dotIdx = i
       i += 1
     }
-
-    if (-1 == bangIdx) {
-      ActionMapping(namespace, name.substring(0, lastIdx), determinMethod(request))
-    } else {
-      ActionMapping(namespace, name.substring(0, bangIdx), name.substring(bangIdx + 1, lastIdx))
+    sb.append(chars)
+    if (dotIdx > 0) sb.delete(dotIdx, sb.length)
+    if (bangIdx > 0) sb.setCharAt(bangIdx, '/')
+    else {
+      val method = determinMethod(request)
+      if (-1 == sb.indexOf(method, lastSlashIdx + 1)) sb.append('/').append(method)
     }
+    mappings.resolve(sb.toString)
   }
 
   private def determinMethod(request: HttpServletRequest): String = {
     val method = request.getParameter(MethodParam)
     if (null == method) DefaultMethod else method
+  }
+}
+
+class ActionMappings {
+  val children = new collection.mutable.HashMap[String, ActionMappings]
+  val mappings = new collection.mutable.HashMap[String, ActionMapping]
+
+  def add(mapping: ActionMapping): Unit = {
+    if (mapping.isPattern) add(mapping.url, mapping, this)
+    else mappings.put(mapping.url, mapping)
+  }
+
+  def add(pattern: String, mapping: ActionMapping, mappings: ActionMappings): Unit = {
+    val slashIndex = pattern.indexOf('/', 1)
+    val head = if (-1 == slashIndex) pattern.substring(1) else pattern.substring(1, slashIndex)
+    val headPattern = ActionMapping.matcherName(head)
+
+    if (-1 == slashIndex) {
+      mappings.mappings.put(headPattern, mapping)
+    } else {
+      add(pattern.substring(slashIndex), mapping, mappings.children.getOrElseUpdate(headPattern, new ActionMappings))
+    }
+  }
+
+  def resolve(uri: String): Option[ActionMapping] = {
+    val directMapping = mappings.get(uri)
+    if (None != directMapping) return directMapping
+
+    val parts = Strings.split(uri, '/')
+    find(0, parts, this) match {
+      case Some(m) =>
+        if (m.isPattern) {
+          val urlParams = new collection.mutable.HashMap[String, String]
+          m.params.get(ActionContext.URLParamIndexes).asInstanceOf[Map[Integer, String]] foreach {
+            case (k, v) =>
+              urlParams.put(v, parts(k))
+          }
+          Some(ActionMapping(m.url, m.handler, m.params ++ urlParams))
+        } else Some(m)
+      case None => None
+    }
+  }
+
+  def find(index: Int, parts: Array[String], mappings: ActionMappings): Option[ActionMapping] = {
+    if (index < parts.length && null != mappings) {
+      if (index == parts.length - 1) {
+        val mapping = mappings.mappings.get(parts(index))
+        if (mapping == None) mappings.mappings.get("*") else mapping
+      } else {
+        val mapping = find(index + 1, parts, mappings.children.get(parts(index)).orNull)
+        if (mapping == None) find(index + 1, parts, mappings.children.get("*").orNull)
+        else mapping
+      }
+    } else {
+      None
+    }
   }
 }

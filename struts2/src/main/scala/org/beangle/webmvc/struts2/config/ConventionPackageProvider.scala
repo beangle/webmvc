@@ -2,21 +2,26 @@ package org.beangle.webmvc.struts2.config
 
 import java.lang.reflect.{ Method, Modifier }
 import scala.collection.JavaConversions.seqAsJavaList
-import org.beangle.commons.inject.ContainerAware
-import org.beangle.commons.lang.{ Objects, Strings }
+import org.beangle.commons.inject.{ Container, ContainerAware }
+import org.beangle.commons.io.IOs
+import org.beangle.commons.lang.{ ClassLoaders, Objects, Strings }
+import org.beangle.commons.lang.reflect.ClassInfo
 import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.i18n.spi.TextBundleRegistry
+import org.beangle.commons.web.context.ServletContextHolder
 import org.beangle.webmvc.annotation.{ action, noaction, result, results }
-import org.beangle.webmvc.route.{ Action, ActionFinder, ContainerActionFinder, Profile, RouteService }
-import org.apache.struts2.StrutsConstants
-import com.opensymphony.xwork2.{ ActionContext, ObjectFactory }
+import org.beangle.webmvc.context.ActionContext
+import org.beangle.webmvc.route.{ Action, ActionFinder, ActionMapping, ContainerActionFinder, RequestMapper, RouteService }
+import org.beangle.webmvc.route.impl.{ DefaultViewMapper, HierarchicalUrlMapper, MethodHandler }
+import org.beangle.webmvc.view.freemarker.{ Configurations, TemplateFinder, TemplateFinderByLoader }
 import com.opensymphony.xwork2.config.{ Configuration, ConfigurationException, PackageProvider }
 import com.opensymphony.xwork2.config.entities.{ ActionConfig, PackageConfig, ResultConfig }
+import com.opensymphony.xwork2.factory.ActionFactory
 import com.opensymphony.xwork2.inject.Inject
 import com.opensymphony.xwork2.util.classloader.ReloadingClassLoader
 import com.opensymphony.xwork2.util.finder.{ ClassLoaderInterface, ClassLoaderInterfaceDelegate }
-import com.opensymphony.xwork2.factory.ActionFactory
+import org.apache.struts2.views.freemarker.FreemarkerManager
 
 /**
  * This class is a configuration provider for the XWork configuration system. This is really the
@@ -29,7 +34,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
   @Inject("beangle.convention.action.suffix")
   var actionSuffix: String = "Action"
 
-  @Inject(StrutsConstants.STRUTS_DEVMODE)
+  @Inject("struts.devMode")
   var devMode = "false"
 
   @Inject
@@ -47,13 +52,26 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
   @Inject("beangle.convention.preloadftl")
   var preloadftl: String = "true"
 
+  @Inject
+  var mapper: RequestMapper = _
+
+  @Inject
+  var freemarkerManager: FreemarkerManager = _
+
   private var reloadingClassLoader: ReloadingClassLoader = _
 
   private var defaultParentPackage: String = "beangle"
 
+  private var templateFinder: TemplateFinder = _
+
+  private var objectContainer: Container = _
+  /** [url- > classname] */
+  private var primaryMappings: Map[String, String] = Map.empty
+
   @Inject
   def this(configuration: Configuration, actionFactory: ActionFactory) {
     this(configuration, new ContainerActionFinder(actionFactory.asInstanceOf[ContainerAware].container))
+    objectContainer = actionFactory.asInstanceOf[ContainerAware].container
   }
 
   protected def initReloadClassLoader() {
@@ -63,12 +81,25 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
   protected def getClassLoader(): ClassLoader = Thread.currentThread().getContextClassLoader()
 
   @throws(classOf[ConfigurationException])
-  def init(configuration: Configuration) = {}
+  def init(configuration: Configuration) = {
+    registry.addDefaults(defaultBundleNames.split(","): _*)
+    registry.reloadable = java.lang.Boolean.parseBoolean(reloadBundles)
+    val sc = ServletContextHolder.context
+    templateFinder = new TemplateFinderByLoader(freemarkerManager.getConfiguration(sc).getTemplateLoader(), routeService.viewMapper)
+
+    val url = ClassLoaders.getResource("struts.properties")
+    if (null != url) {
+      val pmappings = new collection.mutable.HashMap[String, String]
+      IOs.readJavaProperties(url) foreach {
+        case (k, v) =>
+          if (k.startsWith("url.")) pmappings.put(Strings.substringAfter(k, "url."), v)
+      }
+      primaryMappings = pmappings.toMap
+    }
+  }
 
   @throws(classOf[ConfigurationException])
   def loadPackages() {
-    registry.addDefaults(defaultBundleNames.split(","): _*)
-    registry.reloadable = java.lang.Boolean.parseBoolean(reloadBundles)
     var watch = new Stopwatch(true)
     routeService.profiles foreach { profile =>
       if (profile.actionScan) actionPackages += profile.actionPattern
@@ -76,31 +107,73 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     if (actionPackages.isEmpty) { return }
 
     initReloadClassLoader()
-    var packageConfigs = new collection.mutable.HashMap[String, PackageConfig.Builder]()
-    var newActions: Int = 0
-    var actionTypes = actionFinder.getActions(new ActionFinder.Test(actionSuffix, actionPackages))
-    for ((actionClass, value) <- actionTypes) {
+    val packageConfigs = new collection.mutable.HashMap[String, PackageConfig.Builder]()
+    var newActions, overrideActions = 0
+    val actionTypes = actionFinder.getActions(new ActionFinder.Test(actionSuffix, actionPackages))
+
+    val name2Clazz = new collection.mutable.HashMap[String, Class[_]]
+    val name2Packages = new collection.mutable.HashMap[String, PackageConfig.Builder]
+
+    for ((actionClass, beanName) <- actionTypes) {
       var profile = routeService.getProfile(actionClass.getName())
-      routeService.buildActions(actionClass) foreach { action =>
-        var packageConfig = getPackageConfig(profile, packageConfigs, action, actionClass)
-        if (createActionConfig(packageConfig, action, actionClass, value)) newActions += 1
+      val action = routeService.buildAction(actionClass)
+      val key =
+        if (action.namespace.equals("/")) action.namespace + action.name
+        else action.namespace + "/" + action.name
+
+      val primaryClassName = primaryMappings.get(key).orNull
+      if (null == primaryClassName || primaryClassName.equals(actionClass.getName())) {
+        val exist = name2Clazz.get(key).orNull
+        val pcb =
+          if (null == exist) buildPackageConfig(actionClass, action, packageConfigs)
+          else name2Packages.get(key).orNull
+
+        var created = false
+        //subclass or nonrelated class
+        if (null == exist || !actionClass.isAssignableFrom(exist)) {
+          created = createActionConfig(pcb, action, actionClass, beanName)
+          if (created) {
+            if (null == exist) newActions += 1 else overrideActions += 1
+          }
+        }
+        if (created) {
+          name2Clazz.put(key, actionClass);
+          name2Packages.put(key, pcb)
+          // build all action to action mappings
+          val classInfo = ClassInfo.get(actionClass)
+          routeService.buildActions(actionClass) foreach { action =>
+            val methods = classInfo.getMethods(action.method)
+            if (methods.size == 1) {
+              val pattern = action.getUri('/')
+              println(pattern)
+              val mappingConfig = Map((ActionContext.URLParamIndexes, ActionMapping.parse(pattern)), ("namespace", action.namespace), ("name", action.name))
+              mapper.asInstanceOf[HierarchicalUrlMapper].add(ActionMapping(pattern, MethodHandler(objectContainer.getBean(beanName).get, methods.head.method), mappingConfig))
+            }
+          }
+        }
       }
     }
     newActions += buildIndexActions(packageConfigs)
-    // Add the new actions to the configuration
-    var packageNames = packageConfigs.keySet
-    for (packageName <- packageNames) {
-      configuration.removePackageConfig(packageName)
-      configuration.addPackageConfig(packageName, packageConfigs(packageName).build())
+    // Add the new actions to the configuration(remove duplicated package builder for key != builder.name)
+    val processedPackages = new collection.mutable.HashSet[String]
+    for (builder <- packageConfigs.values) {
+      val packageName = builder.getName
+      if (!processedPackages.contains(packageName)) {
+        configuration.removePackageConfig(packageName)
+        configuration.addPackageConfig(packageName, packageConfigs(packageName).build())
+        processedPackages += packageName
+      }
     }
-    info(s"Action scan completed,create ${newActions} action in ${watch}.")
+
+    info(s"Action scan completed,create ${newActions} action(override ${overrideActions}) in ${watch}.")
+    templateFinder = null
   }
 
   protected def getClassLoaderInterface(): ClassLoaderInterface = {
     if (isReloadEnabled()) return new ClassLoaderInterfaceDelegate(reloadingClassLoader)
     else {
       var classLoaderInterface: ClassLoaderInterface = null
-      var ctx = ActionContext.getContext()
+      var ctx = com.opensymphony.xwork2.ActionContext.getContext()
       if (ctx != null)
         classLoaderInterface = ctx.get(ClassLoaderInterface.CLASS_LOADER_INTERFACE).asInstanceOf[ClassLoaderInterface]
       Objects.defaultIfNull(classLoaderInterface, new ClassLoaderInterfaceDelegate(getClassLoader()))
@@ -160,31 +233,29 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
         val rtc = pcb.getResultType(resultType)
         val rcb = new ResultConfig.Builder(result.name(), rtc.getClassName())
         if (null != rtc.getDefaultResultParam()) rcb.addParam(rtc.getDefaultResultParam(), result.location())
-        configs.add(rcb.build())
+        configs += rcb.build()
         annotationResults.add(result.name())
       }
     }
     // load ftl convension results
-    var extention = routeService.getProfile(clazz.getName).viewExtension
-    if (preloadftl == "true" && extention.endsWith("ftl")) {
-      var resultTypeConfig = configuration.getPackageConfig("struts-default")
-        .getAllResultTypeConfigs().get("freemarker")
+    var suffix = routeService.getProfile(clazz.getName).viewSuffix
+    if (preloadftl == "true" && suffix.endsWith(".ftl")) {
+      var resultTypeConfig = configuration.getPackageConfig("struts-default").getAllResultTypeConfigs().get("freemarker")
       for (m <- clazz.getMethods) {
         var name = m.getName()
-        if (shouldGenerateResult(m)) {
-          var buf = new StringBuilder()
-          buf.append(routeService.mapView(clazz.getName(), name, name))
-          buf.append('.')
-          buf.append(extention)
-          configs += new ResultConfig.Builder(name, resultTypeConfig.getClassName()).addParam(
-            resultTypeConfig.getDefaultResultParam(), buf.toString()).build()
+        if (!annotationResults.contains(name) && shouldGenerateResult(m)) {
+          val path = templateFinder.find(clazz, DefaultViewMapper.defaultView(name, name), suffix)
+          if (null != path) {
+            configs += new ResultConfig.Builder(name, resultTypeConfig.getClassName()).addParam(
+              resultTypeConfig.getDefaultResultParam(), path).build()
+          }
         }
       }
     }
     configs
   }
 
-  protected def getPackageConfig(profile: Profile, packageConfigs: collection.mutable.Map[String, PackageConfig.Builder], action: Action, actionClass: Class[_]): PackageConfig.Builder = {
+  protected def buildPackageConfig(actionClass: Class[_], action: Action, packageConfigs: collection.mutable.Map[String, PackageConfig.Builder]): PackageConfig.Builder = {
     // 循环查找父包
     var actionPkg = actionClass.getPackage.getName
     var parentPkg: PackageConfig = null
@@ -200,7 +271,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     if (parentPkg == null) {
       throw new ConfigurationException(s"Unable to locate parent package [${actionClass.getPackage.getName}]")
     }
-    var actionPackage = actionClass.getPackage().getName()
+    var actionPackage = actionClass.getPackage().getName
     var pkgConfig: PackageConfig.Builder = packageConfigs.get(actionPackage).orNull
     if (pkgConfig == null) {
       var myPkg = configuration.getPackageConfig(actionPackage)

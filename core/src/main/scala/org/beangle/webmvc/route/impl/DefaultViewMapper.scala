@@ -1,24 +1,25 @@
 package org.beangle.webmvc.route.impl
 
 import org.beangle.commons.lang.Strings
-import org.beangle.webmvc.route.{Constants, RouteService, ViewMapper}
+import org.beangle.webmvc.route.{ Constants, RouteService, ViewMapper }
 
+object DefaultViewMapper {
+  private val methodViews = Map(("search", "list"), ("query", "list"), ("edit", "form"), ("home", "index"), ("execute", "index"), ("add", "new"))
+  
+  def defaultView(methodName: String, viewName: String): String = {
+    if (null == viewName || "success" == viewName) methodViews.getOrElse(methodName, methodName)
+    else methodViews.getOrElse(viewName, viewName)
+  }
+
+}
 class DefaultViewMapper(val routeService: RouteService) extends ViewMapper {
-
-  private val methodViews = Map(("search", "list"), ("query", "list"),
-    ("edit", "form"), ("home", "index"), ("execute", "index"), ("add", "new"))
 
   /**
    * 查询control对应的view的名字(没有后缀)
    */
-  def getViewPath(className: String, methodName: String, viewName: String): String = {
+  def map(className: String, viewName: String): String = {
     if (Strings.isNotEmpty(viewName) && viewName.charAt(0) == Constants.separator) viewName
     else {
-      val newViewName = {
-        if (Strings.isEmpty(viewName) || viewName.equals("success")) {
-          methodName
-        } else viewName
-      }
       val profile = routeService.getProfile(className)
       if (null == profile) { throw new RuntimeException("no convention profile for " + className) }
       val buf = new StringBuilder()
@@ -38,7 +39,7 @@ class DefaultViewMapper(val routeService: RouteService) extends ViewMapper {
       // add method mapping path
       buf.append(Constants.separator)
 
-      buf.append(methodViews.get(newViewName).getOrElse(newViewName))
+      buf.append(viewName)
       buf.toString()
     }
   }

@@ -121,7 +121,7 @@ class ActionSupport extends Logging {
   /**
    * 获得aciton错误消息<br>
    */
-  protected final def actionErrors: List[String] = {
+  protected[action] final def actionErrors: List[String] = {
     val messages = ContextHolder.context.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
     if (null == messages) List()
     else messages.errors.toList

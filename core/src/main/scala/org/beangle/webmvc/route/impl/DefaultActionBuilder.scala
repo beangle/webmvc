@@ -6,6 +6,7 @@ import org.beangle.webmvc.route.{ Action, ActionBuilder, Constants, RouteService
 import org.beangle.webmvc.route.Profile
 import org.beangle.commons.lang.reflect.ClassInfo
 import org.beangle.webmvc.annotation.path
+import org.beangle.commons.lang.Strings
 
 class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder {
 
@@ -17,24 +18,28 @@ class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder
    */
   def build(clazz: Class[_], method: String): Action = {
     val profile = routeService.getProfile(clazz.getName)
-    new Action(buildAction(clazz, profile), if (null == method) profile.defaultMethod else method).extention(profile.uriExtension)
+    val result = buildAction(clazz, profile)
+    new Action(clazz, result._1, result._2, if (null == method) profile.defaultMethod else method).suffix(profile.uriSuffix)
   }
 
   def build(clazz: Class[_]): Seq[Action] = {
     val profile = routeService.getProfile(clazz.getName)
-    val sb = buildAction(clazz, profile)
+    val result = buildAction(clazz, profile)
     val actions = new collection.mutable.ListBuffer[Action]
+    //FIXME too many method
     ClassInfo.get(clazz).getMethods foreach { minfo =>
-      val ann = minfo.method.getAnnotation(classOf[path])
-      if (null != ann) {
-        actions += new Action(sb + ann.value(), minfo.method.getName).extention(profile.uriExtension)
+      val methodName = minfo.method.getName
+      if (!methodName.startsWith("get")) {
+        val ann = minfo.method.getAnnotation(classOf[path])
+        actions += new Action(clazz, result._1, result._2, (if (null != ann) ann.value() else methodName)).suffix(profile.uriSuffix)
       }
     }
-    actions += new Action(sb, profile.defaultMethod).extention(profile.uriExtension)
+    //FIXME already have index
+    actions += new Action(clazz, result._1, result._2, profile.defaultMethod).suffix(profile.uriSuffix)
     actions
   }
 
-  private def buildAction(clazz: Class[_], profile: Profile): String = {
+  private def buildAction(clazz: Class[_], profile: Profile): Tuple2[String, String] = {
     val className = clazz.getName
     val profile = routeService.getProfile(className)
     val ann = clazz.getAnnotation(classOf[action])
@@ -65,6 +70,8 @@ class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder
         sb.append(name.substring(1))
       }
     }
-    sb.toString
+    val result = sb.toString
+    val lastSlash = result.lastIndexOf('/')
+    Tuple2(result.substring(0, lastSlash), result.substring(lastSlash + 1))
   }
 }

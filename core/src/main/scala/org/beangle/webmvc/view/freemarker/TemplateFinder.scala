@@ -13,20 +13,23 @@ import freemarker.template.Configuration
  * @author chaostone
  */
 trait TemplateFinder {
-  def find(actionClass: Class[_], method: String, viewName: String, extention: String): String
+  def find(actionClass: Class[_], viewName: String, suffix: String): String
 }
 
+/**
+ * Find template in class hierarchy with configuration without caching.
+ */
 class TemplateFinderByConfig(configuration: Configuration, viewMapper: ViewMapper) extends TemplateFinder {
 
-  def find(actionClass: Class[_], method: String, viewName: String, extention: String): String = {
+  def find(actionClass: Class[_], viewName: String, suffix: String): String = {
     var path: String = null
     var superClass = actionClass
     var source: Object = null
     do {
-      val buf = new StringBuilder()
-      buf.append(viewMapper.getViewPath(superClass.getName(), method, viewName))
-      buf.append('.').append(extention)
-      path = buf.toString()
+      val buf = new StringBuilder
+      buf.append(viewMapper.map(superClass.getName, viewName))
+      buf.append(suffix)
+      path = buf.toString
       var templateName = path
       if (path.charAt(0) != '/') templateName = "/" + templateName
       try {
@@ -37,29 +40,33 @@ class TemplateFinderByConfig(configuration: Configuration, viewMapper: ViewMappe
           source = "error ftl"
         }
       }
-      superClass = superClass.getSuperclass()
-    } while (null == source && !superClass.equals(classOf[Object]) && !superClass.isPrimitive())
+      superClass = superClass.getSuperclass
+    } while (null == source && !superClass.equals(classOf[Object]) && !superClass.isPrimitive)
     if (null == source) null else path
   }
 }
 
+/**
+ * Try find template in class hierarchy,caching missing result.
+ */
 class TemplateFinderByLoader(val loader: TemplateLoader, val viewMapper: ViewMapper) extends TemplateFinder {
 
-  private val missings = new collection.mutable.HashSet[String]()
+  private val missings = new collection.mutable.HashSet[String]
 
-  def find(actionClass: Class[_], method: String, viewName: String, extention: String): String = {
+  def find(actionClass: Class[_], viewName: String, suffix: String): String = {
     var path: String = null
-    var superClass: Class[_] = actionClass
+    var superClass = actionClass
     var source: Object = null
     var breakWhile = false
     do {
-      val buf = new StringBuilder()
-      buf.append(viewMapper.getViewPath(superClass.getName(), method, viewName))
-      buf.append('.').append(extention)
-      path = buf.toString()
+      val buf = new StringBuilder
+      buf.append(viewMapper.map(superClass.getName, viewName))
+      buf.append(suffix)
+      path = buf.toString
       var templateName = path
+      //different with config finder
       if (path.charAt(0) == '/') templateName = templateName.substring(1)
-      if (!missings.contains(templateName.asInstanceOf)) {
+      if (!missings.contains(templateName)) {
         try {
           source = loader.findTemplateSource(templateName)
           if (null != source) loader.closeTemplateSource(source)
@@ -69,8 +76,8 @@ class TemplateFinderByLoader(val loader: TemplateLoader, val viewMapper: ViewMap
             breakWhile = true
         }
       }
-      if (!breakWhile) superClass = superClass.getSuperclass()
-    } while (!breakWhile && null == source && !superClass.equals(classOf[Object]) && !superClass.isPrimitive())
+      if (!breakWhile) superClass = superClass.getSuperclass
+    } while (!breakWhile && null == source && !superClass.equals(classOf[Object]) && !superClass.isPrimitive)
     if (null == source) null else path
   }
 }

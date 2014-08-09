@@ -14,28 +14,13 @@ import org.springframework.web.servlet.ModelAndView
 class BeangleInterceptor extends HandlerInterceptor {
 
   override def preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Object): Boolean = {
-    val context = new ActionContext(request, response, getParams(request))
-    ContextHolder.contexts.set(context)
+    ContextHolder.context.response = response
     true
   }
 
   override def postHandle(req: HttpServletRequest, res: HttpServletResponse, handler: Object, mv: ModelAndView): Unit = {
   }
-  override def afterCompletion(req: HttpServletRequest, res: HttpServletResponse, handler: Object, ex: Exception): Unit = {
-  }
 
-  private def getParams(request: HttpServletRequest): Map[String, Any] = {
-    val context = ContextHolder.context
-    val itor = request.getParameterMap.entrySet.iterator
-    val paramsBuilder = new collection.mutable.HashMap[String, Any]
-    while (itor.hasNext) {
-      val entry = itor.next()
-      paramsBuilder.put(entry.getKey, entry.getValue)
-    }
-    //    request match {
-    //      case mp: MultiPartRequestWrapper => paramsBuilder ++= getUploads(mp)
-    //      case _ =>
-    //    }
-    paramsBuilder.toMap
+  override def afterCompletion(req: HttpServletRequest, res: HttpServletResponse, handler: Object, ex: Exception): Unit = {
   }
 }

@@ -69,7 +69,7 @@ final class Profile(val name: String, val actionPattern: String) extends Compara
   var viewPathStyle = "simple"
 
   // 路径后缀
-  var viewExtension: String = _
+  var viewSuffix: String = _
 
   // 缺省的action中的方法
   var defaultMethod = "index"
@@ -81,7 +81,7 @@ final class Profile(val name: String, val actionPattern: String) extends Compara
   var uriPathStyle = "simple"
 
   /** URI的后缀 */
-  var uriExtension: String = _
+  var uriSuffix: String = _
 
   // 匹配缓存[className,matchInfo]
   private var cache = new ju.concurrent.ConcurrentHashMap[String, MatchInfo]
@@ -173,8 +173,8 @@ final class Profile(val name: String, val actionPattern: String) extends Compara
 
   override def toString(): String = Objects.toStringBuilder(this).add("name", name).add("actionPattern", actionPattern)
     .add("actionSuffix", actionSuffix).add("actionScan", actionScan.toString).add("viewPath", viewPath)
-    .add("viewPathStyle", viewPathStyle).add("viewExtension", viewExtension).add("uriPath", uriPath)
-    .add("uriPathStyle", uriPathStyle).add("uriExtension", uriExtension)
+    .add("viewPathStyle", viewPathStyle).add("viewSuffix", viewSuffix).add("uriPath", uriPath)
+    .add("uriPathStyle", uriPathStyle).add("uriSuffix", uriSuffix)
     .add("defaultMethod", defaultMethod).toString()
 }
 

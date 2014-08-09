@@ -11,6 +11,13 @@ import javax.servlet.ServletContext
 
 object Configurations {
 
+  def disableFreemarkerLogger(): Unit = {
+    try {
+      freemarker.log.Logger.selectLoggerLibrary(freemarker.log.Logger.LIBRARY_NONE)
+    } catch {
+      case t: Exception => t.printStackTrace()
+    }
+  }
   /**
    * The default template loader is a MultiTemplateLoader which includes
    * BeangleClassTemplateLoader(classpath:) and a WebappTemplateLoader

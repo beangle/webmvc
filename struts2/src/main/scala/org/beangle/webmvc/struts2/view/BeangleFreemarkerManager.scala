@@ -11,15 +11,7 @@ import javax.servlet.ServletContext
 
 class BeangleFreemarkerManager extends FreemarkerManager with Logging {
 
-  disableFreemarkerLogger()
-
-  protected def disableFreemarkerLogger(): Unit = {
-    try {
-      freemarker.log.Logger.selectLoggerLibrary(freemarker.log.Logger.LIBRARY_NONE)
-    } catch {
-      case t: Exception => t.printStackTrace()
-    }
-  }
+  Configurations.disableFreemarkerLogger()
 
   override protected def createObjectWrapper(servletContext: ServletContext): ObjectWrapper = {
     val wrapper = new BeangleObjectWrapper(altMapWrapper)
@@ -42,7 +34,7 @@ class BeangleFreemarkerManager extends FreemarkerManager with Logging {
 
   override protected def loadSettings(servletContext: ServletContext): Unit = {
     val properties = Configurations.loadSetting()
-    for ((key, value) <- properties){
+    for ((key, value) <- properties) {
       if (null != key && null != value) addSetting(key, value)
     }
     info(s"Freemarker properties:$properties")

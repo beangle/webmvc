@@ -26,9 +26,9 @@
   
   <package name="beangle" extends="struts-default">
     <interceptors>
-      <interceptor name="beangle" class="org.beangle.webmvc.struts2.interceptor.BeangleInterceptor"/>
+      <interceptor name="flash" class="org.beangle.webmvc.struts2.interceptor.FlashInterceptor"/>
       <interceptor-stack name="beangleStack">
-        <interceptor-ref name="beangle"/>
+        <interceptor-ref name="flash"/>
       </interceptor-stack>
     </interceptors>
     <default-interceptor-ref name="beangleStack"/>
@@ -40,8 +40,9 @@
   <bean type="com.opensymphony.xwork2.UnknownHandler" class="org.beangle.webmvc.struts2.ConventionResultHandler"/>
   <bean type="org.apache.struts2.dispatcher.mapper.ActionMapper" name="beangle" class="org.beangle.webmvc.struts2.dispatcher.ConventionActionMapper"/>
   <bean type="com.opensymphony.xwork2.config.PackageProvider" name="beangle" class="org.beangle.webmvc.struts2.config.ConventionPackageProvider"/>
-  <bean type="org.beangle.webmvc.route.RouteService" class="org.beangle.webmvc.route.impl.RouteServiceImpl"/>
-
+  <bean type="org.beangle.webmvc.route.RouteService" name="default" class="org.beangle.webmvc.route.impl.RouteServiceImpl"/>
+  <bean type="org.beangle.webmvc.route.RequestMapper" name="default" class="org.beangle.webmvc.route.impl.HierarchicalUrlMapper"/>
+  
   <bean type="com.opensymphony.xwork2.ActionProxyFactory" name="beangle" class="org.beangle.webmvc.struts2.BeangleActionProxyFactory" />
   <bean type="com.opensymphony.xwork2.factory.ActionFactory" name="beangle" class="org.beangle.webmvc.struts2.factory.BeangleActionFactory" />
   <bean type="com.opensymphony.xwork2.factory.ResultFactory" name="beangle" class="org.beangle.webmvc.struts2.factory.BeangleResultFactory" />
