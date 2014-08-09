@@ -72,9 +72,9 @@ class ActionSupport extends Logging {
 
   final def getText(aTextName: String): String = ContextHolder.context.textResource(aTextName).get
 
-  final def getText(key: String, defaultValue: String, args: Object*): String = ContextHolder.context.textResource(key, defaultValue, args)
+  final def getText(key: String, defaultValue: String, args: Any*): String = ContextHolder.context.textResource(key, defaultValue, args)
 
-  protected final def getTextInternal(msgKey: String, args: Object*): String = {
+  protected final def getTextInternal(msgKey: String, args: Any*): String = {
     if (Strings.isEmpty(msgKey)) null
     if (Chars.isAsciiAlpha(msgKey.charAt(0)) && msgKey.indexOf('.') > 0) {
       getText(msgKey, msgKey, args)
@@ -83,19 +83,19 @@ class ActionSupport extends Logging {
     }
   }
 
-  protected final def addMessage(msgKey: String, args: Object*): Unit = {
+  protected final def addMessage(msgKey: String, args: Any*): Unit = {
     ContextHolder.context.flash.addMessageNow(getTextInternal(msgKey, args))
   }
 
-  protected final def addError(msgKey: String, args: Object*): Unit = {
+  protected final def addError(msgKey: String, args: Any*): Unit = {
     ContextHolder.context.flash.addErrorNow(getTextInternal(msgKey, args))
   }
 
-  protected final def addFlashError(msgKey: String, args: Object*): Unit = {
+  protected final def addFlashError(msgKey: String, args: Any*): Unit = {
     ContextHolder.context.flash.addError(getTextInternal(msgKey, args))
   }
 
-  protected final def addFlashMessage(msgKey: String, args: Object*): Unit = {
+  protected final def addFlashMessage(msgKey: String, args: Any*): Unit = {
     ContextHolder.context.flash.addMessage(getTextInternal(msgKey, args))
   }
 
@@ -122,7 +122,7 @@ class ActionSupport extends Logging {
   @noaction
   protected def remoteAddr: String = RequestUtils.getIpAddr(request)
 
-  protected final def put(key: String, value: Object) {
+  protected final def put(key: String, value: Any) {
     ContextHolder.context.attribute(key, value)
   }
 

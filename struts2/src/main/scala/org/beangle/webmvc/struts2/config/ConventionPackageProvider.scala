@@ -141,10 +141,10 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
           name2Packages.put(key, pcb)
           // build all action to action mappings
           val classInfo = ClassInfo.get(actionClass)
-          routeService.buildActions(actionClass) foreach { action =>
-            val method = classInfo.getMethods(action.method).head.method
-            addAction2Mapper(action, beanName, method)
-            if (action.method == "index") addAction2Mapper(action.method(null), beanName, method)
+          routeService.buildActions(actionClass) foreach {
+            case (action, method) =>
+              addAction2Mapper(action, beanName, method)
+              if (action.method == "index") addAction2Mapper(action.method(null), beanName, method)
           }
         }
       }

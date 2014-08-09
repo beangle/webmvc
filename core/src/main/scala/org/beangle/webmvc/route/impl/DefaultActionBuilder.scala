@@ -19,24 +19,23 @@ class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder
    * 否则加上包名，其中的.编成URI路径分割符。包名不做其他处理。<br>
    * 复杂URL,以/开始
    */
-  def build(clazz: Class[_], method: String): Action = {
+  override def build(clazz: Class[_], method: String): Action = {
     val profile = routeService.getProfile(clazz.getName)
     val result = buildAction(clazz, profile)
     new Action(clazz, result._1, result._2, if (null == method) profile.defaultMethod else method).suffix(profile.uriSuffix)
   }
 
-  def build(clazz: Class[_]): Seq[Action] = {
+  override def build(clazz: Class[_]): Seq[Tuple2[Action, Method]] = {
     val profile = routeService.getProfile(clazz.getName)
     val result = buildAction(clazz, profile)
-    val actions = new collection.mutable.ListBuffer[Action]
-    //FIXME too many method
+    val actions = new collection.mutable.ListBuffer[Tuple2[Action, Method]]
     ClassInfo.get(clazz).methods foreach {
       case (methodName, minfos) =>
         if (minfos.size == 1) {
           val method = minfos.head.method
           if (isActionMethod(method)) {
             val ann = method.getAnnotation(classOf[path])
-            actions += new Action(clazz, result._1, result._2, (if (null != ann) ann.value() else methodName)).suffix(profile.uriSuffix)
+            actions += Tuple2(new Action(clazz, result._1, result._2, (if (null != ann) ann.value() else methodName)).suffix(profile.uriSuffix), method)
           }
         }
     }

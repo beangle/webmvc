@@ -1,7 +1,8 @@
 package org.beangle.webmvc.route
 
-import javax.servlet.http.HttpServletRequest
 import java.lang.reflect.Method
+
+import javax.servlet.http.HttpServletRequest
 
 object Constants {
   // 路径分割符
@@ -36,7 +37,7 @@ trait RouteService {
    */
   def buildAction(clazz: Class[_], method: String = null): Action
 
-  def buildActions(clazz: Class[_]): Seq[Action]
+  def buildActions(clazz: Class[_]): Seq[Tuple2[Action, Method]]
 
   /**
    * viewname -> 页面路径的映射
@@ -56,12 +57,12 @@ trait ActionBuilder {
 
   def build(clazz: Class[_], method: String): Action
 
-  def build(clazz: Class[_]): Seq[Action]
+  def build(clazz: Class[_]): Seq[Tuple2[Action, Method]]
 }
 
 trait Handler {
   def action: AnyRef
-  def handle(params:Map[String,Any]): Any
+  def handle(params: Map[String, Any]): Any
 }
 
 trait RequestMapper {
