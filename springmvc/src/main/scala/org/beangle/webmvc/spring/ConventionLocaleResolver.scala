@@ -15,8 +15,6 @@ class ConventionLocaleResolver extends LocaleResolver {
 
   override def setLocale(request: HttpServletRequest, response: HttpServletResponse, locale: ju.Locale): Unit = {
     val session = request.getSession(false)
-    if (null != session) {
-      session.setAttribute(ParamLocaleResolver.SessionAttribute, locale)
-    }
+    if (null != session) session.setAttribute(ParamLocaleResolver.SessionAttribute, locale)
   }
 }

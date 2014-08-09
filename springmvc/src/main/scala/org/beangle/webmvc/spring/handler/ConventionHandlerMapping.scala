@@ -50,19 +50,15 @@ class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetec
   }
 
   protected override def getHandlerInternal(request: HttpServletRequest): Object = {
-
     resolver.resolve(request) match {
       case Some(am) =>
         val rs = lookupHandler(am.url, request)
         if (null != rs) {
           val context = ActionContextBuilder.build(request, null)
           ContextHolder.contexts.set(context)
-        } else {
-          ContextHolder.contexts.remove()
         }
         rs
       case None =>
-        ContextHolder.contexts.remove()
         null
     }
 
