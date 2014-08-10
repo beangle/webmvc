@@ -1,19 +1,15 @@
 package org.beangle.webmvc.spring.handler
 
 import java.{ util => ju }
+
+import org.beangle.commons.lang.reflect.ClassInfo
+import org.beangle.webmvc.context.{ ActionContextBuilder, ContextHolder }
 import org.beangle.webmvc.route.{ ActionFinder, RouteService }
-import org.beangle.webmvc.route.impl.{ ActionMappings, HierarchicalUrlMapper }
+import org.beangle.webmvc.route.impl.{ ActionMappingBuilder, HierarchicalUrlMapper }
 import org.springframework.web.servlet.HandlerExecutionChain
 import org.springframework.web.servlet.handler.AbstractDetectingUrlHandlerMapping
+
 import javax.servlet.http.HttpServletRequest
-import org.springframework.beans.BeansException
-import org.beangle.webmvc.route.RequestMapper
-import org.beangle.webmvc.route.ActionMapping
-import org.beangle.webmvc.route.impl.MethodHandler
-import org.beangle.commons.lang.reflect.ClassInfo
-import org.beangle.webmvc.context.ActionContext
-import org.beangle.webmvc.context.ContextHolder
-import org.beangle.webmvc.context.ActionContextBuilder
 
 class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetectingUrlHandlerMapping {
 
@@ -41,7 +37,7 @@ class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetec
         case (action, method) =>
           val pattern = action.getUri('/')
           //FIXME namespace,actionName
-          resolver.add(ActionMapping(pattern, MethodHandler(bean, method), null, null, null))
+          resolver.add(ActionMappingBuilder.build(pattern, bean, method, null, null))
           patterns += pattern
       }
       patterns.toArray

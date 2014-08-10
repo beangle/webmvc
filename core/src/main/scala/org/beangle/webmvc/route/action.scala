@@ -3,7 +3,7 @@ package org.beangle.webmvc.route
 import java.net.URLEncoder
 
 import org.beangle.commons.lang.{ Objects, Strings }
-import Action._
+
 object Action {
   def to(clazz: Class[_]): Action = new Action(clazz, null)
 
@@ -64,11 +64,11 @@ class Action(val clazz: Class[_], var namespace: String, var name: String, var m
   }
 
   def this(url: String, method: String) {
-    this(null, if (url == null) null else parse(url)(0), if (url == null) null else parse(url)(1), method)
+    this(null, if (url == null) null else Action.parse(url)(0), if (url == null) null else Action.parse(url)(1), method)
   }
 
   def this(url: String, method: String, params: String) {
-    this(null, if (url == null) null else parse(url)(0), if (url == null) null else parse(url)(1), method)
+    this(null, if (url == null) null else Action.parse(url)(0), if (url == null) null else Action.parse(url)(1), method)
     this.params(params)
   }
 
@@ -122,7 +122,7 @@ class Action(val clazz: Class[_], var namespace: String, var name: String, var m
   }
 
   def path(path: String): Action = {
-    val data = parse(path)
+    val data = Action.parse(path)
     namespace = data(0)
     name = data(1)
     this
@@ -164,31 +164,3 @@ class Action(val clazz: Class[_], var namespace: String, var name: String, var m
 case class ActionMapping(url: String, handler: Handler, namespace: String, name: String, params: Map[String, Any]) {
   val isPattern = url.contains("{") || url.contains("*")
 }
-
-object ActionMapping {
-  /**
-   * /{project} etc.
-   */
-  @inline
-  def matcherName(name: String): String = {
-    if (name.charAt(0) == '{' && name.charAt(name.length - 1) == '}') "*" else name
-  }
-
-  def parse(pattern: String): Map[Integer, String] = {
-    var parts = Strings.split(pattern, "/")
-    var params = new collection.mutable.HashMap[Integer, String]
-    var i = 0
-    while (i < parts.length) {
-      val p = parts(i)
-      if (p.charAt(0) == '{' && p.charAt(p.length - 1) == '}') {
-        params.put(Integer.valueOf(i), p.substring(1, p.length - 1))
-      } else if (p == "*") {
-        params.put(Integer.valueOf(i), String.valueOf(i))
-      }
-      i += 1
-    }
-    params.toMap
-  }
-}
-
-

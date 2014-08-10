@@ -1,15 +1,12 @@
 package org.beangle.webmvc.route.impl
 
-import org.beangle.commons.lang.Strings.{ substringBeforeLast, unCamel, uncapitalize }
-import org.beangle.webmvc.annotation.action
-import org.beangle.webmvc.route.{ Action, ActionBuilder, Constants, RouteService }
-import org.beangle.webmvc.route.Profile
-import org.beangle.commons.lang.reflect.ClassInfo
-import org.beangle.webmvc.annotation.path
-import org.beangle.commons.lang.Strings
 import java.lang.reflect.Method
+
 import org.beangle.commons.lang.Arrays
-import org.beangle.webmvc.annotation.noaction
+import org.beangle.commons.lang.Strings.{ substringBeforeLast, unCamel, uncapitalize }
+import org.beangle.commons.lang.reflect.ClassInfo
+import org.beangle.webmvc.annotation.{ action, mapping, ignore }
+import org.beangle.webmvc.route.{ Action, ActionBuilder, Constants, Profile, RouteService }
 
 class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder {
 
@@ -34,8 +31,8 @@ class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder
         if (minfos.size == 1) {
           val method = minfos.head.method
           if (isActionMethod(method)) {
-            val ann = method.getAnnotation(classOf[path])
-            actions += Tuple2(new Action(clazz, result._1, result._2, (if (null != ann) ann.value() else methodName)).suffix(profile.uriSuffix), method)
+            val ann = method.getAnnotation(classOf[mapping])
+            actions += Tuple2(new Action(clazz, result._1.intern, result._2.intern, (if (null != ann) ann.value() else methodName)).suffix(profile.uriSuffix), method)
           }
         }
     }
@@ -45,9 +42,9 @@ class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder
   private def isActionMethod(method: Method): Boolean = {
     val methodName = method.getName
     if (methodName.startsWith("get") || methodName.startsWith("debug") || methodName.contains("$")) return false
-    if (null != method.getAnnotation(classOf[noaction])) return false
+    if (null != method.getAnnotation(classOf[ignore])) return false
     if (method.getParameterTypes.length == 0) return true
-    method.getParameterAnnotations().exists(annArray => !Arrays.isBlank(annArray))
+    (null != method.getAnnotation(classOf[mapping])) || method.getParameterAnnotations().exists(annArray => !Arrays.isBlank(annArray))
   }
 
   private def buildAction(clazz: Class[_], profile: Profile): Tuple2[String, String] = {

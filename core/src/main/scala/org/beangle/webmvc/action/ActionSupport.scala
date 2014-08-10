@@ -7,7 +7,7 @@ import scala.reflect.ClassTag
 import org.beangle.commons.lang.{ Chars, ClassLoaders, Strings }
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.{ CookieUtils, RequestUtils }
-import org.beangle.webmvc.annotation.noaction
+import org.beangle.webmvc.annotation.ignore
 import org.beangle.webmvc.context.{ ActionMessages, ContextHolder, Flash }
 import org.beangle.webmvc.helper.Params
 import org.beangle.webmvc.route.Action
@@ -102,7 +102,7 @@ class ActionSupport extends Logging {
   /**
    * 获得action消息<br>
    */
-  @noaction
+  @ignore
   protected final def actionMessages: List[String] = {
     val messages = ContextHolder.context.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
     if (null == messages) List()
@@ -112,14 +112,14 @@ class ActionSupport extends Logging {
   /**
    * 获得aciton错误消息<br>
    */
-  @noaction
+  @ignore
   protected final def actionErrors: List[String] = {
     val messages = ContextHolder.context.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
     if (null == messages) List()
     else messages.errors.toList
   }
 
-  @noaction
+  @ignore
   protected def remoteAddr: String = RequestUtils.getIpAddr(request)
 
   protected final def put(key: String, value: Any) {
@@ -186,10 +186,10 @@ class ActionSupport extends Logging {
     url
   }
 
-  @noaction
+  @ignore
   protected final def request: HttpServletRequest = ContextHolder.context.request
 
-  @noaction
+  @ignore
   protected final def response: HttpServletResponse = ContextHolder.context.response
 
 }

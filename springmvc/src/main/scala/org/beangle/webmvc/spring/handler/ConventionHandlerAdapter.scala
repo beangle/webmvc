@@ -25,8 +25,8 @@ class ConventionHandlerAdapter(routeService: RouteService) extends HandlerAdapte
       null
     } else {
       am.handler match {
-        case MethodHandler(action, method) =>
-          new ModelAndView(routeService.mapView(action.getClass.getName, DefaultViewMapper.defaultView(method.getName, result)), null)
+        case mh: MethodHandler =>
+          new ModelAndView(routeService.mapView(mh.action.getClass.getName, DefaultViewMapper.defaultView(mh.method.getName, result)), null)
         case _ => null
       }
     }

@@ -1,11 +1,11 @@
 package org.beangle.webmvc.spring
 
-import org.springframework.web.servlet.LocaleResolver
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpServletRequest
-import java.{ util => ju }
+import java.{util => ju}
+
 import org.beangle.webmvc.context.ParamLocaleResolver
-import java.util.Locale
+import org.springframework.web.servlet.LocaleResolver
+
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 class ConventionLocaleResolver extends LocaleResolver {
 

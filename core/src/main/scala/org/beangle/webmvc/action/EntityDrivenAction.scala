@@ -1,7 +1,6 @@
 package org.beangle.webmvc.action
 
 import java.{ util => ju }
-
 import org.beangle.commons.collection.Order
 import org.beangle.commons.config.property.PropertyConfig
 import org.beangle.commons.lang.Strings
@@ -199,16 +198,6 @@ class EntityDrivenAction extends EntityActionSupport {
     builder.orderBy(get(Order.OrderStr).get).limit(getPageLimit())
   }
 
-  final def getEntityName(): String = entityType.getName
-
-  protected def entityType: Class[_] = null
-
-  protected def getShortName(): String = {
-    val name = getEntityName()
-    if (Strings.isNotEmpty(name)) getCommandName(name)
-    else null
-  }
-
   protected def getModel[T](entityName: String, id: Serializable): Entity[T] = {
     entityDao.get(Class.forName(entityName).asInstanceOf, id)
   }
@@ -216,12 +205,4 @@ class EntityDrivenAction extends EntityActionSupport {
   protected def getModels(entityName: String, ids: Array[_]): List[_] = {
     entityDao.find(Class.forName(entityName).asInstanceOf, "id", ids).asInstanceOf[List[_]]
   }
-
-  /**
-   * replace EntityUtils.getCommandName(name)
-   */
-  private def getCommandName(entityName: String): String = {
-    Strings.uncapitalize(Strings.substringAfterLast(entityName, "."))
-  }
-
 }

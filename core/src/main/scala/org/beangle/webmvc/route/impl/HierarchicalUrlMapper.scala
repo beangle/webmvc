@@ -14,6 +14,7 @@ class HierarchicalUrlMapper extends RequestMapper {
 
   val DefaultMethod = "index"
   val MethodParam = "_method"
+  val httpMethods = Map(("GET", ""), ("POST", ""), ("PUT", "put"), ("DELETE", "delete"), ("HEAD", "head"))
 
   def add(mapping: ActionMapping): Unit = {
     mappings.add(mapping)
@@ -52,8 +53,9 @@ class HierarchicalUrlMapper extends RequestMapper {
   }
 
   private def determineMethod(request: HttpServletRequest, defaultMethod: String): String = {
-    val method = request.getParameter(MethodParam)
-    if (null == method) defaultMethod else method
+    var httpMethod = httpMethods(request.getMethod)
+    if ("" == httpMethod) httpMethod = request.getParameter(MethodParam)
+    if (null == httpMethod) defaultMethod else httpMethod
   }
 }
 
@@ -69,7 +71,7 @@ class ActionMappings {
   def add(pattern: String, mapping: ActionMapping, mappings: ActionMappings): Unit = {
     val slashIndex = pattern.indexOf('/', 1)
     val head = if (-1 == slashIndex) pattern.substring(1) else pattern.substring(1, slashIndex)
-    val headPattern = ActionMapping.matcherName(head)
+    val headPattern = ActionMappingBuilder.getMatcherName(head)
 
     if (-1 == slashIndex) {
       mappings.mappings.put(headPattern, mapping)

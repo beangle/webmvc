@@ -7,8 +7,9 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface path {
+public @interface mapping {
 
 	String value();
 
+	String method() default "";
 }

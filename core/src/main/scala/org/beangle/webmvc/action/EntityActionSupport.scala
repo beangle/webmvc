@@ -90,4 +90,21 @@ class EntityActionSupport extends ActionSupport {
   protected final def populateConditions(builder: OqlBuilder[_], exclusiveAttrNames: String) {
     QueryHelper.populateConditions(builder, exclusiveAttrNames);
   }
+
+  protected final def getEntityName(): String = getEntityType.getName
+
+  protected def getEntityType: Class[_] = null
+
+  protected def getShortName(): String = {
+    val name = getEntityName()
+    if (Strings.isNotEmpty(name)) getCommandName(name)
+    else null
+  }
+
+  /**
+   * replace EntityUtils.getCommandName(name)
+   */
+  private def getCommandName(entityName: String): String = {
+    Strings.uncapitalize(Strings.substringAfterLast(entityName, "."))
+  }
 }

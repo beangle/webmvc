@@ -10,7 +10,7 @@ import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.i18n.spi.TextBundleRegistry
 import org.beangle.commons.web.context.ServletContextHolder
-import org.beangle.webmvc.annotation.{ action, noaction, result, results }
+import org.beangle.webmvc.annotation.{ action, ignore, result, results }
 import org.beangle.webmvc.context.ActionContext
 import org.beangle.webmvc.route.{ Action, ActionFinder, ActionMapping, ContainerActionFinder, RequestMapper, RouteService }
 import org.beangle.webmvc.route.impl.{ DefaultViewMapper, HierarchicalUrlMapper, MethodHandler }
@@ -22,6 +22,7 @@ import com.opensymphony.xwork2.inject.Inject
 import com.opensymphony.xwork2.util.classloader.ReloadingClassLoader
 import com.opensymphony.xwork2.util.finder.{ ClassLoaderInterface, ClassLoaderInterfaceDelegate }
 import org.apache.struts2.views.freemarker.FreemarkerManager
+import org.beangle.webmvc.route.impl.ActionMappingBuilder
 
 /**
  * This class is a configuration provider for the XWork configuration system. This is really the
@@ -168,8 +169,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
   private def addAction2Mapper(action: Action, beanName: String, method: Method): Unit = {
     val pattern = action.getUri('/')
     val bean: Object = objectContainer.getBean(beanName).get
-    val mappingConfig = Map(ActionContext.URLParams -> ActionMapping.parse(pattern))
-    mapper.asInstanceOf[HierarchicalUrlMapper].add(ActionMapping(pattern, MethodHandler(bean, method), action.namespace, action.name, mappingConfig))
+    mapper.asInstanceOf[HierarchicalUrlMapper].add(ActionMappingBuilder.build(pattern, bean, method, action.namespace, action.name))
   }
 
   protected def getClassLoaderInterface(): ClassLoaderInterface = {
@@ -207,7 +207,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   protected def shouldGenerateResult(m: Method): Boolean = {
     if (classOf[String].equals(m.getReturnType()) && m.getParameterTypes.length == 0
-      && null == m.getAnnotation(classOf[noaction])) {
+      && null == m.getAnnotation(classOf[ignore])) {
       var name = m.getName().toLowerCase()
       !(name.startsWith("save") || name.startsWith("remove")
         || name.startsWith("export") || name.startsWith("import")
