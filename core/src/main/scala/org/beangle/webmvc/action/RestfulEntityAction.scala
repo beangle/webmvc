@@ -32,13 +32,13 @@ class RestfulEntityAction extends EntityActionSupport {
     forward()
   }
 
-  @mapping("{id}/delete")
+  @mapping(value = "{id}", method = "delete")
   def remove(@param("id") id: String): String = {
     null
   }
-  
-  @mapping("{id}/put")
-  def update(@param("id") id: String): String ={
+
+  @mapping(value = "{id}", method = "put")
+  def update(@param("id") id: String): String = {
     null
   }
 

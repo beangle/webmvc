@@ -1,7 +1,10 @@
 package org.beangle.webmvc.struts2.config
 
-import java.lang.reflect.{ Method, Modifier }
+import java.lang.reflect.Method
+
 import scala.collection.JavaConversions.seqAsJavaList
+
+import org.apache.struts2.views.freemarker.FreemarkerManager
 import org.beangle.commons.inject.{ Container, ContainerAware }
 import org.beangle.commons.io.IOs
 import org.beangle.commons.lang.{ ClassLoaders, Objects, Strings }
@@ -11,18 +14,16 @@ import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.i18n.spi.TextBundleRegistry
 import org.beangle.commons.web.context.ServletContextHolder
 import org.beangle.webmvc.annotation.{ action, ignore, result, results }
-import org.beangle.webmvc.context.ActionContext
 import org.beangle.webmvc.route.{ Action, ActionFinder, ActionMapping, ContainerActionFinder, RequestMapper, RouteService }
-import org.beangle.webmvc.route.impl.{ DefaultViewMapper, HierarchicalUrlMapper, MethodHandler }
-import org.beangle.webmvc.view.freemarker.{ Configurations, TemplateFinder, TemplateFinderByLoader }
+import org.beangle.webmvc.route.impl.{ DefaultViewMapper, HierarchicalUrlMapper, RequestMappingBuilder }
+import org.beangle.webmvc.view.freemarker.{ TemplateFinder, TemplateFinderByLoader }
+
 import com.opensymphony.xwork2.config.{ Configuration, ConfigurationException, PackageProvider }
 import com.opensymphony.xwork2.config.entities.{ ActionConfig, PackageConfig, ResultConfig }
 import com.opensymphony.xwork2.factory.ActionFactory
 import com.opensymphony.xwork2.inject.Inject
 import com.opensymphony.xwork2.util.classloader.ReloadingClassLoader
 import com.opensymphony.xwork2.util.finder.{ ClassLoaderInterface, ClassLoaderInterfaceDelegate }
-import org.apache.struts2.views.freemarker.FreemarkerManager
-import org.beangle.webmvc.route.impl.ActionMappingBuilder
 
 /**
  * This class is a configuration provider for the XWork configuration system. This is really the
@@ -142,10 +143,14 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
           name2Packages.put(key, pcb)
           // build all action to action mappings
           val classInfo = ClassInfo.get(actionClass)
-          routeService.buildActions(actionClass) foreach {
-            case (action, method) =>
-              addAction2Mapper(action, beanName, method)
-              if (action.method == "index") addAction2Mapper(action.method(null), beanName, method)
+          routeService.buildMappings(actionClass) foreach {
+            case (config, method) =>
+              addAction2Mapper(config, beanName, method)
+              if (method.getName() == "index" && method.getParameterTypes.length == 0
+                && config.httpMethod == null && config.url.endsWith("/index")) {
+                val indexUrl = Strings.substringAfterLast(config.url, "/index")
+                addAction2Mapper(new ActionMapping(config.httpMethod, indexUrl, config.namespace, config.name), beanName, method)
+              }
           }
         }
       }
@@ -166,10 +171,9 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     templateFinder = null
   }
 
-  private def addAction2Mapper(action: Action, beanName: String, method: Method): Unit = {
-    val pattern = action.getUri('/')
+  private def addAction2Mapper(action: ActionMapping, beanName: String, method: Method): Unit = {
     val bean: Object = objectContainer.getBean(beanName).get
-    mapper.asInstanceOf[HierarchicalUrlMapper].add(ActionMappingBuilder.build(pattern, bean, method, action.namespace, action.name))
+    mapper.asInstanceOf[HierarchicalUrlMapper].add(RequestMappingBuilder.build(action, bean, method))
   }
 
   protected def getClassLoaderInterface(): ClassLoaderInterface = {

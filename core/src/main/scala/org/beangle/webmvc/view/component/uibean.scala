@@ -62,7 +62,7 @@ class UIBean(context: ComponentContext) extends Component(context) {
   }
 
   protected final def render(uri: String): String = {
-    context.uriRender.render(ContextHolder.context.actionMapping, uri)
+    context.uriRender.render(ContextHolder.context.mapping.action, uri)
   }
 
   protected final def generateIdIfEmpty(): Unit = {

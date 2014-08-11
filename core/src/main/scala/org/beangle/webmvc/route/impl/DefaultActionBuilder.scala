@@ -18,68 +18,10 @@ class DefaultActionBuilder(val routeService: RouteService) extends ActionBuilder
    */
   override def build(clazz: Class[_], method: String): Action = {
     val profile = routeService.getProfile(clazz.getName)
-    val result = buildAction(clazz, profile)
+    val url = ActionURLBuilder.build(clazz, profile)
+    val lastSlash = url.lastIndexOf('/')
+    val result =Tuple2(url.substring(0, lastSlash), url.substring(lastSlash + 1))
+    //FIXME consider annotation
     new Action(clazz, result._1, result._2, if (null == method) profile.defaultMethod else method).suffix(profile.uriSuffix)
-  }
-
-  override def build(clazz: Class[_]): Seq[Tuple2[Action, Method]] = {
-    val profile = routeService.getProfile(clazz.getName)
-    val result = buildAction(clazz, profile)
-    val actions = new collection.mutable.ListBuffer[Tuple2[Action, Method]]
-    ClassInfo.get(clazz).methods foreach {
-      case (methodName, minfos) =>
-        if (minfos.size == 1) {
-          val method = minfos.head.method
-          if (isActionMethod(method)) {
-            val ann = method.getAnnotation(classOf[mapping])
-            actions += Tuple2(new Action(clazz, result._1.intern, result._2.intern, (if (null != ann) ann.value() else methodName)).suffix(profile.uriSuffix), method)
-          }
-        }
-    }
-    actions
-  }
-
-  private def isActionMethod(method: Method): Boolean = {
-    val methodName = method.getName
-    if (methodName.startsWith("get") || methodName.startsWith("debug") || methodName.contains("$")) return false
-    if (null != method.getAnnotation(classOf[ignore])) return false
-    if (method.getParameterTypes.length == 0) return true
-    (null != method.getAnnotation(classOf[mapping])) || method.getParameterAnnotations().exists(annArray => !Arrays.isBlank(annArray))
-  }
-
-  private def buildAction(clazz: Class[_], profile: Profile): Tuple2[String, String] = {
-    val className = clazz.getName
-    val profile = routeService.getProfile(className)
-    val ann = clazz.getAnnotation(classOf[action])
-    val sb = new StringBuilder()
-    // namespace
-    sb.append(profile.uriPath)
-
-    if (null == ann) {
-      if (Constants.SHORT_URI.equals(profile.uriPathStyle)) {
-        val simpleName = className.substring(className.lastIndexOf('.') + 1)
-        sb.append(uncapitalize(simpleName.substring(0, simpleName.length - profile.actionSuffix.length)))
-      } else if (Constants.SIMPLE_URI.equals(profile.uriPathStyle)) {
-        sb.append(profile.getInfix(className))
-      } else if (Constants.SEO_URI.equals(profile.uriPathStyle)) {
-        sb.append(unCamel(profile.getInfix(className)))
-      } else {
-        throw new RuntimeException("unsupported uri style " + profile.uriPathStyle)
-      }
-    } else {
-      val name = ann.value()
-      if (!name.startsWith("/")) {
-        if (Constants.SEO_URI == profile.uriPathStyle) {
-          sb.append(unCamel(substringBeforeLast(profile.getInfix(className), "/")) + "/" + name)
-        } else {
-          sb.append(name)
-        }
-      } else {
-        sb.append(name.substring(1))
-      }
-    }
-    val result = sb.toString
-    val lastSlash = result.lastIndexOf('/')
-    Tuple2(result.substring(0, lastSlash), result.substring(lastSlash + 1))
   }
 }

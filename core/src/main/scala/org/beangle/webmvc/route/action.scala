@@ -1,8 +1,8 @@
 package org.beangle.webmvc.route
 
 import java.net.URLEncoder
-
 import org.beangle.commons.lang.{ Objects, Strings }
+import java.lang.reflect.Method
 
 object Action {
   def to(clazz: Class[_]): Action = new Action(clazz, null)
@@ -161,6 +161,18 @@ class Action(val clazz: Class[_], var namespace: String, var name: String, var m
       .add("params", parameters).toString()
 }
 
-case class ActionMapping(url: String, handler: Handler, namespace: String, name: String, params: Map[String, Any]) {
+case class RequestMapping(action: ActionMapping, handler: Handler, params: Map[String, Any])
+
+class ActionMapping(val httpMethod: String, val url: String, val namespace: String, val name: String) {
   val isPattern = url.contains("{") || url.contains("*")
+}
+
+trait ActionBuilder {
+
+  def build(clazz: Class[_], method: String): Action
+}
+
+trait ActionMappingBuilder {
+
+  def build(clazz: Class[_]): Seq[Tuple2[ActionMapping, Method]]
 }

@@ -17,7 +17,7 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   val textResource = ContextHolder.context.textResource
 
-  def url(url: String) = context.uriRender.render(ContextHolder.context.actionMapping, url)
+  def url(url: String) = context.uriRender.render(ContextHolder.context.mapping.action, url)
 
   def now = new ju.Date
 

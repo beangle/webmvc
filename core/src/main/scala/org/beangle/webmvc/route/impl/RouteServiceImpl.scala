@@ -1,13 +1,14 @@
 package org.beangle.webmvc.route.impl
 
+import java.lang.reflect.Method
 import java.net.URL
 import java.{ util => ju }
+
 import org.beangle.commons.bean.PropertyUtils.{ copyProperty, getProperty }
 import org.beangle.commons.io.IOs
 import org.beangle.commons.lang.{ ClassLoaders, Strings }
 import org.beangle.commons.logging.Logging
-import org.beangle.webmvc.route.{ Action, Profile, RouteService }
-import java.lang.reflect.Method
+import org.beangle.webmvc.route.{ Action, ActionMapping, Profile, RouteService }
 
 object RouteServiceImpl extends Logging {
 
@@ -83,6 +84,7 @@ class RouteServiceImpl extends RouteService with Logging {
 
   val viewMapper = new DefaultViewMapper(this)
   val actionBuilder = new DefaultActionBuilder(this)
+  val actionMappingBuilder = new DefaultActionMappingBuilder(this)
 
   val profiles: List[Profile] = RouteServiceImpl.loadProfiles
 
@@ -120,8 +122,8 @@ class RouteServiceImpl extends RouteService with Logging {
     actionBuilder.build(clazz, method)
   }
 
-  def buildActions(clazz: Class[_]): Seq[Tuple2[Action, Method]] = {
-    actionBuilder.build(clazz)
+  def buildMappings(clazz: Class[_]): Seq[Tuple2[ActionMapping, Method]] = {
+    actionMappingBuilder.build(clazz)
   }
   /**
    * viewname -> 页面路径的映射

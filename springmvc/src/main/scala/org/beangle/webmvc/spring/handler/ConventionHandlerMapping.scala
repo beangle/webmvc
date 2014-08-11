@@ -1,11 +1,11 @@
 package org.beangle.webmvc.spring.handler
 
-import java.{ util => ju }
+import java.{util => ju}
 
 import org.beangle.commons.lang.reflect.ClassInfo
-import org.beangle.webmvc.context.{ ActionContextBuilder, ContextHolder }
-import org.beangle.webmvc.route.{ ActionFinder, RouteService }
-import org.beangle.webmvc.route.impl.{ ActionMappingBuilder, HierarchicalUrlMapper }
+import org.beangle.webmvc.context.{ActionContextBuilder, ContextHolder}
+import org.beangle.webmvc.route.{ActionFinder, RouteService}
+import org.beangle.webmvc.route.impl.{HierarchicalUrlMapper, RequestMappingBuilder}
 import org.springframework.web.servlet.HandlerExecutionChain
 import org.springframework.web.servlet.handler.AbstractDetectingUrlHandlerMapping
 
@@ -33,12 +33,10 @@ class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetec
     if (actionTest(bean.getClass.getName)) {
       val patterns = new collection.mutable.ListBuffer[String]
       val classInfo = ClassInfo.get(bean.getClass)
-      routeService.buildActions(bean.getClass).map {
+      routeService.buildMappings(bean.getClass).map {
         case (action, method) =>
-          val pattern = action.getUri('/')
-          //FIXME namespace,actionName
-          resolver.add(ActionMappingBuilder.build(pattern, bean, method, null, null))
-          patterns += pattern
+          resolver.add(RequestMappingBuilder.build(action, bean, method))
+          patterns += action.url
       }
       patterns.toArray
     } else null
@@ -47,7 +45,7 @@ class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetec
   protected override def getHandlerInternal(request: HttpServletRequest): Object = {
     resolver.resolve(request) match {
       case Some(am) =>
-        val rs = lookupHandler(am.url, request)
+        val rs = lookupHandler(am.action.url, request)
         if (null != rs) {
           val context = ActionContextBuilder.build(request, null)
           ContextHolder.contexts.set(context)

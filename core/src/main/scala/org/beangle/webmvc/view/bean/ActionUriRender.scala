@@ -12,7 +12,7 @@ import org.beangle.webmvc.route.ActionMapping
  * @since 2.4
  */
 trait ActionUriRender {
-  def render(mapping: ActionMapping, uri: String): String
+  def render(action: ActionMapping, uri: String): String
 }
 
 object DefaultActionUriRender {
@@ -32,9 +32,9 @@ class DefaultActionUriRender(suffix: String) extends ActionUriRender {
 
   val render = DefaultActionUriRender.buildUrlRender(suffix)
 
-  override def render(mapping: ActionMapping, uri: String): String = {
+  override def render(action: ActionMapping, uri: String): String = {
     val context = ContextHolder.context.request.getServletContext().getContextPath
-    val newUri = if (uri.charAt(0) == '!') mapping.name + "/" + uri.substring(1) else uri.replace('!', '/')
-    render.render(context, mapping.namespace + "/" + mapping.name, newUri)
+    val newUri = if (uri.charAt(0) == '!') action.name + "/" + uri.substring(1) else uri.replace('!', '/')
+    render.render(context, action.namespace + "/" + action.name, newUri)
   }
 }

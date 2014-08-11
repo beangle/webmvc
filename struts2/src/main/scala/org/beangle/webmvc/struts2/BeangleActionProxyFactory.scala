@@ -19,7 +19,7 @@ class BeangleActionProxyFactory extends DefaultActionProxyFactory {
     //when chain result invocated servletActionContext.actionMapping is not null
     if (null != ServletActionContext.getActionMapping()) {
       resolver.resolve(namespace + "/" + actionName + "/" + methodName) match {
-        case Some(m) => ContextHolder.context.actionMapping = m
+        case Some(m) => ContextHolder.context.mapping = m
         case None => throw new RuntimeException("Cannot find action mapping for $namespace $actionName $methodName")
       }
     }
@@ -32,7 +32,7 @@ class BeangleActionProxyFactory extends DefaultActionProxyFactory {
 class BeangleActionInvocation(extraContext: ju.Map[String, Object]) extends DefaultActionInvocation(extraContext, true) {
 
   protected override def invokeAction(action: Object, actionConfig: ActionConfig): String = {
-    val mapping = ContextHolder.context.actionMapping
+    val mapping = ContextHolder.context.mapping
     val result = String.valueOf(mapping.handler.handle(mapping.params))
     val resultCode = if (isEmpty(result)) "index"
 

@@ -8,7 +8,6 @@ import org.apache.struts2.dispatcher.multipart.MultiPartRequestWrapper
 import org.beangle.commons.lang.Arrays.{ isBlank, isEmpty }
 import org.beangle.webmvc.context.{ ActionContextBuilder, ContextHolder }
 import org.beangle.webmvc.route.RequestMapper
-import org.beangle.webmvc.route.impl.MethodHandler
 
 import com.opensymphony.xwork2.config.ConfigurationManager
 import com.opensymphony.xwork2.inject.Inject
@@ -31,14 +30,14 @@ class ConventionActionMapper extends DefaultActionMapper with ActionMapper {
           case mp: MultiPartRequestWrapper => ActionContextBuilder.build(request, response, m.params, getUploads(mp))
           case _ => ActionContextBuilder.build(request, response)
         }
-        context.actionMapping = m
+        context.mapping = m
         ContextHolder.contexts.set(context)
 
         val am = new ActionMapping()
         val params = m.params
-        am.setNamespace(m.namespace)
-        am.setName(m.name)
-        am.setMethod(m.handler.asInstanceOf[MethodHandler].method.getName)
+        am.setNamespace(m.action.namespace)
+        am.setName(m.action.name)
+        //am.setMethod(m.handler.asInstanceOf[MethodHandler].method.getName)
         am
       case None => null
     }

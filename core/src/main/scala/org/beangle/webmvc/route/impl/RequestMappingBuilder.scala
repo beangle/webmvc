@@ -7,10 +7,9 @@ import scala.Range
 import org.beangle.commons.lang.Strings
 import org.beangle.webmvc.annotation.param
 import org.beangle.webmvc.context.ActionContext
-import org.beangle.webmvc.route.ActionMapping
+import org.beangle.webmvc.route.{ ActionMapping, RequestMapping }
 
-object ActionMappingBuilder {
-
+object RequestMappingBuilder {
   /**
    * /{project} etc.
    */
@@ -35,19 +34,20 @@ object ActionMappingBuilder {
     params.toMap
   }
 
-  def build(pattern: String, bean: AnyRef, method: Method, namespace: String, name: String): ActionMapping = {
-    val urlParams = parse(pattern)
+  def build(action: ActionMapping, bean: AnyRef, method: Method): RequestMapping = {
+    val urlParams = parse(action.url)
     val urlPathNames = urlParams.keySet.toList.sorted.map { i => urlParams(i) }
 
     val annotationsList = method.getParameterAnnotations
     val paramNames = Range(0, annotationsList.length) map { i =>
       annotationsList(i).find { ann => ann.isInstanceOf[param] } match {
-        case Some(p) => p.asInstanceOf[param].value()
+        case Some(p) => p.asInstanceOf[param].value
         case None => urlPathNames(i)
       }
     }
-    if (method.getParameterTypes().length != paramNames.size) throw new RuntimeException("Cannot find enough param name,Using @mapping or @param")
-    ActionMapping(pattern, new MethodHandler(bean, method, paramNames.toArray), namespace, name, Map((ActionContext.URLParams, urlParams)))
-  }
 
+    if (method.getParameterTypes().length != paramNames.size) throw new RuntimeException("Cannot find enough param name,Using @mapping or @param")
+
+    RequestMapping(action, new MethodHandler(bean, method, paramNames.toArray), Map((ActionContext.URLParams, urlParams)))
+  }
 }

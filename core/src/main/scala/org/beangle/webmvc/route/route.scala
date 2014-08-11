@@ -37,7 +37,7 @@ trait RouteService {
    */
   def buildAction(clazz: Class[_], method: String = null): Action
 
-  def buildActions(clazz: Class[_]): Seq[Tuple2[Action, Method]]
+  def buildMappings(clazz: Class[_]): Seq[Tuple2[ActionMapping, Method]]
 
   /**
    * viewname -> 页面路径的映射
@@ -53,20 +53,13 @@ trait ViewMapper {
   def map(className: String, viewName: String): String
 }
 
-trait ActionBuilder {
-
-  def build(clazz: Class[_], method: String): Action
-
-  def build(clazz: Class[_]): Seq[Tuple2[Action, Method]]
-}
-
 trait Handler {
   def action: AnyRef
   def handle(params: Map[String, Any]): Any
 }
 
 trait RequestMapper {
-  def resolve(request: HttpServletRequest): Option[ActionMapping]
+  def resolve(request: HttpServletRequest): Option[RequestMapping]
 
-  def resolve(uri: String): Option[ActionMapping]
+  def resolve(uri: String): Option[RequestMapping]
 }

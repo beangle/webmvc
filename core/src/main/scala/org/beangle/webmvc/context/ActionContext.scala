@@ -1,11 +1,10 @@
 package org.beangle.webmvc.context
 
-import java.{ util => ju }
-import org.beangle.commons.lang.Locales
-import org.beangle.commons.text.i18n.TextResource
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.webmvc.route.ActionMapping
 import org.beangle.commons.collection.Collections
+import org.beangle.commons.text.i18n.TextResource
+import org.beangle.webmvc.route.RequestMapping
+
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 object ContextHolder {
   val contexts = new ThreadLocal[ActionContext]
@@ -13,7 +12,6 @@ object ContextHolder {
 }
 
 object ActionContext {
-//  val ActionMappingKey = "_action_mapping"
   val URLParams = "_url_params"
 }
 
@@ -22,7 +20,7 @@ class ActionContext(val request: HttpServletRequest, var response: HttpServletRe
   import ActionContext._
   var local = ParamLocaleResolver.resolve(request)
 
-  var actionMapping: ActionMapping = _
+  var mapping: RequestMapping = _
 
   private val temp = new collection.mutable.HashMap[String, Any]
 

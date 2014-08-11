@@ -1,30 +1,31 @@
 package org.beangle.webmvc.route.impl
 
-import java.{lang => jl}
+import java.{ lang => jl }
 
+import org.beangle.commons.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.context.ActionContext
-import org.beangle.webmvc.route.{ActionMapping, RequestMapper}
+import org.beangle.webmvc.route.{ RequestMapper, RequestMapping }
 
 import javax.servlet.http.HttpServletRequest
 
 class HierarchicalUrlMapper extends RequestMapper {
-  private val mappings = new ActionMappings
+  private val mappings = new RequestMappings
 
   val DefaultMethod = "index"
   val MethodParam = "_method"
-  val httpMethods = Map(("GET", ""), ("POST", ""), ("PUT", "put"), ("DELETE", "delete"), ("HEAD", "head"))
+  val httpMethods = Map((GET, ""), (POST, ""), (PUT, "put"), (DELETE, "delete"), (HEAD, "head"))
 
-  def add(mapping: ActionMapping): Unit = {
+  def add(mapping: RequestMapping): Unit = {
     mappings.add(mapping)
   }
 
-  def resolve(uri: String): Option[ActionMapping] = {
-    mappings.resolve(uri)
+  def resolve(uri: String): Option[RequestMapping] = {
+    mappings.resolve(GET, uri)
   }
 
-  def resolve(request: HttpServletRequest): Option[ActionMapping] = {
+  def resolve(request: HttpServletRequest): Option[RequestMapping] = {
     val uri = RequestUtils.getServletPath(request)
     var bangIdx, dotIdx = -1
     val lastSlashIdx = uri.lastIndexOf('/')
@@ -49,7 +50,7 @@ class HierarchicalUrlMapper extends RequestMapper {
         if (null != method && -1 == sb.indexOf(method, lastSlashIdx + 1)) sb.append('/').append(method)
       }
     }
-    mappings.resolve(sb.toString)
+    mappings.resolve(request.getMethod, sb.toString)
   }
 
   private def determineMethod(request: HttpServletRequest, defaultMethod: String): String = {
@@ -59,47 +60,52 @@ class HierarchicalUrlMapper extends RequestMapper {
   }
 }
 
-class ActionMappings {
-  val children = new collection.mutable.HashMap[String, ActionMappings]
-  val mappings = new collection.mutable.HashMap[String, ActionMapping]
+class RequestMappings {
+  val children = new collection.mutable.HashMap[String, RequestMappings]
+  val mappings = new collection.mutable.HashMap[String, RequestMapping]
 
-  def add(mapping: ActionMapping): Unit = {
-    if (mapping.isPattern) add(mapping.url, mapping, this)
-    else mappings.put(mapping.url, mapping)
+  def add(mapping: RequestMapping): Unit = {
+    if (mapping.action.isPattern) add(mapping.action.url, mapping, this)
+    else mappings.put(mapping.action.url, mapping)
   }
 
-  def add(pattern: String, mapping: ActionMapping, mappings: ActionMappings): Unit = {
+  def add(pattern: String, mapping: RequestMapping, mappings: RequestMappings): Unit = {
     val slashIndex = pattern.indexOf('/', 1)
     val head = if (-1 == slashIndex) pattern.substring(1) else pattern.substring(1, slashIndex)
-    val headPattern = ActionMappingBuilder.getMatcherName(head)
+    val headPattern = RequestMappingBuilder.getMatcherName(head)
 
     if (-1 == slashIndex) {
       mappings.mappings.put(headPattern, mapping)
     } else {
-      add(pattern.substring(slashIndex), mapping, mappings.children.getOrElseUpdate(headPattern, new ActionMappings))
+      add(pattern.substring(slashIndex), mapping, mappings.children.getOrElseUpdate(headPattern, new RequestMappings))
     }
   }
 
-  def resolve(uri: String): Option[ActionMapping] = {
+  def resolve(httpMethod: String, uri: String): Option[RequestMapping] = {
     val directMapping = mappings.get(uri)
     if (None != directMapping) return directMapping
 
     val parts = Strings.split(uri, '/')
-    find(0, parts, this) match {
+    val result = find(0, parts, this)
+    result match {
       case Some(m) =>
-        if (m.isPattern) {
-          val urlParams = new collection.mutable.HashMap[String, String]
-          m.params(ActionContext.URLParams).asInstanceOf[Map[Integer, String]] foreach {
-            case (k, v) =>
-              urlParams.put(v, parts(k))
-          }
-          Some(ActionMapping(m.url, m.handler, m.namespace, m.name, m.params ++ urlParams))
-        } else Some(m)
+        val action = m.action
+        if (null != action.httpMethod && action.httpMethod != httpMethod) None
+        else {
+          if (action.isPattern) {
+            val urlParams = new collection.mutable.HashMap[String, String]
+            m.params(ActionContext.URLParams).asInstanceOf[Map[Integer, String]] foreach {
+              case (k, v) =>
+                urlParams.put(v, parts(k))
+            }
+            Some(RequestMapping(action, m.handler, m.params ++ urlParams))
+          } else result
+        }
       case None => None
     }
   }
 
-  def find(index: Int, parts: Array[String], mappings: ActionMappings): Option[ActionMapping] = {
+  def find(index: Int, parts: Array[String], mappings: RequestMappings): Option[RequestMapping] = {
     if (index < parts.length && null != mappings) {
       if (index == parts.length - 1) {
         val mapping = mappings.mappings.get(parts(index))
