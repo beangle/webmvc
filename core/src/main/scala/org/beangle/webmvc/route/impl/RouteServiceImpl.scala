@@ -3,12 +3,12 @@ package org.beangle.webmvc.route.impl
 import java.lang.reflect.Method
 import java.net.URL
 import java.{ util => ju }
-
 import org.beangle.commons.bean.PropertyUtils.{ copyProperty, getProperty }
 import org.beangle.commons.io.IOs
 import org.beangle.commons.lang.{ ClassLoaders, Strings }
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.route.{ Action, ActionMapping, Profile, RouteService }
+import org.beangle.webmvc.route.StrutsAction
 
 object RouteServiceImpl extends Logging {
 
@@ -83,9 +83,7 @@ object RouteServiceImpl extends Logging {
 class RouteServiceImpl extends RouteService with Logging {
 
   val viewMapper = new DefaultViewMapper(this)
-  val actionBuilder = new DefaultActionBuilder(this)
   val actionMappingBuilder = new DefaultActionMappingBuilder(this)
-
   val profiles: List[Profile] = RouteServiceImpl.loadProfiles
 
   // 匹配缓存[String,Profile]
@@ -116,10 +114,17 @@ class RouteServiceImpl extends RouteService with Logging {
     getProfile(clazz.getName())
   }
   /**
-   * 默认类名对应的控制器名称(含有扩展名)
+   * 根据class对应的profile获得ctl/action类中除去后缀后的名字。<br>
+   * 如果对应profile中是uriStyle,那么类中只保留简单类名，去掉后缀，并且小写第一个字母。<br>
+   * 否则加上包名，其中的.编成URI路径分割符。包名不做其他处理。<br>
+   * 复杂URL,以/开始
    */
-  def buildAction(clazz: Class[_], method: String = null): Action = {
-    actionBuilder.build(clazz, method)
+  def buildAction(clazz: Class[_]): StrutsAction = {
+    val profile = getProfile(clazz.getName)
+    val url = ActionURIBuilder.build(clazz, profile)
+    val lastSlash = url.lastIndexOf('/')
+    val result = Tuple2(url.substring(0, lastSlash), url.substring(lastSlash + 1))
+    new StrutsAction(result._1, result._2, profile.defaultMethod)
   }
 
   def buildMappings(clazz: Class[_]): Seq[Tuple2[ActionMapping, Method]] = {

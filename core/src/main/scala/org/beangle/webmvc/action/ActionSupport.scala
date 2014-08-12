@@ -58,11 +58,17 @@ class ActionSupport extends Logging {
     forward(action)
   }
 
-  protected final def redirect(method: String, message: String, params: String): String = redirect(new Action(null: String, method, params), message)
+  protected final def redirect(method: String, message: String, params: String): String = {
+    redirect(Action(this, method, params), message)
+  }
 
-  protected final def redirect(method: String): String = redirect(new Action(method), null)
+  protected final def redirect(method: String): String = {
+    redirect(Action(this, method), null)
+  }
 
-  protected final def redirect(method: String, message: String): String = redirect(new Action(method), message)
+  protected final def redirect(method: String, message: String): String = {
+    redirect(Action(this,method), message)
+  }
 
   protected final def redirect(action: Action, message: String): String = {
     if (Strings.isNotEmpty(message)) addFlashMessage(message)

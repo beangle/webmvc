@@ -13,7 +13,7 @@ class DefaultActionMappingBuilder(val routeService: RouteService) extends Action
 
   override def build(clazz: Class[_]): Seq[Tuple2[ActionMapping, Method]] = {
     val profile = routeService.getProfile(clazz.getName)
-    val result = ActionURLBuilder.build(clazz, profile)
+    val result = ActionURIBuilder.build(clazz, profile)
     val lastSlash = result.lastIndexOf('/')
     val namespace = result.substring(0, lastSlash).intern()
     val name = result.substring(lastSlash + 1).intern()

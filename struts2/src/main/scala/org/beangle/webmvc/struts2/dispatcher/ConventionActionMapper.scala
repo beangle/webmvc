@@ -28,7 +28,7 @@ class ConventionActionMapper extends DefaultActionMapper with ActionMapper {
         val response = ServletActionContext.getResponse
         val context = request match {
           case mp: MultiPartRequestWrapper => ActionContextBuilder.build(request, response, m.params, getUploads(mp))
-          case _ => ActionContextBuilder.build(request, response)
+          case _ => ActionContextBuilder.build(request, response,m.params)
         }
         context.mapping = m
         ContextHolder.contexts.set(context)

@@ -14,7 +14,7 @@ import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.i18n.spi.TextBundleRegistry
 import org.beangle.commons.web.context.ServletContextHolder
 import org.beangle.webmvc.annotation.{ action, ignore, result, results }
-import org.beangle.webmvc.route.{ Action, ActionFinder, ActionMapping, ContainerActionFinder, RequestMapper, RouteService }
+import org.beangle.webmvc.route.{ ActionFinder, ActionMapping, ContainerActionFinder, RequestMapper, RouteService, StrutsAction }
 import org.beangle.webmvc.route.impl.{ DefaultViewMapper, HierarchicalUrlMapper, RequestMappingBuilder }
 import org.beangle.webmvc.view.freemarker.{ TemplateFinder, TemplateFinderByLoader }
 
@@ -190,7 +190,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   protected def isReloadEnabled(): Boolean = devMode == "true"
 
-  protected def createActionConfig(pkgCfg: PackageConfig.Builder, action: Action, actionClass: Class[_], beanName: String): Boolean = {
+  protected def createActionConfig(pkgCfg: PackageConfig.Builder, action: StrutsAction, actionClass: Class[_], beanName: String): Boolean = {
     var actionConfig = new ActionConfig.Builder(pkgCfg.getName(), action.name, beanName)
     actionConfig.methodName(action.method)
     var actionName = action.name
@@ -264,7 +264,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     configs
   }
 
-  protected def buildPackageConfig(actionClass: Class[_], action: Action, packageConfigs: collection.mutable.Map[String, PackageConfig.Builder]): PackageConfig.Builder = {
+  protected def buildPackageConfig(actionClass: Class[_], action: StrutsAction, packageConfigs: collection.mutable.Map[String, PackageConfig.Builder]): PackageConfig.Builder = {
     // 循环查找父包
     var actionPkg = actionClass.getPackage.getName
     var parentPkg: PackageConfig = null

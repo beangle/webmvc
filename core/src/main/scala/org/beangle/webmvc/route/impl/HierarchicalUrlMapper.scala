@@ -12,7 +12,7 @@ import scala.collection.mutable
 
 class HierarchicalUrlMapper extends RequestMapper {
   private val mappings = new RequestMappings
-  private val reverseMappings = new collection.mutable.HashMap[Class[_], mutable.Map[String, ActionMapping]]
+  private val reverseMappings = new collection.mutable.HashMap[Class[_], mutable.Map[String, RequestMapping]]
 
   val DefaultMethod = "index"
   val MethodParam = "_method"
@@ -20,9 +20,16 @@ class HierarchicalUrlMapper extends RequestMapper {
 
   def add(mapping: RequestMapping): Unit = {
     val action = mapping.action
-    val methodMappings = reverseMappings.getOrElseUpdate(action.clazz, new mutable.HashMap[String, ActionMapping])
-    methodMappings.put(action.method, action)
+    val methodMappings = reverseMappings.getOrElseUpdate(action.clazz, new mutable.HashMap[String, RequestMapping])
+    methodMappings.put(action.method, mapping)
     mappings.add(mapping)
+  }
+
+  def antiResolve(clazz: Class[_], method: String): Option[RequestMapping] = {
+    reverseMappings.get(clazz) match {
+      case Some(methodMappings) => methodMappings.get(method)
+      case None => None
+    }
   }
 
   def resolve(uri: String): Option[RequestMapping] = {
@@ -105,7 +112,7 @@ class RequestMappings {
               case (k, v) =>
                 urlParams.put(v, parts(k))
             }
-            Some(RequestMapping(action, m.handler, m.params ++ urlParams))
+            Some(new RequestMapping(action, m.handler, urlParams))
           } else result
         }
       case None => None

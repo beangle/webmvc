@@ -1,21 +1,23 @@
 package org.beangle.webmvc.struts2
 
 import scala.collection.JavaConversions.{ asScalaSet, mapAsJavaMap, mapAsScalaMap }
+
 import org.apache.struts2.ServletActionContext
 import org.apache.struts2.dispatcher.ServletRedirectResult
 import org.apache.struts2.views.freemarker.FreemarkerManager
-import org.beangle.commons.lang.Strings.{ contains, isBlank, isEmpty, isNotEmpty, substringAfter, substringBefore }
+import org.beangle.commons.lang.Strings.{ contains, isEmpty, isNotEmpty, substringAfter, substringBefore }
 import org.beangle.commons.web.util.RequestUtils.getServletPath
 import org.beangle.webmvc.context.ContextHolder
-import org.beangle.webmvc.route.{ Action, RouteService }
+import org.beangle.webmvc.route.{ Action, ClassAction, RequestMapper, RequestMapping, RouteService, StrutsAction, URIAction }
 import org.beangle.webmvc.route.impl.DefaultViewMapper
 import org.beangle.webmvc.view.freemarker.TemplateFinderByConfig
+
 import com.opensymphony.xwork2.{ ActionContext, ObjectFactory, Result, UnknownHandler, XWorkException }
 import com.opensymphony.xwork2.config.Configuration
 import com.opensymphony.xwork2.config.entities.{ ActionConfig, ResultConfig, ResultTypeConfig }
 import com.opensymphony.xwork2.inject.Inject
+
 import javax.servlet.http.HttpServletRequest
-import org.beangle.webmvc.route.RequestMapper
 
 /**
  * 实现action到result之间的路由和处理<br>
@@ -81,21 +83,16 @@ class ConventionResultHandler extends UnknownHandler {
       val prefix = substringBefore(newResultCode, ":")
       cfg = resultTypeConfigs(prefix)
       if (prefix.startsWith("chain")) {
-        val action = buildAction(substringAfter(newResultCode, ":"))
+        val action = buildAction(substringAfter(newResultCode, ":"), true)
         val params = buildResultParams(path, cfg)
         addNamespaceAction(action, params)
         if (isNotEmpty(action.method)) params.put("method", action.method)
-
-        resolver.resolve(action.namespace + "/" + action.name + "/" + action.method) match {
-          case Some(m) => ContextHolder.context.mapping = m
-          case None => throw new RuntimeException("Cannot find action mapping for $namespace $actionName $methodName")
-        }
 
         buildResult(newResultCode, cfg, context, params)
       } else if (prefix.startsWith("redirect")) {
         val targetResource = substringAfter(newResultCode, ":")
         if (contains(targetResource, ':')) { return new ServletRedirectResult(targetResource) }
-        val action = buildAction(targetResource)
+        val action = buildAction(targetResource, false)
 
         // add special param and ajax tag for redirect
         val request: HttpServletRequest = ServletActionContext.getRequest()
@@ -134,26 +131,43 @@ class ConventionResultHandler extends UnknownHandler {
   /**
    * 依据跳转路径进行构建
    */
-  private def buildAction(path: String): Action = {
-    val dispatch: Object = ContextHolder.context.temp("dispatch_action")
-    dispatch match {
+  private def buildAction(path: String, forward: Boolean): StrutsAction = {
+    var mapping: RequestMapping = null
+    val action = ContextHolder.context.temp[Object]("dispatch_action") match {
       case action: Action => {
-        if (null != action.clazz) {
-          val newAction = routeService.buildAction(action.clazz)
-          action.name = newAction.name
-          action.namespace = newAction.namespace
+        action match {
+          case ca: ClassAction => resolver.antiResolve(ca.clazz, ca.method) match {
+            case Some(rm) =>
+              mapping = rm
+              if (forward) new StrutsAction(rm.action.namespace, rm.action.name, rm.action.method).params(ca.parameters)
+              else {
+                val ua = new URIAction(rm.action.fill(ContextHolder.context.params ++ ca.parameters)).toStruts
+                ca.parameters --= rm.action.urlParamNames.values
+                ua.params(ca.parameters)
+              }
+            case None => throw new RuntimeException("Cannot find action mapping for $namespace $actionName $methodName")
+          }
+          case ua: URIAction => ua.toStruts
+          case sa: StrutsAction => sa
         }
-        if (isBlank(action.name)) action.path(getServletPath(ServletActionContext.getRequest()))
-        action
       }
       case _ => {
-        val newPath = if (path.startsWith("?")) getServletPath(ServletActionContext.getRequest()) + path else path
-        new Action(newPath, null)
+        Action(if (path.startsWith("?")) getServletPath(ServletActionContext.getRequest()) + path else path).toStruts
       }
     }
+    if (forward) {
+      if (null == mapping) {
+        resolver.resolve(action.uri) match {
+          case Some(m) => mapping = m
+          case None => throw new RuntimeException("Cannot find action mapping for $namespace $actionName $methodName")
+        }
+      }
+      ContextHolder.context.mapping = mapping
+    }
+    action
   }
 
-  private def addNamespaceAction(action: Action, params: collection.mutable.Map[String, String]) {
+  private def addNamespaceAction(action: StrutsAction, params: collection.mutable.Map[String, String]) {
     params.put("namespace", action.namespace)
     params.put("actionName", action.name)
   }

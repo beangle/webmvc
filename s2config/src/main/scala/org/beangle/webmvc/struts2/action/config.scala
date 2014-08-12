@@ -49,7 +49,7 @@ class ConfigAction extends ActionSupport {
   }
 
   def index(): String = {
-    return forward(new Action(this, "actions"))
+    return forward(Action(this, "actions"))
   }
 
   def actions(): String = {

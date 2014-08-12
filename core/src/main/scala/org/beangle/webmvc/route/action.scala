@@ -5,110 +5,57 @@ import org.beangle.commons.lang.{ Objects, Strings }
 import java.lang.reflect.Method
 
 object Action {
-  def to(clazz: Class[_]): Action = new Action(clazz, null)
+  def apply(clazz: Class[_], method: String = "index"): ClassAction = {
+    new ClassAction(clazz, method)
+  }
 
-  def to(obj: Object): Action = new Action(obj, null)
+  def apply(obj: Object, method: String): ClassAction = {
+    new ClassAction(obj.getClass, method)
+  }
 
-  def parse(path: String): Array[String] = {
-    var endIndex = path.length()
-    var i = endIndex - 1
-    var actionIndex = 0
-    var flag = false
-    while (i > -1 && !flag) {
-      var c = path.charAt(i)
-      if (c == '.' || c == '!') {
-        endIndex = i
-      } else if (c == '/') {
-        actionIndex = i + 1
-        flag = true
-      }
-      i -= 1
-    }
-    var namespace: String = null
-    if (actionIndex < 2) {
-      namespace = "/"
-    } else {
-      namespace = path.substring(0, actionIndex - 1)
-      if (namespace.charAt(0) != '/') {
-        namespace = "/" + namespace
-      }
-    }
-    val actionName = path.substring(actionIndex, endIndex)
-    Array(namespace, actionName)
+  def apply(clazz: Class[_], method: String, params: String): ClassAction = {
+    new ClassAction(clazz, method).params(params)
+  }
+
+  def apply(obj: Object, method: String, params: String): ClassAction = {
+    new ClassAction(obj.getClass, method).params(params)
+  }
+
+  def apply(uri: String, params: String): URIAction = {
+    new URIAction(uri).params(params)
+  }
+
+  def apply(uri: String): URIAction = {
+    new URIAction(uri)
   }
 }
 
-class Action(val clazz: Class[_], var namespace: String, var name: String, var method: String) {
-
-  var path: String = _
-
+trait Action {
   var suffix: String = _
-
   val parameters = new collection.mutable.HashMap[String, String]
+  def uri: String
 
-  def this(method: String) {
-    this(null, null, null, method)
-  }
-
-  def this(ctlObj: Object, method: String) {
-    this(if (ctlObj != null) ctlObj.getClass() else null, null, null, method)
-  }
-
-  def this(clazz: Class[_], method: String) {
-    this(clazz, null, null, method)
-  }
-
-  def this(clazz: Class[_], method: String, params: String) {
-    this(clazz, null, null, method)
-    this.params(params)
-  }
-
-  //FIXME use factory
-  def this(url: String, method: String) {
-    this(null, if (url == null) null else Action.parse(url)(0), if (url == null) null else Action.parse(url)(1), method)
-  }
-
-  def this(url: String, method: String, params: String) {
-    this(null, if (url == null) null else Action.parse(url)(0), if (url == null) null else Action.parse(url)(1), method)
-    this.params(params)
-  }
-
-  def name(name: String): Action = {
-    this.name = name
-    this
-  }
-
-  def namespace(namespace: String): Action = {
-    this.namespace = namespace
-    this
-  }
-
-  def method(method: String): Action = {
-    this.method = method
-    this
-  }
-
-  def suffix(suffix: String): Action = {
+  def suffix(suffix: String): this.type = {
     this.suffix = suffix
     this
   }
 
-  def param(key: String, value: String): Action = {
+  def param(key: String, value: String): this.type = {
     parameters.put(key, value)
     this
   }
 
-  def param(key: String, obj: Object): Action = {
+  def param(key: String, obj: Object): this.type = {
     parameters.put(key, String.valueOf(obj))
     this
   }
 
-  def params(newParams: collection.Map[String, String]): Action = {
+  def params(newParams: collection.Map[String, String]): this.type = {
     parameters ++= newParams
     this
   }
 
-  def params(paramStr: String): Action = {
+  def params(paramStr: String): this.type = {
     if (Strings.isNotEmpty(paramStr)) {
       val paramPairs = Strings.split(paramStr, "&")
       for (paramPair <- paramPairs) {
@@ -122,22 +69,9 @@ class Action(val clazz: Class[_], var namespace: String, var name: String, var m
     this
   }
 
-  def path(path: String): Action = {
-    val data = Action.parse(path)
-    namespace = data(0)
-    name = data(1)
-    this
-  }
-
-  def getUri(methodSeparator: Char = '!'): String = {
-    val buf = new StringBuilder(25)
-    if (null == namespace || namespace.length() == 1) buf.append('/')
-    else buf.append(namespace).append('/')
-
-    if (null != name) buf.append(name)
-    if (Strings.isNotEmpty(method)) buf.append(methodSeparator).append(method)
+  def url: String = {
+    val buf = new StringBuilder(uri)
     if (null != suffix) buf.append(suffix)
-
     if (null != parameters && parameters.size > 0) {
       var first = true
       for ((key, value) <- parameters) {
@@ -156,16 +90,70 @@ class Action(val clazz: Class[_], var namespace: String, var name: String, var m
     }
     return buf.toString()
   }
-
-  override def toString(): String =
-    Objects.toStringBuilder(this).add("namespace", namespace).add("name", name).add("method", method)
-      .add("params", parameters).toString()
 }
 
-case class RequestMapping(action: ActionMapping, handler: Handler, params: Map[String, Any])
+class ClassAction(val clazz: Class[_], val method: String) extends Action {
+  var uri: String = _
+}
+
+class StrutsAction(val namespace: String, val name: String, val method: String, val path: String = null) extends Action {
+  val uri = if (null == path) buildUri() else path
+
+  def buildUri(): String = {
+    val buf = new StringBuilder(40)
+    if (null == namespace || namespace.length() == 1) buf.append('/')
+    else buf.append(namespace).append('/')
+
+    if (null != name) buf.append(name)
+    if (Strings.isNotEmpty(method)) buf.append('/').append(method)
+    buf.toString
+  }
+}
+
+class URIAction(val uri: String) extends Action {
+
+  def toStruts: StrutsAction = {
+    var endIndex = uri.length
+    var actionIndex = 0
+    var bandIndex = -1 //!
+    var nonSlash = true
+    var i = endIndex - 1
+    while (i > -1 && nonSlash) {
+      uri.charAt(i) match {
+        case '.' => endIndex = i
+        case '!' =>
+          endIndex = i; bandIndex = i
+        case '/' =>
+          actionIndex = i + 1; nonSlash = false
+        case _ =>
+      }
+      i -= 1
+    }
+    val namespace = if (actionIndex < 2) "/" else uri.substring(0, actionIndex - 1)
+    val actionName = uri.substring(actionIndex, endIndex)
+    val methodName = if (bandIndex > 0) uri.substring(bandIndex, endIndex) else null
+    val sa = new StrutsAction(namespace, actionName, methodName)
+    sa.params(parameters)
+    sa.suffix = suffix
+    sa
+  }
+}
+
+class RequestMapping(val action: ActionMapping, val handler: Handler, val params: collection.Map[String, Any])
 
 class ActionMapping(val httpMethod: String, val url: String, val clazz: Class[_], val method: String, val paramNames: Array[String], val urlParamNames: Map[Integer, String], val namespace: String, val name: String) {
   val isPattern = url.contains("{") || url.contains("*")
+
+  def fill(params: collection.Map[String, Any]): String = {
+    if (!isPattern) return url
+    val result = url
+    val parts = Strings.split(url, '/')
+    urlParamNames foreach {
+      case (index, name) =>
+        parts(index) = String.valueOf(params(name))
+    }
+    "/" + Strings.join(parts, "/")
+  }
 
   override def toString: String = {
     (if (null == httpMethod) "*" else httpMethod) + " " + url + " " + clazz.getName + "." +

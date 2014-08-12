@@ -4,7 +4,7 @@ import org.beangle.commons.lang.Strings.{ substringBeforeLast, unCamel, uncapita
 import org.beangle.webmvc.annotation.action
 import org.beangle.webmvc.route.{ Constants, Profile }
 
-object ActionURLBuilder {
+object ActionURIBuilder {
   
   def build(clazz: Class[_], profile: Profile): String = {
     val className = clazz.getName

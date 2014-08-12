@@ -19,6 +19,6 @@ object RequestMappingBuilder {
   }
 
   def build(action: ActionMapping, bean: AnyRef, method: Method): RequestMapping = {
-    RequestMapping(action, new MethodHandler(bean, method), Map.empty)
+    new RequestMapping(action, new MethodHandler(bean, method), Map.empty)
   }
 }

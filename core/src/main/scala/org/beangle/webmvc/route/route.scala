@@ -31,11 +31,10 @@ trait RouteService {
 
   def viewMapper: ViewMapper
 
-  def actionBuilder: ActionBuilder
   /**
    * 默认类名对应的控制器名称(含有扩展名)
    */
-  def buildAction(clazz: Class[_], method: String = null): Action
+  def buildAction(clazz: Class[_]): StrutsAction
 
   def buildMappings(clazz: Class[_]): Seq[Tuple2[ActionMapping, Method]]
 
@@ -55,11 +54,14 @@ trait ViewMapper {
 
 trait Handler {
   def action: AnyRef
-  def handle(mapping: ActionMapping, params: Map[String, Any]): Any
+  def handle(mapping: ActionMapping): Any
 }
 
 trait RequestMapper {
   def resolve(request: HttpServletRequest): Option[RequestMapping]
 
+  def antiResolve(clazz: Class[_], method: String): Option[RequestMapping]
+
   def resolve(uri: String): Option[RequestMapping]
+
 }
