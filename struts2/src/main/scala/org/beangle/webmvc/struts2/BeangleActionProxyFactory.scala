@@ -33,7 +33,7 @@ class BeangleActionInvocation(extraContext: ju.Map[String, Object]) extends Defa
 
   protected override def invokeAction(action: Object, actionConfig: ActionConfig): String = {
     val mapping = ContextHolder.context.mapping
-    val result = String.valueOf(mapping.handler.handle(mapping.params))
+    val result = String.valueOf(mapping.handler.handle(mapping.action, mapping.params))
     val resultCode = if (isEmpty(result)) "index"
 
     val viewName = DefaultViewMapper.defaultView(mapping.handler.asInstanceOf[MethodHandler].method.getName, result)

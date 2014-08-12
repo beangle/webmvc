@@ -20,15 +20,11 @@ class ConventionHandlerAdapter(routeService: RouteService) extends HandlerAdapte
 
   override def handle(request: HttpServletRequest, response: HttpServletResponse, handler: Object): ModelAndView = {
     val am = ContextHolder.context.mapping
-    val result = String.valueOf(am.handler.handle(am.params))
+    val result = String.valueOf(am.handler.handle(am.action, am.params))
     if (Strings.contains(result, ":")) {
       null
     } else {
-      am.handler match {
-        case mh: MethodHandler =>
-          new ModelAndView(routeService.mapView(mh.action.getClass.getName, DefaultViewMapper.defaultView(mh.method.getName, result)), null)
-        case _ => null
-      }
+      new ModelAndView(routeService.mapView(am.action.clazz.getName, DefaultViewMapper.defaultView(am.action.method, result)), null)
     }
   }
 

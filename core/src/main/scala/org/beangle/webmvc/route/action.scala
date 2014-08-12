@@ -63,6 +63,7 @@ class Action(val clazz: Class[_], var namespace: String, var name: String, var m
     this.params(params)
   }
 
+  //FIXME use factory
   def this(url: String, method: String) {
     this(null, if (url == null) null else Action.parse(url)(0), if (url == null) null else Action.parse(url)(1), method)
   }
@@ -163,8 +164,13 @@ class Action(val clazz: Class[_], var namespace: String, var name: String, var m
 
 case class RequestMapping(action: ActionMapping, handler: Handler, params: Map[String, Any])
 
-class ActionMapping(val httpMethod: String, val url: String, val namespace: String, val name: String) {
+class ActionMapping(val httpMethod: String, val url: String, val clazz: Class[_], val method: String, val paramNames: Array[String], val urlParamNames: Map[Integer, String], val namespace: String, val name: String) {
   val isPattern = url.contains("{") || url.contains("*")
+
+  override def toString: String = {
+    (if (null == httpMethod) "*" else httpMethod) + " " + url + " " + clazz.getName + "." +
+      method + "(" + Strings.join(paramNames, ",") + ") " + namespace + "(" + name + ")"
+  }
 }
 
 trait ActionBuilder {

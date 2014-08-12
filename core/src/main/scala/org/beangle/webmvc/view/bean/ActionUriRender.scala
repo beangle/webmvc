@@ -4,6 +4,7 @@ import org.beangle.commons.lang.Strings
 import org.beangle.commons.web.url.UrlRender
 import org.beangle.webmvc.context.ContextHolder
 import org.beangle.webmvc.route.ActionMapping
+import org.beangle.commons.lang.time.Stopwatch
 
 /**
  * Url render
@@ -34,7 +35,8 @@ class DefaultActionUriRender(suffix: String) extends ActionUriRender {
 
   override def render(action: ActionMapping, uri: String): String = {
     val context = ContextHolder.context.request.getServletContext().getContextPath
-    val newUri = if (uri.charAt(0) == '!') action.name + "/" + uri.substring(1) else uri.replace('!', '/')
+    val newUri = if (uri.charAt(0) == '!') action.name + uri.replace('!', '/') else uri.replace('!', '/')
     render.render(context, action.namespace + "/" + action.name, newUri)
   }
+
 }

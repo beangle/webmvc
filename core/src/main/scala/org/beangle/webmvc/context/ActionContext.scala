@@ -11,13 +11,8 @@ object ContextHolder {
   def context: ActionContext = contexts.get()
 }
 
-object ActionContext {
-  val URLParams = "_url_params"
-}
-
 class ActionContext(val request: HttpServletRequest, var response: HttpServletResponse, val params: Map[String, Any]) {
 
-  import ActionContext._
   var local = ParamLocaleResolver.resolve(request)
 
   var mapping: RequestMapping = _

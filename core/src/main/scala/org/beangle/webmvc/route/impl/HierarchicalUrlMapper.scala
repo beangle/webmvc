@@ -1,23 +1,28 @@
 package org.beangle.webmvc.route.impl
 
 import java.{ lang => jl }
-
 import org.beangle.commons.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.context.ActionContext
 import org.beangle.webmvc.route.{ RequestMapper, RequestMapping }
-
 import javax.servlet.http.HttpServletRequest
+import org.beangle.webmvc.route.ActionMapping
+import scala.collection.mutable
 
 class HierarchicalUrlMapper extends RequestMapper {
   private val mappings = new RequestMappings
+  //FIXME
+  private val reverseMappings = new collection.mutable.HashMap[Class[_], mutable.Map[String, ActionMapping]]
 
   val DefaultMethod = "index"
   val MethodParam = "_method"
   val httpMethods = Map((GET, ""), (POST, ""), (PUT, "put"), (DELETE, "delete"), (HEAD, "head"))
 
   def add(mapping: RequestMapping): Unit = {
+    val action = mapping.action
+    val methodMappings = reverseMappings.getOrElseUpdate(action.clazz, new mutable.HashMap[String, ActionMapping])
+    methodMappings.put(action.method, action)
     mappings.add(mapping)
   }
 
@@ -65,8 +70,11 @@ class RequestMappings {
   val mappings = new collection.mutable.HashMap[String, RequestMapping]
 
   def add(mapping: RequestMapping): Unit = {
-    if (mapping.action.isPattern) add(mapping.action.url, mapping, this)
-    else mappings.put(mapping.action.url, mapping)
+    val action = mapping.action
+    val url = if (null != action.httpMethod) action.url + "/" + action.httpMethod.toLowerCase() else action.url
+
+    if (action.isPattern) add(url, mapping, this)
+    else mappings.put(action.url, mapping)
   }
 
   def add(pattern: String, mapping: RequestMapping, mappings: RequestMappings): Unit = {
@@ -94,7 +102,7 @@ class RequestMappings {
         else {
           if (action.isPattern) {
             val urlParams = new collection.mutable.HashMap[String, String]
-            m.params(ActionContext.URLParams).asInstanceOf[Map[Integer, String]] foreach {
+            action.urlParamNames foreach {
               case (k, v) =>
                 urlParams.put(v, parts(k))
             }

@@ -55,7 +55,7 @@ trait ViewMapper {
 
 trait Handler {
   def action: AnyRef
-  def handle(params: Map[String, Any]): Any
+  def handle(mapping: ActionMapping, params: Map[String, Any]): Any
 }
 
 trait RequestMapper {

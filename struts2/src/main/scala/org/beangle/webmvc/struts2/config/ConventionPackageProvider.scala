@@ -144,12 +144,13 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
           // build all action to action mappings
           val classInfo = ClassInfo.get(actionClass)
           routeService.buildMappings(actionClass) foreach {
-            case (config, method) =>
-              addAction2Mapper(config, beanName, method)
+            case (action, method) =>
+              addAction2Mapper(action, beanName, method)
               if (method.getName() == "index" && method.getParameterTypes.length == 0
-                && config.httpMethod == null && config.url.endsWith("/index")) {
-                val indexUrl = Strings.substringAfterLast(config.url, "/index")
-                addAction2Mapper(new ActionMapping(config.httpMethod, indexUrl, config.namespace, config.name), beanName, method)
+                && action.httpMethod == null && action.url.endsWith("/index")) {
+                val indexUrl = Strings.substringAfterLast(action.url, "/index")
+                addAction2Mapper(new ActionMapping(action.httpMethod, indexUrl, action.clazz, action.method,
+                  action.paramNames, action.urlParamNames, action.namespace, action.name), beanName, method)
               }
           }
         }

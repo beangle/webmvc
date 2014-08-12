@@ -7,16 +7,18 @@ import org.beangle.webmvc.helper.Params
 import org.beangle.webmvc.route.Handler
 import org.beangle.webmvc.context.ContextHolder
 import org.beangle.webmvc.context.ActionContext
+import org.beangle.webmvc.route.ActionMapping
 
-class MethodHandler(val action: AnyRef, val method: Method, val paramNames: Array[String]) extends Handler {
+class MethodHandler(val action: AnyRef, val method: Method) extends Handler {
   val paramTypes = method.getParameterTypes
 
-  override def handle(params: Map[String, Any]): Any = {
+  override def handle(mapping: ActionMapping, params: Map[String, Any]): Any = {
     if (0 == paramTypes.length) {
       method.invoke(action)
     } else {
       val values = new Array[Object](paramTypes.length)
       var binded = 0
+      val paramNames = mapping.paramNames
       Range(0, paramTypes.length) foreach { i =>
         val paramName = paramNames(i)
         val pt = paramTypes(i)
