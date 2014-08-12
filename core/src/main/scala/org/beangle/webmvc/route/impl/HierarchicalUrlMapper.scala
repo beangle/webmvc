@@ -12,7 +12,6 @@ import scala.collection.mutable
 
 class HierarchicalUrlMapper extends RequestMapper {
   private val mappings = new RequestMappings
-  //FIXME
   private val reverseMappings = new collection.mutable.HashMap[Class[_], mutable.Map[String, ActionMapping]]
 
   val DefaultMethod = "index"

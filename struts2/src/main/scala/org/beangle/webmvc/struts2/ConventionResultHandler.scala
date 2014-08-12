@@ -1,7 +1,6 @@
 package org.beangle.webmvc.struts2
 
 import scala.collection.JavaConversions.{ asScalaSet, mapAsJavaMap, mapAsScalaMap }
-
 import org.apache.struts2.ServletActionContext
 import org.apache.struts2.dispatcher.ServletRedirectResult
 import org.apache.struts2.views.freemarker.FreemarkerManager
@@ -11,13 +10,12 @@ import org.beangle.webmvc.context.ContextHolder
 import org.beangle.webmvc.route.{ Action, RouteService }
 import org.beangle.webmvc.route.impl.DefaultViewMapper
 import org.beangle.webmvc.view.freemarker.TemplateFinderByConfig
-
 import com.opensymphony.xwork2.{ ActionContext, ObjectFactory, Result, UnknownHandler, XWorkException }
 import com.opensymphony.xwork2.config.Configuration
 import com.opensymphony.xwork2.config.entities.{ ActionConfig, ResultConfig, ResultTypeConfig }
 import com.opensymphony.xwork2.inject.Inject
-
 import javax.servlet.http.HttpServletRequest
+import org.beangle.webmvc.route.RequestMapper
 
 /**
  * 实现action到result之间的路由和处理<br>
@@ -27,21 +25,21 @@ import javax.servlet.http.HttpServletRequest
  */
 class ConventionResultHandler extends UnknownHandler {
 
-  protected var resultTypeConfigs: Map[String, ResultTypeConfig] = Map.empty
-
-  protected var objectFactory: ObjectFactory = _
-
-  protected var configuration: Configuration = _
-
-  protected var routeService: RouteService = _
+  private var resultTypeConfigs: Map[String, ResultTypeConfig] = Map.empty
 
   private var templateFinder: TemplateFinderByConfig = _
 
   @Inject
-  def this(configuration: Configuration, objectFactory: ObjectFactory, freemarkerManager: FreemarkerManager, routeService: RouteService) = {
+  var objectFactory: ObjectFactory = _
+
+  @Inject
+  var resolver: RequestMapper = _
+
+  var routeService: RouteService = _
+
+  @Inject
+  def this(configuration: Configuration, freemarkerManager: FreemarkerManager, routeService: RouteService) = {
     this()
-    this.objectFactory = objectFactory
-    this.configuration = configuration
     this.routeService = routeService
     this.templateFinder = new TemplateFinderByConfig(freemarkerManager.getConfig(), routeService.viewMapper)
     val types = Map(("freemarker", ".ftl"), ("velocity", ".vm"), ("dispatcher", ".jsp"))
@@ -87,6 +85,11 @@ class ConventionResultHandler extends UnknownHandler {
         val params = buildResultParams(path, cfg)
         addNamespaceAction(action, params)
         if (isNotEmpty(action.method)) params.put("method", action.method)
+
+        resolver.resolve(action.namespace + "/" + action.name + "/" + action.method) match {
+          case Some(m) => ContextHolder.context.mapping = m
+          case None => throw new RuntimeException("Cannot find action mapping for $namespace $actionName $methodName")
+        }
 
         buildResult(newResultCode, cfg, context, params)
       } else if (prefix.startsWith("redirect")) {

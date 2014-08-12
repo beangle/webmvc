@@ -15,7 +15,7 @@ class DefaultModule extends AbstractBindModule {
     bind(classOf[RouteServiceImpl])
     bind("handlerMapping", classOf[ConventionHandlerMapping])
     bind("handlerAdapter", classOf[ConventionHandlerAdapter])
-    bind("localeResolver", classOf[ConventionLocaleResolver])
+    bind("localeResolver", classOf[ParamLocaleResolver])
     bind("viewResolver", classOf[FreeMarkerViewResolver]).property("cache", true)
       .property("prefix", "")
       .property("suffix", ".ftl")

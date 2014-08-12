@@ -12,17 +12,7 @@ import org.apache.struts2.ServletActionContext
 
 class BeangleActionProxyFactory extends DefaultActionProxyFactory {
 
-  @Inject
-  var resolver: RequestMapper = _
-
   override def createActionProxy(namespace: String, actionName: String, methodName: String, extraContext: ju.Map[String, Object], executeResult: Boolean, cleanupContext: Boolean): ActionProxy = {
-    //when chain result invocated servletActionContext.actionMapping is not null
-    if (null != ServletActionContext.getActionMapping()) {
-      resolver.resolve(namespace + "/" + actionName + "/" + methodName) match {
-        case Some(m) => ContextHolder.context.mapping = m
-        case None => throw new RuntimeException("Cannot find action mapping for $namespace $actionName $methodName")
-      }
-    }
     val inv = new BeangleActionInvocation(extraContext)
     container.inject(inv)
     createActionProxy(inv, namespace, actionName, methodName, executeResult, cleanupContext)
