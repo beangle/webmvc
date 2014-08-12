@@ -8,13 +8,13 @@ import javax.servlet.http.HttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 
 /**
- * Create actionContext
- * FIXME Upload
+ * Process Flash in context
  */
-class BeangleInterceptor extends HandlerInterceptor {
+object FlashInterceptor extends HandlerInterceptor {
 
   override def preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Object): Boolean = {
     ContextHolder.context.response = response
+
     true
   }
 
@@ -22,5 +22,8 @@ class BeangleInterceptor extends HandlerInterceptor {
   }
 
   override def afterCompletion(req: HttpServletRequest, res: HttpServletResponse, handler: Object, ex: Exception): Unit = {
+    //FIXME inner forward will invoke twice
+    val flash = ContextHolder.context.flash
+    if (null != flash) flash.nextToNow()
   }
 }

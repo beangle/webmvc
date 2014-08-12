@@ -15,6 +15,10 @@ class RestfulEntityAction extends EntityActionSupport {
   var config: PropertyConfig = _
   var entityMetaData: EntityMetadata = _
 
+  def index(): String = {
+    forward()
+  }
+
   @mapping("{id}")
   def info(@param("id") id: String): String = {
     val entityId = Params.converter.convert(id, entityMetaData.getType(getEntityName()).get.idClass)

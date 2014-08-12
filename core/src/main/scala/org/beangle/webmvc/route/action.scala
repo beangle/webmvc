@@ -28,6 +28,12 @@ object Action {
   def apply(uri: String): URIAction = {
     new URIAction(uri)
   }
+
+  def toURIAction(ca: ClassAction, mapping: ActionMapping, params: Map[String, Any]): URIAction = {
+    val ua = new URIAction(mapping.fill(params ++ ca.parameters))
+    ca.parameters --= mapping.urlParamNames.values
+    ua.params(ca.parameters)
+  }
 }
 
 trait Action {

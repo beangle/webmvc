@@ -138,14 +138,13 @@ class ConventionResultHandler extends UnknownHandler {
         action match {
           case ca: ClassAction => resolver.antiResolve(ca.clazz, ca.method) match {
             case Some(rm) =>
-              mapping = rm
-              if (forward) new StrutsAction(rm.action.namespace, rm.action.name, rm.action.method).params(ca.parameters)
-              else {
-                val ua = new URIAction(rm.action.fill(ContextHolder.context.params ++ ca.parameters)).toStruts
-                ca.parameters --= rm.action.urlParamNames.values
-                ua.params(ca.parameters)
+              if (forward) {
+                mapping = rm
+                new StrutsAction(rm.action.namespace, rm.action.name, rm.action.method).params(ca.parameters)
+              } else {
+                Action.toURIAction(ca, rm.action, ContextHolder.context.params).toStruts
               }
-            case None => throw new RuntimeException("Cannot find action mapping for $namespace $actionName $methodName")
+            case None => throw new RuntimeException(s"Cannot find action mapping for ${ca.clazz.getName} ${ca.method}")
           }
           case ua: URIAction => ua.toStruts
           case sa: StrutsAction => sa
@@ -159,7 +158,7 @@ class ConventionResultHandler extends UnknownHandler {
       if (null == mapping) {
         resolver.resolve(action.uri) match {
           case Some(m) => mapping = m
-          case None => throw new RuntimeException("Cannot find action mapping for $namespace $actionName $methodName")
+          case None => throw new RuntimeException(s"Cannot find action mapping for ${action.uri}")
         }
       }
       ContextHolder.context.mapping = mapping

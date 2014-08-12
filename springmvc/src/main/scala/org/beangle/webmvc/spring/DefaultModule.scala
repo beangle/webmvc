@@ -8,6 +8,7 @@ import org.beangle.webmvc.spring.mvc.view.FreeMarkerConfigurer
 import org.beangle.webmvc.spring.mvc.view.FreeMarkerViewResolver
 import org.beangle.webmvc.view.freemarker.FreemarkerTemplateEngine
 import org.beangle.webmvc.view.tag.BeangleTagLibrary
+import org.beangle.webmvc.route.impl.HierarchicalUrlMapper
 
 class DefaultModule extends AbstractBindModule {
 
@@ -16,6 +17,7 @@ class DefaultModule extends AbstractBindModule {
     bind("handlerMapping", classOf[ConventionHandlerMapping])
     bind("handlerAdapter", classOf[ConventionHandlerAdapter])
     bind("localeResolver", classOf[ParamLocaleResolver])
+    bind("requestMapper", classOf[HierarchicalUrlMapper])
     bind("viewResolver", classOf[FreeMarkerViewResolver]).property("cache", true)
       .property("prefix", "")
       .property("suffix", ".ftl")

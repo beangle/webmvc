@@ -1,11 +1,11 @@
 package org.beangle.webmvc.spring.handler
 
-import java.{util => ju}
+import java.{ util => ju }
 
 import org.beangle.commons.lang.reflect.ClassInfo
-import org.beangle.webmvc.context.{ActionContextBuilder, ContextHolder}
-import org.beangle.webmvc.route.{ActionFinder, RouteService}
-import org.beangle.webmvc.route.impl.{HierarchicalUrlMapper, RequestMappingBuilder}
+import org.beangle.webmvc.context.{ ActionContextBuilder, ContextHolder }
+import org.beangle.webmvc.route.{ ActionFinder, RouteService }
+import org.beangle.webmvc.route.impl.{ HierarchicalUrlMapper, RequestMappingBuilder }
 import org.springframework.web.servlet.HandlerExecutionChain
 import org.springframework.web.servlet.handler.AbstractDetectingUrlHandlerMapping
 
@@ -38,29 +38,25 @@ class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetec
           resolver.add(RequestMappingBuilder.build(action, bean, method))
           patterns += action.url
       }
-      patterns.toArray
+      null
     } else null
   }
 
   protected override def getHandlerInternal(request: HttpServletRequest): Object = {
     resolver.resolve(request) match {
       case Some(am) =>
-        val rs = lookupHandler(am.action.url, request)
-        if (null != rs) {
-          val context = ActionContextBuilder.build(request, null)
-          ContextHolder.contexts.set(context)
-        }
-        rs
-      case None =>
-        null
+        //FIXME for uploads
+        val context = ActionContextBuilder.build(request, null, am.params)
+        context.mapping = am
+        ContextHolder.contexts.set(context)
+        am.handler
+      case None => null
     }
-
   }
 
-  protected override def buildPathExposingHandler(rawHandler: Object, bestMatchingPattern: String,
-    pathWithinMapping: String, uriTemplateVariables: ju.Map[String, String]): Object = {
-    val chain = new HandlerExecutionChain(rawHandler)
-    chain.addInterceptor(new BeangleInterceptor());
+  protected override def getHandlerExecutionChain(handler: Object, request: HttpServletRequest): HandlerExecutionChain = {
+    val chain = new HandlerExecutionChain(handler)
+    chain.addInterceptor(FlashInterceptor)
     chain
   }
 }
