@@ -9,9 +9,9 @@ import freemarker.template.{ Configuration, TemplateExceptionHandler }
 import javax.servlet.ServletContext
 
 class FreeMarkerConfigurer extends org.springframework.web.servlet.view.freemarker.FreeMarkerConfig with Logging with ServletContextAware {
-  val config = new Configuration()
-
+  //must before configuration init
   Configurations.disableFreemarkerLogger()
+  val config = new Configuration()
 
   override def getConfiguration(): Configuration = {
     config
