@@ -22,10 +22,10 @@ class FreeMarkerConfigurer extends org.springframework.web.servlet.view.freemark
   }
 
   def setServletContext(servletContext: ServletContext) {
-    config.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
-    config.setDefaultEncoding("UTF-8");
-    config.setLocalizedLookup(false);
-    config.setWhitespaceStripping(true);
+    config.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER)
+    config.setDefaultEncoding("UTF-8")
+    config.setLocalizedLookup(false)
+    config.setWhitespaceStripping(true)
 
     val properties = Configurations.loadSetting()
     for ((key, value) <- properties) {

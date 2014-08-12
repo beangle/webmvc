@@ -13,7 +13,7 @@ class DefaultModuleTest extends FunSpec with Matchers {
       val properties = new DefaultModule().properties
       assert(null != properties)
       assert(properties.contains("struts.url.http.port"))
-      assert(properties("struts.objectFactory") == "beangle")
+      assert(!properties.contains("struts.objectFactory"))
     }
   }
 }
