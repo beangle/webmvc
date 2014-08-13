@@ -11,7 +11,7 @@ import org.beangle.data.model.dao.{ GeneralDao, QueryBuilder }
 import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
 import org.beangle.webmvc.helper.Params
 
-class EntityDrivenAction extends EntityActionSupport {
+abstract class EntityDrivenAction extends EntityActionSupport {
 
   var entityDao: GeneralDao = _
   var config: PropertyConfig = _
@@ -49,16 +49,16 @@ class EntityDrivenAction extends EntityActionSupport {
    * Seach Entitis
    */
   def search(): String = {
-    put(getShortName() + "s", search(getQueryBuilder()))
+    put(shortName + "s", search(getQueryBuilder()))
     forward()
   }
 
   def getExportDatas[T](): Seq[T] = {
     // 自动会考虑页面是否传入id
-    val result: Option[Seq[T]] = if (Strings.isNotBlank(getEntityName())) {
-      entityMetaData.getType(getEntityName()) match {
+    val result: Option[Seq[T]] = if (Strings.isNotBlank(entityName)) {
+      entityMetaData.getType(entityName) match {
         case Some(entityType) => {
-          val ids = getIds(getShortName(), entityType.idClass).asInstanceOf[Array[Serializable]]
+          val ids = getIds(shortName, entityType.idClass).asInstanceOf[Array[Serializable]]
           if (ids != null && ids.length > 0) {
             Some(entityDao.get(entityType.entityClass, ids).asInstanceOf)
           } else None
@@ -72,8 +72,8 @@ class EntityDrivenAction extends EntityActionSupport {
    * Edit by entity.id or id
    */
   def edit(): String = {
-    var entity = getEntity()
-    put(getShortName(), entity)
+    var entity = getEntity
+    put(shortName, entity)
     editSetting(entity)
     return forward()
   }
@@ -82,12 +82,12 @@ class EntityDrivenAction extends EntityActionSupport {
    * Remove entities by [entity.id]/entityIds
    */
   def remove(): String = {
-    val idclass = entityMetaData.getType(getEntityName()).get.idClass.asInstanceOf[Class[Serializable]]
-    val entityId: Serializable = getId(getShortName(), idclass)
+    val idclass = entityMetaData.getType(entityName).get.idClass.asInstanceOf[Class[Serializable]]
+    val entityId: Serializable = getId(shortName, idclass)
     val entities: Seq[_] = if (null == entityId) {
-      getModels(getEntityName(), getIds(getShortName(), idclass))
+      getModels(entityName, getIds(shortName, idclass))
     } else {
-      val entity: Entity[_] = getModel(getEntityName(), entityId)
+      val entity: Entity[_] = getModel(entityName, entityId)
       List(entity)
     }
     removeAndForward(entities)
@@ -101,7 +101,7 @@ class EntityDrivenAction extends EntityActionSupport {
   }
 
   protected def populateEntity(): Entity[_] = {
-    populateEntity(getEntityName(), getShortName())
+    populateEntity(entityName, shortName)
   }
 
   protected def populateEntity(entityName: String, shortName: String): Entity[_] = {
@@ -116,29 +116,29 @@ class EntityDrivenAction extends EntityActionSupport {
   }
 
   protected def populateEntity[T](entityClass: Class[T], shortName: String): T = {
-    val entityType: EntityType = (if (entityClass.isInterface()) {
-      entityMetaData.getType(entityClass.getName())
+    val entityType: EntityType = (if (entityClass.isInterface) {
+      entityMetaData.getType(entityClass.getName)
     } else {
       entityMetaData.getType(entityClass)
     }).get
     populateEntity(entityType.entityName, shortName).asInstanceOf[T]
   }
 
-  protected def getEntity[T](): Entity[T] = {
-    getEntity(getEntityName, getShortName())
+  protected def getEntity[T]: Entity[T] = {
+    getEntity(entityName, shortName)
   }
 
   protected def getEntity[T](entityName: String, name: String): Entity[T] = {
     val entityType: EntityType = entityMetaData.getType(entityName).get
     val entityId: Serializable = getId(name, entityType.idClass)
     if (null == entityId)
-      populate(entityType.newInstance().asInstanceOf[Entity[_]], entityType.entityName, name).asInstanceOf[Entity[T]]
+      populate(entityType.newInstance.asInstanceOf[Entity[_]], entityType.entityName, name).asInstanceOf[Entity[T]]
     else getModel(entityName, entityId)
   }
 
   protected def getEntity[T](entityClass: Class[T], shortName: String): T = {
-    val entityType: EntityType = (if (entityClass.isInterface())
-      entityMetaData.getType(entityClass.getName())
+    val entityType: EntityType = (if (entityClass.isInterface)
+      entityMetaData.getType(entityClass.getName)
     else entityMetaData.getType(entityClass)).get
     getEntity(entityType.entityName, shortName).asInstanceOf[T]
   }
@@ -147,10 +147,10 @@ class EntityDrivenAction extends EntityActionSupport {
    * 查看信息
    */
   def info(): String = {
-    val entityId: Serializable = getId(getShortName(), entityMetaData.getType(getEntityName()).get.idClass)
+    val entityId: Serializable = getId(shortName, entityMetaData.getType(entityName).get.idClass)
     if (null != entityId) {
-      val entity: Entity[_] = getModel(getEntityName(), entityId)
-      put(getShortName(), entity)
+      val entity: Entity[_] = getModel(entityName, entityId)
+      put(shortName, entity)
     }
     forward()
   }
@@ -193,7 +193,7 @@ class EntityDrivenAction extends EntityActionSupport {
   }
 
   protected def getQueryBuilder[T](): OqlBuilder[T] = {
-    val builder: OqlBuilder[T] = OqlBuilder.from(getEntityName(), getShortName())
+    val builder: OqlBuilder[T] = OqlBuilder.from(entityName, shortName)
     populateConditions(builder)
     builder.orderBy(get(Order.OrderStr).get).limit(getPageLimit())
   }

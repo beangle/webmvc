@@ -33,6 +33,11 @@ object Action {
     val ua = new URIAction(mapping.fill(params ++ ca.parameters))
     ca.parameters --= mapping.urlParamNames.values
     ua.params(ca.parameters)
+    if (mapping.httpMethod != null) {
+      val method = RequestMapper.HttpMethodMap(mapping.httpMethod)
+      if ("" != method) ua.param(RequestMapper.MethodParam, method)
+    }
+    ua
   }
 }
 
@@ -147,9 +152,14 @@ class URIAction(val uri: String) extends Action {
 
 class RequestMapping(val action: ActionMapping, val handler: Handler, val params: collection.Map[String, Any])
 
+import org.beangle.commons.http.HttpMethods._
 class ActionMapping(val httpMethod: String, val url: String, val clazz: Class[_], val method: String, val paramNames: Array[String], val urlParamNames: Map[Integer, String], val namespace: String, val name: String) {
   val isPattern = url.contains("{") || url.contains("*")
 
+  def httpMethodMatches(requestMethod: String): Boolean = {
+    if (null == httpMethod) requestMethod == GET || requestMethod == POST
+    else requestMethod == httpMethod
+  }
   def fill(params: collection.Map[String, Any]): String = {
     if (!isPattern) return url
     val result = url

@@ -67,7 +67,7 @@ class ActionSupport extends Logging {
   }
 
   protected final def redirect(method: String, message: String): String = {
-    redirect(Action(this,method), message)
+    redirect(Action(this, method), message)
   }
 
   protected final def redirect(action: Action, message: String): String = {
@@ -78,31 +78,31 @@ class ActionSupport extends Logging {
 
   final def getText(aTextName: String): String = ContextHolder.context.textResource(aTextName).get
 
-  final def getText(key: String, defaultValue: String, args: Any*): String = ContextHolder.context.textResource(key, defaultValue, args)
+  final def getText(key: String, defaultValue: String, args: Any*): String = ContextHolder.context.textResource(key, defaultValue, args: _*)
 
   protected final def getTextInternal(msgKey: String, args: Any*): String = {
     if (Strings.isEmpty(msgKey)) null
     if (Chars.isAsciiAlpha(msgKey.charAt(0)) && msgKey.indexOf('.') > 0) {
-      getText(msgKey, msgKey, args)
+      getText(msgKey, msgKey, args: _*)
     } else {
       msgKey
     }
   }
 
   protected final def addMessage(msgKey: String, args: Any*): Unit = {
-    ContextHolder.context.flash.addMessageNow(getTextInternal(msgKey, args))
+    ContextHolder.context.flash.addMessageNow(getTextInternal(msgKey, args: _*))
   }
 
   protected final def addError(msgKey: String, args: Any*): Unit = {
-    ContextHolder.context.flash.addErrorNow(getTextInternal(msgKey, args))
+    ContextHolder.context.flash.addErrorNow(getTextInternal(msgKey, args: _*))
   }
 
   protected final def addFlashError(msgKey: String, args: Any*): Unit = {
-    ContextHolder.context.flash.addError(getTextInternal(msgKey, args))
+    ContextHolder.context.flash.addError(getTextInternal(msgKey, args: _*))
   }
 
   protected final def addFlashMessage(msgKey: String, args: Any*): Unit = {
-    ContextHolder.context.flash.addMessage(getTextInternal(msgKey, args))
+    ContextHolder.context.flash.addMessage(getTextInternal(msgKey, args: _*))
   }
 
   /**

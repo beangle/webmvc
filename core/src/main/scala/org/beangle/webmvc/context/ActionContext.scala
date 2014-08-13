@@ -4,7 +4,7 @@ import org.beangle.commons.collection.Collections
 import org.beangle.commons.text.i18n.TextResource
 import org.beangle.webmvc.route.RequestMapping
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 object ContextHolder {
   val contexts = new ThreadLocal[ActionContext]
@@ -13,9 +13,11 @@ object ContextHolder {
 
 class ActionContext(val request: HttpServletRequest, var response: HttpServletResponse, val params: Map[String, Any]) {
 
-  var local = ParamLocaleResolver.resolve(request)
+  var locale = ParamLocaleResolver.resolve(request)
 
   var mapping: RequestMapping = _
+
+  var textResource: TextResource = _
 
   private val temp = new collection.mutable.HashMap[String, Any]
 
@@ -53,9 +55,6 @@ class ActionContext(val request: HttpServletRequest, var response: HttpServletRe
     } else null
   }
 
-  def textResource: TextResource = {
-    attribute("textResource")
-  }
 }
 
 object ActionContextBuilder {

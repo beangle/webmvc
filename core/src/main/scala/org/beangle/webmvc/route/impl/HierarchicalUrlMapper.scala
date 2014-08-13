@@ -1,22 +1,21 @@
 package org.beangle.webmvc.route.impl
 
 import java.{ lang => jl }
-import org.beangle.commons.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
+
+import scala.collection.mutable
+
+import org.beangle.commons.http.HttpMethods.GET
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.web.util.RequestUtils
-import org.beangle.webmvc.context.ActionContext
-import org.beangle.webmvc.route.{ RequestMapper, RequestMapping }
+import org.beangle.webmvc.route.RequestMapper
+import org.beangle.webmvc.route.RequestMapper.{ DefaultMethod, MethodParam, HttpMethodMap, HttpMethods }
+import org.beangle.webmvc.route.RequestMapping
+
 import javax.servlet.http.HttpServletRequest
-import org.beangle.webmvc.route.ActionMapping
-import scala.collection.mutable
 
 class HierarchicalUrlMapper extends RequestMapper {
   private val mappings = new RequestMappings
   private val reverseMappings = new collection.mutable.HashMap[Class[_], mutable.Map[String, RequestMapping]]
-
-  val DefaultMethod = "index"
-  val MethodParam = "_method"
-  val httpMethods = Map((GET, ""), (POST, ""), (PUT, "put"), (DELETE, "delete"), (HEAD, "head"))
 
   def add(mapping: RequestMapping): Unit = {
     val action = mapping.action
@@ -65,8 +64,11 @@ class HierarchicalUrlMapper extends RequestMapper {
   }
 
   private def determineMethod(request: HttpServletRequest, defaultMethod: String): String = {
-    var httpMethod = httpMethods(request.getMethod)
-    if ("" == httpMethod) httpMethod = request.getParameter(MethodParam)
+    var httpMethod = HttpMethodMap(request.getMethod)
+    if ("" == httpMethod) {
+      httpMethod = request.getParameter(MethodParam)
+      if (null != httpMethod && !HttpMethods.contains(httpMethod)) httpMethod = null
+    }
     if (null == httpMethod) defaultMethod else httpMethod
   }
 }
@@ -104,8 +106,7 @@ class RequestMappings {
     result match {
       case Some(m) =>
         val action = m.action
-        if (null != action.httpMethod && action.httpMethod != httpMethod) None
-        else {
+        if (action.httpMethodMatches(httpMethod)) {
           if (action.isPattern) {
             val urlParams = new collection.mutable.HashMap[String, String]
             action.urlParamNames foreach {
@@ -114,7 +115,7 @@ class RequestMappings {
             }
             Some(new RequestMapping(action, m.handler, urlParams))
           } else result
-        }
+        } else None
       case None => None
     }
   }

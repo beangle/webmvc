@@ -1,14 +1,14 @@
 package org.beangle.webmvc.action
 
 import scala.reflect.ClassTag
-
 import org.beangle.commons.collection.page.PageLimit
 import org.beangle.commons.lang.Strings
 import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
 import org.beangle.webmvc.helper.{ Params, PopulateHelper, QueryHelper }
+import org.beangle.webmvc.annotation.ignore
 
-class EntityActionSupport extends ActionSupport {
+abstract class EntityActionSupport extends ActionSupport {
 
   /**
    * Get entity's id from shortname.id,shortnameId,id
@@ -91,12 +91,15 @@ class EntityActionSupport extends ActionSupport {
     QueryHelper.populateConditions(builder, exclusiveAttrNames);
   }
 
-  protected final def getEntityName(): String = getEntityType.getName
+  @ignore
+  final def entityName: String = entityType.getName
 
-  protected def getEntityType: Class[_] = null
+  @ignore
+  protected def entityType: Class[_]
 
-  protected def getShortName(): String = {
-    val name = getEntityName()
+  @ignore
+  protected def shortName: String = {
+    val name = entityName
     if (Strings.isNotEmpty(name)) getCommandName(name)
     else null
   }

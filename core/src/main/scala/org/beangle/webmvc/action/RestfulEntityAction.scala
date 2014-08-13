@@ -9,7 +9,7 @@ import org.beangle.data.model.Entity
 import org.beangle.webmvc.annotation.param
 import org.beangle.commons.http.HttpMethods._
 
-class RestfulEntityAction extends EntityActionSupport {
+abstract class RestfulEntityAction extends EntityActionSupport {
 
   var entityDao: GeneralDao = _
   var config: PropertyConfig = _
@@ -21,8 +21,8 @@ class RestfulEntityAction extends EntityActionSupport {
 
   @mapping("{id}")
   def info(@param("id") id: String): String = {
-    val entityId = Params.converter.convert(id, entityMetaData.getType(getEntityName()).get.idClass)
-    put(getShortName(), getModel(getEntityName(), entityId))
+    val entityId = Params.converter.convert(id, entityMetaData.getType(entityName).get.idClass)
+    put(shortName, getModel(entityName, entityId))
     forward()
   }
 

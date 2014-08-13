@@ -57,7 +57,17 @@ trait Handler {
   def handle(mapping: ActionMapping): Any
 }
 
+object RequestMapper {
+  final val DefaultMethod = "index"
+  final val MethodParam = "_method"
+  import org.beangle.commons.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
+  final val HttpMethodMap = Map((GET, ""), (POST, ""), (PUT, "put"), (DELETE, "delete"), (HEAD, "head"))
+  final val HttpMethods = Set("put", "delete", "head")
+
+}
+
 trait RequestMapper {
+
   def resolve(request: HttpServletRequest): Option[RequestMapping]
 
   def antiResolve(clazz: Class[_], method: String): Option[RequestMapping]
