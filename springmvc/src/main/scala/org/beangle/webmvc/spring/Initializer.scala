@@ -12,7 +12,7 @@ class Initializer extends org.beangle.commons.web.init.Initializer {
     sc.addFilter("CharacterEncoding", new CharacterEncodingFilter)
 
     val sr = sc.addServlet("Action", new DispatcherServlet)
-    sr.setInitParameter("contextAttribute", "WebApplicationContext:Controller")
+    sr.setInitParameter("contextAttribute", "WebApplicationContext:Action")
     sr.addMapping("/*")
   }
 }
