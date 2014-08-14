@@ -1,16 +1,16 @@
 package org.beangle.webmvc.context
 
 import java.{ util => ju }
-
 import org.beangle.commons.lang.Locales
-
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 trait LocaleResolver {
   def resolve(request: HttpServletRequest): ju.Locale
+  def setLocale(request: HttpServletRequest, response: HttpServletResponse, locale: ju.Locale): Unit
 }
 
-object ParamLocaleResolver extends LocaleResolver {
+class ParamLocaleResolver extends LocaleResolver {
   val SessionAttribute = "WW_TRANS_I18N_LOCALE"
   val SessionParameter = "session_locale"
   val RequestParameter = "request_locale"
@@ -38,5 +38,9 @@ object ParamLocaleResolver extends LocaleResolver {
       request.setAttribute("locale", locale)
     }
     locale
+  }
+  override def setLocale(request: HttpServletRequest, response: HttpServletResponse, locale: ju.Locale): Unit = {
+    val session = request.getSession(false)
+    if (null != session) session.setAttribute(SessionAttribute, locale)
   }
 }

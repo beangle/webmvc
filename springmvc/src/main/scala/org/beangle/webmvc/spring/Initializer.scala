@@ -9,7 +9,7 @@ class Initializer extends org.beangle.commons.web.init.Initializer {
   override def onStartup(sc: ServletContext) {
     sc.setInitParameter("templatePath", "webapp://pages,class://")
     sc.addListener(new HttpSessionEventPublisher)
-    sc.addFilter("CharacterEncoding", new CharacterEncodingFilter)
+    sc.addFilter("CharacterEncoding", new CharacterEncodingFilter).setInitParameter("forceEncoding", "true")
 
     val sr = sc.addServlet("Action", new DispatcherServlet)
     sr.setInitParameter("contextAttribute", "WebApplicationContext:Action")

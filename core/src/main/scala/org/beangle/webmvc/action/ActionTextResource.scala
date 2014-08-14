@@ -1,20 +1,16 @@
-package org.beangle.webmvc.struts2
+package org.beangle.webmvc.action
 
 import java.{ util => jl }
-
 import scala.collection.mutable.{ HashSet, Set }
-
 import org.beangle.commons.bean.PropertyUtils
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.text.i18n.impl.DefaultTextResource
 import org.beangle.commons.text.i18n.spi.{ TextBundleRegistry, TextFormater }
-import org.beangle.webmvc.action.EntityActionSupport
+import org.beangle.webmvc.context.ContextHolder
+import org.beangle.webmvc.route.impl.MethodHandler
 
-import com.opensymphony.xwork2.ActionContext
-import com.opensymphony.xwork2.util.ValueStack
-
-class ActionTextResource(val actionClass: Class[_], locale: jl.Locale, registry: TextBundleRegistry,
-  formater: TextFormater, val valueStack: ValueStack) extends DefaultTextResource(locale, registry, formater) {
+class ActionTextResource(actionClass: Class[_], locale: jl.Locale, registry: TextBundleRegistry,
+  formater: TextFormater) extends DefaultTextResource(locale, registry, formater) {
 
   /**
    * 1 remove index key(user.roles[0].name etc.)
@@ -25,26 +21,23 @@ class ActionTextResource(val actionClass: Class[_], locale: jl.Locale, registry:
     if (key == null) ""
     var checked = new HashSet[String]
     // search up class hierarchy
-    var msg = getMessage(actionClass.getName(), locale, key)
+    var msg = getMessage(actionClass.getName, locale, key)
     if (msg != None) return msg
     // nothing still? all right, search the package hierarchy now
-    msg = getPackageMessage(actionClass.getName(), key, checked)
+    msg = getPackageMessage(actionClass.getName, key, checked)
     if (msg != None) return msg
 
+    val context = ContextHolder.context
     if (classOf[EntityActionSupport].isAssignableFrom(actionClass)) {
-      var context = ActionContext.getContext()
       // search up model's class hierarchy
-      var actionInvocation = context.getActionInvocation()
-      // ActionInvocation may be null if we're being run from a Sitemesh filter
-      if (actionInvocation != null) {
-        var action = actionInvocation.getAction()
-        if (action.isInstanceOf[EntityActionSupport]) {
-          var entityName = (action.asInstanceOf[EntityActionSupport]).entityName
+      context.mapping.handler match {
+        case mh: MethodHandler =>
+          val entityName = mh.action.asInstanceOf[EntityActionSupport].entityName
           if (entityName != null) {
             msg = getPackageMessage(entityName, key, checked)
             if (msg != None) return msg
           }
-        }
+        case _ =>
       }
     }
 
@@ -52,13 +45,13 @@ class ActionTextResource(val actionClass: Class[_], locale: jl.Locale, registry:
     var idx = key.indexOf(".")
     if (idx > 0) {
       var prop = key.substring(0, idx)
-      var obj = valueStack.findValue(prop)
+      var obj = context.attribute[Any](prop)
       if (null != obj && !prop.equals("action")) {
-        var aClass: Class[_] = obj.getClass()
+        var aClass: Class[_] = obj.getClass
         var newKey = key
         var goOn = true
         while (null != aClass && goOn && msg.isEmpty) {
-          msg = getPackageMessage(aClass.getName(), newKey, checked)
+          msg = getPackageMessage(aClass.getName, newKey, checked)
           if (msg.isEmpty) {
             var nextIdx = newKey.indexOf(".", idx + 1)
             if (nextIdx == -1) {
@@ -74,8 +67,7 @@ class ActionTextResource(val actionClass: Class[_], locale: jl.Locale, registry:
         }
       }
     }
-    val defaultText = registry.getDefaultText(key, locale)
-    if (null == defaultText) None else Some(defaultText)
+    registry.getDefaultText(key, locale)
   }
 
   private def getPackageMessage(className: String, key: String, checked: Set[String]): Option[String] = {

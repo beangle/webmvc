@@ -1,20 +1,20 @@
 package org.beangle.webmvc.struts2.dispatcher
 
 import java.io.File
+
 import org.apache.struts2.ServletActionContext
-import org.apache.struts2.dispatcher.mapper.{ ActionMapper, ActionMapping, DefaultActionMapper }
+import org.apache.struts2.dispatcher.mapper.{ActionMapper, ActionMapping, DefaultActionMapper}
 import org.apache.struts2.dispatcher.multipart.MultiPartRequestWrapper
-import org.beangle.commons.lang.Arrays.{ isBlank, isEmpty }
-import org.beangle.webmvc.context.{ ActionContextBuilder, ContextHolder }
+import org.beangle.commons.lang.Arrays.{isBlank, isEmpty}
+import org.beangle.commons.text.i18n.spi.{TextBundleRegistry, TextFormater}
+import org.beangle.webmvc.action.ActionTextResource
+import org.beangle.webmvc.context.{ActionContextBuilder, ContextHolder, LocaleResolver}
 import org.beangle.webmvc.route.RequestMapper
+
 import com.opensymphony.xwork2.config.ConfigurationManager
 import com.opensymphony.xwork2.inject.Inject
+
 import javax.servlet.http.HttpServletRequest
-import org.beangle.commons.text.i18n.spi.TextBundleRegistry
-import org.beangle.webmvc.struts2.ActionTextResource
-import org.beangle.commons.text.i18n.TextResource
-import org.beangle.commons.text.i18n.impl.DefaultTextFormater
-import com.opensymphony.xwork2.ActionContext
 
 class ConventionActionMapper extends DefaultActionMapper with ActionMapper {
 
@@ -24,7 +24,11 @@ class ConventionActionMapper extends DefaultActionMapper with ActionMapper {
   @Inject
   var registry: TextBundleRegistry = _
 
-  val formater = new DefaultTextFormater
+  @Inject
+  var formater: TextFormater = _
+
+  @Inject
+  var localeResolver: LocaleResolver = _
   /**
    * reserved method parameter
    */
@@ -33,11 +37,10 @@ class ConventionActionMapper extends DefaultActionMapper with ActionMapper {
       case Some(m) =>
         val response = ServletActionContext.getResponse
         val context = request match {
-          case mp: MultiPartRequestWrapper => ActionContextBuilder.build(request, response, m.params, getUploads(mp))
-          case _ => ActionContextBuilder.build(request, response, m.params)
+          case mp: MultiPartRequestWrapper => ActionContextBuilder.build(request, response, localeResolver, m, getUploads(mp))
+          case _ => ActionContextBuilder.build(request, response, localeResolver, m)
         }
-        context.mapping = m
-        context.textResource = new ActionTextResource(m.action.clazz, context.locale, registry, formater, ActionContext.getContext.getValueStack)
+        context.textResource = new ActionTextResource(m.action.clazz, context.locale, registry, formater)
 
         ContextHolder.contexts.set(context)
 

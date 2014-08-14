@@ -92,7 +92,7 @@ abstract class EntityActionSupport extends ActionSupport {
   }
 
   @ignore
-  final def entityName: String = entityType.getName
+  protected[action] final def entityName: String = entityType.getName
 
   @ignore
   protected def entityType: Class[_]

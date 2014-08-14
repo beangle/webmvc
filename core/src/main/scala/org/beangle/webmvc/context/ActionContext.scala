@@ -1,10 +1,11 @@
 package org.beangle.webmvc.context
 
+import java.{ util => ju }
 import org.beangle.commons.collection.Collections
 import org.beangle.commons.text.i18n.TextResource
 import org.beangle.webmvc.route.RequestMapping
-
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.webmvc.route.ActionMapping
 
 object ContextHolder {
   val contexts = new ThreadLocal[ActionContext]
@@ -13,7 +14,7 @@ object ContextHolder {
 
 class ActionContext(val request: HttpServletRequest, var response: HttpServletResponse, val params: Map[String, Any]) {
 
-  var locale = ParamLocaleResolver.resolve(request)
+  var locale: ju.Locale = _
 
   var mapping: RequestMapping = _
 
@@ -58,10 +59,16 @@ class ActionContext(val request: HttpServletRequest, var response: HttpServletRe
 }
 
 object ActionContextBuilder {
-  def build(request: HttpServletRequest, response: HttpServletResponse, paramMaps: collection.Map[String, Any]*): ActionContext = {
+  def build(request: HttpServletRequest, response: HttpServletResponse, localeResolver: LocaleResolver, mapping: RequestMapping, paramMaps: collection.Map[String, Any]*): ActionContext = {
     val params = new collection.mutable.HashMap[String, Any]
     Collections.putAll(params, request.getParameterMap)
+    params ++= mapping.params
+
     paramMaps foreach (pMap => params ++= pMap)
-    new ActionContext(request, response, params.toMap)
+
+    val context = new ActionContext(request, response, params.toMap)
+    context.mapping = mapping
+    context.locale = localeResolver.resolve(request)
+    context
   }
 }
