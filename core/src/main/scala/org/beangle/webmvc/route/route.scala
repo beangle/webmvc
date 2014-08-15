@@ -25,8 +25,6 @@ trait RouteService {
 
   def getProfile(className: String): Profile
 
-  def getProfile(clazz: Class[_]): Profile
-
   def profiles: List[Profile]
 
   def viewMapper: ViewMapper
@@ -49,7 +47,7 @@ trait ViewMapper {
   /**
    * viewname -> 页面路径的映射
    */
-  def map(className: String, viewName: String): String
+  def map(className: String, viewName: String, profile: Profile): String
 }
 
 trait Handler {

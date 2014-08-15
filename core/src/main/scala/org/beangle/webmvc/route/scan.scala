@@ -8,17 +8,16 @@ object ActionFinder {
    * Test whether the class is a action class.
    * <ul>
    * <li>Ends with suffix</li>
-   * <li>In one of given packages</li>
+   * <li>In one of given profiles</li>
    * </ul>
    */
-  class Test(suffix: String, packages: Iterable[String]) extends Predicate[String] {
-    def apply(name: String): Boolean = {
-      if (name.endsWith(suffix)) {
-        val classPackageName = if (name.indexOf(".") > 0) name.substring(0, name.lastIndexOf(".")) else ""
-        packages.exists(packageName => Profile.isInPackage(packageName, classPackageName))
-      } else {
-        false
-      }
+  class Test(suffix: String, routeService: RouteService) extends Predicate[Class[_]] {
+    def apply(clazz: Class[_]): Boolean = {
+      val className = clazz.getName
+      if (className.endsWith(suffix)) {
+        val profile = routeService.getProfile(className)
+        null != profile && profile.actionScan
+      } else false
     }
   }
 }
@@ -40,7 +39,7 @@ class ContainerActionFinder(val container: Container) extends ActionFinder {
     if (null != container) {
       container.keys() foreach { name =>
         val clazzType = container.getType(name).orNull
-        if (null != clazzType && actionTest.apply(clazzType.getName())) actions.put(clazzType, name.toString())
+        if (null != clazzType && actionTest.apply(clazzType)) actions.put(clazzType, name.toString)
       }
     }
     actions.toMap

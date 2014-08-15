@@ -43,7 +43,7 @@ class ConventionResultHandler extends UnknownHandler {
   def this(configuration: Configuration, freemarkerManager: FreemarkerManager, routeService: RouteService) = {
     this()
     this.routeService = routeService
-    this.templateFinder = new TemplateFinderByConfig(freemarkerManager.getConfig(), routeService.viewMapper)
+    this.templateFinder = new TemplateFinderByConfig(freemarkerManager.getConfig(), routeService)
     val types = Map(("freemarker", ".ftl"), ("velocity", ".vm"), ("dispatcher", ".jsp"))
     val pc = configuration.getPackageConfig("struts-default")
     val resTypeConfigs = new collection.mutable.HashMap[String, ResultTypeConfig]

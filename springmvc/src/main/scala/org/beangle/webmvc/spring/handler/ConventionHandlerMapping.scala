@@ -29,20 +29,13 @@ class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetec
     registry.addDefaults("beangle", "application")
   }
 
-  private val actionTest = {
-    val packages = new collection.mutable.ListBuffer[String]
-    routeService.profiles foreach { profile =>
-      if (profile.actionScan) packages += profile.actionPattern
-    }
-    new ActionFinder.Test(actionSuffix, packages.toList)
-  }
-
   /**
    * generate url for every handler
    */
   protected override def determineUrlsForHandler(beanName: String): Array[String] = {
     val bean = getApplicationContext().getBean(beanName)
-    if (actionTest(bean.getClass.getName)) {
+    val actionTest = new ActionFinder.Test(actionSuffix, routeService)
+    if (actionTest(bean.getClass)) {
       val patterns = new collection.mutable.ListBuffer[String]
       val classInfo = ClassInfo.get(bean.getClass)
       routeService.buildMappings(bean.getClass).map {

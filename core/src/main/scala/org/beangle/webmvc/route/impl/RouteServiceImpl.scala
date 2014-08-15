@@ -28,7 +28,7 @@ object RouteServiceImpl extends Logging {
   /**加载META-INF/convention-default.properties*/
   private def loadDefaultProfile(): Profile = {
     val convention_default = ClassLoaders.getResource("META-INF/beangle/convention-default.properties")
-    if (null == convention_default) { throw new RuntimeException("cannot find convention-default.properties!") }
+    if (null == convention_default) throw new RuntimeException("cannot find convention-default.properties!")
     buildProfiles(convention_default, true)(0)
   }
 
@@ -82,37 +82,36 @@ object RouteServiceImpl extends Logging {
 
 class RouteServiceImpl extends RouteService with Logging {
 
-  val viewMapper = new DefaultViewMapper(this)
+  private val classProfiles = new collection.mutable.HashMap[String, Profile]
+
+  val viewMapper = new DefaultViewMapper
+
   val actionMappingBuilder = new DefaultActionMappingBuilder(this)
+
   val profiles: List[Profile] = RouteServiceImpl.loadProfiles
 
-  // 匹配缓存[String,Profile]
-  private val cache = new ju.concurrent.ConcurrentHashMap[String, Profile]
-
   def getProfile(className: String): Profile = {
-    var matched = cache.get(className)
-    if (null != matched) { return matched }
+    var matched = classProfiles.get(className).orNull
+    if (null != matched) return matched
     var index: Int = -1
     var patternLen: Int = 0
-    for (profile <- profiles if (profile.isMatch(className))) {
-      var newIndex = profile.matchedIndex(className)
-      if (newIndex >= index && profile.actionPattern.length >= patternLen) {
-        matched = profile
-        index = newIndex
-        patternLen = profile.actionPattern.length
+    for (profile <- profiles) {
+      profile.matches(className) foreach { matcheInfo =>
+        val newIndex = matcheInfo.start
+        if (newIndex >= index && profile.actionPattern.length >= patternLen) {
+          matched = profile
+          index = newIndex
+          patternLen = profile.actionPattern.length
+        }
       }
     }
-    if (matched == null) {
-      matched = RouteServiceImpl.defaultProfile
+    if (null != matched) {
+      classProfiles.put(className, matched)
+      debug(s"${className} match profile:${matched}")
     }
-    cache.put(className, matched)
-    debug(s"${className} match profile:${matched}")
     matched
   }
 
-  def getProfile(clazz: Class[_]): Profile = {
-    getProfile(clazz.getName())
-  }
   /**
    * 根据class对应的profile获得ctl/action类中除去后缀后的名字。<br>
    * 如果对应profile中是uriStyle,那么类中只保留简单类名，去掉后缀，并且小写第一个字母。<br>
@@ -134,6 +133,8 @@ class RouteServiceImpl extends RouteService with Logging {
    * viewname -> 页面路径的映射
    */
   def mapView(className: String, viewName: String): String = {
-    viewMapper.map(className, viewName)
+    val profile = getProfile(className)
+    if (null == profile) throw new RuntimeException(s"no convention profile for $className")
+    viewMapper.map(className, viewName, profile)
   }
 }

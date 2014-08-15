@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<profiles>
+  <profile package="*">
+    <action scan="true" suffix="Action" defaultMethod="index"/>
+    <view path="/" style="full" suffix=".ftl" />
+    <uri path="/" suffix=""  style="seo" />
+  </profile>
+  <profile package="org.beangle.webmvc.*.action"/>
+</profiles>
+
+#default.actionPattern=default
+#default.actionSuffix=Action
+#default.actionScan=true
+#default.viewPath=/
+#default.viewPathStyle=full
+#default.viewSuffix=.ftl
+#default.uriPath=/
+#default.uriPathStyle=seo
+#default.uriSuffix=
+#default.defaultMethod=index

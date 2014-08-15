@@ -1,11 +1,10 @@
 package org.beangle.webmvc.view.freemarker
 
 import java.io.{ FileNotFoundException, IOException }
-
 import org.beangle.webmvc.route.ViewMapper
-
 import freemarker.cache.TemplateLoader
 import freemarker.template.Configuration
+import org.beangle.webmvc.route.RouteService
 
 /**
  * Try to find template
@@ -19,15 +18,17 @@ trait TemplateFinder {
 /**
  * Find template in class hierarchy with configuration without caching.
  */
-class TemplateFinderByConfig(configuration: Configuration, viewMapper: ViewMapper) extends TemplateFinder {
+class TemplateFinderByConfig(configuration: Configuration, routeService: RouteService) extends TemplateFinder {
 
   def find(actionClass: Class[_], viewName: String, suffix: String): String = {
     var path: String = null
     var superClass = actionClass
     var source: Object = null
+    val profile = routeService.getProfile(actionClass.getName)
+    val viewMapper = routeService.viewMapper
     do {
       val buf = new StringBuilder
-      buf.append(viewMapper.map(superClass.getName, viewName))
+      buf.append(viewMapper.map(superClass.getName, viewName, profile))
       buf.append(suffix)
       path = buf.toString
       var templateName = path
@@ -49,7 +50,7 @@ class TemplateFinderByConfig(configuration: Configuration, viewMapper: ViewMappe
 /**
  * Try find template in class hierarchy,caching missing result.
  */
-class TemplateFinderByLoader(val loader: TemplateLoader, val viewMapper: ViewMapper) extends TemplateFinder {
+class TemplateFinderByLoader(loader: TemplateLoader, routeService: RouteService) extends TemplateFinder {
 
   private val missings = new collection.mutable.HashSet[String]
 
@@ -58,9 +59,11 @@ class TemplateFinderByLoader(val loader: TemplateLoader, val viewMapper: ViewMap
     var superClass = actionClass
     var source: Object = null
     var breakWhile = false
+    val profile = routeService.getProfile(actionClass.getName)
+    val viewMapper = routeService.viewMapper
     do {
       val buf = new StringBuilder
-      buf.append(viewMapper.map(superClass.getName, viewName))
+      buf.append(viewMapper.map(superClass.getName, viewName, profile))
       buf.append(suffix)
       path = buf.toString
       var templateName = path
