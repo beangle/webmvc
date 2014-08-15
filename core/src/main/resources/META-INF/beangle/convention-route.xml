@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<profiles>
+  <profile name="beangle" pattern="org.beangle.webmvc.*.action"/>
+</profiles>
