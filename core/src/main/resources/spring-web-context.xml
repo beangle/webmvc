@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <bean id="BeangeSpringConfigProcessor" class="org.beangle.spring.config.SpringConfigProcessor">
-    <property name="moduleLocations" value="classpath*:META-INF/beangle/webmodule.properties" />
+    <property name="moduleLocations" value="classpath*:META-INF/beangle/web-module.properties" />
     <property name="reconfigLocations" value=";classpath*:spring-web-config.xml" />
   </bean>
 
