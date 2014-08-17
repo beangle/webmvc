@@ -15,8 +15,7 @@ object ActionFinder {
     def apply(clazz: Class[_]): Boolean = {
       val className = clazz.getName
       if (className.endsWith(suffix)) {
-        val profile = routeService.getProfile(className)
-        null != profile && profile.actionScan
+        null != routeService.getProfile(className)
       } else false
     }
   }

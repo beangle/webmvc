@@ -1,13 +1,14 @@
 package org.beangle.webmvc.route.impl
 
 import java.lang.reflect.Method
+
+import scala.Range
+
 import org.beangle.commons.lang.Arrays
+import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.reflect.ClassInfo
-import org.beangle.webmvc.annotation.{ ignore, mapping }
+import org.beangle.webmvc.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.route.{ ActionMapping, ActionMappingBuilder, RouteService }
-import org.beangle.webmvc.annotation.action
-import org.beangle.commons.lang.Strings
-import org.beangle.webmvc.annotation.param
 
 class DefaultActionMappingBuilder(val routeService: RouteService) extends ActionMappingBuilder {
 
@@ -24,7 +25,7 @@ class DefaultActionMappingBuilder(val routeService: RouteService) extends Action
           val method = minfos.head.method
           if (isActionMethod(method)) {
             val ann = method.getAnnotation(classOf[mapping])
-            val httpMethod = if (null != ann && ann.method != "") ann.method.toUpperCase.intern else null
+            val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else null
             val url = result + "/" + (if (null != ann) ann.value else methodName)
             val urlParams = parse(url)
             val urlPathNames = urlParams.keySet.toList.sorted.map { i => urlParams(i) }
@@ -47,7 +48,7 @@ class DefaultActionMappingBuilder(val routeService: RouteService) extends Action
   }
 
   def parse(pattern: String): Map[Integer, String] = {
-    var parts = Strings.split(pattern, "/")
+    var parts = split(pattern, "/")
     var params = new collection.mutable.HashMap[Integer, String]
     var i = 0
     while (i < parts.length) {

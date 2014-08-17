@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <profiles>
   <profile name="default" pattern="*">
-    <action scan="true" suffix="Action" defaultMethod="index"/>
+    <action suffix="Action" defaultMethod="index"/>
     <view path="/" style="full" suffix=".ftl" />
     <uri path="/" suffix=""  style="seo" />
   </profile>

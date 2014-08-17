@@ -5,10 +5,10 @@ import java.{ lang => jl }
 import scala.collection.mutable
 
 import org.beangle.commons.http.HttpMethods.GET
-import org.beangle.commons.lang.Strings
+import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.route.RequestMapper
-import org.beangle.webmvc.route.RequestMapper.{ DefaultMethod, MethodParam, HttpMethodMap, HttpMethods }
+import org.beangle.webmvc.route.RequestMapper.{ DefaultMethod, HttpMethodMap, HttpMethods, MethodParam }
 import org.beangle.webmvc.route.RequestMapping
 
 import javax.servlet.http.HttpServletRequest
@@ -79,7 +79,7 @@ class RequestMappings {
 
   def add(mapping: RequestMapping): Unit = {
     val action = mapping.action
-    val url = if (null != action.httpMethod) action.url + "/" + action.httpMethod.toLowerCase() else action.url
+    val url = if (null != action.httpMethod && isNotEmpty(HttpMethodMap(action.httpMethod))) action.url + "/" + HttpMethodMap(action.httpMethod) else action.url
 
     if (action.isPattern) add(url, mapping, this)
     else mappings.put(action.url, mapping)
@@ -101,7 +101,7 @@ class RequestMappings {
     val directMapping = mappings.get(uri)
     if (None != directMapping) return directMapping
 
-    val parts = Strings.split(uri, '/')
+    val parts = split(uri, '/')
     val result = find(0, parts, this)
     result match {
       case Some(m) =>

@@ -22,7 +22,7 @@
     <module>core</module>
     <module>struts2</module>
     <module>springmvc</module>
-    <module>bootstrap</module>
+    <module>bootstrapui</module>
     <module>s2config</module>
   </modules>
 

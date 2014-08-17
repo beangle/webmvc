@@ -1,10 +1,7 @@
 package org.beangle.webmvc.route
 
-import java.{ util => ju }
 import org.beangle.commons.lang.Objects
-import org.beangle.commons.lang.Strings._
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.beangle.commons.lang.Strings.{ contains, isEmpty, split, substringBeforeLast, uncapitalize }
 import org.beangle.commons.logging.Logging
 
 object Profile extends Logging {
@@ -36,14 +33,6 @@ object Profile extends Logging {
   }
 }
 /**
- * 路由调转配置
- *
- * @author chaostone <br>
- *         /:controller:ext =>:method=index||get("method")
- *         /:controller/:method:ext
- */
-import Profile._
-/**
  * name: 配置名
  * actionPattern :action所在的包,匹配action的唯一条件
  */
@@ -51,9 +40,6 @@ final class Profile(val name: String, val actionPattern: String) extends Compara
 
   // action类名后缀
   var actionSuffix: String = _
-
-  // 扫描action
-  var actionScan: Boolean = _
 
   // 缺省的action中的方法
   var defaultMethod = "index"
@@ -85,7 +71,7 @@ final class Profile(val name: String, val actionPattern: String) extends Compara
   def matches(className: String): Option[MatchInfo] = {
     var matchInfo = matchInfos.get(className)
     if (matchInfo.isEmpty) {
-      val newMatchInfo = getMatchInfo(className, split(actionPattern, '*'))
+      val newMatchInfo = Profile.getMatchInfo(className, split(actionPattern, '*'))
       if (!newMatchInfo.isEmpty) {
         matchInfos.put(className, newMatchInfo.get)
         matchInfo = newMatchInfo
@@ -160,7 +146,7 @@ final class Profile(val name: String, val actionPattern: String) extends Compara
   }
 
   override def toString: String = Objects.toStringBuilder(this).add("name", name).add("actionPattern", actionPattern)
-    .add("actionSuffix", actionSuffix).add("actionScan", actionScan.toString).add("viewPath", viewPath)
+    .add("actionSuffix", actionSuffix).add("viewPath", viewPath)
     .add("viewPathStyle", viewPathStyle).add("viewSuffix", viewSuffix).add("uriPath", uriPath)
     .add("uriPathStyle", uriPathStyle).add("uriSuffix", uriSuffix)
     .add("defaultMethod", defaultMethod).toString

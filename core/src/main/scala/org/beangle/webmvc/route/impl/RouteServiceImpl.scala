@@ -40,10 +40,9 @@ object RouteServiceImpl extends Logging {
       val profile = new Profile(name, pattern)
       val actionNodes = profileElem \ "action"
       if (actionNodes.isEmpty) {
-        copyDefaultProperties(profile, "actionScan", "actionSuffix", "defaultMethod")
+        copyDefaultProperties(profile, "actionSuffix", "defaultMethod")
       } else {
         actionNodes foreach { elem =>
-          readProperty(elem, profile, "scan", "actionScan")
           readProperty(elem, profile, "suffix", "actionSuffix")
           readProperty(elem, profile, "defaultMethod", "defaultMethod")
         }
