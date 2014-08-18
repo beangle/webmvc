@@ -4,6 +4,7 @@ import org.beangle.commons.lang.Strings
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.{EntityMetadata, EntityType}
 import org.beangle.data.model.util.ConvertPopulator
+import org.beangle.webmvc.api.context.Params
 
 object PopulateHelper {
 

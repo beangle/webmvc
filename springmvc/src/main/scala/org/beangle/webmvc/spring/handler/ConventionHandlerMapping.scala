@@ -2,46 +2,39 @@ package org.beangle.webmvc.spring.handler
 
 import java.{ util => ju }
 import org.beangle.commons.lang.reflect.ClassInfo
-import org.beangle.webmvc.context.{ ActionContextBuilder, ContextHolder }
-import org.beangle.webmvc.route.{ ActionFinder, RouteService }
-import org.beangle.webmvc.route.impl.{ HierarchicalUrlMapper, RequestMappingBuilder }
+import org.beangle.webmvc.dispatch.{ HierarchicalUrlMapper, RequestMappingBuilder }
 import org.springframework.web.servlet.HandlerExecutionChain
 import org.springframework.web.servlet.handler.AbstractDetectingUrlHandlerMapping
 import javax.servlet.http.HttpServletRequest
-import org.beangle.webmvc.action.ActionTextResource
 import org.beangle.commons.text.i18n.spi.TextFormater
 import org.beangle.commons.text.i18n.spi.TextBundleRegistry
 import org.beangle.commons.bean.Initializing
+import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.context.ActionFinder
+import org.beangle.webmvc.context.ActionContextHelper
+import org.beangle.commons.text.i18n.spi.TextResourceProvider
+import org.beangle.webmvc.context.ActionTextResource
 
-class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetectingUrlHandlerMapping with Initializing {
-
-  var actionSuffix: String = "Action"
+class ConventionHandlerMapping(configurer: Configurer) extends AbstractDetectingUrlHandlerMapping {
 
   var resolver: HierarchicalUrlMapper = _
 
-  var registry: TextBundleRegistry = _
+  var localeResover: org.beangle.webmvc.spi.context.LocaleResolver = _
 
-  var formater: TextFormater = _
-
-  var localeResover: org.beangle.webmvc.context.LocaleResolver = _
-
-  override def init() {
-    registry.addDefaults("beangle", "application")
-  }
+  var textResourceProvider: TextResourceProvider = _
 
   /**
    * generate url for every handler
    */
   protected override def determineUrlsForHandler(beanName: String): Array[String] = {
     val bean = getApplicationContext().getBean(beanName)
-    val actionTest = new ActionFinder.Test(actionSuffix, routeService)
+    val actionTest = new ActionFinder.Test(configurer)
     if (actionTest(bean.getClass)) {
-      val patterns = new collection.mutable.ListBuffer[String]
       val classInfo = ClassInfo.get(bean.getClass)
-      routeService.buildMappings(bean.getClass).map {
+      configurer.buildMappings(bean.getClass).map {
         case (action, method) =>
           resolver.add(RequestMappingBuilder.build(action, bean, method))
-          patterns += action.url
       }
       null
     } else null
@@ -51,9 +44,9 @@ class ConventionHandlerMapping(routeService: RouteService) extends AbstractDetec
     resolver.resolve(request) match {
       case Some(am) =>
         //FIXME for uploads
-        val context = ActionContextBuilder.build(request, null, localeResover, am)
-        context.textResource = new ActionTextResource(am.action.clazz, context.locale, registry, formater)
+        val context = ActionContextHelper.build(request, null, localeResover, am)
         ContextHolder.contexts.set(context)
+        context.textResource = textResourceProvider.getTextResource(context.locale)
         am.handler
       case None => null
     }

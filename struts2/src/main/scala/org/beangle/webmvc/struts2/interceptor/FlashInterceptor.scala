@@ -1,6 +1,6 @@
 package org.beangle.webmvc.struts2.interceptor
 
-import org.beangle.webmvc.context.ContextHolder
+import org.beangle.webmvc.api.context.ContextHolder
 
 import com.opensymphony.xwork2.ActionInvocation
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor

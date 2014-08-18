@@ -1,11 +1,12 @@
 package org.beangle.webmvc.view.component
 
 import java.io.Writer
-import java.{util => ju}
+import java.{ util => ju }
 
 import org.beangle.commons.bean.PropertyUtils
-import org.beangle.commons.lang.{Chars, Strings}
-import org.beangle.webmvc.context.ContextHolder
+import org.beangle.commons.lang.{ Chars, Strings }
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.context.ActionContextHelper
 
 import javax.servlet.http.HttpServletRequest
 
@@ -62,7 +63,7 @@ class UIBean(context: ComponentContext) extends Component(context) {
   }
 
   protected final def render(uri: String): String = {
-    context.uriRender.render(ContextHolder.context.mapping.action, uri)
+    context.uriRender.render(ActionContextHelper.getMapping(ContextHolder.context).action, uri)
   }
 
   protected final def generateIdIfEmpty(): Unit = {

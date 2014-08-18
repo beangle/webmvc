@@ -7,10 +7,10 @@ import org.beangle.commons.bean.Initializing
 import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.Throwables
 import org.beangle.commons.logging.Logging
-import org.beangle.webmvc.context.ContextHolder
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.spi.view.tag.TagLibrary
+import org.beangle.webmvc.spi.view.template.TemplateEngine
 import org.beangle.webmvc.view.component.Component
-import org.beangle.webmvc.view.tag.TagLibrary
-import org.beangle.webmvc.view.template.AbstractTemplateEngine
 
 import freemarker.cache.StrongCacheStorage
 import freemarker.core.ParseException
@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest
  *
  * @author chaostone
  */
-class FreemarkerTemplateEngine extends AbstractTemplateEngine with Logging with Initializing {
+class FreemarkerTemplateEngine extends TemplateEngine with Logging with Initializing {
 
   protected val config = buildConfig()
   private val templateModelAttribute = ".freemarker.TemplateModel"

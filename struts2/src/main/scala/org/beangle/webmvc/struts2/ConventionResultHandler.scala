@@ -7,9 +7,13 @@ import org.apache.struts2.dispatcher.ServletRedirectResult
 import org.apache.struts2.views.freemarker.FreemarkerManager
 import org.beangle.commons.lang.Strings.{ contains, isEmpty, isNotEmpty, substringAfter, substringBefore }
 import org.beangle.commons.web.util.RequestUtils.getServletPath
-import org.beangle.webmvc.context.ContextHolder
-import org.beangle.webmvc.route.{ Action, ClassAction, RequestMapper, RequestMapping, RouteService, StrutsAction, URIAction }
-import org.beangle.webmvc.route.impl.DefaultViewMapper
+import org.beangle.webmvc.api.action.{ To, ToClass, ToStruts, ToURI, to }
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.context.ActionContextHelper
+import org.beangle.webmvc.spi.dispatch.{ RequestMapper, RequestMapping }
+import org.beangle.webmvc.spi.view.ViewMapper
+import org.beangle.webmvc.view.DefaultViewMapper
 import org.beangle.webmvc.view.freemarker.TemplateFinderByConfig
 
 import com.opensymphony.xwork2.{ ActionContext, ObjectFactory, Result, UnknownHandler, XWorkException }
@@ -37,13 +41,16 @@ class ConventionResultHandler extends UnknownHandler {
   @Inject
   var resolver: RequestMapper = _
 
-  var routeService: RouteService = _
+  var viewMapper: ViewMapper = _
+
+  var configurer: Configurer = _
 
   @Inject
-  def this(configuration: Configuration, freemarkerManager: FreemarkerManager, routeService: RouteService) = {
+  def this(configuration: Configuration, freemarkerManager: FreemarkerManager, configurer: Configurer, viewMapper: ViewMapper) = {
     this()
-    this.routeService = routeService
-    this.templateFinder = new TemplateFinderByConfig(freemarkerManager.getConfig(), routeService)
+    this.configurer = configurer
+    this.viewMapper = viewMapper
+    this.templateFinder = new TemplateFinderByConfig(freemarkerManager.getConfig(), viewMapper, configurer)
     val types = Map(("freemarker", ".ftl"), ("velocity", ".vm"), ("dispatcher", ".jsp"))
     val pc = configuration.getPackageConfig("struts-default")
     val resTypeConfigs = new collection.mutable.HashMap[String, ResultTypeConfig]
@@ -68,11 +75,11 @@ class ConventionResultHandler extends UnknownHandler {
       val methodName = context.getActionInvocation().getProxy().getMethod()
       if (isEmpty(newResultCode)) newResultCode = "index"
       val viewName = DefaultViewMapper.defaultView(methodName, newResultCode)
-      val suffix = routeService.getProfile(className).viewSuffix
+      val suffix = configurer.getProfile(className).viewSuffix
       if (".ftl" == suffix) path = templateFinder.find(actionClass, viewName, suffix)
       if (null == path) {
         val buf = new StringBuilder()
-        buf.append(routeService.mapView(className, DefaultViewMapper.defaultView(methodName, newResultCode)))
+        buf.append(viewMapper.map(className, DefaultViewMapper.defaultView(methodName, newResultCode), configurer.getProfile(className)))
         buf.append(suffix)
         path = buf.toString
       }
@@ -131,27 +138,27 @@ class ConventionResultHandler extends UnknownHandler {
   /**
    * 依据跳转路径进行构建
    */
-  private def buildAction(path: String, forward: Boolean): StrutsAction = {
+  private def buildAction(path: String, forward: Boolean): ToStruts = {
     var mapping: RequestMapping = null
     val action = ContextHolder.context.temp[Object]("dispatch_action") match {
-      case action: Action => {
+      case action: To => {
         action match {
-          case ca: ClassAction => resolver.antiResolve(ca.clazz, ca.method) match {
+          case ca: ToClass => resolver.antiResolve(ca.clazz, ca.method) match {
             case Some(rm) =>
               if (forward) {
                 mapping = rm
-                new StrutsAction(rm.action.namespace, rm.action.name, rm.action.method).params(ca.parameters)
+                new ToStruts(rm.action.namespace, rm.action.name, rm.action.method).params(ca.parameters)
               } else {
-                Action.toURIAction(ca, rm.action, ContextHolder.context.params).toStruts
+                rm.action.toURI(ca, ContextHolder.context.params).toStruts
               }
             case None => throw new RuntimeException(s"Cannot find action mapping for ${ca.clazz.getName} ${ca.method}")
           }
-          case ua: URIAction => ua.toStruts
-          case sa: StrutsAction => sa
+          case ua: ToURI => ua.toStruts
+          case sa: ToStruts => sa
         }
       }
       case _ => {
-        Action(if (path.startsWith("?")) getServletPath(ServletActionContext.getRequest()) + path else path).toStruts
+        to(if (path.startsWith("?")) getServletPath(ServletActionContext.getRequest()) + path else path).toStruts
       }
     }
     if (forward) {
@@ -161,12 +168,12 @@ class ConventionResultHandler extends UnknownHandler {
           case None => throw new RuntimeException(s"Cannot find action mapping for ${action.uri}")
         }
       }
-      ContextHolder.context.mapping = mapping
+      ActionContextHelper.setMapping(ContextHolder.context, mapping)
     }
     action
   }
 
-  private def addNamespaceAction(action: StrutsAction, params: collection.mutable.Map[String, String]) {
+  private def addNamespaceAction(action: ToStruts, params: collection.mutable.Map[String, String]) {
     params.put("namespace", action.namespace)
     params.put("actionName", action.name)
   }

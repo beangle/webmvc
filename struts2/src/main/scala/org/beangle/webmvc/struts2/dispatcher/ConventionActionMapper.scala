@@ -1,31 +1,31 @@
 package org.beangle.webmvc.struts2.dispatcher
 
 import java.io.File
-
 import org.apache.struts2.ServletActionContext
-import org.apache.struts2.dispatcher.mapper.{ActionMapper, ActionMapping, DefaultActionMapper}
+import org.apache.struts2.dispatcher.mapper.{ ActionMapper, ActionMapping, DefaultActionMapper }
 import org.apache.struts2.dispatcher.multipart.MultiPartRequestWrapper
-import org.beangle.commons.lang.Arrays.{isBlank, isEmpty}
-import org.beangle.commons.text.i18n.spi.{TextBundleRegistry, TextFormater}
-import org.beangle.webmvc.action.ActionTextResource
-import org.beangle.webmvc.context.{ActionContextBuilder, ContextHolder, LocaleResolver}
-import org.beangle.webmvc.route.RequestMapper
-
+import org.beangle.commons.lang.Arrays.{ isBlank, isEmpty }
+import org.beangle.commons.text.i18n.spi.{ TextBundleRegistry, TextFormater }
 import com.opensymphony.xwork2.config.ConfigurationManager
 import com.opensymphony.xwork2.inject.Inject
-
 import javax.servlet.http.HttpServletRequest
+import org.beangle.webmvc.spi.context.LocaleResolver
+import org.beangle.webmvc.spi.dispatch.RequestMapper
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.context.ActionContextHelper
+import org.beangle.commons.text.i18n.impl.DefaultTextFormater
+import org.beangle.webmvc.context.ActionTextResource
+import org.beangle.commons.text.i18n.impl.DefaultTextBundleRegistry
+import org.beangle.webmvc.context.ActionTextResourceProvider
 
 class ConventionActionMapper extends DefaultActionMapper with ActionMapper {
 
   @Inject
   var resolver: RequestMapper = _
 
-  @Inject
-  var registry: TextBundleRegistry = _
+  val textResourceProvider = new ActionTextResourceProvider(new DefaultTextBundleRegistry(), new DefaultTextFormater)
 
-  @Inject
-  var formater: TextFormater = _
+  textResourceProvider.init()
 
   @Inject
   var localeResolver: LocaleResolver = _
@@ -37,12 +37,11 @@ class ConventionActionMapper extends DefaultActionMapper with ActionMapper {
       case Some(m) =>
         val response = ServletActionContext.getResponse
         val context = request match {
-          case mp: MultiPartRequestWrapper => ActionContextBuilder.build(request, response, localeResolver, m, getUploads(mp))
-          case _ => ActionContextBuilder.build(request, response, localeResolver, m)
+          case mp: MultiPartRequestWrapper => ActionContextHelper.build(request, response, localeResolver, m, getUploads(mp))
+          case _ => ActionContextHelper.build(request, response, localeResolver, m)
         }
-        context.textResource = new ActionTextResource(m.action.clazz, context.locale, registry, formater)
-
         ContextHolder.contexts.set(context)
+        context.textResource = textResourceProvider.getTextResource(context.locale)
 
         val am = new ActionMapping()
         val action = m.action

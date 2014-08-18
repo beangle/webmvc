@@ -7,5 +7,12 @@
   <artifactId>beangle-webmvc-core</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMvc Core</name>
+  <name>Beangle WebMVC Core</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.beangle.webmvc</groupId>
+      <artifactId>beangle-webmvc-api</artifactId>
+    </dependency>
+  </dependencies>
 </project>

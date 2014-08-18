@@ -1,12 +1,15 @@
 package org.beangle.webmvc.action
 
 import scala.reflect.ClassTag
+
 import org.beangle.commons.collection.page.PageLimit
 import org.beangle.commons.lang.Strings
 import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
-import org.beangle.webmvc.helper.{ Params, PopulateHelper, QueryHelper }
-import org.beangle.webmvc.annotation.ignore
+import org.beangle.webmvc.api.action.ActionSupport
+import org.beangle.webmvc.api.annotation.ignore
+import org.beangle.webmvc.api.context.Params
+import org.beangle.webmvc.helper.{ PopulateHelper, QueryHelper }
 
 abstract class EntityActionSupport extends ActionSupport {
 
@@ -92,7 +95,7 @@ abstract class EntityActionSupport extends ActionSupport {
   }
 
   @ignore
-  protected[action] final def entityName: String = entityType.getName
+  final def entityName: String = entityType.getName
 
   @ignore
   protected def entityType: Class[_]

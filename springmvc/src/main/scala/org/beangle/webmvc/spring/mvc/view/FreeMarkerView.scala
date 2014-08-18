@@ -1,14 +1,16 @@
 package org.beangle.webmvc.spring.mvc.view
 
 import java.{ util => ju }
+
 import scala.collection.JavaConversions.mapAsScalaMap
-import org.beangle.webmvc.view.tag.TagLibrary
+
+import org.beangle.commons.logging.Logging
+import org.beangle.webmvc.spi.view.tag.TagLibrary
 import org.springframework.context.ApplicationContext
-import freemarker.template.SimpleHash
+
+import freemarker.template.{ SimpleHash, Template }
 import javax.servlet.ServletContext
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.commons.logging.Logging
-import freemarker.template.Template
 
 class FreeMarkerView extends org.springframework.web.servlet.view.freemarker.FreeMarkerView with Logging {
 

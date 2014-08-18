@@ -2,18 +2,16 @@ package org.beangle.webmvc.helper
 
 import java.text.{ ParseException, SimpleDateFormat }
 import java.{ util => ju }
+
 import org.beangle.commons.bean.PropertyUtils
 import org.beangle.commons.collection.page.{ Page, PageLimit }
 import org.beangle.commons.lang.{ Numbers, Strings }
+import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.CookieUtils
 import org.beangle.data.jpa.dao.OqlBuilder
-import org.beangle.data.model.dao.Condition
-import org.beangle.data.model.meta.EntityType
-import org.slf4j.LoggerFactory
-import javax.servlet.http.HttpServletRequest
-import org.beangle.commons.logging.Logging
 import org.beangle.data.model.Entity
-import org.beangle.webmvc.context.ContextHolder
+import org.beangle.data.model.dao.Condition
+import org.beangle.webmvc.api.context.{ ContextHolder, Params }
 
 object QueryHelper extends Logging {
 

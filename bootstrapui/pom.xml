@@ -4,7 +4,7 @@
     <artifactId>beangle-webmvc-parent</artifactId>
     <version>4.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>beangle-webmvc-bootstrap</artifactId>
+  <artifactId>beangle-webmvc-bootstrapui</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMvc Bootstrap</name>

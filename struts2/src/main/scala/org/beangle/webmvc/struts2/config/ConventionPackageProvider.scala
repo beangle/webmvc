@@ -13,10 +13,17 @@ import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.i18n.spi.TextBundleRegistry
 import org.beangle.commons.web.context.ServletContextHolder
-import org.beangle.webmvc.annotation.{ action, ignore, result, results }
-import org.beangle.webmvc.route.{ ActionFinder, ActionMapping, ContainerActionFinder, RequestMapper, RouteService, StrutsAction }
-import org.beangle.webmvc.route.impl.{ DefaultViewMapper, HierarchicalUrlMapper, RequestMappingBuilder }
-import org.beangle.webmvc.view.freemarker.{ TemplateFinder, TemplateFinderByLoader }
+import org.beangle.webmvc.api.action.ToStruts
+import org.beangle.webmvc.api.annotation.{ action, ignore, result, results }
+import org.beangle.webmvc.config.{ ActionMapping, Configurer }
+import org.beangle.webmvc.config.impl.ActionURIBuilder
+import org.beangle.webmvc.context.{ ActionFinder, ContainerActionFinder }
+import org.beangle.webmvc.dispatch.{ HierarchicalUrlMapper, RequestMappingBuilder }
+import org.beangle.webmvc.spi.dispatch.RequestMapper
+import org.beangle.webmvc.spi.view.ViewMapper
+import org.beangle.webmvc.spi.view.template.TemplateFinder
+import org.beangle.webmvc.view.DefaultViewMapper
+import org.beangle.webmvc.view.freemarker.TemplateFinderByLoader
 
 import com.opensymphony.xwork2.config.{ Configuration, ConfigurationException, PackageProvider }
 import com.opensymphony.xwork2.config.entities.{ ActionConfig, PackageConfig, ResultConfig }
@@ -31,14 +38,11 @@ import com.opensymphony.xwork2.util.finder.{ ClassLoaderInterface, ClassLoaderIn
  */
 class ConventionPackageProvider(val configuration: Configuration, val actionFinder: ActionFinder) extends PackageProvider with Logging {
 
-  @Inject("beangle.convention.action.suffix")
-  var actionSuffix: String = "Action"
-
   @Inject("struts.devMode")
   var devMode = "false"
 
   @Inject
-  var routeService: RouteService = _
+  var configurer: Configurer = _
 
   @Inject
   var registry: TextBundleRegistry = _
@@ -54,6 +58,9 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   @Inject
   var mapper: RequestMapper = _
+
+  @Inject
+  var viewMapper: ViewMapper = _
 
   @Inject
   var freemarkerManager: FreemarkerManager = _
@@ -85,7 +92,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     registry.addDefaults(defaultBundleNames.split(","): _*)
     registry.reloadable = java.lang.Boolean.parseBoolean(reloadBundles)
     val sc = ServletContextHolder.context
-    templateFinder = new TemplateFinderByLoader(freemarkerManager.getConfiguration(sc).getTemplateLoader(), routeService)
+    templateFinder = new TemplateFinderByLoader(freemarkerManager.getConfiguration(sc).getTemplateLoader(), viewMapper, configurer)
 
     val url = ClassLoaders.getResource("struts.properties")
     if (null != url) {
@@ -98,20 +105,34 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     }
   }
 
+  /**
+   * 根据class对应的profile获得ctl/action类中除去后缀后的名字。<br>
+   * 如果对应profile中是uriStyle,那么类中只保留简单类名，去掉后缀，并且小写第一个字母。<br>
+   * 否则加上包名，其中的.编成URI路径分割符。包名不做其他处理。<br>
+   * 复杂URL,以/开始
+   */
+  def build2StrutsAction(clazz: Class[_]): ToStruts = {
+    val profile = configurer.getProfile(clazz.getName)
+    val url = ActionURIBuilder.build(clazz, profile)
+    val lastSlash = url.lastIndexOf('/')
+    val result = Tuple2(url.substring(0, lastSlash), url.substring(lastSlash + 1))
+    new ToStruts(result._1, result._2, profile.defaultMethod)
+  }
+
   @throws(classOf[ConfigurationException])
   def loadPackages() {
     var watch = new Stopwatch(true)
     initReloadClassLoader()
     val packageConfigs = new collection.mutable.HashMap[String, PackageConfig.Builder]()
     var newActions, overrideActions = 0
-    val actionTypes = actionFinder.getActions(new ActionFinder.Test(actionSuffix, routeService))
+    val actionTypes = actionFinder.getActions(new ActionFinder.Test(configurer))
 
     val name2Clazz = new collection.mutable.HashMap[String, Class[_]]
     val name2Packages = new collection.mutable.HashMap[String, PackageConfig.Builder]
 
     for ((actionClass, beanName) <- actionTypes) {
-      var profile = routeService.getProfile(actionClass.getName)
-      val action = routeService.buildAction(actionClass)
+      var profile = configurer.getProfile(actionClass.getName)
+      val action = build2StrutsAction(actionClass)
       val key =
         if (action.namespace.equals("/")) action.namespace + action.name
         else action.namespace + "/" + action.name
@@ -136,7 +157,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
           name2Packages.put(key, pcb)
           // build all action to action mappings
           val classInfo = ClassInfo.get(actionClass)
-          routeService.buildMappings(actionClass) foreach {
+          configurer.buildMappings(actionClass) foreach {
             case (action, method) =>
               addAction2Mapper(action, beanName, method)
               if (method.getName == "index" && method.getParameterTypes.length == 0
@@ -183,7 +204,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   protected def isReloadEnabled: Boolean = devMode == "true"
 
-  protected def createActionConfig(pkgCfg: PackageConfig.Builder, action: StrutsAction, actionClass: Class[_], beanName: String): Boolean = {
+  protected def createActionConfig(pkgCfg: PackageConfig.Builder, action: ToStruts, actionClass: Class[_], beanName: String): Boolean = {
     var actionConfig = new ActionConfig.Builder(pkgCfg.getName, action.name, beanName)
     actionConfig.methodName(action.method)
     var actionName = action.name
@@ -239,7 +260,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
       }
     }
     // load ftl convension results
-    var suffix = routeService.getProfile(clazz.getName).viewSuffix
+    var suffix = configurer.getProfile(clazz.getName).viewSuffix
     if (preloadftl == "true" && suffix.endsWith(".ftl")) {
       var resultTypeConfig = configuration.getPackageConfig("struts-default").getAllResultTypeConfigs.get("freemarker")
       ClassInfo.get(clazz).getMethods foreach { mi =>
@@ -257,7 +278,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     configs
   }
 
-  protected def buildPackageConfig(actionClass: Class[_], action: StrutsAction, packageConfigs: collection.mutable.Map[String, PackageConfig.Builder]): PackageConfig.Builder = {
+  protected def buildPackageConfig(actionClass: Class[_], action: ToStruts, packageConfigs: collection.mutable.Map[String, PackageConfig.Builder]): PackageConfig.Builder = {
     // 循环查找父包
     var actionPkg = actionClass.getPackage.getName
     var parentPkg: PackageConfig = null

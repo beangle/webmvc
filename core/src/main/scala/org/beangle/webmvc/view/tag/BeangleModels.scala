@@ -4,7 +4,8 @@ import java.io.StringWriter
 import java.{ util => ju }
 
 import org.beangle.commons.collection.page.Page
-import org.beangle.webmvc.context.ContextHolder
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.context.ActionContextHelper
 import org.beangle.webmvc.view.UITheme
 import org.beangle.webmvc.view.component.{ Agent, Anchor, Checkbox, Checkboxes, ComponentContext, Css, Date, Dialog, Div, Email, Field, Foot, Form, Formfoot, Grid }
 import org.beangle.webmvc.view.component.{ Head, Iframe, Messages, Module, Navbar, Navitem, Pagebar, Password, Radio, Radios, Reset, Select, Select2, Startend, Submit, Tab, Tabs, Textarea, Textfield, Textfields, Toolbar, Validity }
@@ -17,7 +18,9 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   val textResource = ContextHolder.context.textResource
 
-  def url(url: String) = context.uriRender.render(ContextHolder.context.mapping.action, url)
+  def url(url: String) = {
+    context.uriRender.render(ActionContextHelper.getMapping(ContextHolder.context).action, url)
+  }
 
   def now = new ju.Date
 

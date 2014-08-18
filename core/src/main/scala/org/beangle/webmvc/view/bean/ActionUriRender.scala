@@ -2,8 +2,8 @@ package org.beangle.webmvc.view.bean
 
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.web.url.UrlRender
-import org.beangle.webmvc.context.ContextHolder
-import org.beangle.webmvc.route.ActionMapping
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.config.ActionMapping
 import org.beangle.commons.lang.time.Stopwatch
 
 /**

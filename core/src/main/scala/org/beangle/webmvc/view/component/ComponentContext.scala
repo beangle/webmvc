@@ -1,9 +1,8 @@
 package org.beangle.webmvc.view.component
 
-import scala.Range
-
-import org.beangle.webmvc.view.bean.{ ActionUriRender, UIIdGenerator }
-import org.beangle.webmvc.view.template.{ TemplateEngine, Theme, ThemeStack, Themes }
+import org.beangle.webmvc.spi.view.template.TemplateEngine
+import org.beangle.webmvc.view.bean.{ActionUriRender, UIIdGenerator}
+import org.beangle.webmvc.view.template.{Theme, ThemeStack, Themes}
 
 class ComponentContext(val uriRender: ActionUriRender, val idGenerator: UIIdGenerator, val templateEngine: TemplateEngine) {
 

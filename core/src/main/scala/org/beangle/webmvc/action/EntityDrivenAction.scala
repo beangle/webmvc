@@ -9,7 +9,7 @@ import org.beangle.data.model.Entity
 import org.beangle.data.model.bean.UpdatedBean
 import org.beangle.data.model.dao.{ GeneralDao, QueryBuilder }
 import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
-import org.beangle.webmvc.helper.Params
+import org.beangle.webmvc.api.context.Params
 
 abstract class EntityDrivenAction extends EntityActionSupport {
 

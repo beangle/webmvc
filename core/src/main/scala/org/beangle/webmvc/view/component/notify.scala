@@ -1,11 +1,6 @@
 package org.beangle.webmvc.view.component
 
-import org.beangle.commons.collection.Collections
-import org.beangle.webmvc.context.ActionMessages
-import org.beangle.webmvc.context.ActionContext
-import org.beangle.webmvc.context.Flash
-import org.beangle.webmvc.context.ActionContext
-import org.beangle.webmvc.context.ContextHolder
+import org.beangle.webmvc.api.context.{ ActionMessages, ContextHolder, Flash }
 
 class Messages(context: ComponentContext) extends UIBean(context) {
   var actionMessages: List[String] = null

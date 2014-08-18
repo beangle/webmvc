@@ -13,7 +13,6 @@
   <constant name="struts.configuration.xml.reload" value="false"/>
   <constant name="beangle.i18n.reload" value="false"/>
   <constant name="beangle.i18n.resources" value="beangle,application"/>
-  <constant name="beangle.convention.action.suffix" value="Action"/>
   <constant name="beangle.convention.default.parent.package" value="beangle"/>
   <constant name="beangle.convention.preloadftl" value="true"/>
   <!-- max 50M -->
@@ -40,14 +39,15 @@
   <bean type="com.opensymphony.xwork2.UnknownHandler" class="org.beangle.webmvc.struts2.ConventionResultHandler"/>
   <bean type="org.apache.struts2.dispatcher.mapper.ActionMapper" name="beangle" class="org.beangle.webmvc.struts2.dispatcher.ConventionActionMapper"/>
   <bean type="com.opensymphony.xwork2.config.PackageProvider" name="beangle" class="org.beangle.webmvc.struts2.config.ConventionPackageProvider"/>
-  <bean type="org.beangle.webmvc.route.RouteService" name="default" class="org.beangle.webmvc.route.impl.RouteServiceImpl"/>
-  <bean type="org.beangle.webmvc.route.RequestMapper" name="default" class="org.beangle.webmvc.route.impl.HierarchicalUrlMapper"/>
-  <bean type="org.beangle.webmvc.context.LocaleResolver" name="default" class="org.beangle.webmvc.context.ParamLocaleResolver"/>
+  <bean type="org.beangle.webmvc.config.Configurer" name="default" class="org.beangle.webmvc.config.impl.DefaultConfigurer"/>
+  <bean type="org.beangle.webmvc.spi.dispatch.RequestMapper" name="default" class="org.beangle.webmvc.dispatch.HierarchicalUrlMapper"/>
+  <bean type="org.beangle.webmvc.spi.context.LocaleResolver" name="default" class="org.beangle.webmvc.context.ParamLocaleResolver"/>
+  <bean type="org.beangle.webmvc.spi.view.ViewMapper" name="default" class="org.beangle.webmvc.view.DefaultViewMapper"/>
 
   <bean type="com.opensymphony.xwork2.ActionProxyFactory" name="beangle" class="org.beangle.webmvc.struts2.BeangleActionProxyFactory" />
   <bean type="com.opensymphony.xwork2.factory.ActionFactory" name="beangle" class="org.beangle.webmvc.struts2.factory.BeangleActionFactory" />
   <bean type="com.opensymphony.xwork2.factory.ResultFactory" name="beangle" class="org.beangle.webmvc.struts2.factory.BeangleResultFactory" />
-  
+
   <constant name="struts.freemarker.manager.classname" value="org.beangle.webmvc.struts2.view.BeangleFreemarkerManager"/>
   <bean type="org.apache.struts2.views.TagLibraryModelProvider" name="b" class="org.beangle.webmvc.struts2.view.BeangleStrutsTagLibrary" />
   

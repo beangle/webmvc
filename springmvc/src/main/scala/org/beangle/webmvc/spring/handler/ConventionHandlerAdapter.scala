@@ -1,16 +1,21 @@
 package org.beangle.webmvc.spring.handler
 
 import org.beangle.commons.lang.Strings.{ contains, substringBefore }
-import org.beangle.webmvc.context.ContextHolder
-import org.beangle.webmvc.route.{ Action, ClassAction, Handler, RequestMapper, RouteService }
-import org.beangle.webmvc.route.impl.DefaultViewMapper
+import org.beangle.webmvc.api.action.ToClass
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.context.ActionContextHelper
+import org.beangle.webmvc.spi.dispatch.{ Handler, RequestMapper }
+import org.beangle.webmvc.spi.view.ViewMapper
+import org.beangle.webmvc.view.DefaultViewMapper
 import org.springframework.web.servlet.{ HandlerAdapter, ModelAndView }
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
-class ConventionHandlerAdapter(routeService: RouteService) extends HandlerAdapter {
+class ConventionHandlerAdapter(configurer: Configurer) extends HandlerAdapter {
 
   var mapper: RequestMapper = _
+  var viewMapper: ViewMapper = _
   /**
    * Just support Support subclass
    */
@@ -19,13 +24,13 @@ class ConventionHandlerAdapter(routeService: RouteService) extends HandlerAdapte
   }
 
   override def handle(request: HttpServletRequest, response: HttpServletResponse, handler: Object): ModelAndView = {
-    val am = ContextHolder.context.mapping
+    val am = ActionContextHelper.getMapping(ContextHolder.context)
     val result = String.valueOf(am.handler.handle(am.action))
     if (contains(result, ":")) {
       val prefix = substringBefore(result, ":")
-      val ca = ContextHolder.context.temp[Object]("dispatch_action").asInstanceOf[ClassAction]
+      val ca = ContextHolder.context.temp[Object]("dispatch_action").asInstanceOf[ToClass]
       val url = mapper.antiResolve(ca.clazz, ca.method) match {
-        case Some(rm) => Action.toURIAction(ca, rm.action, ContextHolder.context.params).url
+        case Some(rm) => rm.action.toURI(ca, ContextHolder.context.params).url
         case None => throw new RuntimeException(s"Cannot find action mapping for ${ca.clazz.getName} ${ca.method}")
       }
       if (prefix == "chain") {
@@ -37,7 +42,8 @@ class ConventionHandlerAdapter(routeService: RouteService) extends HandlerAdapte
       }
       null
     } else {
-      new ModelAndView(routeService.mapView(am.action.clazz.getName, DefaultViewMapper.defaultView(am.action.method, result)), null)
+      val className = am.action.clazz.getName
+      new ModelAndView(viewMapper.map(className, DefaultViewMapper.defaultView(am.action.method, result), configurer.getProfile(className)), null)
     }
   }
 

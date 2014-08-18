@@ -4,8 +4,8 @@ import org.beangle.commons.config.property.PropertyConfig
 import org.beangle.data.model.Entity
 import org.beangle.data.model.dao.GeneralDao
 import org.beangle.data.model.meta.EntityMetadata
-import org.beangle.webmvc.annotation.{mapping, param}
-import org.beangle.webmvc.helper.Params
+import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
+import org.beangle.webmvc.api.context.Params
 
 abstract class RestfulEntityAction extends EntityActionSupport {
 

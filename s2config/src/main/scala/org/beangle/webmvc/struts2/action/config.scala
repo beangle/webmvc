@@ -28,8 +28,7 @@ import org.apache.struts2.views.freemarker.FreemarkerManager
 import org.apache.struts2.views.velocity.VelocityManager
 import org.beangle.commons.lang.{ ClassLoaders, Objects }
 import org.beangle.commons.lang.reflect.BeanManifest
-import org.beangle.webmvc.action.ActionSupport
-import org.beangle.webmvc.route.Action
+import org.beangle.webmvc.api.action.{ ActionSupport, to }
 import org.beangle.webmvc.struts2.action.helper.S2ConfigurationHelper
 
 import com.opensymphony.xwork2.{ ActionContext, ActionProxyFactory, ObjectFactory, TextProvider }
@@ -49,7 +48,7 @@ class ConfigAction extends ActionSupport {
   }
 
   def index(): String = {
-    return forward(Action(this, "actions"))
+    return forward(to(this, "actions"))
   }
 
   def actions(): String = {

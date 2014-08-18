@@ -1,18 +1,14 @@
 package org.beangle.webmvc.view.component
 
-import org.beangle.commons.collection.page.Page
-import org.beangle.commons.lang.Strings
-import org.beangle.commons.lang.Objects
 import java.io.Writer
-import org.beangle.commons.lang.Numbers
-import org.beangle.webmvc.view.template.Theme
-import freemarker.template.utility.StringUtil
-import Grid._
-import org.beangle.webmvc.view.template.Theme
-import org.beangle.webmvc.view.template.Themes
-import org.beangle.webmvc.context.ContextHolder
-import org.beangle.commons.bean.PropertyUtils
 import java.{ util => ju }
+
+import org.beangle.commons.collection.page.Page
+import org.beangle.commons.lang.{ Objects, Strings }
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.view.template.Themes
+
+import freemarker.template.utility.StringUtil
 object Grid {
 
   class Filter(context: ComponentContext) extends ClosingUIBean(context) {
@@ -223,7 +219,9 @@ object Grid {
     }
   }
 }
+
 class Grid(context: ComponentContext) extends ClosingUIBean(context) {
+  import Grid._
   val cols = new collection.mutable.ListBuffer[Col]
   val colTitles = new collection.mutable.HashSet[Object]
   var items: Object = _
