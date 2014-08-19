@@ -16,6 +16,8 @@ class ActionContext(val request: HttpServletRequest, var response: HttpServletRe
 
   var textResource: TextResource = _
 
+  var flashMap: Flash = _
+
   private val temp = new collection.mutable.HashMap[String, Any]
 
   def attribute(name: String, value: Any): Unit = {
@@ -41,14 +43,17 @@ class ActionContext(val request: HttpServletRequest, var response: HttpServletRe
   }
 
   def flash: Flash = {
-    val session = request.getSession()
-    if (null != session) {
-      val flash = session.getAttribute("flash").asInstanceOf[Flash]
-      if (null == flash) {
-        val nflash = new Flash
-        session.setAttribute("flash", nflash)
-        nflash
-      } else flash
-    } else null
+    if (null == flashMap) {
+      val session = request.getSession()
+      if (null != session) {
+        val flashObj = session.getAttribute("flash")
+        if (null != flashObj) flashMap = flashObj.asInstanceOf[Flash]
+        else {
+          flashMap = new Flash
+          session.setAttribute("flash", flashMap)
+        }
+      }
+    }
+    flashMap
   }
 }

@@ -50,6 +50,7 @@ class Flash extends Map[Object, Object] with Serializable {
   }
 
   def nextToNow() {
+    if (now.isEmpty && next.isEmpty) return
     now.clear()
     now.putAll(next)
     next.clear()

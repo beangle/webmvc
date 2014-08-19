@@ -50,8 +50,6 @@ class ConventionHandlerMapping(configurer: Configurer) extends AbstractDetecting
   }
 
   protected override def getHandlerExecutionChain(handler: Object, request: HttpServletRequest): HandlerExecutionChain = {
-    val chain = new HandlerExecutionChain(handler)
-    chain.addInterceptor(FlashInterceptor)
-    chain
+    new HandlerExecutionChain(handler)
   }
 }

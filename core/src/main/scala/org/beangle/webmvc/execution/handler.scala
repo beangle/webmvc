@@ -9,9 +9,7 @@ trait Handler {
 
 trait Interceptor {
 
-  def intercept(handler: Handler)
+  def preHandle(handler: Handler): Boolean
 
-  def preHandle(handler: Object): Boolean
-
-  def postHandle(handler: Object, result: Any): Unit
+  def postHandle(handler: Handler, result: Any): Unit
 }

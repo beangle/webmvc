@@ -3,6 +3,7 @@ package org.beangle.webmvc.config
 import org.beangle.commons.lang.Objects
 import org.beangle.commons.lang.Strings.{ contains, isEmpty, split, substringBeforeLast, uncapitalize }
 import org.beangle.commons.logging.Logging
+import org.beangle.webmvc.execution.Interceptor
 
 object Constants {
   // 路径分割符
@@ -80,6 +81,8 @@ final class Profile(val name: String, val actionPattern: String) extends Compara
   /** URI的后缀 */
   var uriSuffix: String = _
 
+  var interceptors: Array[Interceptor] = Array()
+  
   // 匹配缓存[className,matchInfo]
   private val matchInfos = new collection.mutable.HashMap[String, MatchInfo]
 

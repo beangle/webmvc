@@ -5,13 +5,13 @@ import java.lang.reflect.Method
 import scala.Range
 
 import org.beangle.commons.lang.Arrays
-import org.beangle.commons.lang.Strings.{isNotEmpty, split}
+import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.commons.lang.reflect.ClassInfo
-import org.beangle.webmvc.api.annotation.{ignore, mapping, param}
+import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.config.Profile
 import org.beangle.webmvc.config.impl.ActionURIBuilder
-import org.beangle.webmvc.dispatch.{ActionMapping, ActionMappingBuilder}
+import org.beangle.webmvc.dispatch.{ ActionMapping, ActionMappingBuilder }
 
 class DefaultActionMappingBuilder extends ActionMappingBuilder {
 
@@ -42,7 +42,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
 
             if (method.getParameterTypes().length != paramNames.size) throw new RuntimeException("Cannot find enough param name,Using @mapping or @param")
 
-            actions += Tuple2(new ActionMapping(httpMethod, url, clazz, methodName, paramNames.toArray, urlParams, namespace, name,Array()), method)
+            actions += Tuple2(new ActionMapping(httpMethod, url, clazz, methodName, paramNames.toArray, urlParams, namespace, name, profile.interceptors), method)
           }
         }
     }

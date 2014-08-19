@@ -4,5 +4,8 @@
     <action suffix="Action" defaultMethod="index"/>
     <view path="/" style="full" suffix=".ftl" />
     <uri path="/" suffix=""  style="seo" />
+    <interceptors>
+      <interceptor class="org.beangle.webmvc.execution.interceptors.FlashInterceptor"/>
+    </interceptors>
   </profile>
 </profiles>

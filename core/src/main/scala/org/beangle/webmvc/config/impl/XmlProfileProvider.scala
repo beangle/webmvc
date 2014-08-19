@@ -1,32 +1,32 @@
 package org.beangle.webmvc.config.impl
 
 import java.net.URL
-
 import scala.xml.{ Node, XML }
-
 import org.beangle.commons.bean.PropertyUtils.{ copyProperty, getProperty }
 import org.beangle.commons.lang.ClassLoaders
 import org.beangle.webmvc.config.{ Profile, ProfileProvider }
+import org.beangle.webmvc.execution.Interceptor
+import org.beangle.commons.lang.reflect.Reflections
 
 class XmlProfileProvider extends ProfileProvider {
 
   private val defaultProfile = loadDefaultProfile()
 
   /**
-   * 初始化配置META-INF/convention-route.xml
+   * 初始化配置META-INF/beangle/mvc-config.xml
    */
   def loadProfiles(): List[Profile] = {
     val profiles = new collection.mutable.ListBuffer[Profile]
-    ClassLoaders.getResources("META-INF/beangle/convention-route.xml").foreach { url =>
+    ClassLoaders.getResources("META-INF/beangle/mvc-config.xml").foreach { url =>
       profiles ++= readXmlToProfiles(url)
     }
     profiles.toList
   }
 
-  /**加载META-INF/convention-default.xml*/
+  /**加载META-INF/beangle/mvc-default.xml*/
   private def loadDefaultProfile(): Profile = {
-    val convention_default = ClassLoaders.getResource("META-INF/beangle/convention-default.xml")
-    if (null == convention_default) throw new RuntimeException("cannot find convention-default.xml!")
+    val convention_default = ClassLoaders.getResource("META-INF/beangle/mvc-default.xml")
+    if (null == convention_default) throw new RuntimeException("cannot find mvc-default.xml!")
     readXmlToProfiles(convention_default)(0)
   }
 
@@ -67,6 +67,18 @@ class XmlProfileProvider extends ProfileProvider {
           readProperty(elem, profile, "suffix", "uriSuffix")
         }
       }
+      
+      val interceptorNodes = profileElem \\ "interceptor"
+      if (interceptorNodes.isEmpty) {
+        copyDefaultProperties(profile, "interceptors")
+      } else {
+        val interceptors = new collection.mutable.ListBuffer[Interceptor]
+        interceptorNodes foreach { elem =>
+          interceptors += Reflections.newInstance(ClassLoaders.loadClass((elem \ "@class").text)).asInstanceOf[Interceptor]
+        }
+        profile.interceptors = interceptors.toArray
+      }
+
       profiles += profile
     }
     profiles

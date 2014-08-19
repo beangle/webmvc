@@ -25,10 +25,7 @@
   
   <package name="beangle" extends="struts-default">
     <interceptors>
-      <interceptor name="flash" class="org.beangle.webmvc.struts2.interceptor.FlashInterceptor"/>
-      <interceptor-stack name="beangleStack">
-        <interceptor-ref name="flash"/>
-      </interceptor-stack>
+      <interceptor-stack name="beangleStack"/>
     </interceptors>
     <default-interceptor-ref name="beangleStack"/>
   </package>
