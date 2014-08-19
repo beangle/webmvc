@@ -33,16 +33,17 @@
     <default-interceptor-ref name="beangleStack"/>
   </package>
 
-  <bean type="org.beangle.commons.text.i18n.spi.TextBundleRegistry" class="org.beangle.commons.text.i18n.impl.DefaultTextBundleRegistry" />
-  <bean type="org.beangle.commons.text.i18n.spi.TextFormater" class="org.beangle.commons.text.i18n.impl.DefaultTextFormater"/>
+  <bean type="org.beangle.commons.text.i18n.TextBundleRegistry" class="org.beangle.commons.text.i18n.DefaultTextBundleRegistry" />
+  <bean type="org.beangle.commons.text.i18n.TextFormater" class="org.beangle.commons.text.i18n.DefaultTextFormater"/>
 
   <bean type="com.opensymphony.xwork2.UnknownHandler" class="org.beangle.webmvc.struts2.ConventionResultHandler"/>
   <bean type="org.apache.struts2.dispatcher.mapper.ActionMapper" name="beangle" class="org.beangle.webmvc.struts2.dispatcher.ConventionActionMapper"/>
   <bean type="com.opensymphony.xwork2.config.PackageProvider" name="beangle" class="org.beangle.webmvc.struts2.config.ConventionPackageProvider"/>
   <bean type="org.beangle.webmvc.config.Configurer" name="default" class="org.beangle.webmvc.config.impl.DefaultConfigurer"/>
-  <bean type="org.beangle.webmvc.spi.dispatch.RequestMapper" name="default" class="org.beangle.webmvc.dispatch.HierarchicalUrlMapper"/>
-  <bean type="org.beangle.webmvc.spi.context.LocaleResolver" name="default" class="org.beangle.webmvc.context.ParamLocaleResolver"/>
-  <bean type="org.beangle.webmvc.spi.view.ViewMapper" name="default" class="org.beangle.webmvc.view.DefaultViewMapper"/>
+  <bean type="org.beangle.webmvc.dispatch.RequestMapper" name="default" class="org.beangle.webmvc.dispatch.impl.HierarchicalUrlMapper"/>
+  <bean type="org.beangle.webmvc.dispatch.ActionMappingBuilder" name="default" class="org.beangle.webmvc.dispatch.impl.DefaultActionMappingBuilder"/>
+  <bean type="org.beangle.webmvc.context.LocaleResolver" name="default" class="org.beangle.webmvc.context.impl.ParamLocaleResolver"/>
+  <bean type="org.beangle.webmvc.view.ViewMapper" name="default" class="org.beangle.webmvc.view.impl.DefaultViewMapper"/>
 
   <bean type="com.opensymphony.xwork2.ActionProxyFactory" name="beangle" class="org.beangle.webmvc.struts2.BeangleActionProxyFactory" />
   <bean type="com.opensymphony.xwork2.factory.ActionFactory" name="beangle" class="org.beangle.webmvc.struts2.factory.BeangleActionFactory" />

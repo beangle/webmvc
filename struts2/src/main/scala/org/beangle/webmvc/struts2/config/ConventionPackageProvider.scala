@@ -11,19 +11,19 @@ import org.beangle.commons.lang.{ ClassLoaders, Objects, Strings }
 import org.beangle.commons.lang.reflect.ClassInfo
 import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging
-import org.beangle.commons.text.i18n.spi.TextBundleRegistry
+import org.beangle.commons.text.i18n.TextBundleRegistry
 import org.beangle.commons.web.context.ServletContextHolder
 import org.beangle.webmvc.api.action.ToStruts
 import org.beangle.webmvc.api.annotation.{ action, ignore, result, results }
-import org.beangle.webmvc.config.{ ActionMapping, Configurer }
+import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.config.impl.ActionURIBuilder
 import org.beangle.webmvc.context.{ ActionFinder, ContainerActionFinder }
-import org.beangle.webmvc.dispatch.{ HierarchicalUrlMapper, RequestMappingBuilder }
-import org.beangle.webmvc.spi.dispatch.RequestMapper
-import org.beangle.webmvc.spi.view.ViewMapper
-import org.beangle.webmvc.spi.view.template.TemplateFinder
-import org.beangle.webmvc.view.DefaultViewMapper
+import org.beangle.webmvc.dispatch.{ ActionMapping, ActionMappingBuilder, RequestMapper }
+import org.beangle.webmvc.dispatch.impl.{ HierarchicalUrlMapper, RequestMappingBuilder }
+import org.beangle.webmvc.view.ViewMapper
 import org.beangle.webmvc.view.freemarker.TemplateFinderByLoader
+import org.beangle.webmvc.view.impl.DefaultViewMapper
+import org.beangle.webmvc.view.template.TemplateFinder
 
 import com.opensymphony.xwork2.config.{ Configuration, ConfigurationException, PackageProvider }
 import com.opensymphony.xwork2.config.entities.{ ActionConfig, PackageConfig, ResultConfig }
@@ -61,6 +61,9 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   @Inject
   var viewMapper: ViewMapper = _
+
+  @Inject
+  var actionMappingBuilder: ActionMappingBuilder = _
 
   @Inject
   var freemarkerManager: FreemarkerManager = _
@@ -157,14 +160,13 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
           name2Packages.put(key, pcb)
           // build all action to action mappings
           val classInfo = ClassInfo.get(actionClass)
-          configurer.buildMappings(actionClass) foreach {
+          actionMappingBuilder.build(actionClass, configurer.getProfile(actionClass.getName)) foreach {
             case (action, method) =>
               addAction2Mapper(action, beanName, method)
               if (method.getName == "index" && method.getParameterTypes.length == 0
                 && action.httpMethod == null && action.url.endsWith("/index")) {
                 val indexUrl = Strings.substringBeforeLast(action.url, "/index")
-                addAction2Mapper(new ActionMapping(action.httpMethod, indexUrl, action.clazz, action.method,
-                  action.paramNames, action.urlParamNames, action.namespace, action.name), beanName, method)
+                addAction2Mapper(action.cloneFor(indexUrl), beanName, method)
               }
           }
         }

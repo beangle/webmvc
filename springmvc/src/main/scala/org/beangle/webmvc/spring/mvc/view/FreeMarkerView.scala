@@ -5,7 +5,7 @@ import java.{ util => ju }
 import scala.collection.JavaConversions.mapAsScalaMap
 
 import org.beangle.commons.logging.Logging
-import org.beangle.webmvc.spi.view.tag.TagLibrary
+import org.beangle.webmvc.view.tag.TagLibrary
 import org.springframework.context.ApplicationContext
 
 import freemarker.template.{ SimpleHash, Template }

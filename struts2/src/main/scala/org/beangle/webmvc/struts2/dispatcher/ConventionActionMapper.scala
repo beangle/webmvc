@@ -1,22 +1,21 @@
 package org.beangle.webmvc.struts2.dispatcher
 
 import java.io.File
+
 import org.apache.struts2.ServletActionContext
 import org.apache.struts2.dispatcher.mapper.{ ActionMapper, ActionMapping, DefaultActionMapper }
 import org.apache.struts2.dispatcher.multipart.MultiPartRequestWrapper
 import org.beangle.commons.lang.Arrays.{ isBlank, isEmpty }
-import org.beangle.commons.text.i18n.spi.{ TextBundleRegistry, TextFormater }
+import org.beangle.commons.text.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.context.{ ActionContextHelper, LocaleResolver }
+import org.beangle.webmvc.context.impl.ActionTextResourceProvider
+import org.beangle.webmvc.dispatch.RequestMapper
+
 import com.opensymphony.xwork2.config.ConfigurationManager
 import com.opensymphony.xwork2.inject.Inject
+
 import javax.servlet.http.HttpServletRequest
-import org.beangle.webmvc.spi.context.LocaleResolver
-import org.beangle.webmvc.spi.dispatch.RequestMapper
-import org.beangle.webmvc.api.context.ContextHolder
-import org.beangle.webmvc.context.ActionContextHelper
-import org.beangle.commons.text.i18n.impl.DefaultTextFormater
-import org.beangle.webmvc.context.ActionTextResource
-import org.beangle.commons.text.i18n.impl.DefaultTextBundleRegistry
-import org.beangle.webmvc.context.ActionTextResourceProvider
 
 class ConventionActionMapper extends DefaultActionMapper with ActionMapper {
 

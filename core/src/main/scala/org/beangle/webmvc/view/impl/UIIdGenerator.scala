@@ -1,4 +1,4 @@
-package org.beangle.webmvc.view.bean
+package org.beangle.webmvc.view.impl
 
 import scala.util.Random
 import org.beangle.commons.lang.Strings

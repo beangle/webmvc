@@ -2,8 +2,8 @@ package org.beangle.webmvc.context
 
 import org.beangle.commons.collection.Collections
 import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.spi.context.LocaleResolver
-import org.beangle.webmvc.spi.dispatch.RequestMapping
+import org.beangle.webmvc.context.LocaleResolver
+import org.beangle.webmvc.dispatch.RequestMapping
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 

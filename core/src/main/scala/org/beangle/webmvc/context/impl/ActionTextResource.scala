@@ -1,4 +1,4 @@
-package org.beangle.webmvc.context
+package org.beangle.webmvc.context.impl
 
 import java.{ util => jl }
 
@@ -6,12 +6,11 @@ import scala.collection.mutable.{ HashSet, Set }
 
 import org.beangle.commons.bean.PropertyUtils
 import org.beangle.commons.lang.Strings
-import org.beangle.commons.text.i18n.TextResource
-import org.beangle.commons.text.i18n.spi.{ TextBundleRegistry, TextFormater }
+import org.beangle.commons.text.i18n.{ TextBundleRegistry, TextFormater, TextResource }
 import org.beangle.webmvc.action.EntityActionSupport
-import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.dispatch.MethodHandler
+import org.beangle.webmvc.context.ActionContextHelper
+import org.beangle.webmvc.execution.impl.MethodHandler
 
 class ActionTextResource(context: ActionContext, val locale: jl.Locale, registry: TextBundleRegistry, formater: TextFormater) extends TextResource {
 

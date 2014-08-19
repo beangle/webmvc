@@ -1,11 +1,12 @@
 package org.beangle.webmvc.config.impl
 
 import java.net.URL
+
 import scala.xml.{ Node, XML }
+
 import org.beangle.commons.bean.PropertyUtils.{ copyProperty, getProperty }
 import org.beangle.commons.lang.ClassLoaders
-import org.beangle.webmvc.config.Profile
-import org.beangle.webmvc.spi.config.ProfileProvider
+import org.beangle.webmvc.config.{ Profile, ProfileProvider }
 
 class XmlProfileProvider extends ProfileProvider {
 

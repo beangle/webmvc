@@ -1,9 +1,9 @@
-package org.beangle.webmvc.dispatch
+package org.beangle.webmvc.dispatch.impl
 
 import java.lang.reflect.Method
-
-import org.beangle.webmvc.config.ActionMapping
-import org.beangle.webmvc.spi.dispatch.RequestMapping
+import org.beangle.webmvc.dispatch.ActionMapping
+import org.beangle.webmvc.execution.impl.MethodHandler
+import org.beangle.webmvc.dispatch.RequestMapping
 
 object RequestMappingBuilder {
   /**

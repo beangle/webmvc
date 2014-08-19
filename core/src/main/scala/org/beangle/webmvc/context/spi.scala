@@ -1,4 +1,4 @@
-package org.beangle.webmvc.spi.context
+package org.beangle.webmvc.context
 
 import java.{ util => ju }
 import org.beangle.commons.lang.Locales

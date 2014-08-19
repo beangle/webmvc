@@ -1,29 +1,26 @@
 package org.beangle.webmvc.spring.handler
 
-import java.{ util => ju }
 import org.beangle.commons.lang.reflect.ClassInfo
-import org.beangle.webmvc.dispatch.{ HierarchicalUrlMapper, RequestMappingBuilder }
+import org.beangle.commons.text.i18n.TextResourceProvider
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.context.{ ActionContextHelper, ActionFinder }
+import org.beangle.webmvc.dispatch.ActionMappingBuilder
+import org.beangle.webmvc.dispatch.impl.{ HierarchicalUrlMapper, RequestMappingBuilder }
 import org.springframework.web.servlet.HandlerExecutionChain
 import org.springframework.web.servlet.handler.AbstractDetectingUrlHandlerMapping
+
 import javax.servlet.http.HttpServletRequest
-import org.beangle.commons.text.i18n.spi.TextFormater
-import org.beangle.commons.text.i18n.spi.TextBundleRegistry
-import org.beangle.commons.bean.Initializing
-import org.beangle.webmvc.config.Configurer
-import org.beangle.webmvc.api.context.ContextHolder
-import org.beangle.webmvc.context.ActionFinder
-import org.beangle.webmvc.context.ActionContextHelper
-import org.beangle.commons.text.i18n.spi.TextResourceProvider
-import org.beangle.webmvc.context.ActionTextResource
 
 class ConventionHandlerMapping(configurer: Configurer) extends AbstractDetectingUrlHandlerMapping {
 
   var resolver: HierarchicalUrlMapper = _
 
-  var localeResover: org.beangle.webmvc.spi.context.LocaleResolver = _
+  var localeResover: org.beangle.webmvc.context.LocaleResolver = _
 
   var textResourceProvider: TextResourceProvider = _
 
+  var actionMappingBuilder: ActionMappingBuilder = _
   /**
    * generate url for every handler
    */
@@ -32,7 +29,7 @@ class ConventionHandlerMapping(configurer: Configurer) extends AbstractDetecting
     val actionTest = new ActionFinder.Test(configurer)
     if (actionTest(bean.getClass)) {
       val classInfo = ClassInfo.get(bean.getClass)
-      configurer.buildMappings(bean.getClass).map {
+      actionMappingBuilder.build(bean.getClass, configurer.getProfile(bean.getClass.getName)).map {
         case (action, method) =>
           resolver.add(RequestMappingBuilder.build(action, bean, method))
       }

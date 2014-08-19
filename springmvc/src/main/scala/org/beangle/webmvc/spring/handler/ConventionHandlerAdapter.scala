@@ -5,9 +5,10 @@ import org.beangle.webmvc.api.action.ToClass
 import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.context.ActionContextHelper
-import org.beangle.webmvc.spi.dispatch.{ Handler, RequestMapper }
-import org.beangle.webmvc.spi.view.ViewMapper
-import org.beangle.webmvc.view.DefaultViewMapper
+import org.beangle.webmvc.dispatch.RequestMapper
+import org.beangle.webmvc.execution.Handler
+import org.beangle.webmvc.view.ViewMapper
+import org.beangle.webmvc.view.impl.DefaultViewMapper
 import org.springframework.web.servlet.{ HandlerAdapter, ModelAndView }
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }

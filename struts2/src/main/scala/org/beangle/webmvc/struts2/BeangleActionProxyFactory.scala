@@ -1,15 +1,15 @@
 package org.beangle.webmvc.struts2
 
 import java.{ util => ju }
+
 import org.beangle.commons.lang.Strings.isEmpty
 import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.context.ActionContextHelper
+import org.beangle.webmvc.execution.impl.MethodHandler
+import org.beangle.webmvc.view.impl.DefaultViewMapper
+
 import com.opensymphony.xwork2.{ ActionProxy, DefaultActionInvocation, DefaultActionProxyFactory }
 import com.opensymphony.xwork2.config.entities.ActionConfig
-import com.opensymphony.xwork2.inject.Inject
-import org.apache.struts2.ServletActionContext
-import org.beangle.webmvc.context.ActionContextHelper
-import org.beangle.webmvc.view.DefaultViewMapper
-import org.beangle.webmvc.dispatch.MethodHandler
 
 class BeangleActionProxyFactory extends DefaultActionProxyFactory {
 

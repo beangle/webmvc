@@ -1,8 +1,10 @@
-package org.beangle.webmvc.spi.view.template
+package org.beangle.webmvc.view.template
 
 import java.io.Writer
 import org.beangle.webmvc.view.component.Component
+import org.beangle.commons.lang.annotation.spi
 
+@spi
 trait TemplateEngine {
 
   @throws(classOf[Exception])

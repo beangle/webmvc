@@ -1,10 +1,11 @@
-package org.beangle.webmvc.context
+package org.beangle.webmvc.context.impl
 
 import java.{ util => ju }
 import org.beangle.commons.lang.Locales
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import org.beangle.webmvc.spi.context.LocaleResolver
+import org.beangle.webmvc.context.LocaleResolver
+import java.{util => ju}
 
 class ParamLocaleResolver extends LocaleResolver {
   val SessionAttribute = "WW_TRANS_I18N_LOCALE"

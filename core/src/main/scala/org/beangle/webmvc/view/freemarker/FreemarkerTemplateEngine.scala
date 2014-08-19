@@ -8,8 +8,8 @@ import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.Throwables
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.api.context.ContextHolder
-import org.beangle.webmvc.spi.view.tag.TagLibrary
-import org.beangle.webmvc.spi.view.template.TemplateEngine
+import org.beangle.webmvc.view.tag.TagLibrary
+import org.beangle.webmvc.view.template.TemplateEngine
 import org.beangle.webmvc.view.component.Component
 
 import freemarker.cache.StrongCacheStorage

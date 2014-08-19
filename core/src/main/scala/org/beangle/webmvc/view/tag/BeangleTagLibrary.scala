@@ -1,8 +1,7 @@
 package org.beangle.webmvc.view.tag
 
 import org.beangle.webmvc.helper.ContainerHelper
-import org.beangle.webmvc.spi.view.tag.TagLibrary
-import org.beangle.webmvc.view.bean.{ DefaultActionUriRender, IndexableIdGenerator }
+import org.beangle.webmvc.view.impl.{ DefaultActionUriRender, IndexableIdGenerator }
 import org.beangle.webmvc.view.component.ComponentContext
 import org.beangle.webmvc.view.freemarker.FreemarkerTemplateEngine
 

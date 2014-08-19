@@ -8,7 +8,7 @@ import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 class BeangleLocaleResolver extends LocaleResolver {
 
-  var innerResolver: org.beangle.webmvc.spi.context.LocaleResolver = _
+  var innerResolver: org.beangle.webmvc.context.LocaleResolver = _
 
   override def resolveLocale(request: HttpServletRequest): ju.Locale = {
     innerResolver.resolve(request)

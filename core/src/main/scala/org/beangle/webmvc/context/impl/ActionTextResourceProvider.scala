@@ -1,13 +1,14 @@
-package org.beangle.webmvc.context
+package org.beangle.webmvc.context.impl
 
 import java.{ util => ju }
-import org.beangle.commons.bean.Initializing
-import org.beangle.commons.text.i18n.TextResource
-import org.beangle.commons.text.i18n.spi.{ TextBundleRegistry, TextFormater, TextResourceProvider }
-import org.beangle.webmvc.api.context.ContextHolder
-import org.beangle.commons.lang.Strings
 
-class ActionTextResourceProvider(registry: TextBundleRegistry, formater: TextFormater) extends TextResourceProvider with Initializing {
+import org.beangle.commons.bean.Initializing
+import org.beangle.commons.lang.Strings
+import org.beangle.commons.text.i18n.{ TextBundleRegistry, TextFormater, TextResource, TextResourceProvider }
+import org.beangle.webmvc.api.context.ContextHolder
+
+class ActionTextResourceProvider(registry: TextBundleRegistry, formater: TextFormater)
+  extends TextResourceProvider with Initializing {
 
   var defaults: String = "beangle,application"
 

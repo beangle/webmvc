@@ -11,10 +11,10 @@ import org.beangle.webmvc.api.action.{ To, ToClass, ToStruts, ToURI, to }
 import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.context.ActionContextHelper
-import org.beangle.webmvc.spi.dispatch.{ RequestMapper, RequestMapping }
-import org.beangle.webmvc.spi.view.ViewMapper
-import org.beangle.webmvc.view.DefaultViewMapper
+import org.beangle.webmvc.dispatch.{ RequestMapper, RequestMapping }
+import org.beangle.webmvc.view.ViewMapper
 import org.beangle.webmvc.view.freemarker.TemplateFinderByConfig
+import org.beangle.webmvc.view.impl.DefaultViewMapper
 
 import com.opensymphony.xwork2.{ ActionContext, ObjectFactory, Result, UnknownHandler, XWorkException }
 import com.opensymphony.xwork2.config.Configuration

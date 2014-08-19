@@ -1,4 +1,4 @@
-package org.beangle.webmvc.view.bean
+package org.beangle.webmvc.view.impl
 /**
  * Record urlrender,uigenerator attribute name in action context.
  *

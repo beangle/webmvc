@@ -1,4 +1,4 @@
-package org.beangle.webmvc.dispatch
+package org.beangle.webmvc.dispatch.impl
 
 import java.{ lang => jl }
 
@@ -6,9 +6,10 @@ import scala.collection.mutable
 
 import org.beangle.commons.http.HttpMethods.GET
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
+import org.beangle.commons.lang.annotation.spi
 import org.beangle.commons.web.util.RequestUtils
-import org.beangle.webmvc.config.ActionMapping.{ DefaultMethod, HttpMethodMap, HttpMethods, MethodParam }
-import org.beangle.webmvc.spi.dispatch.{ RequestMapper, RequestMapping }
+import org.beangle.webmvc.dispatch.{ RequestMapper, RequestMapping }
+import org.beangle.webmvc.dispatch.ActionMapping.{ DefaultMethod, HttpMethodMap, HttpMethods, MethodParam }
 
 import javax.servlet.http.HttpServletRequest
 

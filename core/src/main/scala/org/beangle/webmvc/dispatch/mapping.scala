@@ -1,10 +1,14 @@
-package org.beangle.webmvc.config
+package org.beangle.webmvc.dispatch
 
 import java.lang.reflect.Method
-
 import org.beangle.commons.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
 import org.beangle.commons.lang.Strings.{ join, split }
+import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.api.action.{ ToClass, ToURI }
+import org.beangle.webmvc.config.Profile
+import org.beangle.webmvc.execution.Handler
+import javax.servlet.http.HttpServletRequest
+import org.beangle.webmvc.execution.Interceptor
 
 object ActionMapping {
   final val DefaultMethod = "index"
@@ -14,13 +18,17 @@ object ActionMapping {
   final val HttpMethods = Set("put", "delete", "head")
 }
 
-class ActionMapping(val httpMethod: String, val url: String, val clazz: Class[_], val method: String, val paramNames: Array[String], val urlParamNames: Map[Integer, String], val namespace: String, val name: String) {
+class ActionMapping(val httpMethod: String, val url: String, val clazz: Class[_], val method: String,
+  val paramNames: Array[String], val urlParamNames: Map[Integer, String],
+  val namespace: String, val name: String,
+  val interceptors: Array[Interceptor]) {
   val isPattern = url.contains("{") || url.contains("*")
 
   def httpMethodMatches(requestMethod: String): Boolean = {
     if (null == httpMethod) requestMethod == GET || requestMethod == POST
     else requestMethod == httpMethod
   }
+
   def fill(params: collection.Map[String, Any]): String = {
     if (!isPattern) return url
     val result = url
@@ -47,9 +55,12 @@ class ActionMapping(val httpMethod: String, val url: String, val clazz: Class[_]
     }
     ua
   }
+
+  def cloneFor(url: String): ActionMapping = {
+    new ActionMapping(httpMethod, url, clazz, method,
+      paramNames, urlParamNames, namespace, name, interceptors)
+  }
 }
 
-trait ActionMappingBuilder {
+class RequestMapping(val action: ActionMapping, val handler: Handler, val params: collection.Map[String, Any])
 
-  def build(clazz: Class[_], profile: Profile): Seq[Tuple2[ActionMapping, Method]]
-}

@@ -3,8 +3,8 @@ package org.beangle.webmvc.view.freemarker
 import java.io.{ FileNotFoundException, IOException }
 import freemarker.cache.TemplateLoader
 import freemarker.template.Configuration
-import org.beangle.webmvc.spi.view.template.TemplateFinder
-import org.beangle.webmvc.spi.view.ViewMapper
+import org.beangle.webmvc.view.template.TemplateFinder
+import org.beangle.webmvc.view.ViewMapper
 import org.beangle.webmvc.config.Configurer
 
 /**
