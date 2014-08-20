@@ -1,16 +1,19 @@
 package org.beangle.webmvc.view.freemarker
 
 import java.io.{ FileNotFoundException, IOException }
+
+import org.beangle.commons.lang.annotation.spi
+import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.view.ViewPathMapper
+import org.beangle.webmvc.view.template.TemplateResolver
+
 import freemarker.cache.TemplateLoader
 import freemarker.template.Configuration
-import org.beangle.webmvc.view.template.TemplateFinder
-import org.beangle.webmvc.view.ViewMapper
-import org.beangle.webmvc.config.Configurer
 
 /**
  * Find template in class hierarchy with configuration without caching.
  */
-class TemplateFinderByConfig(configuration: Configuration, viewMapper: ViewMapper, configurer: Configurer) extends TemplateFinder {
+class HierarchicalTemplateResolverByConfig(configuration: Configuration, viewMapper: ViewPathMapper, configurer: Configurer) extends TemplateResolver {
 
   def find(actionClass: Class[_], viewName: String, suffix: String): String = {
     var path: String = null
@@ -41,7 +44,7 @@ class TemplateFinderByConfig(configuration: Configuration, viewMapper: ViewMappe
 /**
  * Try find template in class hierarchy,caching missing result.
  */
-class TemplateFinderByLoader(loader: TemplateLoader, viewMapper: ViewMapper, configurer: Configurer) extends TemplateFinder {
+class HierarchicalTemplateResolverByLoader(loader: TemplateLoader, viewMapper: ViewPathMapper, configurer: Configurer) extends TemplateResolver {
 
   private val missings = new collection.mutable.HashSet[String]
 

@@ -5,5 +5,5 @@ import javax.servlet.http.HttpServletRequest
 import org.beangle.commons.lang.annotation.spi
 @spi
 trait TagLibrary {
-  def getModels(req: HttpServletRequest, res: HttpServletResponse): Any
+  def getModels(req: HttpServletRequest, res: HttpServletResponse): AnyRef
 }

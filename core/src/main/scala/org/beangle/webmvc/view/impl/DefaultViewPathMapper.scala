@@ -3,7 +3,7 @@ package org.beangle.webmvc.view.impl
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.config.{ Constants, Profile }
-import org.beangle.webmvc.view.ViewMapper
+import org.beangle.webmvc.view.ViewPathMapper
 
 object DefaultViewMapper {
   private val methodViews = Map(("search", "list"), ("query", "list"), ("edit", "form"), ("home", "index"), ("execute", "index"), ("add", "new"))
@@ -14,7 +14,7 @@ object DefaultViewMapper {
   }
 }
 
-class DefaultViewMapper extends ViewMapper {
+class DefaultViewPathMapper extends ViewPathMapper {
 
   /**
    * 查询control对应的view的名字(没有后缀)

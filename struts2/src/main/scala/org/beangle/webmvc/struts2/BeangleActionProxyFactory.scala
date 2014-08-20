@@ -22,6 +22,9 @@ class BeangleActionProxyFactory extends DefaultActionProxyFactory {
 
 class BeangleActionInvocation(extraContext: ju.Map[String, Object]) extends DefaultActionInvocation(extraContext, true) {
 
+//  override def invoke(): String = {
+//null
+//  }
   protected override def invokeAction(action: Object, actionConfig: ActionConfig): String = {
     val mapping = ActionContextHelper.getMapping(ContextHolder.context)
     val result = String.valueOf(mapping.handler.handle(mapping.action))

@@ -1,16 +1,16 @@
 package org.beangle.webmvc.api.action
 
 import java.net.URL
-
 import scala.reflect.ClassTag
-
 import org.beangle.commons.lang.{ Chars, ClassLoaders, Strings }
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.{ CookieUtils, RequestUtils }
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.{ ActionMessages, ContextHolder, Flash, Params }
-
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.webmvc.api.view.View
+import org.beangle.webmvc.api.view.ForwardActionView
+import org.beangle.webmvc.api.view.RedirectActionView
 
 object ActionSupport {
   /**
@@ -43,35 +43,33 @@ class ActionSupport extends Logging {
     view
   }
 
-  protected final def forward(action: To): String = {
-    ContextHolder.context.temp("dispatch_action", action)
-    "chain:dispatch_action"
+  protected final def forward(action: To): View = {
+    new ForwardActionView(action)
   }
 
-  protected final def forward(action: To, message: String): String = {
+  protected final def forward(action: To, message: String): View = {
     if (Strings.isNotBlank(message)) {
       if (Strings.contains(message, "error")) addError(message)
       else addMessage(message)
     }
-    forward(action)
+    new ForwardActionView(action)
   }
 
-  protected final def redirect(method: String, message: String, params: String): String = {
+  protected final def redirect(method: String, message: String, params: String): View = {
     redirect(to(this, method, params), message)
   }
 
-  protected final def redirect(method: String): String = {
+  protected final def redirect(method: String): View = {
     redirect(to(this, method), null)
   }
 
-  protected final def redirect(method: String, message: String): String = {
+  protected final def redirect(method: String, message: String): View = {
     redirect(to(this, method), message)
   }
 
-  protected final def redirect(action: To, message: String): String = {
+  protected final def redirect(action: To, message: String): View = {
     if (Strings.isNotEmpty(message)) addFlashMessage(message)
-    ContextHolder.context.temp("dispatch_action", action)
-    "redirectAction:dispatch_action"
+    new RedirectActionView(action)
   }
 
   final def getText(aTextName: String): String = ContextHolder.context.textResource(aTextName).get

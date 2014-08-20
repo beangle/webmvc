@@ -42,7 +42,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
 
             if (method.getParameterTypes().length != paramNames.size) throw new RuntimeException("Cannot find enough param name,Using @mapping or @param")
 
-            actions += Tuple2(new ActionMapping(httpMethod, url, clazz, methodName, paramNames.toArray, urlParams, namespace, name, profile.interceptors), method)
+            actions += Tuple2(new ActionMapping(httpMethod, url, clazz, methodName, paramNames.toArray, urlParams, namespace, name, profile.interceptors,Map.empty), method)
           }
         }
     }

@@ -55,6 +55,7 @@ class BeangleObjectWrapper(val altMapWrapper: Boolean) extends DefaultObjectWrap
       decision.setMethodShadowsProperty(false)
     }
   }
+  //FIXME wrapper twice
   override def wrap(obj: Object): TemplateModel = {
     return inner_wrap(convert2Java(obj));
   }

@@ -1,14 +1,10 @@
 package org.beangle.webmvc.dispatch
 
-import java.lang.reflect.Method
 import org.beangle.commons.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
 import org.beangle.commons.lang.Strings.{ join, split }
-import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.api.action.{ ToClass, ToURI }
-import org.beangle.webmvc.config.Profile
-import org.beangle.webmvc.execution.Handler
-import javax.servlet.http.HttpServletRequest
-import org.beangle.webmvc.execution.Interceptor
+import org.beangle.webmvc.api.view.View
+import org.beangle.webmvc.execution.{ Handler, Interceptor }
 
 object ActionMapping {
   final val DefaultMethod = "index"
@@ -21,7 +17,8 @@ object ActionMapping {
 class ActionMapping(val httpMethod: String, val url: String, val clazz: Class[_], val method: String,
   val paramNames: Array[String], val urlParamNames: Map[Integer, String],
   val namespace: String, val name: String,
-  val interceptors: Array[Interceptor]) {
+  val interceptors: Array[Interceptor],
+  val views: Map[String, View]) {
   val isPattern = url.contains("{") || url.contains("*")
 
   def httpMethodMatches(requestMethod: String): Boolean = {
@@ -58,7 +55,7 @@ class ActionMapping(val httpMethod: String, val url: String, val clazz: Class[_]
 
   def cloneFor(url: String): ActionMapping = {
     new ActionMapping(httpMethod, url, clazz, method,
-      paramNames, urlParamNames, namespace, name, interceptors)
+      paramNames, urlParamNames, namespace, name, interceptors, views)
   }
 }
 

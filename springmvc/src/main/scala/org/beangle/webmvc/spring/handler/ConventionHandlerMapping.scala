@@ -45,7 +45,9 @@ class ConventionHandlerMapping(configurer: Configurer) extends AbstractDetecting
         ContextHolder.contexts.set(context)
         context.textResource = textResourceProvider.getTextResource(context.locale)
         am.handler
-      case None => null
+      case None =>
+        null
+      //super.getHandlerInternal(request)
     }
   }
 

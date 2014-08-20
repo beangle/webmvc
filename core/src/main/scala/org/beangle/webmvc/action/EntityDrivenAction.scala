@@ -1,15 +1,18 @@
 package org.beangle.webmvc.action
 
-import java.{ util => ju }
+import java.{util => ju}
+
 import org.beangle.commons.collection.Order
 import org.beangle.commons.config.property.PropertyConfig
 import org.beangle.commons.lang.Strings
 import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
 import org.beangle.data.model.bean.UpdatedBean
-import org.beangle.data.model.dao.{ GeneralDao, QueryBuilder }
-import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
+import org.beangle.data.model.dao.{GeneralDao, QueryBuilder}
+import org.beangle.data.model.meta.{EntityMetadata, EntityType}
+import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params
+import org.beangle.webmvc.api.view.View
 
 abstract class EntityDrivenAction extends EntityActionSupport {
 
@@ -81,7 +84,7 @@ abstract class EntityDrivenAction extends EntityActionSupport {
   /**
    * Remove entities by [entity.id]/entityIds
    */
-  def remove(): String = {
+  def remove(): View = {
     val idclass = entityMetaData.getType(entityName).get.idClass.asInstanceOf[Class[Serializable]]
     val entityId: Serializable = getId(shortName, idclass)
     val entities: Seq[_] = if (null == entityId) {
@@ -96,7 +99,7 @@ abstract class EntityDrivenAction extends EntityActionSupport {
   /**
    * Save single entity
    */
-  def save(): String = {
+  def save(): View = {
     saveAndForward(populateEntity())
   }
 
@@ -164,7 +167,7 @@ abstract class EntityDrivenAction extends EntityActionSupport {
    *
    * @param entity
    */
-  protected def saveAndForward(entity: Entity[_]): String = {
+  protected def saveAndForward(entity: Entity[_]): View = {
     try {
       if (entity.isInstanceOf[UpdatedBean]) {
         val timeEntity = entity.asInstanceOf[UpdatedBean]
@@ -180,7 +183,7 @@ abstract class EntityDrivenAction extends EntityActionSupport {
     }
   }
 
-  protected def removeAndForward(entities: Seq[_]): String = {
+  protected def removeAndForward(entities: Seq[_]): View = {
     try {
       remove(entities)
       redirect("search", "info.remove.success")
