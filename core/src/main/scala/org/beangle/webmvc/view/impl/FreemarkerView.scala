@@ -7,12 +7,26 @@ import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.dispatch.ActionMapping
 import org.beangle.webmvc.view.{ LocatedView, ViewPathMapper, ViewRender, ViewResolver }
 import org.beangle.webmvc.view.freemarker.{ HierarchicalTemplateResolverByConfig, ParametersHashModel, ServletContextHashModel }
-
 import freemarker.ext.servlet.{ AllHttpScopesHashModel, HttpRequestHashModel, HttpSessionHashModel }
 import freemarker.template.{ ObjectWrapper, SimpleHash, Template }
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.webmvc.view.TypeViewBuilder
+import org.beangle.webmvc.api.annotation.view
+import org.beangle.webmvc.view.ViewBuilder
+import org.beangle.webmvc.view.template.TemplateResolver
 
 class FreemarkerView(val location: String) extends LocatedView
+
+class FreemarkerViewBuilder extends TypeViewBuilder {
+
+  override def build(view: view): View = {
+    new FreemarkerView(view.location)
+  }
+
+  override def supportViewType: String = {
+    "freemarker"
+  }
+}
 
 class FreemarkerViewResolver(configurer: Configurer, freemarkerConfigurer: FreemarkerConfigurer, viewPathMapper: ViewPathMapper)
   extends ViewResolver with ViewRender {
@@ -21,17 +35,16 @@ class FreemarkerViewResolver(configurer: Configurer, freemarkerConfigurer: Freem
   final val KEY_REQUEST = "Request"
   final val KEY_REQUEST_PARAMETERS = "Parameters"
 
-  val templateResolver = new HierarchicalTemplateResolverByConfig(freemarkerConfigurer.config, viewPathMapper, configurer)
+  var templateResolver: TemplateResolver = _
 
   val configuration = freemarkerConfigurer.config
   val servletContext = ServletContextHolder.context
-  //FIXME migrate beangle freemark manager
   val servletContextModel = new ServletContextHashModel(servletContext, configuration.getObjectWrapper)
 
   def resolve(viewName: String, mapping: ActionMapping): View = {
     val clazz = mapping.clazz
     val suffix = configurer.getProfile(clazz.getName).viewSuffix
-    val path = templateResolver.find(mapping.clazz, viewName, suffix)
+    val path = templateResolver.resolve(mapping.clazz, viewName, suffix)
     if (null == path) null else new FreemarkerView(path)
   }
 
@@ -49,8 +62,12 @@ class FreemarkerViewResolver(configurer: Configurer, freemarkerConfigurer: Freem
     template.process(model, response.getWriter)
   }
 
-  def supportView: Class[_] = {
+  def supportViewClass: Class[_] = {
     classOf[FreemarkerView]
+  }
+
+  def supportViewType: String = {
+    "freemarker"
   }
 
   protected def createModel(wrapper: ObjectWrapper, request: HttpServletRequest, response: HttpServletResponse, context: ActionContext): SimpleHash = {

@@ -72,6 +72,9 @@ final class Profile(val name: String, val actionPattern: String) extends Compara
   // 路径后缀
   var viewSuffix: String = _
 
+  // View Type (freemarker chain)
+  var viewType: String = _
+  
   // URI ROOT
   var uriPath = "/"
 
@@ -82,7 +85,7 @@ final class Profile(val name: String, val actionPattern: String) extends Compara
   var uriSuffix: String = _
 
   var interceptors: Array[Interceptor] = Array()
-  
+
   // 匹配缓存[className,matchInfo]
   private val matchInfos = new collection.mutable.HashMap[String, MatchInfo]
 
@@ -171,7 +174,8 @@ final class Profile(val name: String, val actionPattern: String) extends Compara
   override def toString: String = {
     Objects.toStringBuilder(this).add("name", name).add("actionPattern", actionPattern)
       .add("actionSuffix", actionSuffix).add("viewPath", viewPath)
-      .add("viewPathStyle", viewPathStyle).add("viewSuffix", viewSuffix).add("uriPath", uriPath)
+      .add("viewPathStyle", viewPathStyle).add("viewSuffix", viewSuffix)
+      .add("viewType", viewType).add("uriPath", uriPath)
       .add("uriPathStyle", uriPathStyle).add("uriSuffix", uriSuffix)
       .add("defaultMethod", defaultMethod).toString
   }

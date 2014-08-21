@@ -11,20 +11,28 @@ import org.beangle.webmvc.view.ViewRender
 import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.view.impl.DefaultViewMapper
+import org.beangle.webmvc.config.Configurer
 
 class DefaultInvocationReactor extends InvocationReactor with Initializing {
 
   var container: Container = _
 
-  var resolvers: List[ViewResolver] = List.empty
+  var resolvers: Map[String, ViewResolver] = Map.empty
 
   var renders: Map[Class[_], ViewRender] = Map.empty
 
+  var configurer: Configurer = _
+
   override def init(): Unit = {
-    resolvers = container.getBeans(classOf[ViewResolver]).values.toList
+    val resolverMap = new collection.mutable.HashMap[String, ViewResolver]
+    container.getBeans(classOf[ViewResolver]).values foreach { resolver =>
+      resolverMap.put(resolver.supportViewType, resolver)
+    }
+    resolvers = resolverMap.toMap
+
     val renderMaps = new collection.mutable.HashMap[Class[_], ViewRender]
     container.getBeans(classOf[ViewRender]).values foreach { render =>
-      renderMaps.put(render.supportView, render)
+      renderMaps.put(render.supportViewClass, render)
     }
     renders = renderMaps.toMap
   }
@@ -37,18 +45,14 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
       result = handler.handle(mapping)
       if (null != result) {
         val view = result match {
-          case viewName: String => mapping.views.get(viewName) match {
-            case Some(v) => v
-            case None =>
-              val newViewName = DefaultViewMapper.defaultView(mapping.method, viewName)
-              var resolvedView: View = null
-              val iter = resolvers.iterator
-              while (iter.hasNext && null == resolvedView) {
-                val resolver = iter.next
-                resolvedView = resolver.resolve(newViewName, mapping)
-              }
-              resolvedView
-          }
+          case viewName: String =>
+            val newViewName = DefaultViewMapper.defaultView(mapping.method, viewName)
+            mapping.views.get(newViewName) match {
+              case Some(v) => v
+              case None =>
+                val profile = configurer.getProfile(mapping.clazz.getName)
+                resolvers(profile.viewType).resolve(newViewName, mapping)
+            }
           case view: View => view
         }
         if (null == view) {

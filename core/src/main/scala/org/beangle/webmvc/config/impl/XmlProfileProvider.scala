@@ -48,12 +48,13 @@ class XmlProfileProvider extends ProfileProvider {
 
       val viewNodes = profileElem \ "view"
       if (viewNodes.isEmpty) {
-        copyDefaultProperties(profile, "viewPath", "viewPathStyle", "viewSuffix")
+        copyDefaultProperties(profile, "viewPath", "viewPathStyle", "viewType", "viewSuffix")
       } else {
         viewNodes foreach { elem =>
           readProperty(elem, profile, "path", "viewPath")
           readProperty(elem, profile, "style", "viewPathStyle")
           readProperty(elem, profile, "suffix", "viewSuffix")
+          readProperty(elem, profile, "type", "viewType")
         }
       }
 
@@ -67,7 +68,7 @@ class XmlProfileProvider extends ProfileProvider {
           readProperty(elem, profile, "suffix", "uriSuffix")
         }
       }
-      
+
       val interceptorNodes = profileElem \\ "interceptor"
       if (interceptorNodes.isEmpty) {
         copyDefaultProperties(profile, "interceptors")
@@ -87,7 +88,7 @@ class XmlProfileProvider extends ProfileProvider {
   private def readProperty(elem: Node, profile: Profile, attrName: String, propertyName: String): Unit = {
     val xmlAttribute = "@" + attrName
     if (!(elem \ xmlAttribute).isEmpty) {
-      copyProperty(profile, propertyName, (elem \ xmlAttribute).text)
+      copyProperty(profile, propertyName, (elem \ xmlAttribute).text.intern)
     } else {
       copyProperty(profile, propertyName, getProperty(defaultProfile, propertyName))
     }

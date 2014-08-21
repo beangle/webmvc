@@ -1,19 +1,26 @@
 package org.beangle.webmvc.dispatch.impl
 
 import java.lang.reflect.Method
-
 import scala.Range
-
 import org.beangle.commons.lang.Arrays
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
-import org.beangle.commons.lang.annotation.spi
+import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.reflect.ClassInfo
-import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
+import org.beangle.webmvc.api.annotation.{ action, ignore, mapping, param, view, views }
+import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.Profile
 import org.beangle.webmvc.config.impl.ActionURIBuilder
 import org.beangle.webmvc.dispatch.{ ActionMapping, ActionMappingBuilder }
+import org.beangle.webmvc.view.impl.{ DefaultViewMapper, FreemarkerView }
+import org.beangle.webmvc.view.template.TemplateResolver
+import org.beangle.webmvc.view.ViewBuilder
+import java.lang.annotation.Annotation
 
 class DefaultActionMappingBuilder extends ActionMappingBuilder {
+
+  var templateResolver: TemplateResolver = _
+
+  var viewBuilder: ViewBuilder = _
 
   override def build(clazz: Class[_], profile: Profile): Seq[Tuple2[ActionMapping, Method]] = {
     val result = ActionURIBuilder.build(clazz, profile)
@@ -21,6 +28,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
     val namespace = result.substring(0, lastSlash).intern()
     val name = result.substring(lastSlash + 1).intern()
     val actions = new collection.mutable.ListBuffer[Tuple2[ActionMapping, Method]]
+    val views = buildViews(clazz, profile)
     ClassInfo.get(clazz).methods foreach {
       case (methodName, minfos) =>
         if (minfos.size == 1) {
@@ -42,7 +50,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
 
             if (method.getParameterTypes().length != paramNames.size) throw new RuntimeException("Cannot find enough param name,Using @mapping or @param")
 
-            actions += Tuple2(new ActionMapping(httpMethod, url, clazz, methodName, paramNames.toArray, urlParams, namespace, name, profile.interceptors,Map.empty), method)
+            actions += Tuple2(new ActionMapping(httpMethod, url, clazz, methodName, paramNames.toArray, urlParams, namespace, name, profile.interceptors, views), method)
           }
         }
     }
@@ -72,4 +80,62 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
     (null != method.getAnnotation(classOf[mapping])) || method.getParameterAnnotations().exists(annArray => !Arrays.isBlank(annArray))
   }
 
+  protected def buildViews(clazz: Class[_], profile: Profile): Map[String, View] = {
+    val viewMap = new collection.mutable.HashMap[String, View]
+    // load annotation results
+    var results = new Array[view](0)
+    var rs = clazz.getAnnotation(classOf[views])
+    if (null == rs) {
+      val an = clazz.getAnnotation(classOf[action])
+      if (null != an) results = an.views()
+    } else {
+      results = rs.value()
+    }
+
+    val annotationResults = new collection.mutable.HashSet[String]
+    if (null != results) {
+      for (result <- results) {
+        viewMap.put(result.name, viewBuilder.build(result, profile.viewType))
+        annotationResults += result.name
+      }
+    }
+
+    // load ftl convension results
+    val suffix = profile.viewSuffix
+    if (suffix.endsWith(".ftl")) {
+      ClassInfo.get(clazz).getMethods foreach { mi =>
+        val m = mi.method
+        var name = m.getName
+        if (!annotationResults.contains(name) && shouldGenerateResult(m)) {
+          val path = templateResolver.resolve(clazz, DefaultViewMapper.defaultView(name, name), suffix)
+          if (null != path) viewMap.put(name, new FreemarkerView(path))
+        }
+      }
+    }
+    viewMap.toMap
+  }
+
+  protected def shouldGenerateResult(m: Method): Boolean = {
+    if (classOf[String].equals(m.getReturnType) && null == m.getAnnotation(classOf[ignore])) {
+      if (m.getParameterTypes.length == 0 || null != m.getAnnotation(classOf[mapping]) || containParamAnnotation(m.getParameterAnnotations)) {
+        var name = m.getName.toLowerCase
+        !(name.startsWith("save") || name.startsWith("remove")
+          || name.startsWith("export") || name.startsWith("import")
+          || name.startsWith("get") || Strings.contains(name, "$"))
+      } else false
+    } else false
+  }
+
+  private def containParamAnnotation(annotations: Array[Array[Annotation]]): Boolean = {
+    var i = 0
+    while (i < annotations.length) {
+      var j = 0
+      while (j < annotations(i).length) {
+        if (annotations(i)(j).isInstanceOf[param]) return true;
+        j += 1
+      }
+      i += 1
+    }
+    false
+  }
 }

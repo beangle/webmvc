@@ -5,6 +5,7 @@ import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.Profile
 import org.beangle.webmvc.dispatch.ActionMapping
+import org.beangle.webmvc.api.annotation.view
 @spi
 trait ViewPathMapper {
   /**
@@ -18,10 +19,26 @@ trait LocatedView extends View {
 }
 
 trait ViewRender {
-  def supportView: Class[_]
+  def supportViewClass: Class[_]
   def render(view: View, context: ActionContext)
 }
 
+/**
+ * find view by mapping and viewName
+ */
 trait ViewResolver {
   def resolve(viewName: String, mapping: ActionMapping): View
+  def supportViewType: String
+}
+
+/**
+ * Builder view from annotation
+ */
+trait ViewBuilder {
+  def build(view: view, defaultType:String): View
+}
+
+trait TypeViewBuilder {
+  def build(view: view): View
+  def supportViewType: String
 }

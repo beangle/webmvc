@@ -11,5 +11,5 @@ public @interface action {
 
 	String value();
 
-	result[] results() default {};
+	view[] views() default {};
 }

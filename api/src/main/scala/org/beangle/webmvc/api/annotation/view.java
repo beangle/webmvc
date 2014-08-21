@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface result {
+public @interface view {
 	/**
 	 * @return The name of the result mapping. This is the value that is
 	 *         returned from the action method and is used to associate a
@@ -17,19 +17,12 @@ public @interface result {
 
 	/**
 	 * @return The location of the result within the web application or anywhere
-	 *         on disk. This location can be relative if the type of this result
-	 *         is one of the pre-defined relative result types (these default to
-	 *         dispatcher, velocity and freemarker). Or this location can be
-	 *         absolute relative to the root of the web application or the
-	 *         classpath (since velocity and freemarker templates can be loaded
-	 *         via the classpath).
+	 *         on disk.
 	 */
 	String location() default "";
 
 	/**
-	 * @return The type of the result. This is usually setup in the struts.xml
-	 *         or struts-plugin.xml and is a simple name that is mapped to a
-	 *         result Class.
+	 * @return The type of the result. 
 	 */
 	String type() default "";
 

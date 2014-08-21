@@ -6,6 +6,31 @@ import org.beangle.webmvc.api.context.{ ActionContext, ContextHolder }
 import org.beangle.webmvc.api.view.{ ActionView, ForwardActionView, RedirectActionView, View }
 import org.beangle.webmvc.dispatch.RequestMapper
 import org.beangle.webmvc.view.ViewRender
+import org.beangle.webmvc.view.TypeViewBuilder
+import org.beangle.webmvc.api.annotation.view
+import org.beangle.webmvc.api.action.to
+
+class ForwardActionViewBuilder extends TypeViewBuilder {
+
+  override def build(view: view): View = {
+    new ForwardActionView(to(view.location))
+  }
+
+  override def supportViewType: String = {
+    "chain"
+  }
+}
+
+class RedirectActionViewBuilder extends TypeViewBuilder {
+
+  override def build(view: view): View = {
+    new RedirectActionView(to(view.location))
+  }
+
+  override def supportViewType: String = {
+    "redirectAction"
+  }
+}
 
 abstract class ActionViewRender(val mapper: RequestMapper) extends ViewRender {
 
@@ -23,7 +48,7 @@ abstract class ActionViewRender(val mapper: RequestMapper) extends ViewRender {
 
 class ForwardActionViewRender(mapper: RequestMapper) extends ActionViewRender(mapper) {
 
-  override def supportView: Class[_] = {
+  override def supportViewClass: Class[_] = {
     classOf[ForwardActionView]
   }
 
@@ -34,7 +59,7 @@ class ForwardActionViewRender(mapper: RequestMapper) extends ActionViewRender(ma
 
 class RedirectActionViewRender(mapper: RequestMapper) extends ActionViewRender(mapper) {
 
-  override def supportView: Class[_] = {
+  override def supportViewClass: Class[_] = {
     classOf[RedirectActionView]
   }
 

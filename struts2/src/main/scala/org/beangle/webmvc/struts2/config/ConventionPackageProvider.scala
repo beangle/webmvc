@@ -1,9 +1,7 @@
 package org.beangle.webmvc.struts2.config
 
 import java.lang.reflect.Method
-
 import scala.collection.JavaConversions.seqAsJavaList
-
 import org.apache.struts2.views.freemarker.FreemarkerManager
 import org.beangle.commons.inject.{ Container, ContainerAware }
 import org.beangle.commons.io.IOs
@@ -14,23 +12,22 @@ import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.i18n.TextBundleRegistry
 import org.beangle.commons.web.context.ServletContextHolder
 import org.beangle.webmvc.api.action.ToStruts
-import org.beangle.webmvc.api.annotation.{ action, ignore, result, results }
+import org.beangle.webmvc.api.annotation.{ action, ignore, view, views }
 import org.beangle.webmvc.config.Configurer
-import org.beangle.webmvc.config.impl.ActionURIBuilder
 import org.beangle.webmvc.context.{ ActionFinder, ContainerActionFinder }
 import org.beangle.webmvc.dispatch.{ ActionMapping, ActionMappingBuilder, RequestMapper }
 import org.beangle.webmvc.dispatch.impl.{ HierarchicalUrlMapper, RequestMappingBuilder }
-import org.beangle.webmvc.view.ViewMapper
-import org.beangle.webmvc.view.freemarker.TemplateFinderByLoader
+import org.beangle.webmvc.view.ViewPathMapper
+import org.beangle.webmvc.view.freemarker.HierarchicalTemplateResolverByLoader
 import org.beangle.webmvc.view.impl.DefaultViewMapper
-import org.beangle.webmvc.view.template.TemplateFinder
-
+import org.beangle.webmvc.view.template.TemplateResolver
 import com.opensymphony.xwork2.config.{ Configuration, ConfigurationException, PackageProvider }
 import com.opensymphony.xwork2.config.entities.{ ActionConfig, PackageConfig, ResultConfig }
 import com.opensymphony.xwork2.factory.ActionFactory
 import com.opensymphony.xwork2.inject.Inject
 import com.opensymphony.xwork2.util.classloader.ReloadingClassLoader
 import com.opensymphony.xwork2.util.finder.{ ClassLoaderInterface, ClassLoaderInterfaceDelegate }
+import org.beangle.webmvc.config.impl.ActionURIBuilder
 
 /**
  * This class is a configuration provider for the XWork configuration system. This is really the
@@ -60,7 +57,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
   var mapper: RequestMapper = _
 
   @Inject
-  var viewMapper: ViewMapper = _
+  var viewPathMapper: ViewPathMapper = _
 
   @Inject
   var actionMappingBuilder: ActionMappingBuilder = _
@@ -72,7 +69,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
 
   private var defaultParentPackage: String = "beangle"
 
-  private var templateFinder: TemplateFinder = _
+  private var templateResolver: TemplateResolver = _
 
   private var objectContainer: Container = _
   /** [url- > classname] */
@@ -95,7 +92,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     registry.addDefaults(defaultBundleNames.split(","): _*)
     registry.reloadable = java.lang.Boolean.parseBoolean(reloadBundles)
     val sc = ServletContextHolder.context
-    templateFinder = new TemplateFinderByLoader(freemarkerManager.getConfiguration(sc).getTemplateLoader(), viewMapper, configurer)
+    templateResolver = new HierarchicalTemplateResolverByLoader(freemarkerManager.getConfiguration(sc).getTemplateLoader(), viewPathMapper, configurer)
 
     val url = ClassLoaders.getResource("struts.properties")
     if (null != url) {
@@ -172,7 +169,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
         }
       }
     }
-    newActions += buildIndexActions(packageConfigs)
+    //    newActions += buildIndexActions(packageConfigs)
     // Add the new actions to the configuration(remove duplicated package builder for key != builder.name)
     val processedPackages = new collection.mutable.HashSet[String]
     for (builder <- packageConfigs.values) {
@@ -185,7 +182,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     }
 
     info(s"Action scan completed,create ${newActions} action(override ${overrideActions}) in ${watch}.")
-    templateFinder = null
+    templateResolver = null
   }
 
   private def addAction2Mapper(action: ActionMapping, beanName: String, method: Method): Unit = {
@@ -241,11 +238,11 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
   protected def buildResultConfigs(clazz: Class[_], pcb: PackageConfig.Builder): Seq[ResultConfig] = {
     var configs = new collection.mutable.ListBuffer[ResultConfig]
     // load annotation results
-    var results = new Array[result](0)
-    val rs = clazz.getAnnotation(classOf[results])
+    var results = new Array[view](0)
+    val rs = clazz.getAnnotation(classOf[views])
     if (null == rs) {
       val an = clazz.getAnnotation(classOf[action])
-      if (null != an) results = an.results
+      if (null != an) results = an.views
     } else {
       results = rs.value
     }
@@ -269,7 +266,7 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
         val m = mi.method
         var name = m.getName
         if (!annotationResults.contains(name) && shouldGenerateResult(m)) {
-          val path = templateFinder.find(clazz, DefaultViewMapper.defaultView(name, name), suffix)
+          val path = templateResolver.resolve(clazz, DefaultViewMapper.defaultView(name, name), suffix)
           if (null != path) {
             configs += new ResultConfig.Builder(name, resultTypeConfig.getClassName).addParam(
               resultTypeConfig.getDefaultResultParam, path).build()
@@ -306,33 +303,33 @@ class ConventionPackageProvider(val configuration: Configuration, val actionFind
     pkgConfig
   }
 
-  /**
-   * Determine all the index handling actions and results based on this logic:
-   *
-   * - Loop over all the namespaces such as /foo and see if it has an action named index
-   * - If an action doesn't exists in the parent namespace of the same name, create an action in the parent namespace of the same name as the namespace that points to the index action in the namespace. e.g. /foo -> /foo/index
-   * - 3. Create the action in the namespace for empty string if it doesn't exist. e.g. /foo/ the action is "" and the namespace is /foo
-   *
-   */
-  protected def buildIndexActions(packageConfigs: collection.mutable.Map[String, PackageConfig.Builder]): Int = {
-    var createCount = 0
-    var byNamespace = new collection.mutable.HashMap[String, PackageConfig.Builder]
-    for (packageConfig <- packageConfigs.values) {
-      byNamespace.put(packageConfig.getNamespace, packageConfig)
-    }
-    var namespaces = byNamespace.keySet
-    for (namespace <- namespaces if (byNamespace(namespace).build().getAllActionConfigs.get("index") != null)) {
-      // First see if the namespace has an index action
-      var pkgConfig = byNamespace(namespace)
-      var indexActionConfig = pkgConfig.build().getAllActionConfigs.get("index")
-      if (pkgConfig.build().getAllActionConfigs.get("") == null) {
-        debug(s"Creating index actionconfig for ${indexActionConfig.getClassName}")
-        pkgConfig.addActionConfig("", indexActionConfig)
-        createCount += 1
-      }
-    }
-    return createCount
-  }
+  //  /**
+  //   * Determine all the index handling actions and results based on this logic:
+  //   *
+  //   * - Loop over all the namespaces such as /foo and see if it has an action named index
+  //   * - If an action doesn't exists in the parent namespace of the same name, create an action in the parent namespace of the same name as the namespace that points to the index action in the namespace. e.g. /foo -> /foo/index
+  //   * - 3. Create the action in the namespace for empty string if it doesn't exist. e.g. /foo/ the action is "" and the namespace is /foo
+  //   *
+  //   */
+  //  protected def buildIndexActions(packageConfigs: collection.mutable.Map[String, PackageConfig.Builder]): Int = {
+  //    var createCount = 0
+  //    var byNamespace = new collection.mutable.HashMap[String, PackageConfig.Builder]
+  //    for (packageConfig <- packageConfigs.values) {
+  //      byNamespace.put(packageConfig.getNamespace, packageConfig)
+  //    }
+  //    var namespaces = byNamespace.keySet
+  //    for (namespace <- namespaces if (byNamespace(namespace).build().getAllActionConfigs.get("index") != null)) {
+  //      // First see if the namespace has an index action
+  //      var pkgConfig = byNamespace(namespace)
+  //      var indexActionConfig = pkgConfig.build().getAllActionConfigs.get("index")
+  //      if (pkgConfig.build().getAllActionConfigs.get("") == null) {
+  //        debug(s"Creating index actionconfig for ${indexActionConfig.getClassName}")
+  //        pkgConfig.addActionConfig("", indexActionConfig)
+  //        createCount += 1
+  //      }
+  //    }
+  //    return createCount
+  //  }
 
   override def needsReload(): Boolean = devMode == "true"
 

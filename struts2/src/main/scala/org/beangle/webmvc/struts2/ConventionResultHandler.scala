@@ -12,8 +12,8 @@ import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.context.ActionContextHelper
 import org.beangle.webmvc.dispatch.{ RequestMapper, RequestMapping }
-import org.beangle.webmvc.view.ViewMapper
-import org.beangle.webmvc.view.freemarker.TemplateFinderByConfig
+import org.beangle.webmvc.view.ViewPathMapper
+import org.beangle.webmvc.view.freemarker.HierarchicalTemplateResolverByConfig
 import org.beangle.webmvc.view.impl.DefaultViewMapper
 
 import com.opensymphony.xwork2.{ ActionContext, ObjectFactory, Result, UnknownHandler, XWorkException }
@@ -33,7 +33,7 @@ class ConventionResultHandler extends UnknownHandler {
 
   private var resultTypeConfigs: Map[String, ResultTypeConfig] = Map.empty
 
-  private var templateFinder: TemplateFinderByConfig = _
+  private var templateResolver: HierarchicalTemplateResolverByConfig = _
 
   @Inject
   var objectFactory: ObjectFactory = _
@@ -41,16 +41,16 @@ class ConventionResultHandler extends UnknownHandler {
   @Inject
   var resolver: RequestMapper = _
 
-  var viewMapper: ViewMapper = _
+  var viewPathMapper: ViewPathMapper = _
 
   var configurer: Configurer = _
 
   @Inject
-  def this(configuration: Configuration, freemarkerManager: FreemarkerManager, configurer: Configurer, viewMapper: ViewMapper) = {
+  def this(configuration: Configuration, freemarkerManager: FreemarkerManager, configurer: Configurer, viewPathMapper: ViewPathMapper) = {
     this()
     this.configurer = configurer
-    this.viewMapper = viewMapper
-    this.templateFinder = new TemplateFinderByConfig(freemarkerManager.getConfig(), viewMapper, configurer)
+    this.viewPathMapper = viewPathMapper
+    this.templateResolver = new HierarchicalTemplateResolverByConfig(freemarkerManager.getConfig(), viewPathMapper, configurer)
     val types = Map(("freemarker", ".ftl"), ("velocity", ".vm"), ("dispatcher", ".jsp"))
     val pc = configuration.getPackageConfig("struts-default")
     val resTypeConfigs = new collection.mutable.HashMap[String, ResultTypeConfig]
@@ -76,10 +76,10 @@ class ConventionResultHandler extends UnknownHandler {
       if (isEmpty(newResultCode)) newResultCode = "index"
       val viewName = DefaultViewMapper.defaultView(methodName, newResultCode)
       val suffix = configurer.getProfile(className).viewSuffix
-      if (".ftl" == suffix) path = templateFinder.find(actionClass, viewName, suffix)
+      if (".ftl" == suffix) path = templateResolver.resolve(actionClass, viewName, suffix)
       if (null == path) {
         val buf = new StringBuilder()
-        buf.append(viewMapper.map(className, DefaultViewMapper.defaultView(methodName, newResultCode), configurer.getProfile(className)))
+        buf.append(viewPathMapper.map(className, DefaultViewMapper.defaultView(methodName, newResultCode), configurer.getProfile(className)))
         buf.append(suffix)
         path = buf.toString
       }

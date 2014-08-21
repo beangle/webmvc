@@ -7,11 +7,9 @@ import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ParamLocale
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionMappingBuilder, HierarchicalUrlMapper }
 import org.beangle.webmvc.execution.impl.DefaultInvocationReactor
 import org.beangle.webmvc.spring.handler.{ ConventionHandlerAdapter, ConventionHandlerMapping }
-import org.beangle.webmvc.view.freemarker.FreemarkerTemplateEngine
-import org.beangle.webmvc.view.impl.{ DefaultViewPathMapper, FreemarkerConfigurer, FreemarkerViewResolver }
+import org.beangle.webmvc.view.freemarker.{ FreemarkerTemplateEngine, HierarchicalTemplateResolver }
+import org.beangle.webmvc.view.impl.{ DefaultViewBuilder, DefaultViewPathMapper, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerConfigurer, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender }
 import org.beangle.webmvc.view.tag.BeangleTagLibrary
-import org.beangle.webmvc.view.impl.ForwardActionViewRender
-import org.beangle.webmvc.view.impl.RedirectActionViewRender
 
 class DefaultModule extends AbstractBindModule {
 
@@ -22,11 +20,16 @@ class DefaultModule extends AbstractBindModule {
     bind("paramLocaleResolver", classOf[ParamLocaleResolver])
 
     bind(classOf[DefaultConfigurer], classOf[DefaultViewPathMapper], classOf[DefaultActionMappingBuilder])
-    bind(classOf[DefaultInvocationReactor], classOf[HierarchicalUrlMapper], classOf[FreemarkerConfigurer], classOf[FreemarkerViewResolver])
+    bind(classOf[DefaultInvocationReactor], classOf[HierarchicalUrlMapper])
+    bind(classOf[FreemarkerConfigurer], classOf[HierarchicalTemplateResolver],
+      classOf[FreemarkerViewResolver], classOf[FreemarkerViewBuilder])
 
-    bind(classOf[ForwardActionViewRender], classOf[RedirectActionViewRender])
+    bind(classOf[ForwardActionViewRender], classOf[ForwardActionViewBuilder])
+    bind(classOf[RedirectActionViewBuilder], classOf[RedirectActionViewRender])
     bind(classOf[DefaultTextFormater], classOf[DefaultTextBundleRegistry])
     bind(classOf[FreemarkerTemplateEngine])
+    bind(classOf[DefaultViewBuilder])
+
     bind(classOf[ActionTextResourceProvider], classOf[DefaultTextFormater], classOf[DefaultTextBundleRegistry])
     bind("b", classOf[BeangleTagLibrary])
   }
