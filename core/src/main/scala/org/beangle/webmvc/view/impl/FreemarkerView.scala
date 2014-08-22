@@ -56,9 +56,12 @@ class FreemarkerViewResolver(configurer: Configurer, freemarkerConfigurer: Freem
   }
 
   protected def processTemplate(template: Template, model: SimpleHash, response: HttpServletResponse): Unit = {
-    val attrContentType = template.getCustomAttribute("content_type")
+    val attrContentType = template.getCustomAttribute("content_type").asInstanceOf[String]
     if (attrContentType == null) response.setContentType(freemarkerConfigurer.contentType)
-    else response.setContentType(attrContentType.toString)
+    else {
+      if (!attrContentType.contains("charset")) response.setCharacterEncoding(configuration.getDefaultEncoding())
+      response.setContentType(attrContentType.toString)
+    }
     template.process(model, response.getWriter)
   }
 

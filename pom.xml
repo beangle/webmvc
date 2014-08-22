@@ -24,7 +24,7 @@
     <module>struts2</module>
     <module>springmvc</module>
     <module>bootstrapui</module>
-    <module>s2config</module>
+    <module>config-browser</module>
   </modules>
 
   <dependencyManagement>

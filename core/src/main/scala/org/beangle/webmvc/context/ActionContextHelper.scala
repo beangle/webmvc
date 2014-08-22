@@ -13,9 +13,15 @@ object ActionContextHelper {
 
   def build(request: HttpServletRequest, response: HttpServletResponse, mapping: RequestMapping, localeResolver: LocaleResolver, textResourceProvider: TextResourceProvider, paramMaps: collection.Map[String, Any]*): ActionContext = {
     val params = new collection.mutable.HashMap[String, Any]
-    Collections.putAll(params, request.getParameterMap)
-    params ++= mapping.params
+    val paramIter = request.getParameterMap.entrySet.iterator
+    while (paramIter.hasNext) {
+      val paramEntry = paramIter.next
+      val values = paramEntry.getValue
+      if (values.length == 1) params.put(paramEntry.getKey, values(0))
+      else params.put(paramEntry.getKey, values)
+    }
 
+    params ++= mapping.params
     paramMaps foreach (pMap => params ++= pMap)
 
     val context = new ActionContext(request, response, localeResolver.resolve(request), params.toMap)

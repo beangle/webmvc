@@ -30,5 +30,6 @@ class DefaultModule extends AbstractBindModule {
 
     bind(classOf[ActionTextResourceProvider], classOf[DefaultTextFormater], classOf[DefaultTextBundleRegistry])
     bind("b", classOf[BeangleTagLibrary])
+    
   }
 }

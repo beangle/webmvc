@@ -12,12 +12,7 @@ class ParametersHashModel(val params: Map[String, Any]) extends TemplateHashMode
     params.get(key) match {
       case Some(v) => {
         if (v.getClass.isArray) {
-          val array = v.asInstanceOf[Array[_]]
-          if (array.length > 0) {
-            new SimpleScalar(array(0).asInstanceOf[String])
-          } else {
-            null
-          }
+          new SimpleScalar(v.asInstanceOf[Array[_]](0).asInstanceOf[String])
         } else new SimpleScalar(v.asInstanceOf[String])
       }
       case None => null
