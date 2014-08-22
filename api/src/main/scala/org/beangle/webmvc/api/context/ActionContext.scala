@@ -10,9 +10,7 @@ object ContextHolder {
   def context: ActionContext = contexts.get()
 }
 
-class ActionContext(val request: HttpServletRequest, var response: HttpServletResponse, val params: Map[String, Any]) {
-
-  var locale: ju.Locale = _
+final class ActionContext(val request: HttpServletRequest, var response: HttpServletResponse, val locale: ju.Locale, val params: Map[String, Any]) {
 
   var textResource: TextResource = _
 

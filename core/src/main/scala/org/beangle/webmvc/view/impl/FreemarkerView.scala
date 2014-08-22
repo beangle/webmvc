@@ -1,19 +1,19 @@
 package org.beangle.webmvc.view.impl
 
+import org.beangle.commons.lang.annotation.spi
 import org.beangle.commons.web.context.ServletContextHolder
+import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.dispatch.ActionMapping
-import org.beangle.webmvc.view.{ LocatedView, ViewPathMapper, ViewRender, ViewResolver }
-import org.beangle.webmvc.view.freemarker.{ HierarchicalTemplateResolverByConfig, ParametersHashModel, ServletContextHashModel }
+import org.beangle.webmvc.view.{ LocatedView, TypeViewBuilder, ViewPathMapper, ViewRender, ViewResolver }
+import org.beangle.webmvc.view.freemarker.{ ParametersHashModel, ServletContextHashModel }
+import org.beangle.webmvc.view.template.TemplateResolver
+
 import freemarker.ext.servlet.{ AllHttpScopesHashModel, HttpRequestHashModel, HttpSessionHashModel }
 import freemarker.template.{ ObjectWrapper, SimpleHash, Template }
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.webmvc.view.TypeViewBuilder
-import org.beangle.webmvc.api.annotation.view
-import org.beangle.webmvc.view.ViewBuilder
-import org.beangle.webmvc.view.template.TemplateResolver
 
 class FreemarkerView(val location: String) extends LocatedView
 

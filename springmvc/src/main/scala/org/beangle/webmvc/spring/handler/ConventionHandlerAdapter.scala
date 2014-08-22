@@ -22,7 +22,6 @@ class ConventionHandlerAdapter(configurer: Configurer) extends HandlerAdapter {
   override def handle(request: HttpServletRequest, response: HttpServletResponse, handler: Object): ModelAndView = {
     ContextHolder.context.response = response
     val am = ActionContextHelper.getMapping(ContextHolder.context)
-    val watch = new Stopwatch(true)
     invocationReactor.invoke(am.handler, am.action)
     null
   }

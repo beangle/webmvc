@@ -4,20 +4,39 @@ import java.{ lang => jl }
 
 import scala.collection.mutable
 
+import org.beangle.commons.bean.Initializing
 import org.beangle.commons.http.HttpMethods.GET
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.commons.web.util.RequestUtils
-import org.beangle.webmvc.dispatch.{ RequestMapper, RequestMapping }
+import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.context.ActionFinder
+import org.beangle.webmvc.dispatch.{ ActionMappingBuilder, RequestMapper, RequestMapping }
 import org.beangle.webmvc.dispatch.ActionMapping.{ DefaultMethod, HttpMethodMap, HttpMethods, MethodParam }
 
 import javax.servlet.http.HttpServletRequest
 
-class HierarchicalUrlMapper extends RequestMapper {
+class HierarchicalUrlMapper extends RequestMapper with Initializing {
+
   private val mappings = new RequestMappings
+
   private val reverseMappings = new collection.mutable.HashMap[Class[_], mutable.Map[String, RequestMapping]]
 
-  def add(mapping: RequestMapping): Unit = {
+  var actionFinder: ActionFinder = _
+  var configurer: Configurer = _
+  var actionMappingBuilder: ActionMappingBuilder = _
+
+  override def init(): Unit = {
+    actionFinder.getActions(new ActionFinder.Test(configurer)) foreach { bean =>
+      val clazz = bean.getClass
+      actionMappingBuilder.build(clazz, configurer.getProfile(clazz.getName)).map {
+        case (action, method) =>
+          add(RequestMappingBuilder.build(action, bean, method))
+      }
+    }
+  }
+
+  private def add(mapping: RequestMapping): Unit = {
     val action = mapping.action
     val methodMappings = reverseMappings.getOrElseUpdate(action.clazz, new mutable.HashMap[String, RequestMapping])
     methodMappings.put(action.method, mapping)

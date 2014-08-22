@@ -9,49 +9,26 @@ import org.beangle.webmvc.dispatch.ActionMappingBuilder
 import org.beangle.webmvc.dispatch.impl.{ HierarchicalUrlMapper, RequestMappingBuilder }
 import org.springframework.web.servlet.HandlerExecutionChain
 import org.springframework.web.servlet.handler.AbstractDetectingUrlHandlerMapping
-
 import javax.servlet.http.HttpServletRequest
+import org.beangle.webmvc.dispatch.RequestMapper
+import org.springframework.web.servlet.HandlerMapping
 
-class ConventionHandlerMapping(configurer: Configurer) extends AbstractDetectingUrlHandlerMapping {
+class ConventionHandlerMapping(configurer: Configurer) extends HandlerMapping {
 
-  var resolver: HierarchicalUrlMapper = _
+  var mapper: RequestMapper = _
 
   var localeResover: org.beangle.webmvc.context.LocaleResolver = _
 
   var textResourceProvider: TextResourceProvider = _
 
-  var actionMappingBuilder: ActionMappingBuilder = _
-  /**
-   * generate url for every handler
-   */
-  protected override def determineUrlsForHandler(beanName: String): Array[String] = {
-    val bean = getApplicationContext().getBean(beanName)
-    val actionTest = new ActionFinder.Test(configurer)
-    if (actionTest(bean.getClass)) {
-      val classInfo = ClassInfo.get(bean.getClass)
-      actionMappingBuilder.build(bean.getClass, configurer.getProfile(bean.getClass.getName)).map {
-        case (action, method) =>
-          resolver.add(RequestMappingBuilder.build(action, bean, method))
-      }
-      null
-    } else null
-  }
-
-  protected override def getHandlerInternal(request: HttpServletRequest): Object = {
-    resolver.resolve(request) match {
+  override def getHandler(request: HttpServletRequest): HandlerExecutionChain = {
+    mapper.resolve(request) match {
       case Some(am) =>
         //FIXME for uploads
-        val context = ActionContextHelper.build(request, null, localeResover, am)
-        ContextHolder.contexts.set(context)
-        context.textResource = textResourceProvider.getTextResource(context.locale)
-        am.handler
+        ActionContextHelper.build(request, null, am, localeResover, textResourceProvider)
+        new HandlerExecutionChain(am.handler)
       case None =>
         null
-      //super.getHandlerInternal(request)
     }
-  }
-
-  protected override def getHandlerExecutionChain(handler: Object, request: HttpServletRequest): HandlerExecutionChain = {
-    new HandlerExecutionChain(handler)
   }
 }
