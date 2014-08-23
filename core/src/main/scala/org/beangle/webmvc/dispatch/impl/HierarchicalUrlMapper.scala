@@ -27,6 +27,8 @@ class HierarchicalUrlMapper extends RequestMapper with Initializing {
   var actionMappingBuilder: ActionMappingBuilder = _
 
   override def init(): Unit = {
+    //FIXME
+//    info(s"Action scan completed,create ${newActions} action(override ${overrideActions}) in ${watch}.")
     actionFinder.getActions(new ActionFinder.Test(configurer)) foreach { bean =>
       val clazz = bean.getClass
       actionMappingBuilder.build(clazz, configurer.getProfile(clazz.getName)).map {

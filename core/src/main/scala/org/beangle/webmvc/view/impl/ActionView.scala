@@ -69,6 +69,20 @@ class RedirectActionViewRender(mapper: RequestMapper) extends ActionViewRender(m
     val url = toURL(view)
     val finalLocation = if (request.getContextPath.length > 1) request.getContextPath + url else url
     val encodedLocation = response.encodeRedirectURL(finalLocation)
+//     val redirectParamStrs = request.getParameterValues("params")
+//        if (null != redirectParamStrs) {
+//          for (redirectParamStr <- redirectParamStrs)
+//            action.params(redirectParamStr)
+//        }
+//          // x-requested-with->XMLHttpRequest
+//        if (null != request.getHeader("x-requested-with")) action.param("x-requested-with", "1")
+//
+//        val params = buildResultParams(path, cfg)
+//        if (None != action.parameters.get("method")) {
+//          params.put("method", action.parameters("method"))
+//          action.parameters.remove("method")
+//        }
+    
     response.sendRedirect(encodedLocation)
   }
 }

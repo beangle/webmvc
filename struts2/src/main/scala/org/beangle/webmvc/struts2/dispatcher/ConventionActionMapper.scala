@@ -18,7 +18,7 @@ import org.beangle.commons.text.i18n.TextResourceProvider
 
 class ConventionActionMapper extends DefaultActionMapper with ActionMapper {
 
-  val resolver: RequestMapper = ContainerHelper.get.getBean(classOf[RequestMapper]).get
+  val mapper: RequestMapper = ContainerHelper.get.getBean(classOf[RequestMapper]).get
 
   val textResourceProvider = ContainerHelper.get.getBean(classOf[TextResourceProvider]).get
 
@@ -27,14 +27,9 @@ class ConventionActionMapper extends DefaultActionMapper with ActionMapper {
    * reserved method parameter
    */
   override def getMapping(request: HttpServletRequest, configManager: ConfigurationManager): ActionMapping = {
-    resolver.resolve(request) match {
+    mapper.resolve(request) match {
       case Some(m) =>
-        val response = ServletActionContext.getResponse
-        val context = request match {
-          case mp: MultiPartRequestWrapper => ActionContextHelper.build(request, response, m, localeResolver, textResourceProvider)
-          case _ => ActionContextHelper.build(request, response, m, localeResolver, textResourceProvider)
-        }
-
+        ActionContextHelper.build(request, ServletActionContext.getResponse, m, localeResolver, textResourceProvider)
         val am = new ActionMapping()
         val action = m.action
         am.setNamespace(action.namespace)
