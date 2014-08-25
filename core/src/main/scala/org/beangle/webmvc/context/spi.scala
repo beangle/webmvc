@@ -7,7 +7,7 @@ import org.beangle.commons.lang.functor.Predicate
 import org.beangle.webmvc.config.Configurer
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-
+@spi
 trait LocaleResolver {
   def resolve(request: HttpServletRequest): ju.Locale
   def setLocale(request: HttpServletRequest, response: HttpServletResponse, locale: ju.Locale): Unit

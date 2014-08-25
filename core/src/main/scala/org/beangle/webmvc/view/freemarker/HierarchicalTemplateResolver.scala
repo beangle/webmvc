@@ -3,16 +3,16 @@ package org.beangle.webmvc.view.freemarker
 import java.io.{ FileNotFoundException, IOException }
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.config.Configurer
-import org.beangle.webmvc.view.ViewPathMapper
-import org.beangle.webmvc.view.template.TemplateResolver
-import freemarker.cache.TemplateLoader
-import freemarker.template.Configuration
 import org.beangle.webmvc.view.impl.FreemarkerConfigurer
+import org.beangle.webmvc.view.template.{ TemplatePathMapper, TemplateResolver }
+import org.beangle.commons.lang.annotation.description
 
 /**
  * Find template in class hierarchy with configuration without caching.
+ * It need a ViewPathMapper
  */
-class HierarchicalTemplateResolver(freemarkerConfigurer: FreemarkerConfigurer, viewPathMapper: ViewPathMapper, configurer: Configurer) extends TemplateResolver {
+@description("参考类层级模板查找器")
+class HierarchicalTemplateResolver(freemarkerConfigurer: FreemarkerConfigurer, templatePathMapper: TemplatePathMapper, configurer: Configurer) extends TemplateResolver {
 
   override def resolve(actionClass: Class[_], viewName: String, suffix: String): String = {
     var path: String = null
@@ -22,7 +22,7 @@ class HierarchicalTemplateResolver(freemarkerConfigurer: FreemarkerConfigurer, v
     val configuration = freemarkerConfigurer.config
     do {
       val buf = new StringBuilder
-      buf.append(viewPathMapper.map(superClass.getName, viewName, profile))
+      buf.append(templatePathMapper.map(superClass.getName, viewName, profile))
       buf.append(suffix)
       path = buf.toString
       var templateName = path

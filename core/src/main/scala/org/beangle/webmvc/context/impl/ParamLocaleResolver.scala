@@ -1,12 +1,14 @@
 package org.beangle.webmvc.context.impl
 
 import java.{ util => ju }
-import org.beangle.commons.lang.Locales
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
-import org.beangle.webmvc.context.LocaleResolver
-import java.{util => ju}
 
+import org.beangle.commons.lang.Locales
+import org.beangle.commons.lang.annotation.{ description, spi }
+import org.beangle.webmvc.context.LocaleResolver
+
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+
+@description("基于参数的Locale解析器")
 class ParamLocaleResolver extends LocaleResolver {
   val SessionAttribute = "WW_TRANS_I18N_LOCALE"
   val SessionParameter = "session_locale"

@@ -1,18 +1,16 @@
 package org.beangle.webmvc.execution.impl
 
-import org.beangle.webmvc.execution.InvocationReactor
-import org.beangle.webmvc.dispatch.ActionMapping
-import org.beangle.webmvc.execution.Handler
-import org.beangle.webmvc.execution.Interceptor
-import org.beangle.commons.inject.Container
 import org.beangle.commons.bean.Initializing
-import org.beangle.webmvc.view.ViewResolver
-import org.beangle.webmvc.view.ViewRender
+import org.beangle.commons.inject.Container
+import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.view.impl.DefaultViewMapper
-import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.config.{ ActionMapping, Configurer }
+import org.beangle.webmvc.execution.{ Handler, Interceptor, InvocationReactor }
+import org.beangle.webmvc.view.{ ViewRender, ViewResolver }
+import org.beangle.webmvc.view.template.DefaultTemplatePathMapper
 
+@description("缺省的调用发生器")
 class DefaultInvocationReactor extends InvocationReactor with Initializing {
 
   var container: Container = _
@@ -38,7 +36,8 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
   }
 
   override def invoke(handler: Handler, mapping: ActionMapping): Unit = {
-    val interceptors = mapping.interceptors
+    val config = mapping.config
+    val interceptors = config.profile.interceptors
     var lastInterceptorIndex = preHandle(interceptors, handler)
     var result: Any = null
     if (lastInterceptorIndex == interceptors.length - 1) {
@@ -46,17 +45,17 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
       if (null != result) {
         val view = result match {
           case viewName: String =>
-            val newViewName = DefaultViewMapper.defaultView(mapping.method, viewName)
-            mapping.views.get(newViewName) match {
+            val newViewName = DefaultTemplatePathMapper.defaultView(mapping.method.getName, viewName)
+            config.views.get(newViewName) match {
               case Some(v) => v
               case None =>
-                val profile = configurer.getProfile(mapping.clazz.getName)
+                val profile = configurer.getProfile(config.clazz.getName)
                 resolvers(profile.viewType).resolve(newViewName, mapping)
             }
           case view: View => view
         }
         if (null == view) {
-          throw new RuntimeException(s"Cannot find $result for ${mapping.clazz}")
+          throw new RuntimeException(s"Cannot find $result for ${config.clazz}")
         }
         renders.get(view.getClass) match {
           case Some(render) => render.render(view, ContextHolder.context)

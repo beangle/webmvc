@@ -4,7 +4,7 @@ import java.lang.reflect.Method
 import scala.Range
 import org.beangle.commons.lang.Primitives
 import org.beangle.webmvc.api.context.{ ContextHolder, Params }
-import org.beangle.webmvc.dispatch.ActionMapping
+import org.beangle.webmvc.config.ActionMapping
 import org.beangle.webmvc.execution.Handler
 import org.beangle.webmvc.execution.Interceptor
 
@@ -18,7 +18,7 @@ class MethodHandler(val action: AnyRef, val method: Method) extends Handler {
       val values = new Array[Object](paramTypes.length)
       var binded = 0
       val params = ContextHolder.context.params
-      val paramNames = mapping.paramNames
+      val paramNames = mapping.params
       Range(0, paramTypes.length) foreach { i =>
         val paramName = paramNames(i)
         val pt = paramTypes(i)

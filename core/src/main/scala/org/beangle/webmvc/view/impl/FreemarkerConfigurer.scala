@@ -1,23 +1,20 @@
 package org.beangle.webmvc.view.impl
 
-import org.beangle.commons.logging.Logging
-import org.beangle.webmvc.view.freemarker.{ BeangleObjectWrapper, Configurations }
-import freemarker.ext.jsp.TaglibFactory
-import freemarker.template.{ Configuration, TemplateExceptionHandler }
-import javax.servlet.ServletContext
 import org.beangle.commons.bean.Initializing
+import org.beangle.commons.lang.annotation.description
+import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.context.ServletContextHolder
-import org.beangle.commons.inject.Container
-import org.beangle.webmvc.view.tag.TagLibrary
+import org.beangle.webmvc.view.freemarker.{ BeangleObjectWrapper, Configurations }
 
+import freemarker.template.{ Configuration, TemplateExceptionHandler }
+
+@description("Freemarker配置提供者")
 class FreemarkerConfigurer extends Logging with Initializing {
   //must before configuration init
   Configurations.disableFreemarkerLogger()
 
-  var container: Container = _
   val config = new Configuration()
 
-  var tags: Map[_, TagLibrary] = Map.empty
   var contentType: String = _
 
   override def init(): Unit = {
@@ -36,8 +33,6 @@ class FreemarkerConfigurer extends Logging with Initializing {
     config.setObjectWrapper(wrapper)
     val servletContext = ServletContextHolder.context
     config.setTemplateLoader(Configurations.createTemplateLoader(servletContext, servletContext.getInitParameter("templatePath")))
-
-    tags = container.getBeans(classOf[TagLibrary])
 
     var content_type = config.getCustomAttribute("content_type").asInstanceOf[String]
     if (null == content_type) content_type = "text/html"

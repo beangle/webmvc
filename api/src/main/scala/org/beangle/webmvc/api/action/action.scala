@@ -21,12 +21,13 @@ object to {
     new ToClass(obj.getClass, method).params(params)
   }
 
-  def apply(uri: String, params: String): ToURI = {
-    new ToURI(uri).params(params)
+  def apply(uri: String, params: String): ToURL = {
+    new ToURL(uri).params(params)
   }
 
-  def apply(uri: String): ToURI = {
-    new ToURI(uri)
+  def apply(uri: String): ToURL = {
+    val index = uri.indexOf('?')
+    if (-1 == index) new ToURL(uri) else new ToURL(uri.substring(0, index)).params(uri.substring(index + 1))
   }
 }
 
@@ -110,7 +111,7 @@ class ToStruts(val namespace: String, val name: String, val method: String, val 
   }
 }
 
-class ToURI(val uri: String) extends To {
+class ToURL(val uri: String) extends To {
 
   def toStruts: ToStruts = {
     var endIndex = uri.length
@@ -121,8 +122,7 @@ class ToURI(val uri: String) extends To {
     while (i > -1 && nonSlash) {
       uri.charAt(i) match {
         case '.' => endIndex = i
-        case '!' =>
-          endIndex = i; bandIndex = i
+        case '!' => bandIndex = i
         case '/' =>
           actionIndex = i + 1; nonSlash = false
         case _ =>
@@ -130,8 +130,8 @@ class ToURI(val uri: String) extends To {
       i -= 1
     }
     val namespace = if (actionIndex < 2) "/" else uri.substring(0, actionIndex - 1)
-    val actionName = uri.substring(actionIndex, endIndex)
-    val methodName = if (bandIndex > 0) uri.substring(bandIndex, endIndex) else null
+    val actionName = uri.substring(actionIndex, if (bandIndex > 0) bandIndex else endIndex)
+    val methodName = if (bandIndex > 0 && bandIndex < endIndex) uri.substring(bandIndex + 1, endIndex) else null
     val sa = new ToStruts(namespace, actionName, methodName)
     sa.params(parameters)
     sa.suffix = suffix

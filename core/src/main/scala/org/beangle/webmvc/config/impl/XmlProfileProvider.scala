@@ -7,7 +7,46 @@ import org.beangle.commons.lang.ClassLoaders
 import org.beangle.webmvc.config.{ Profile, ProfileProvider }
 import org.beangle.webmvc.execution.Interceptor
 import org.beangle.commons.lang.reflect.Reflections
+import org.beangle.commons.lang.annotation.description
 
+class ProfileBuilder(val name: String, val actionPattern: String) {
+
+  // action类名后缀
+  var actionSuffix: String = _
+
+  // 缺省的action中的方法
+  var defaultMethod = "index"
+
+  // 路径前缀
+  var viewPath: String = _
+
+  // 路径模式
+  var viewPathStyle = "simple"
+
+  // 路径后缀
+  var viewSuffix: String = _
+
+  // View Type (freemarker chain)
+  var viewType: String = _
+
+  //end with /
+  var uriPath = "/"
+
+  // URI style
+  var uriStyle = "simple"
+
+  /** URI的后缀 */
+  var uriSuffix: String = _
+
+  var interceptors: Array[Interceptor] = Array()
+
+  var source: URL = _
+  def mkProfile(): Profile = {
+    new Profile(name, actionPattern, actionSuffix, defaultMethod, viewPath, viewPathStyle, viewSuffix, viewType, uriPath, uriStyle, uriSuffix, interceptors, source)
+  }
+}
+
+@description("基于xml的配置提供者")
 class XmlProfileProvider extends ProfileProvider {
 
   private val defaultProfile = loadDefaultProfile()
@@ -20,7 +59,7 @@ class XmlProfileProvider extends ProfileProvider {
     ClassLoaders.getResources("META-INF/beangle/mvc-config.xml").foreach { url =>
       profiles ++= readXmlToProfiles(url)
     }
-    profiles.toList
+    profiles.sorted.toList
   }
 
   /**加载META-INF/beangle/mvc-default.xml*/
@@ -35,7 +74,7 @@ class XmlProfileProvider extends ProfileProvider {
     XML.load(url) \ "profile" foreach { profileElem =>
       val name = (profileElem \ "@name").text
       val pattern = (profileElem \ "@pattern").text
-      val profile = new Profile(name, pattern)
+      val profile = new ProfileBuilder(name, pattern)
       val actionNodes = profileElem \ "action"
       if (actionNodes.isEmpty) {
         copyDefaultProperties(profile, "actionSuffix", "defaultMethod")
@@ -60,11 +99,12 @@ class XmlProfileProvider extends ProfileProvider {
 
       val uriNodes = profileElem \ "uri"
       if (uriNodes.isEmpty) {
-        copyDefaultProperties(profile, "uriPath", "uriPathStyle", "uriSuffix")
+        copyDefaultProperties(profile, "uriPath", "uriStyle", "uriSuffix")
       } else {
         uriNodes foreach { elem =>
           readProperty(elem, profile, "path", "uriPath")
-          readProperty(elem, profile, "style", "uriPathStyle")
+          if (!profile.uriPath.endsWith("/")) profile.uriPath += "/"
+          readProperty(elem, profile, "style", "uriStyle")
           readProperty(elem, profile, "suffix", "uriSuffix")
         }
       }
@@ -79,13 +119,13 @@ class XmlProfileProvider extends ProfileProvider {
         }
         profile.interceptors = interceptors.toArray
       }
-
-      profiles += profile
+      profile.source = url
+      profiles += profile.mkProfile
     }
     profiles
   }
 
-  private def readProperty(elem: Node, profile: Profile, attrName: String, propertyName: String): Unit = {
+  private def readProperty(elem: Node, profile: ProfileBuilder, attrName: String, propertyName: String): Unit = {
     val xmlAttribute = "@" + attrName
     if (!(elem \ xmlAttribute).isEmpty) {
       copyProperty(profile, propertyName, (elem \ xmlAttribute).text.intern)
@@ -94,7 +134,7 @@ class XmlProfileProvider extends ProfileProvider {
     }
   }
 
-  private def copyDefaultProperties(profile: Profile, properties: String*): Unit = {
+  private def copyDefaultProperties(profile: ProfileBuilder, properties: String*): Unit = {
     properties foreach { propertyName =>
       copyProperty(profile, propertyName, getProperty(defaultProfile, propertyName))
     }

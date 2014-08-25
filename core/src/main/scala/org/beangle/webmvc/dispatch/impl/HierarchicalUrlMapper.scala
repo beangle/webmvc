@@ -2,61 +2,82 @@ package org.beangle.webmvc.dispatch.impl
 
 import java.{ lang => jl }
 
-import scala.collection.mutable
-
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.http.HttpMethods.GET
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
-import org.beangle.commons.lang.annotation.spi
+import org.beangle.commons.lang.annotation.{ description, spi }
+import org.beangle.commons.lang.time.Stopwatch
+import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.RequestUtils
-import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.config.{ ActionConfig, ActionMapping }
+import org.beangle.webmvc.config.{ ActionMappingBuilder, Configurer }
+import org.beangle.webmvc.config.ActionMapping.{ DefaultMethod, HttpMethodMap, HttpMethods, MethodParam }
 import org.beangle.webmvc.context.ActionFinder
-import org.beangle.webmvc.dispatch.{ ActionMappingBuilder, RequestMapper, RequestMapping }
-import org.beangle.webmvc.dispatch.ActionMapping.{ DefaultMethod, HttpMethodMap, HttpMethods, MethodParam }
+import org.beangle.webmvc.dispatch.{ RequestMapper, RequestMapping }
 
 import javax.servlet.http.HttpServletRequest
 
-class HierarchicalUrlMapper extends RequestMapper with Initializing {
+@description("支持层级的url映射器")
+class HierarchicalUrlMapper extends RequestMapper with Initializing with Logging {
 
-  private val mappings = new RequestMappings
+  private val hierarchicalMappings = new HierarchicalMappings
 
-  private val reverseMappings = new collection.mutable.HashMap[Class[_], mutable.Map[String, RequestMapping]]
+  private val directMappings = new collection.mutable.HashMap[String, RequestMapping]
+
+  //reverse mapping
+  private val actionConfigs = new collection.mutable.HashMap[String, ActionConfig]
 
   var actionFinder: ActionFinder = _
   var configurer: Configurer = _
   var actionMappingBuilder: ActionMappingBuilder = _
 
   override def init(): Unit = {
-    //FIXME
-//    info(s"Action scan completed,create ${newActions} action(override ${overrideActions}) in ${watch}.")
+    val watch = new Stopwatch(true)
+    var actionCount, mappingCount = 0
     actionFinder.getActions(new ActionFinder.Test(configurer)) foreach { bean =>
       val clazz = bean.getClass
+      actionCount += 1
       actionMappingBuilder.build(clazz, configurer.getProfile(clazz.getName)).map {
-        case (action, method) =>
-          add(RequestMappingBuilder.build(action, bean, method))
+        case (url, action) =>
+          mappingCount += 1
+          add(url, RequestMappingBuilder.build(action, bean))
       }
     }
+    info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in ${watch}.")
   }
 
-  private def add(mapping: RequestMapping): Unit = {
+  def actionNames = actionConfigs.keySet.filter { k =>
+    k.indexOf('/') > -1
+  }
+
+  private def add(url: String, mapping: RequestMapping): Unit = {
     val action = mapping.action
-    val methodMappings = reverseMappings.getOrElseUpdate(action.clazz, new mutable.HashMap[String, RequestMapping])
-    methodMappings.put(action.method, mapping)
-    mappings.add(mapping)
+    actionConfigs.put(action.config.clazz.getName, action.config)
+    actionConfigs.put(action.config.name, action.config)
+
+    val finalUrl = if (null != action.httpMethod && isNotEmpty(HttpMethodMap(action.httpMethod))) url + "/" + HttpMethodMap(action.httpMethod) else url
+    if (!finalUrl.contains("{")) directMappings.put(finalUrl, mapping)
+    else hierarchicalMappings.add(finalUrl, mapping)
   }
 
-  def antiResolve(clazz: Class[_], method: String): Option[RequestMapping] = {
-    reverseMappings.get(clazz) match {
-      case Some(methodMappings) => methodMappings.get(method)
+  override def antiResolve(name: String, method: String): Option[ActionMapping] = {
+    actionConfigs.get(name) match {
+      case Some(config) => config.mappings.get(method)
       case None => None
     }
   }
 
-  def resolve(uri: String): Option[RequestMapping] = {
-    mappings.resolve(GET, uri)
+  override def antiResolve(name: String): Option[ActionConfig] = {
+    actionConfigs.get(name)
   }
 
-  def resolve(request: HttpServletRequest): Option[RequestMapping] = {
+  override def resolve(uri: String): Option[RequestMapping] = {
+    val directMapping = directMappings.get(uri)
+    if (None != directMapping) return directMapping
+    else hierarchicalMappings.resolve(GET, uri)
+  }
+
+  override def resolve(request: HttpServletRequest): Option[RequestMapping] = {
     val uri = RequestUtils.getServletPath(request)
     var bangIdx, dotIdx = -1
     val lastSlashIdx = uri.lastIndexOf('/')
@@ -81,7 +102,11 @@ class HierarchicalUrlMapper extends RequestMapper with Initializing {
         if (null != method && -1 == sb.indexOf(method, lastSlashIdx + 1)) sb.append('/').append(method)
       }
     }
-    mappings.resolve(request.getMethod, sb.toString)
+
+    val finalUrl = sb.toString
+    val directMapping = directMappings.get(finalUrl)
+    if (None != directMapping) return directMapping
+    else hierarchicalMappings.resolve(request.getMethod, finalUrl)
   }
 
   private def determineMethod(request: HttpServletRequest, defaultMethod: String): String = {
@@ -94,19 +119,33 @@ class HierarchicalUrlMapper extends RequestMapper with Initializing {
   }
 }
 
-class RequestMappings {
-  val children = new collection.mutable.HashMap[String, RequestMappings]
+class HierarchicalMappings {
+  val children = new collection.mutable.HashMap[String, HierarchicalMappings]
   val mappings = new collection.mutable.HashMap[String, RequestMapping]
 
-  def add(mapping: RequestMapping): Unit = {
-    val action = mapping.action
-    val url = if (null != action.httpMethod && isNotEmpty(HttpMethodMap(action.httpMethod))) action.url + "/" + HttpMethodMap(action.httpMethod) else action.url
-
-    if (action.isPattern) add(url, mapping, this)
-    else mappings.put(action.url, mapping)
+  def add(url: String, mapping: RequestMapping): Unit = {
+    add(url, mapping, this)
   }
 
-  def add(pattern: String, mapping: RequestMapping, mappings: RequestMappings): Unit = {
+  def resolve(httpMethod: String, uri: String): Option[RequestMapping] = {
+    val parts = split(uri, '/')
+    val result = find(0, parts, this)
+    result match {
+      case Some(m) =>
+        val action = m.action
+        if (action.httpMethodMatches(httpMethod)) {
+          val params = new collection.mutable.HashMap[String, String]
+          action.urlParams foreach {
+            case (k, v) =>
+              params.put(v, parts(k))
+          }
+          Some(new RequestMapping(action, m.handler, params))
+        } else None
+      case None => None
+    }
+  }
+
+  private def add(pattern: String, mapping: RequestMapping, mappings: HierarchicalMappings): Unit = {
     val slashIndex = pattern.indexOf('/', 1)
     val head = if (-1 == slashIndex) pattern.substring(1) else pattern.substring(1, slashIndex)
     val headPattern = RequestMappingBuilder.getMatcherName(head)
@@ -114,34 +153,11 @@ class RequestMappings {
     if (-1 == slashIndex) {
       mappings.mappings.put(headPattern, mapping)
     } else {
-      add(pattern.substring(slashIndex), mapping, mappings.children.getOrElseUpdate(headPattern, new RequestMappings))
+      add(pattern.substring(slashIndex), mapping, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
     }
   }
 
-  def resolve(httpMethod: String, uri: String): Option[RequestMapping] = {
-    val directMapping = mappings.get(uri)
-    if (None != directMapping) return directMapping
-
-    val parts = split(uri, '/')
-    val result = find(0, parts, this)
-    result match {
-      case Some(m) =>
-        val action = m.action
-        if (action.httpMethodMatches(httpMethod)) {
-          if (action.isPattern) {
-            val urlParams = new collection.mutable.HashMap[String, String]
-            action.urlParamNames foreach {
-              case (k, v) =>
-                urlParams.put(v, parts(k))
-            }
-            Some(new RequestMapping(action, m.handler, urlParams))
-          } else result
-        } else None
-      case None => None
-    }
-  }
-
-  def find(index: Int, parts: Array[String], mappings: RequestMappings): Option[RequestMapping] = {
+  private def find(index: Int, parts: Array[String], mappings: HierarchicalMappings): Option[RequestMapping] = {
     if (index < parts.length && null != mappings) {
       if (index == parts.length - 1) {
         val mapping = mappings.mappings.get(parts(index))

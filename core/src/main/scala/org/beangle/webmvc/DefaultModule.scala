@@ -2,34 +2,52 @@ package org.beangle.webmvc
 
 import org.beangle.commons.inject.bind.AbstractBindModule
 import org.beangle.commons.text.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
-import org.beangle.webmvc.config.impl.DefaultConfigurer
-import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ParamLocaleResolver }
-import org.beangle.webmvc.dispatch.impl.{ DefaultActionMappingBuilder, HierarchicalUrlMapper }
+import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider }
+import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, ParamLocaleResolver }
+import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, HierarchicalUrlMapper }
 import org.beangle.webmvc.execution.impl.DefaultInvocationReactor
 import org.beangle.webmvc.view.freemarker.{ FreemarkerTemplateEngine, HierarchicalTemplateResolver }
-import org.beangle.webmvc.view.impl.{ DefaultViewBuilder, DefaultViewPathMapper, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerConfigurer, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender }
+import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerConfigurer, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender }
 import org.beangle.webmvc.view.tag.BeangleTagLibrary
-import org.beangle.webmvc.context.impl.ContainerActionFinder
+import org.beangle.webmvc.view.template.DefaultTemplatePathMapper
 
 class DefaultModule extends AbstractBindModule {
 
   protected override def binding() {
+    //config
+    bind("mvc.ProfileProvider.default", classOf[XmlProfileProvider])
+    bind("mvc.Configurer.default", classOf[DefaultConfigurer])
+    bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder])
+    bind("mvc.ActionFinder.default", classOf[ContainerActionFinder])
 
-    bind(classOf[ParamLocaleResolver])
-    bind(classOf[DefaultConfigurer], classOf[DefaultViewPathMapper], classOf[DefaultActionMappingBuilder])
-    bind(classOf[DefaultInvocationReactor], classOf[HierarchicalUrlMapper])
-    bind(classOf[FreemarkerConfigurer], classOf[HierarchicalTemplateResolver],
-      classOf[FreemarkerViewResolver], classOf[FreemarkerViewBuilder])
+    //template
+    bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerConfigurer])
+    bind("mvc.TemplatePathMapper.default", classOf[DefaultTemplatePathMapper])
+    bind("mvc.TemplateResolver.freemarker", classOf[HierarchicalTemplateResolver])
+    bind("mvc.TemplateEngine.freemarker", classOf[FreemarkerTemplateEngine])
 
-    bind(classOf[ContainerActionFinder])
-    bind(classOf[ForwardActionViewRender], classOf[ForwardActionViewBuilder])
-    bind(classOf[RedirectActionViewBuilder], classOf[RedirectActionViewRender])
-    bind(classOf[DefaultTextFormater], classOf[DefaultTextBundleRegistry])
-    bind(classOf[FreemarkerTemplateEngine])
-    bind(classOf[DefaultViewBuilder])
+    //view
+    bind("mvc.ViewResolver.freemarker", classOf[FreemarkerViewResolver])
+    bind("mvc.ViewBuilder.default", classOf[DefaultViewBuilder])
+    bind("mvc.TypeViewBuilder.freemarker", classOf[FreemarkerViewBuilder])
+    bind("mvc.TypeViewBuilder.chain", classOf[ForwardActionViewBuilder])
+    bind("mvc.TypeViewBuilder.redirect", classOf[RedirectActionViewBuilder])
+    bind("mvc.ViewRender.chain", classOf[ForwardActionViewRender])
+    bind("mvc.ViewRender.redirect", classOf[RedirectActionViewRender])
+    bind("mvc.TaglibraryProvider.default", classOf[ContainerTaglibraryProvider])
+    bind("mvc.Taglibrary.b", classOf[BeangleTagLibrary])
 
-    bind(classOf[ActionTextResourceProvider], classOf[DefaultTextFormater], classOf[DefaultTextBundleRegistry])
-    bind("b", classOf[BeangleTagLibrary])
-    
+    //dispatch
+    bind("mvc.ActionUriRender.default", classOf[DefaultActionUriRender])
+    bind("mvc.RequestMapper.default", classOf[HierarchicalUrlMapper])
+
+    //execution
+    bind("mvc.InvocationReactor.default", classOf[DefaultInvocationReactor])
+
+    //context
+    bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
+    bind("mvc.TextFormater.default", classOf[DefaultTextFormater])
+    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
+    bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
   }
 }

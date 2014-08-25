@@ -22,7 +22,7 @@ class ActionTextResource(context: ActionContext, val locale: jl.Locale, registry
   private def get(key: String, locale: jl.Locale): Option[String] = {
     if (key == null) ""
     val mapping = ActionContextHelper.getMapping(context)
-    val actionClass = mapping.action.clazz
+    val actionClass = mapping.action.config.clazz
     var checked = new HashSet[String]
     // search up class hierarchy
     var msg = getMessage(actionClass.getName, locale, key)

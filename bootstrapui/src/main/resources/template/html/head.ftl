@@ -47,8 +47,8 @@
 [#else]
   <script type="text/javascript" src="${base}/static/scripts/jquery/jquery,/scripts/beangle/beangle.js?compress=no"></script>
 [/#if]
-  <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css">
-  <script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="${base}/static/themes/default/bootstrap.min.css">
+  <script src="${base}/static/scripts/bootstrap/bootstrap.min.js"></script>
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
   <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>

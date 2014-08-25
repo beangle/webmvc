@@ -1,6 +1,8 @@
 package org.beangle.webmvc.view.component
 
-import org.beangle.webmvc.view.impl.{ ActionUriRender, UIIdGenerator }
+import org.beangle.commons.lang.annotation.spi
+import org.beangle.webmvc.dispatch.ActionUriRender
+import org.beangle.webmvc.view.impl.UIIdGenerator
 import org.beangle.webmvc.view.template.{ TemplateEngine, Theme, ThemeStack, Themes }
 
 class ComponentContext(val uriRender: ActionUriRender, val idGenerator: UIIdGenerator, val templateEngine: TemplateEngine) {

@@ -1,12 +1,12 @@
 package org.beangle.webmvc.view.tag
 
 import org.beangle.commons.lang.annotation.spi
-import org.beangle.webmvc.helper.ContainerHelper
+import org.beangle.webmvc.dispatch.ActionUriRender
 import org.beangle.webmvc.view.component.ComponentContext
 import org.beangle.webmvc.view.freemarker.FreemarkerTemplateEngine
-import org.beangle.webmvc.view.impl.{DefaultActionUriRender, IndexableIdGenerator}
-
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import org.beangle.webmvc.view.impl.IndexableIdGenerator
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.commons.lang.annotation.description
 
 /**
  * Beangle tag Library
@@ -14,17 +14,17 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
  * @author chaostone
  * @since 2.0
  */
+@description("beangle标签库")
 class BeangleTagLibrary extends TagLibrary {
 
-  var suffix: String = _
+  var uriRender: ActionUriRender = _
+  var templateEngine: FreemarkerTemplateEngine = _
 
   def getModels(req: HttpServletRequest, res: HttpServletResponse): AnyRef = {
     val queryString = req.getQueryString
     val fullpath = if (null == queryString) req.getRequestURI() else req.getRequestURI() + queryString
     val idGenerator = new IndexableIdGenerator(String.valueOf(Math.abs(fullpath.hashCode)))
 
-    val uriRender = new DefaultActionUriRender(suffix)
-    val templateEngine = ContainerHelper.get.getBean(classOf[FreemarkerTemplateEngine]).orNull
     val componentContext = new ComponentContext(uriRender, idGenerator, templateEngine)
     new BeangleModels(componentContext, req)
   }

@@ -3,14 +3,14 @@ package org.beangle.webmvc.view.freemarker
 import java.io.{ IOException, Writer }
 import java.util.{ ArrayList, HashMap }
 
-import org.beangle.commons.bean.Initializing
 import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.Throwables
+import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.api.context.ContextHolder
-import org.beangle.webmvc.view.tag.TagLibrary
-import org.beangle.webmvc.view.template.TemplateEngine
 import org.beangle.webmvc.view.component.Component
+import org.beangle.webmvc.view.tag.TagLibraryProvider
+import org.beangle.webmvc.view.template.TemplateEngine
 
 import freemarker.cache.StrongCacheStorage
 import freemarker.core.ParseException
@@ -28,11 +28,12 @@ import javax.servlet.http.HttpServletRequest
  *
  * @author chaostone
  */
-class FreemarkerTemplateEngine extends TemplateEngine with Logging with Initializing {
+@description("Freemarker 模板引擎")
+class FreemarkerTemplateEngine(tagLibraryProvider: TagLibraryProvider) extends TemplateEngine with Logging {
 
   protected val config = buildConfig()
   private val templateModelAttribute = ".freemarker.TemplateModel"
-  protected var tagLibraries: Map[String, TagLibrary] = Map.empty
+  protected val tagLibraries = tagLibraryProvider.tagLibraries
   protected var container: Container = _
 
   @throws(classOf[Exception])
@@ -60,7 +61,7 @@ class FreemarkerTemplateEngine extends TemplateEngine with Logging with Initiali
     config.setEncoding(config.getLocale(), "UTF-8")
 
     config.setObjectWrapper(new BeangleObjectWrapper(false))
-    // Cache one hour(7200s) and Strong cache
+    // FIXME Cache one hour(7200s) and Strong cache 
     config.setTemplateUpdateDelay(0)
     // config.setCacheStorage(new MruCacheStorage(100,250))
     config.setCacheStorage(new StrongCacheStorage())
@@ -93,22 +94,20 @@ class FreemarkerTemplateEngine extends TemplateEngine with Logging with Initiali
     val req = context.request
     var model = req.getAttribute(templateModelAttribute).asInstanceOf[SimpleHash]
     if (null == model) {
-      val model = new SimpleHttpScopesHashModel(config.getObjectWrapper(), req)
+      model = new SimpleHttpScopesHashModel(config.getObjectWrapper(), req)
       model.put("Parameters", new HttpRequestParametersHashModel(req))
       val res = ContextHolder.context.response
       for ((k, v) <- tagLibraries) {
         model.put(k, v.getModels(req, res))
       }
+      model.put("request", req)
+      model.put("base", req.getServletContext.getContextPath)
       req.setAttribute(templateModelAttribute, model)
     }
-    return model
+    model
   }
 
   final def suffix = ".ftl"
-
-  def init(): Unit = {
-    tagLibraries = container.getBeans(classOf[TagLibrary]).asInstanceOf[Map[String, TagLibrary]]
-  }
 }
 
 /**
