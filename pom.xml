@@ -15,7 +15,6 @@
     <commons.version>4.1.0-SNAPSHOT</commons.version>
     <data.version>4.1.0-SNAPSHOT</data.version>
     <freemarker.version>2.3.20</freemarker.version>
-    <struts.version>2.3.16.3</struts.version>
   </properties>
 
   <modules>
@@ -23,6 +22,7 @@
     <module>core</module>
     <module>bootstrapui</module>
     <module>config</module>
+    <module>webxml</module>
   </modules>
 
   <dependencyManagement>
@@ -57,11 +57,6 @@
         <artifactId>beangle-webmvc-core</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.struts</groupId>
-        <artifactId>struts2-core</artifactId>
-        <version>${struts.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -73,15 +68,6 @@
     <dependency>
       <groupId>org.beangle.commons</groupId>
       <artifactId>beangle-commons-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.beangle.data</groupId>
-      <artifactId>beangle-data-jpa</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.freemarker</groupId>
-      <artifactId>freemarker</artifactId>
-      <version>${freemarker.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

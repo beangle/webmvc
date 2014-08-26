@@ -23,16 +23,19 @@
   [@b.tab label="Mappings"]
     <table width="100%" class="table">
       <thead>
-        <tr><th>Http Method</th><th>Method Name</th><th>Mapping</th><th>Parameters</th></tr>
+        <tr>
+          <th width="10%">Method</th>
+          <th width="45%">Mapping</th>
+          <th width="45%">Action Method</th>
+        </tr>
       </thead>
       <tbody>
         [#list config.mappings?keys as methodName]
           [#assign mapping = config.mappings[methodName]/]
          <tr>
           <td>${mapping.httpMethod!"*"}</td>
-          <td>${mapping.method.name}</td>
-          <td>${mapping.name}</td>
-          <td>[#list mapping.params as p]${p}[#if p_has_next],[/#if][/#list]</td>
+          <td>${Parameters['name']}/${mapping.name}</td>
+          <td>${mapping.method.name}([#list mapping.params as p]${p}[#if p_has_next],[/#if][/#list])</td>
         </tr>
       [/#list]
       </tbody>
