@@ -33,7 +33,6 @@ class FreemarkerTemplateEngine(tagLibraryProvider: TagLibraryProvider) extends T
 
   protected val config = buildConfig()
   private val templateModelAttribute = ".freemarker.TemplateModel"
-  protected val tagLibraries = tagLibraryProvider.tagLibraries
   protected var container: Container = _
 
   @throws(classOf[Exception])
@@ -97,7 +96,7 @@ class FreemarkerTemplateEngine(tagLibraryProvider: TagLibraryProvider) extends T
       model = new SimpleHttpScopesHashModel(config.getObjectWrapper(), req)
       model.put("Parameters", new HttpRequestParametersHashModel(req))
       val res = ContextHolder.context.response
-      for ((k, v) <- tagLibraries) {
+      for ((k, v) <- tagLibraryProvider.tagLibraries) {
         model.put(k, v.getModels(req, res))
       }
       model.put("request", req)

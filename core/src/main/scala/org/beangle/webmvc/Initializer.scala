@@ -15,10 +15,7 @@ class Initializer extends org.beangle.commons.web.init.Initializer {
     sc.addListener(new HttpSessionEventPublisher)
     sc.addFilter("CharacterEncoding", new CharacterEncodingFilter)
 
-    val sr = sc.addServlet("Action", new DispatcherServlet)
-    sr.setInitParameter("contextAttribute", "WebApplicationContext:Action")
-    sr.addMapping("/*")
-
+    sc.addServlet("Action", new DispatcherServlet).addMapping("/*")
     sc.addServlet("StaticResource", new StaticResourceServlet()).addMapping("/static/*")
   }
 }

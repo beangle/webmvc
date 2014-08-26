@@ -43,8 +43,6 @@ class FreemarkerViewResolver(configurer: Configurer, freemarkerConfigurer: Freem
   val servletContext = ServletContextHolder.context
   val servletContextModel = new ServletContextHashModel(servletContext, configuration.getObjectWrapper)
 
-  var tagLibraries = tagLibraryProvider.tagLibraries
-
   def resolve(viewName: String, mapping: ActionMapping): View = {
     val config = mapping.config
     val path = templateResolver.resolve(config.clazz, viewName, config.profile.viewSuffix)
@@ -83,7 +81,7 @@ class FreemarkerViewResolver(configurer: Configurer, freemarkerConfigurer: Freem
     if (session != null) model.put(KEY_SESSION, new HttpSessionHashModel(session, wrapper))
     model.put(KEY_REQUEST, new HttpRequestHashModel(request, wrapper))
     model.put(KEY_REQUEST_PARAMETERS, new ParametersHashModel(context.params))
-    tagLibraries foreach {
+    tagLibraryProvider.tagLibraries foreach {
       case (tagName, tag) =>
         model.put(tagName.toString, tag.getModels(request, response))
     }

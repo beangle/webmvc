@@ -2,8 +2,8 @@ package org.beangle.webmvc.dispatch.impl
 
 import java.{ lang => jl }
 
-import org.beangle.commons.bean.Initializing
 import org.beangle.commons.http.HttpMethods.GET
+import org.beangle.commons.inject.{ Container, ContainerRefreshedHook }
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.lang.time.Stopwatch
@@ -18,7 +18,7 @@ import org.beangle.webmvc.dispatch.{ RequestMapper, RequestMapping }
 import javax.servlet.http.HttpServletRequest
 
 @description("支持层级的url映射器")
-class HierarchicalUrlMapper extends RequestMapper with Initializing with Logging {
+class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook with Logging {
 
   private val hierarchicalMappings = new HierarchicalMappings
 
@@ -31,7 +31,7 @@ class HierarchicalUrlMapper extends RequestMapper with Initializing with Logging
   var configurer: Configurer = _
   var actionMappingBuilder: ActionMappingBuilder = _
 
-  override def init(): Unit = {
+  override def notify(container: Container): Unit = {
     val watch = new Stopwatch(true)
     var actionCount, mappingCount = 0
     actionFinder.getActions(new ActionFinder.Test(configurer)) foreach { bean =>
