@@ -24,7 +24,7 @@ class DefaultModule extends AbstractBindModule {
     bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerConfigurer])
     bind("mvc.TemplatePathMapper.default", classOf[DefaultTemplatePathMapper])
     bind("mvc.TemplateResolver.freemarker", classOf[HierarchicalTemplateResolver])
-    bind("mvc.TemplateEngine.freemarker", classOf[FreemarkerTemplateEngine])
+    bind("mvc.TemplateEngine.freemarker", classOf[FreemarkerTemplateEngine]).property("enableCache", $("mvc.template_engine.cache", "true"))
 
     //view
     bind("mvc.ViewResolver.freemarker", classOf[FreemarkerViewResolver])

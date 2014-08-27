@@ -30,9 +30,8 @@
         </tr>
       </thead>
       <tbody>
-        [#list config.mappings?keys as methodName]
-          [#assign mapping = config.mappings[methodName]/]
-         <tr>
+        [#list config.mappings?values as mapping]
+        <tr>
           <td>${mapping.httpMethod!"*"}</td>
           <td>${Parameters['name']}/${mapping.name}</td>
           <td>${mapping.method.name}([#list mapping.params as p]${p}[#if p_has_next],[/#if][/#list])</td>

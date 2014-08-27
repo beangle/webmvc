@@ -1,73 +1,71 @@
 package org.beangle.webmvc.view.freemarker
 
-import freemarker.template.TemplateModelException
-import freemarker.template.TemplateModel
-import freemarker.template.DefaultObjectWrapper
-import freemarker.ext.beans.CollectionModel
-import java.util.Collection
-import freemarker.template.SimpleSequence
-import freemarker.ext.beans.MapModel
-import freemarker.template.TemplateHashModelEx
-import freemarker.template.TemplateMethodModelEx
-import freemarker.template.AdapterTemplateModel
-import freemarker.ext.beans.BeansWrapper
-import freemarker.ext.util.ModelFactory
-import freemarker.template.ObjectWrapper
-import freemarker.template.TemplateCollectionModel
-import freemarker.core.CollectionAndSequence
-import freemarker.ext.beans.BeansWrapper.MethodAppearanceDecision
 import java.beans.PropertyDescriptor
+import java.lang.reflect.{ Method, Modifier }
+import java.{ util => ju }
+
 import scala.collection.JavaConversions
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
+
+import freemarker.core.CollectionAndSequence
+import freemarker.ext.beans.BeansWrapper
+import freemarker.ext.beans.BeansWrapper.MethodAppearanceDecision
+import freemarker.ext.beans.MapModel
+import freemarker.ext.util.ModelFactory
+import freemarker.template.{ AdapterTemplateModel, DefaultObjectWrapper, ObjectWrapper, SimpleCollection, SimpleDate, SimpleNumber, SimpleScalar, SimpleSequence, TemplateBooleanModel, TemplateCollectionModel, TemplateHashModelEx, TemplateMethodModelEx, TemplateModel }
 
 class BeangleObjectWrapper(val altMapWrapper: Boolean) extends DefaultObjectWrapper {
 
-  /**
-   * 特殊包装set和map
-   */
-  @throws(classOf[TemplateModelException])
-  private def inner_wrap(obj: Object): TemplateModel = {
-    if (obj == null) { return super.wrap(null); }
-    if (obj.isInstanceOf[List[_]]) { return new CollectionModel(obj.asInstanceOf[Collection[_]], this); }
-    // 使得set等集合可以排序
-    if (obj.isInstanceOf[Collection[_]]) {
-      new SimpleSequence(obj.asInstanceOf[Collection[_]], this);
-    } else {
-      if (obj.isInstanceOf[Map[_, _]]) {
-        if (altMapWrapper) {
-          new FriendlyMapModel(obj.asInstanceOf, this);
-        } else {
-          new MapModel(obj.asInstanceOf, this);
-        }
-      } else super.wrap(obj);
-    }
-  }
-
-  protected override def finetuneMethodAppearance(clazz: Class[_], m: Method,
-    decision: MethodAppearanceDecision) {
+  protected override def finetuneMethodAppearance(clazz: Class[_], m: Method, decision: MethodAppearanceDecision) {
     val name = m.getName
     if (name.equals("hashCode") || name.equals("toString")) return
     if (isPropertyMethod(m)) {
-      val pd = new PropertyDescriptor(name, m, null);
+      val pd = new PropertyDescriptor(name, m, null)
       decision.setExposeAsProperty(pd)
       decision.setExposeMethodAs(name)
       decision.setMethodShadowsProperty(false)
     }
   }
-  //FIXME wrapper twice
-  override def wrap(obj: Object): TemplateModel = {
-    return inner_wrap(convert2Java(obj));
-  }
 
-  private def convert2Java(obj: Any): Object = {
+  override def wrap(obj: Any): TemplateModel = {
+    if (obj == null) return null
     obj match {
-      case Some(inner) => convert2Java(inner)
+      case tm: TemplateModel => tm
+      case s: String => new SimpleScalar(s)
+      case num: Number => new SimpleNumber(num)
+      case date: ju.Date => {
+        date match {
+          case sdate: java.sql.Date => new SimpleDate(sdate)
+          case stime: java.sql.Time => new SimpleDate(stime)
+          case stimestamp: java.sql.Timestamp => new SimpleDate(stimestamp)
+          case _ => new SimpleDate(date, getDefaultDateType())
+        }
+      }
+      //scala some/none/collection
+      case Some(p) => wrap(p)
       case None => null
-      case seq: collection.Seq[_] => JavaConversions.seqAsJavaList(seq)
-      case map: collection.Map[_, _] => JavaConversions.mapAsJavaMap(map)
-      case iter: Iterable[_] => JavaConversions.asJavaIterable(iter)
-      case _ => obj.asInstanceOf[Object]
+      case seq: collection.Seq[_] => new SimpleSequence(JavaConversions.seqAsJavaList(seq), this)
+      case set: collection.Set[_] => new SimpleSequence(JavaConversions.setAsJavaSet(set), this)
+      case map: collection.Map[_, _] =>
+        val juMap = JavaConversions.mapAsJavaMap(map)
+        if (altMapWrapper) {
+          new FriendlyMapModel(juMap, this)
+        } else {
+          new MapModel(juMap, this)
+        }
+      case iter: Iterable[_] => new SimpleSequence(JavaConversions.asJavaCollection(iter), this)
+
+      case b: java.lang.Boolean => if (b) TemplateBooleanModel.TRUE else TemplateBooleanModel.FALSE
+      case array: Array[_] => new SimpleSequence(ju.Arrays.asList(array: _*), this)
+
+      case collection: ju.Collection[_] => new SimpleSequence(collection, this)
+      case map: ju.Map[_, _] =>
+        if (altMapWrapper) {
+          new FriendlyMapModel(map, this)
+        } else {
+          new MapModel(map, this)
+        }
+      case iter: ju.Iterator[_] => new SimpleCollection(iter, this)
+      case _ => handleUnknownType(obj)
     }
   }
 
@@ -76,21 +74,17 @@ class BeangleObjectWrapper(val altMapWrapper: Boolean) extends DefaultObjectWrap
     return (m.getParameterTypes().length == 0 && classOf[Unit] != m.getReturnType() && Modifier.isPublic(m.getModifiers())
       && !Modifier.isStatic(m.getModifiers()) && !Modifier.isSynchronized(m.getModifiers()) && !name.startsWith("get") && !name.startsWith("is"))
   }
-  // attempt to get the best of both the SimpleMapModel and the MapModel
-  // of FM.
+  // attempt to get the best of both the SimpleMapModel and the MapModel of FM.
   override protected def getModelFactory(clazz: Class[_]): ModelFactory = {
-    if (altMapWrapper && classOf[java.util.Map[_, _]].isAssignableFrom(clazz)) {
-      FriendlyMapModel.FACTORY
-    } else super.getModelFactory(clazz);
+    if (altMapWrapper && classOf[java.util.Map[_, _]].isAssignableFrom(clazz)) FriendlyMapModelFactory
+    else super.getModelFactory(clazz)
   }
 }
 
-object FriendlyMapModel {
-  val FACTORY: ModelFactory = new ModelFactory() {
-    def create(obj: Object, wrapper: ObjectWrapper): TemplateModel = {
-      new FriendlyMapModel(obj.asInstanceOf, wrapper.asInstanceOf);
-    }
-  };
+object FriendlyMapModelFactory extends ModelFactory {
+  override def create(obj: Object, wrapper: ObjectWrapper): TemplateModel = {
+    new FriendlyMapModel(obj.asInstanceOf, wrapper.asInstanceOf)
+  }
 }
 /**
  * Attempting to get the best of both worlds of FM's MapModel and
@@ -115,7 +109,7 @@ class FriendlyMapModel(map: java.util.Map[_, _], wrapper: BeansWrapper)
 
   // add feature
   override def values(): TemplateCollectionModel = {
-    new CollectionAndSequence(new SimpleSequence((`object`.asInstanceOf[java.util.Map[_, _]]).values(), wrapper));
+    new CollectionAndSequence(new SimpleSequence((`object`.asInstanceOf[java.util.Map[_, _]]).values(), wrapper))
   }
 }
 

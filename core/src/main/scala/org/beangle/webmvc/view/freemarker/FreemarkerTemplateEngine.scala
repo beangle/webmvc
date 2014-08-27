@@ -2,7 +2,6 @@ package org.beangle.webmvc.view.freemarker
 
 import java.io.{ IOException, Writer }
 import java.util.{ ArrayList, HashMap }
-
 import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.Throwables
 import org.beangle.commons.lang.annotation.{ description, spi }
@@ -11,12 +10,12 @@ import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.view.component.Component
 import org.beangle.webmvc.view.tag.TagLibraryProvider
 import org.beangle.webmvc.view.template.TemplateEngine
-
 import freemarker.cache.StrongCacheStorage
 import freemarker.core.ParseException
 import freemarker.ext.servlet.HttpRequestParametersHashModel
 import freemarker.template.{ Configuration, ObjectWrapper, SimpleHash, Template, TemplateModel }
 import javax.servlet.http.HttpServletRequest
+import org.beangle.commons.bean.Initializing
 
 /**
  * Freemarker Template Engine
@@ -29,11 +28,13 @@ import javax.servlet.http.HttpServletRequest
  * @author chaostone
  */
 @description("Freemarker 模板引擎")
-class FreemarkerTemplateEngine(tagLibraryProvider: TagLibraryProvider) extends TemplateEngine with Logging {
+class FreemarkerTemplateEngine(tagLibraryProvider: TagLibraryProvider) extends TemplateEngine with Initializing with Logging {
 
-  protected val config = buildConfig()
+  private var config: Configuration = _
   private val templateModelAttribute = ".freemarker.TemplateModel"
   protected var container: Container = _
+
+  var enableCache: Boolean = true
 
   @throws(classOf[Exception])
   def render(template: String, writer: Writer, component: Component) = {
@@ -52,23 +53,22 @@ class FreemarkerTemplateEngine(tagLibraryProvider: TagLibraryProvider) extends T
    * <li>Disable auto imports and includes
    * </ul>
    */
-  def buildConfig(): Configuration = {
-    val config = new Configuration()
+  override def init(): Unit = {
+    config = new Configuration()
     config.setTemplateLoader(new HierarchicalTemplateLoader(new BeangleClassTemplateLoader()))
     // Disable freemarker localized lookup
     config.setLocalizedLookup(false)
     config.setEncoding(config.getLocale(), "UTF-8")
 
     config.setObjectWrapper(new BeangleObjectWrapper(false))
-    // FIXME Cache one hour(7200s) and Strong cache 
-    config.setTemplateUpdateDelay(0)
+    // Cache one hour(7200s) and Strong cache
+    config.setTemplateUpdateDelay(if (enableCache) 7200 else 0)
     // config.setCacheStorage(new MruCacheStorage(100,250))
     config.setCacheStorage(new StrongCacheStorage())
 
     // Disable auto imports and includes
     config.setAutoImports(new HashMap(0))
     config.setAutoIncludes(new ArrayList(0))
-    config
   }
 
   /**
