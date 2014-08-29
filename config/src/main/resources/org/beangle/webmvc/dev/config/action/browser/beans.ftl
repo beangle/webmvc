@@ -9,4 +9,5 @@
     [@b.col title="Description"  width="30%"  ]${container.getDefinition(beanName).description!}[/@]
   [/@]
 [/@]
+<label class='laben-info'>BeanName中的 -- 表示和Type相同</label>
 [@b.foot/]
