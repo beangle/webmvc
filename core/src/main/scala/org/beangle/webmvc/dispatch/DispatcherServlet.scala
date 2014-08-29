@@ -26,9 +26,11 @@ class DispatcherServlet extends HttpServlet {
   }
 
   override def service(request: HttpServletRequest, response: HttpServletResponse): Unit = {
-    mapper.resolve(request) foreach { rm =>
-      ActionContextHelper.build(request, response, rm, localeResolver, textResourceProvider)
-      reactor.invoke(rm.handler, rm.action)
+    mapper.resolve(request) match {
+      case Some(rm) =>
+        ActionContextHelper.build(request, response, rm, localeResolver, textResourceProvider)
+        reactor.invoke(rm.handler, rm.action)
+      case None => response.setStatus(HttpServletResponse.SC_NOT_FOUND)
     }
   }
 
