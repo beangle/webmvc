@@ -6,8 +6,8 @@ import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConf
 import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, ParamLocaleResolver }
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, HierarchicalUrlMapper }
 import org.beangle.webmvc.execution.impl.DefaultInvocationReactor
-import org.beangle.webmvc.view.freemarker.{ FreemarkerTemplateEngine, HierarchicalTemplateResolver }
-import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerConfigurer, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender }
+import org.beangle.webmvc.view.freemarker.{ FreemarkerConfigurer, FreemarkerTemplateEngine, HierarchicalTemplateResolver }
+import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender }
 import org.beangle.webmvc.view.tag.BeangleTagLibrary
 import org.beangle.webmvc.view.template.DefaultTemplatePathMapper
 

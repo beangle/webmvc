@@ -7,7 +7,7 @@ import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionMapping, Configurer }
 import org.beangle.webmvc.view.{ LocatedView, TypeViewBuilder, ViewRender, ViewResolver }
-import org.beangle.webmvc.view.freemarker.{ ParametersHashModel, ServletContextHashModel }
+import org.beangle.webmvc.view.freemarker.{ FreemarkerConfigurer, ParametersHashModel, ServletContextHashModel }
 import org.beangle.webmvc.view.tag.TagLibraryProvider
 import org.beangle.webmvc.view.template.TemplateResolver
 
