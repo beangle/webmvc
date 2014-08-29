@@ -7,7 +7,7 @@ import scala.collection.mutable.{ HashSet, Set }
 import org.beangle.commons.bean.PropertyUtils
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.text.i18n.{ TextBundleRegistry, TextFormater, TextResource }
-import org.beangle.webmvc.action.EntityActionSupport
+import org.beangle.webmvc.api.action.EntityActionSupport
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.context.ActionContextHelper
 import org.beangle.webmvc.execution.impl.MethodHandler
@@ -28,16 +28,16 @@ class ActionTextResource(context: ActionContext, val locale: jl.Locale, registry
     var msg = getMessage(actionClass.getName, locale, key)
     if (msg != None) return msg
     // nothing still? all right, search the package hierarchy now
-    msg = getPackageMessage(actionClass.getName, key, checked)
+    msg = getPackageMessage(actionClass, key, checked)
     if (msg != None) return msg
 
     if (classOf[EntityActionSupport].isAssignableFrom(actionClass)) {
       // search up model's class hierarchy
       mapping.handler match {
         case mh: MethodHandler =>
-          val entityName = mh.action.asInstanceOf[EntityActionSupport].entityName
-          if (entityName != null) {
-            msg = getPackageMessage(entityName, key, checked)
+          val entityType = mh.action.asInstanceOf[EntityActionSupport].getEntityType
+          if (entityType != null) {
+            msg = getPackageMessage(entityType, key, checked)
             if (msg != None) return msg
           }
         case _ =>
@@ -54,7 +54,7 @@ class ActionTextResource(context: ActionContext, val locale: jl.Locale, registry
         var newKey = key
         var goOn = true
         while (null != aClass && goOn && msg.isEmpty) {
-          msg = getPackageMessage(aClass.getName, newKey, checked)
+          msg = getPackageMessage(aClass, newKey, checked)
           if (msg.isEmpty) {
             var nextIdx = newKey.indexOf(".", idx + 1)
             if (nextIdx == -1) {
@@ -87,9 +87,9 @@ class ActionTextResource(context: ActionContext, val locale: jl.Locale, registry
     if (msg.isEmpty) Some(key) else msg
   }
 
-  private def getPackageMessage(className: String, key: String, checked: Set[String]): Option[String] = {
+  private def getPackageMessage(clazz: Class[_], key: String, checked: Set[String]): Option[String] = {
     var msg: Option[String] = None
-    var baseName = className
+    var baseName = clazz.getName
     while (baseName.lastIndexOf('.') != -1 && msg.isEmpty) {
       baseName = baseName.substring(0, baseName.lastIndexOf('.'))
       if (!checked.contains(baseName)) {

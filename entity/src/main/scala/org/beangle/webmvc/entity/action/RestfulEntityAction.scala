@@ -1,4 +1,4 @@
-package org.beangle.webmvc.action
+package org.beangle.webmvc.entity.action
 
 import org.beangle.commons.config.property.PropertyConfig
 import org.beangle.data.model.Entity
@@ -7,7 +7,7 @@ import org.beangle.data.model.meta.EntityMetadata
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.context.Params
 
-abstract class RestfulEntityAction extends EntityActionSupport {
+abstract class RestfulEntityAction extends AbstractEntityAction {
 
   var entityDao: GeneralDao = _
   var config: PropertyConfig = _

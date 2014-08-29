@@ -1,4 +1,4 @@
-package org.beangle.webmvc.helper
+package org.beangle.webmvc.entity.helper
 
 import java.text.{ ParseException, SimpleDateFormat }
 import java.{ util => ju }

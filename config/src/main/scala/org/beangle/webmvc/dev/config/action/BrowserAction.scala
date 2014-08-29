@@ -20,27 +20,29 @@ package org.beangle.webmvc.dev.config.action
 
 import org.beangle.commons.io.{ IOs, ResourcePatternResolver }
 import org.beangle.commons.lang.{ ClassLoaders, Strings }
+import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.reflect.BeanManifest
-import org.beangle.webmvc.api.action.{ ActionSupport, to }
-import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.dispatch.impl.HierarchicalUrlMapper
-import org.beangle.webmvc.helper.ContainerHelper
+import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.context.ContainerHelper
+import org.beangle.webmvc.dispatch.impl.HierarchicalUrlMapper
 
 /**
  * @author chaostone
  */
+@description("Beange WebMVC 配置查看器")
 class BrowserAction extends ActionSupport {
 
   var mapper: HierarchicalUrlMapper = _
 
   var configurer: Configurer = _
 
+  @description("")
   def index(): String = {
     put("profiles", configurer.profiles)
     forward()
   }
-  
+
   def getNamespaces(): Seq[String] = {
     val namespaces = new collection.mutable.HashSet[String]
     mapper.actionNames foreach { name =>

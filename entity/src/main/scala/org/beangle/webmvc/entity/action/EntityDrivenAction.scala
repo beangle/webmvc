@@ -1,6 +1,6 @@
-package org.beangle.webmvc.action
+package org.beangle.webmvc.entity.action
 
-import java.{util => ju}
+import java.{ util => ju }
 
 import org.beangle.commons.collection.Order
 import org.beangle.commons.config.property.PropertyConfig
@@ -8,17 +8,18 @@ import org.beangle.commons.lang.Strings
 import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
 import org.beangle.data.model.bean.UpdatedBean
-import org.beangle.data.model.dao.{GeneralDao, QueryBuilder}
-import org.beangle.data.model.meta.{EntityMetadata, EntityType}
+import org.beangle.data.model.dao.{ GeneralDao, QueryBuilder }
+import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
 
-abstract class EntityDrivenAction extends EntityActionSupport {
+abstract class EntityDrivenAction extends AbstractEntityAction {
 
   var entityDao: GeneralDao = _
   var config: PropertyConfig = _
   var entityMetaData: EntityMetadata = _
+
   // CURD----------------------------------------
   protected def remove[T](list: Seq[T]): Unit = {
     entityDao.remove(list)

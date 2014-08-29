@@ -1,55 +1,15 @@
-package org.beangle.webmvc.action
-
-import scala.reflect.ClassTag
+package org.beangle.webmvc.entity.action
 
 import org.beangle.commons.collection.page.PageLimit
 import org.beangle.commons.lang.Strings
 import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
-import org.beangle.webmvc.api.action.ActionSupport
+import org.beangle.webmvc.api.action.EntityActionSupport
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params
-import org.beangle.webmvc.helper.{ PopulateHelper, QueryHelper }
+import org.beangle.webmvc.entity.helper.{ PopulateHelper, QueryHelper }
 
-abstract class EntityActionSupport extends ActionSupport {
-
-  /**
-   * Get entity's id from shortname.id,shortnameId,id
-   */
-  protected final def getId[T](name: String, clazz: Class[T]): T = {
-    val entityId = get(name + ".id")
-      .getOrElse(get(name + "Id")
-        .getOrElse(get("id")
-          .getOrElse(null)))
-    if (entityId == null) null.asInstanceOf[T]
-    else Params.converter.convert(entityId, clazz);
-  }
-
-  protected final def getIntId(shortName: String): Int = getId(shortName, classOf[Int]);
-
-  protected final def getLongId(shortName: String): Long = getId(shortName, classOf[Long]);
-
-  /**
-   * Get entity's long id array from parameters shortname.id,shortname.ids,shortnameIds
-   */
-  protected final def getLongIds(shortName: String): Array[Long] = getIds(shortName, classOf[Long]);
-
-  /**
-   * Get entity's long id array from parameters shortname.id,shortname.ids,shortnameIds
-   */
-  protected final def getIntIds(shortName: String): Array[Int] = getIds(shortName, classOf[Int]);
-
-  /**
-   * Get entity's id array from parameters shortname.id,shortname.ids,shortnameIds
-   */
-  protected final def getIds[T: ClassTag](name: String, clazz: Class[T]): Array[T] = {
-    val datas = Params.getAll(name + ".id", clazz.asInstanceOf[Class[Any]])
-    if (null == datas) {
-      val datastring = Params.get(name + ".ids").getOrElse(Params.get(name + "Ids").getOrElse(null));
-      if (datastring == null) new Array[T](0) else Params.converter.convert(Strings.split(datastring, ","), clazz);
-    }
-    datas.asInstanceOf[Array[T]]
-  }
+abstract class AbstractEntityAction extends EntityActionSupport {
 
   /**
    * 将request中的参数设置到clazz对应的bean。
@@ -96,8 +56,6 @@ abstract class EntityActionSupport extends ActionSupport {
 
   @ignore
   final def entityName: String = getEntityType.getName
-
-  protected def getEntityType: Class[_]
 
   @ignore
   protected def shortName: String = {

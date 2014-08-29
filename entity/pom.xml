@@ -4,10 +4,10 @@
     <artifactId>beangle-webmvc-parent</artifactId>
     <version>4.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>beangle-webmvc-core</artifactId>
+  <artifactId>beangle-webmvc-entity</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMVC Core</name>
+  <name>Beangle WebMVC EntitySupport</name>
 
   <dependencies>
     <dependency>
@@ -15,9 +15,17 @@
       <artifactId>beangle-webmvc-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.beangle.webmvc</groupId>
+      <artifactId>beangle-webmvc-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
       <version>${freemarker.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.data</groupId>
+      <artifactId>beangle-data-jpa</artifactId>
     </dependency>
   </dependencies>
 </project>
