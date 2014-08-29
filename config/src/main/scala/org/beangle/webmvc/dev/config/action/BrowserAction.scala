@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Beangle.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beangle.webmvc.dev.action
+package org.beangle.webmvc.dev.config.action
 
 import org.beangle.commons.io.{ IOs, ResourcePatternResolver }
 import org.beangle.commons.lang.{ ClassLoaders, Strings }
@@ -30,7 +30,7 @@ import org.beangle.webmvc.config.Configurer
 /**
  * @author chaostone
  */
-class ConfigAction extends ActionSupport {
+class BrowserAction extends ActionSupport {
 
   var mapper: HierarchicalUrlMapper = _
 

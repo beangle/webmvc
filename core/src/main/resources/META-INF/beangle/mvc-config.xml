@@ -1,4 +1,6 @@
 <?xml version="1.0"?>
 <profiles>
-  <profile name="beangle" pattern="org.beangle.webmvc.*.action"/>
+  <profile name="beangle" pattern="org.beangle.webmvc.dev.*.action">
+    <uri path="/dev/mvc/" suffix=""  style="seo" />
+  </profile>
 </profiles>
