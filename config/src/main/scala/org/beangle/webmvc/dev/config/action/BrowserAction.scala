@@ -26,6 +26,7 @@ import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.context.ContainerHelper
 import org.beangle.webmvc.dispatch.impl.HierarchicalUrlMapper
+import org.beangle.commons.inject.Containers
 
 /**
  * @author chaostone
@@ -88,7 +89,9 @@ class BrowserAction extends ActionSupport {
   }
 
   def beans(): String = {
-    val container = ContainerHelper.get
+    var container = ContainerHelper.get
+    val parent = get("parent", "")
+    if (Strings.isNotEmpty(parent)) container = Containers.root
     put("beanNames", container.keys)
     put("container", container)
     forward()
@@ -102,7 +105,7 @@ class BrowserAction extends ActionSupport {
       poms += IOs.readJavaProperties(url)
     }
     put("jarPoms", poms.toList)
-    put("pluginsLoaded", ClassLoaders.getResources("META-INF/beangle/web-module.properties"))
+    put("pluginsLoaded", ClassLoaders.getResources("META-INF/beangle/web-cdi.properties"))
     forward()
   }
 

@@ -3,7 +3,7 @@
   <profile name="default" pattern="*">
     <action suffix="Action" defaultMethod="index"/>
     <view path="/" style="full" type="freemarker" suffix=".ftl" />
-    <uri path="/" suffix=""  style="seo" />
+    <url path="/" suffix=""  style="seo" />
     <interceptors>
       <interceptor class="org.beangle.webmvc.execution.interceptors.FlashInterceptor"/>
     </interceptors>

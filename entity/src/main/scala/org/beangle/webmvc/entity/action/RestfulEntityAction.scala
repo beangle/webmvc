@@ -17,19 +17,19 @@ abstract class RestfulEntityAction extends AbstractEntityAction {
     forward()
   }
 
-  @mapping("{id}")
+  @mapping(value = "{id}", method = "get")
   def info(@param("id") id: String): String = {
     val entityId = Params.converter.convert(id, entityMetaData.getType(entityName).get.idClass)
     put(shortName, getModel(entityName, entityId))
     forward()
   }
 
-  @mapping("{id}/edit")
+  @mapping(value = "{id}/edit", method = "get")
   def edit(@param("id") id: String): String = {
     forward()
   }
 
-  @mapping("new")
+  @mapping(value = "new", method = "get")
   def editNew(): String = {
     forward()
   }

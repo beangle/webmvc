@@ -30,19 +30,19 @@ class ProfileBuilder(val name: String, val actionPattern: String) {
   var viewType: String = _
 
   //end with /
-  var uriPath = "/"
+  var urlPath = "/"
 
   // URI style
-  var uriStyle = "simple"
+  var urlStyle = "simple"
 
-  /** URI的后缀 */
-  var uriSuffix: String = _
+  /** URL的后缀 */
+  var urlSuffix: String = _
 
   var interceptors: Array[Interceptor] = Array()
 
   var source: URL = _
   def mkProfile(): Profile = {
-    new Profile(name, actionPattern, actionSuffix, defaultMethod, viewPath, viewPathStyle, viewSuffix, viewType, uriPath, uriStyle, uriSuffix, interceptors, source)
+    new Profile(name, actionPattern, actionSuffix, defaultMethod, viewPath, viewPathStyle, viewSuffix, viewType, urlPath, urlStyle, urlSuffix, interceptors, source)
   }
 }
 
@@ -97,15 +97,15 @@ class XmlProfileProvider extends ProfileProvider {
         }
       }
 
-      val uriNodes = profileElem \ "uri"
-      if (uriNodes.isEmpty) {
-        copyDefaultProperties(profile, "uriPath", "uriStyle", "uriSuffix")
+      val urlNodes = profileElem \ "url"
+      if (urlNodes.isEmpty) {
+        copyDefaultProperties(profile, "urlPath", "urlStyle", "urlSuffix")
       } else {
-        uriNodes foreach { elem =>
-          readProperty(elem, profile, "path", "uriPath")
-          if (!profile.uriPath.endsWith("/")) profile.uriPath += "/"
-          readProperty(elem, profile, "style", "uriStyle")
-          readProperty(elem, profile, "suffix", "uriSuffix")
+        urlNodes foreach { elem =>
+          readProperty(elem, profile, "path", "urlPath")
+          if (!profile.urlPath.endsWith("/")) profile.urlPath += "/"
+          readProperty(elem, profile, "style", "urlStyle")
+          readProperty(elem, profile, "suffix", "urlSuffix")
         }
       }
 

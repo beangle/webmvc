@@ -10,7 +10,7 @@
   <profile name="${profile.name}" pattern="${profile.actionPattern}">
     <action suffix="${profile.actionSuffix}" defaultMethod="${profile.defaultMethod}"/>
     <view path="${profile.viewPath}" style="${profile.viewPathStyle}" type="${profile.viewType}" suffix="${profile.viewSuffix}" />
-    <uri path="${profile.uriPath}" suffix="${profile.uriSuffix}"  style="${profile.uriStyle}" />
+    <uri path="${profile.urlPath}" suffix="${profile.urlSuffix}"  style="${profile.urlStyle}" />
     <interceptors>
       [#list profile.interceptors as interceptor]
       <interceptor class="${interceptor.class.name}"/>

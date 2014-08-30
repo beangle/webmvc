@@ -14,23 +14,23 @@ object ActionNameBuilder {
     val ann = clazz.getAnnotation(classOf[action])
     val sb = new StringBuilder()
     // namespace
-    sb.append(profile.uriPath)
+    sb.append(profile.urlPath)
 
     if (null == ann) {
-      if (Profile.SHORT_URI.equals(profile.uriStyle)) {
+      if (Profile.SHORT_URI.equals(profile.urlStyle)) {
         val simpleName = className.substring(className.lastIndexOf('.') + 1)
         sb.append(uncapitalize(simpleName.substring(0, simpleName.length - profile.actionSuffix.length)))
-      } else if (Profile.SIMPLE_URI.equals(profile.uriStyle)) {
+      } else if (Profile.SIMPLE_URI.equals(profile.urlStyle)) {
         sb.append(profile.getMatched(className))
-      } else if (Profile.SEO_URI.equals(profile.uriStyle)) {
+      } else if (Profile.SEO_URI.equals(profile.urlStyle)) {
         sb.append(unCamel(profile.getMatched(className)))
       } else {
-        throw new RuntimeException("unsupported uri style " + profile.uriStyle)
+        throw new RuntimeException("unsupported uri style " + profile.urlStyle)
       }
     } else {
       val name = ann.value()
       if (!name.startsWith("/")) {
-        if (Profile.SEO_URI == profile.uriStyle) {
+        if (Profile.SEO_URI == profile.urlStyle) {
           sb.append(unCamel(substringBeforeLast(profile.getMatched(className), "/")) + "/" + name)
         } else {
           sb.append(name)

@@ -82,9 +82,9 @@ final class Profile(val name: String,
   val viewPathStyle: String,
   val viewSuffix: String,
   val viewType: String,
-  val uriPath: String,
-  val uriStyle: String,
-  val uriSuffix: String,
+  val urlPath: String,
+  val urlStyle: String,
+  val urlSuffix: String,
   val interceptors: Array[Interceptor],
   val source: URL) extends Comparable[Profile] {
 
@@ -124,8 +124,8 @@ final class Profile(val name: String,
     Objects.toStringBuilder(this).add("name", name).add("actionPattern", actionPattern)
       .add("actionSuffix", actionSuffix).add("viewPath", viewPath)
       .add("viewPathStyle", viewPathStyle).add("viewSuffix", viewSuffix)
-      .add("viewType", viewType).add("uriPath", uriPath)
-      .add("uriStyle", uriStyle).add("uriSuffix", uriSuffix)
+      .add("viewType", viewType).add("urlPath", urlPath)
+      .add("urlStyle", urlStyle).add("urlSuffix", urlSuffix)
       .add("defaultMethod", defaultMethod).toString
   }
 }
