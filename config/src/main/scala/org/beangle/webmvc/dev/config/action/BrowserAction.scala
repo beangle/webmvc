@@ -18,6 +18,7 @@
  */
 package org.beangle.webmvc.dev.config.action
 
+import org.beangle.commons.inject.Container
 import org.beangle.commons.io.{ IOs, ResourcePatternResolver }
 import org.beangle.commons.lang.{ ClassLoaders, Strings }
 import org.beangle.commons.lang.annotation.description
@@ -26,7 +27,6 @@ import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.context.ContainerHelper
 import org.beangle.webmvc.dispatch.impl.HierarchicalUrlMapper
-import org.beangle.commons.inject.Containers
 
 /**
  * @author chaostone
@@ -91,7 +91,7 @@ class BrowserAction extends ActionSupport {
   def beans(): String = {
     var container = ContainerHelper.get
     val parent = get("parent", "")
-    if (Strings.isNotEmpty(parent)) container = Containers.root
+    if (Strings.isNotEmpty(parent)) container = Container.ROOT
     put("beanNames", container.keys)
     put("container", container)
     forward()
