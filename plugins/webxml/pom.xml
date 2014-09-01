@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.beangle.webmvc</groupId>
+    <artifactId>beangle-webmvc-plugins</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>beangle-webmvc-webxml-plugin</artifactId>
+  <packaging>jar</packaging>
+  <modelVersion>4.0.0</modelVersion>
+  <name>Beangle WebMVC Web.xml</name>
+
+  <properties>
+    <beangle.spring.version>4.0.3-SNAPSHOT</beangle.spring.version>
+    <hibernate.version>4.3.1.Final</hibernate.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.beangle.spring</groupId>
+      <artifactId>beangle-spring-context</artifactId>
+      <version>${beangle.spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.spring</groupId>
+      <artifactId>beangle-spring-hibernate</artifactId>
+      <version>${beangle.spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernate.version}</version>
+    </dependency>
+  </dependencies>
+</project>

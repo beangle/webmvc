@@ -20,10 +20,8 @@
   <modules>
     <module>api</module>
     <module>core</module>
-    <module>bootstrapui</module>
-    <module>entity</module>
-    <module>config</module>
-    <module>webxml</module>
+    <module>ui</module>
+    <module>plugins</module>
   </modules>
 
   <dependencyManagement>
