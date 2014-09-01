@@ -91,7 +91,7 @@ class BrowserAction extends ActionSupport {
   def beans(): String = {
     var container = ContainerHelper.get
     val parent = get("parent", "")
-    if (Strings.isNotEmpty(parent)) container = Container.ROOT
+    if (Strings.isNotEmpty(parent)) container = container.parent
     put("beanNames", container.keys)
     put("container", container)
     forward()

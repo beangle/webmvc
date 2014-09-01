@@ -1,9 +1,7 @@
 package org.beangle.webmvc.context.impl
 
 import java.{ util => jl }
-
 import scala.collection.mutable.{ HashSet, Set }
-
 import org.beangle.commons.bean.PropertyUtils
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.text.i18n.{ TextBundleRegistry, TextFormater, TextResource }
@@ -11,15 +9,17 @@ import org.beangle.webmvc.api.action.EntityActionSupport
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.context.ActionContextHelper
 import org.beangle.webmvc.execution.impl.MethodHandler
+import org.beangle.commons.text.i18n.DefaultTextResource
 
-class ActionTextResource(context: ActionContext, val locale: jl.Locale, registry: TextBundleRegistry, formater: TextFormater) extends TextResource {
+class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: TextBundleRegistry, formater: TextFormater)
+  extends DefaultTextResource(locale, registry, formater) {
 
   /**
    * 1 remove index key(user.roles[0].name etc.)
    * 2 change ModelDriven to EntitySupport
    * 3 remove superclass and interface lookup
    */
-  private def get(key: String, locale: jl.Locale): Option[String] = {
+  protected override def get(key: String): Option[String] = {
     if (key == null) ""
     val mapping = ActionContextHelper.getMapping(context)
     val actionClass = mapping.action.config.clazz
@@ -71,20 +71,6 @@ class ActionTextResource(context: ActionContext, val locale: jl.Locale, registry
       }
     }
     registry.getDefaultText(key, locale)
-  }
-
-  /**
-   * getText.
-   */
-  override def apply(key: String, defaultValue: String, args: Any*): String = {
-    val text = get(key, locale).getOrElse(if ((null eq defaultValue)) key else defaultValue)
-    if ((null != text) && args.length > 0) formater.format(text, locale, args: _*)
-    else text
-  }
-
-  def apply(key: String): Option[String] = {
-    val msg = get(key, locale)
-    if (msg.isEmpty) Some(key) else msg
   }
 
   private def getPackageMessage(clazz: Class[_], key: String, checked: Set[String]): Option[String] = {

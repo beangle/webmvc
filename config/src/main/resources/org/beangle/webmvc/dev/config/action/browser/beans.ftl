@@ -2,10 +2,10 @@
 [@b.head/]
 [#include "nav.ftl"/]
 <div>
-   [#if (Parameters['parent']??)]
-   Beans in ROOT Container 
-   [#else]
+   [#if container.parent??]
    Beans in Web Container([@b.a  href="!beans?parent=true"]ROOT[/@])
+   [#else]
+   Beans in ROOT Container
    [/#if]
 </div>
 [@b.grid items=beanNames?sort var="beanName"  style="table-layout:fixed"]
