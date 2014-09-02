@@ -1,0 +1,8 @@
+[#ftl]
+[@b.navbar]
+  [@b.navitem href="!index"]统计信息[/@]
+  [@b.navitem href="!entity"]实体类[/@]
+  [@b.navitem href="!collection"]集合[/@]
+  [@b.navitem href="!cache"]二级缓存[/@]
+  [@b.navitem href="!query"]查询缓存[/@]
+[/@]
