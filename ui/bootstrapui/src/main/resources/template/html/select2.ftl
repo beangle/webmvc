@@ -1,4 +1,3 @@
-[#ftl/]
 <table><tr>
 <td>
 <select name="${tag.name1st}" multiple="multiple" size="${tag.size}" style="width:200px" ondblclick="JavaScript:bg.select.moveSelected(this.form['${tag.name1st}'], this.form['${tag.name2nd}'])" >

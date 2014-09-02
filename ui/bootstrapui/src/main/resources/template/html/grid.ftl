@@ -1,4 +1,3 @@
-[#ftl/]
 <div class="grid">[@b.messages slash="4"/]
 [#if tag.caption??]<div class="grid-caption">${tag.caption?html}</div>[/#if]
 [#if tag.hasbar]<div id="${tag.id}_bar1" class="gridbar"></div>[/#if]

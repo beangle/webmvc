@@ -1,4 +1,3 @@
-[#ftl/]
 [@b.head/]
 [#include "../nav.ftl"/]
 <h4>Configurations</h4>

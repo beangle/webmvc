@@ -1,4 +1,3 @@
-[#ftl/]
 [@b.head/]
 [#include "../nav.ftl"/]
 <div> Modules Locations</div>

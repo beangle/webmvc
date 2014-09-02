@@ -1,4 +1,3 @@
-[#ftl/]
 <script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
 <div id="${tag.id}">
 [#if tag.theming=='onlyimage']

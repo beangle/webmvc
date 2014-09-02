@@ -1,4 +1,3 @@
-[#ftl/]
 [#assign browserjs={"ie6":"json2.js","ie7":"json2.js","ie8":"json2.js"}]
 [#if tag.browser?starts_with('Internet Explorer')]
   [#if tag.version?starts_with("6") ]

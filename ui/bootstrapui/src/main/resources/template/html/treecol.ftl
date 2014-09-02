@@ -1,4 +1,3 @@
-[#ftl/]
 <td${tag.parameterString}>
 <div class="tree-tier${tag.curObj.depth}" align="left">
 [#if (tag.curObj.children?size==0)]<a href="#" class="tree-item"></a>

@@ -1,4 +1,3 @@
-[#ftl/]
 <ul id="${tag.id}" class="nav nav-tabs" ${tag.parameterString}>
   [#list tag.tabs as tab]
   <li><a href="#${tab.id}" data-toggle="tab">${tab.label}</a></li>

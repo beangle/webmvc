@@ -1,4 +1,3 @@
-[#ftl/]
 [#if tag.id??]
 <div class="ui-widget" id="${tag.id}">
 [#if tag.hasActionMessages()]

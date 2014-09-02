@@ -1,4 +1,3 @@
-[#ftl/]
 [#if tag.option??][#assign optionTemplate=tag.option?interpret][/#if]
 [#assign selected=false/]
 <select id="${tag.id}" name="${tag.name}"${tag.parameterString}>

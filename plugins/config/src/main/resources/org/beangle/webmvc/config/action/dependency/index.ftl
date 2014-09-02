@@ -1,4 +1,3 @@
-[#ftl/]
 [@b.head/]
 [#include "../nav.ftl"/]
 [@b.grid items=jarPoms?sort_by("groupId") var="pom" caption="Jars and Web Modules(Requires Maven 2 data)"]

@@ -1,4 +1,3 @@
-[#ftl/]
 [@b.head/]
 <h4>Action information - ${Parameters['name']}</h4>
 

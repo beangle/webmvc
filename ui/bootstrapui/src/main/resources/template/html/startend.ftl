@@ -1,4 +1,3 @@
-[#ftl/]
 <script type="text/javascript">beangle.ui.load("My97DatePicker");</script>
 [#list tag.dates as date]
 [#if date.label??]

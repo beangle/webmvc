@@ -68,6 +68,7 @@ class FreemarkerTemplateEngine(tagLibraryProvider: TagLibraryProvider) extends T
 
     // Disable auto imports and includes
     config.setAutoImports(new HashMap(0))
+    config.setTagSyntax(Configuration.SQUARE_BRACKET_TAG_SYNTAX)
     config.setAutoIncludes(new ArrayList(0))
   }
 

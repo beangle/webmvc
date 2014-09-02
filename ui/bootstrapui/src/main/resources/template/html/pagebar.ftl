@@ -1,4 +1,3 @@
-[#ftl/]
 <script type="text/javascript">
 bg.ready(function(){
   page_${tag.id}=bg.page("${request.requestURI}","${tag.parameters['target']!""}");

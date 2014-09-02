@@ -1,4 +1,3 @@
-[#ftl/]
 [#assign profilexml]
 <profiles>
 

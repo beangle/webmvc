@@ -33,7 +33,6 @@ class FreemarkerConfigurer extends Logging with Initializing {
       if (null != key && null != value) config.setSetting(key, value)
     }
 
-    info(s"Freemarker properties:$properties")
     val wrapper = new BeangleObjectWrapper(true)
     wrapper.setUseCache(false)
     config.setObjectWrapper(wrapper)
