@@ -3,7 +3,6 @@
   [@b.navitem href="/config/mvc"]MVC[/@]
   [@b.navitem href="/config/container/index"]Beans[/@]
   [@b.navitem href="/config/freemarker/index"]Freemarker[/@]
-  [@b.navitem href="/config/hibernate/index"]Hibernate[/@]
   [@b.navitem href="/config/dependency/index"]Jars[/@]
   [@b.navitem href="/config/webinit/index"]Web.xml[/@]
 [/@]

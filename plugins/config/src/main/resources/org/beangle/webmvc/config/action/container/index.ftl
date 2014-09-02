@@ -1,29 +1,29 @@
 [@b.head/]
 [#include "../nav.ftl"/]
-<div> Modules Locations</div>
+<h4> Modules Locations</h4>
 <ul>
   [#list container.moduleLocations as ml]
     <li>${ml.URL}</li>
   [/#list]
 </ul>
-<div> Modules</div>
+<h4> Modules</h4>
 <ul>
   [#list container.modules?sort as m]
     <li>${m.class.name}</li>
   [/#list]
 </ul>
-<div> Reconfig Locations</div>
+<h4> Reconfig Locations</h4>
 <ul>
     <li>${container.reconfigLocations!}</li>
 </ul>
-<div>
+<h4>
    [#if container.parent??]
    Beans in Web Container([@b.a  href="!index?parent=true"]ROOT[/@])
    [#else]
    Beans in ROOT Container
    [/#if]
 <label class='laben-info'> -- 表示和Type相同</label>
-</div>
+</h4>
 [@b.grid items=beanNames?sort var="beanName"  style="table-layout:fixed"]
   [@b.row]
     [@b.col title="Index" width="5%"][#assign className=(container.getType(beanName).name)!""/] ${beanName_index+1}[/@]

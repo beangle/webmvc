@@ -1,6 +1,12 @@
 [@b.head/]
 [#include "../nav.ftl"/]
-<h4>Configurations</h4>
+<h4> Config Locations</h4>
+<ul>
+  [#list configLocations as url]
+    <li>${url}</li>
+  [/#list]
+</ul>
+<h4>Configurations & Settings</h4>
 <table class="table  table-striped">
   <thead>
     <th>Object</th>
@@ -47,16 +53,7 @@
        <td>Whitespace Stripping</td>
        <td>${config.whitespaceStripping?string("True","False")}</td>
     </tr>
-  </tbody>
-</table>
-
-<h4>Settings</h4>
-<table class="table  table-striped">
-  <thead>
-    <th>Property</th>
-    <th>Value</th>
-  </thead>
-  <tbody>
+    <tr> <td colspan="2"><hr></td></tr>
     [#list config.settings?keys as s]
     [#if s!="object_wrapper"]
     <tr>
