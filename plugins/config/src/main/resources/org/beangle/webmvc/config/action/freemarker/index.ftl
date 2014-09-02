@@ -46,6 +46,14 @@
     </tr>
     [/#if]
     <tr>
+       <td>Auto Import</td>
+       <td>${properties["auto_import"]!}</td>
+    </tr>
+    <tr>
+       <td>Auto Include</td>
+       <td>${properties["auto_include"]!}</td>
+    </tr>
+    <tr>
        <td>Tag Syntax</td>
        <td>[#if config.tagSyntax==0]AUTO[#elseif config.tagSyntax==1]&lt;&gt;[#else][][/#if]</td>
     </tr>

@@ -22,7 +22,6 @@
    [#else]
    Beans in ROOT Container
    [/#if]
-<label class='laben-info'> -- 表示和Type相同</label>
 </h4>
 [@b.grid items=beanNames?sort var="beanName"  style="table-layout:fixed"]
   [@b.row]
@@ -32,5 +31,5 @@
     [@b.col title="Description"  width="30%"  ]${container.getDefinition(beanName).description!}[/@]
   [/@]
 [/@]
-
+<label class='laben-info'> -- 表示和Type相同</label>
 [@b.foot/]
