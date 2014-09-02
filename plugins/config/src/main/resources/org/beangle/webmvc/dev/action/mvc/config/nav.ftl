@@ -1,7 +1,0 @@
-[#ftl]
-[@b.navbar title="Beangle WebMVC Configuration Browser"]
-  [@b.navitem href="!index"]Profiles[/@]
-  [@b.navitem href="!actions"]Actions[/@]
-  [@b.navitem href="!beans"]Beans[/@]
-  [@b.navitem href="!jars"]Jars[/@]
-[/@]

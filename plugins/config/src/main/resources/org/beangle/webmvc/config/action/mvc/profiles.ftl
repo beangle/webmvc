@@ -1,7 +1,4 @@
 [#ftl/]
-[@b.head/]
-[#include "nav.ftl"/]
-
 [#assign profilexml]
 <profiles>
 
@@ -24,4 +21,3 @@
 <pre class="code">
 ${profilexml?html}
 </pre>
-[@b.foot/]

@@ -29,16 +29,15 @@ class FreemarkerConfigurer extends Logging with Initializing {
     config.setLocalizedLookup(false)
     config.setWhitespaceStripping(true)
 
-    val properties = loadSetting()
     for ((key, value) <- properties) {
       if (null != key && null != value) config.setSetting(key, value)
     }
+
     info(s"Freemarker properties:$properties")
     val wrapper = new BeangleObjectWrapper(true)
     wrapper.setUseCache(false)
     config.setObjectWrapper(wrapper)
-    val servletContext = ServletContextHolder.context
-    config.setTemplateLoader(createTemplateLoader(servletContext, servletContext.getInitParameter("templatePath")))
+    config.setTemplateLoader(createTemplateLoader(ServletContextHolder.context, templatePath))
 
     var content_type = config.getCustomAttribute("content_type").asInstanceOf[String]
     if (null == content_type) content_type = "text/html"
@@ -87,8 +86,7 @@ class FreemarkerConfigurer extends Logging with Initializing {
    *
    * @see freemarker.template.Configuration#setSettings for the definition of valid settings
    */
-
-  def loadSetting(): Map[String, String] = {
+  def properties: Map[String, String] = {
     val properties = new collection.mutable.HashMap[String, String]
     // 1. first META-INF/freemarker.properties
     for (url <- ClassLoaders.getResources("META-INF/freemarker.properties"))
@@ -118,4 +116,9 @@ class FreemarkerConfigurer extends Logging with Initializing {
       case t: Exception => t.printStackTrace()
     }
   }
+
+  def templatePath: String = {
+    ServletContextHolder.context.getInitParameter("templatePath")
+  }
+
 }

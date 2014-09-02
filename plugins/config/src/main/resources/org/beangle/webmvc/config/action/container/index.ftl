@@ -1,9 +1,25 @@
 [#ftl/]
 [@b.head/]
-[#include "nav.ftl"/]
+[#include "../nav.ftl"/]
+<div> Modules Locations</div>
+<ul>
+  [#list container.moduleLocations as ml]
+    <li>${ml.URL}</li>
+  [/#list]
+</ul>
+<div> Modules</div>
+<ul>
+  [#list container.modules?sort as m]
+    <li>${m.class.name}</li>
+  [/#list]
+</ul>
+<div> Reconfig Locations</div>
+<ul>
+    <li>${container.reconfigLocations!}</li>
+</ul>
 <div>
    [#if container.parent??]
-   Beans in Web Container([@b.a  href="!beans?parent=true"]ROOT[/@])
+   Beans in Web Container([@b.a  href="!index?parent=true"]ROOT[/@])
    [#else]
    Beans in ROOT Container
    [/#if]
@@ -18,11 +34,4 @@
   [/@]
 [/@]
 
-<br />
-<div> Discovered Modules</div>
-<ul>
-  [#list cdi_bundles as url]
-    <li>${url}</li>
-  [/#list]
-</ul>
 [@b.foot/]

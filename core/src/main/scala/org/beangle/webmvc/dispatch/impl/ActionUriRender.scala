@@ -18,9 +18,10 @@ class DefaultActionUriRender extends ActionUriRender {
   var mapper: RequestMapper = _
 
   override def render(action: ActionMapping, uri: String): String = {
-    if (uri.charAt(0) == '/') return uri
-
     val context = ContextHolder.context
+    val contextPath = context.request.getServletContext().getContextPath
+    if (uri.charAt(0) == '/') return contextPath + uri
+
     var params: collection.mutable.Map[String, String] = null
     val config = action.config
     val mapping =
@@ -58,7 +59,7 @@ class DefaultActionUriRender extends ActionUriRender {
           case None => throw new RuntimeException(s"Cannot find $actionName mapping")
         }
       }
-    val contextPath = context.request.getServletContext().getContextPath
+
     val tourl = mapping.toURL(params, context.params)
     params --= mapping.urlParams.values
     contextPath + tourl.params(params).url

@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="BeangeSpringConfigProcessor" class="org.beangle.spring.config.SpringConfigProcessor">
+  <bean id="BeanContainer" class="org.beangle.spring.context.SpringContainer">
     <property name="moduleLocations" value="classpath*:META-INF/beangle/web-cdi.properties" />
     <property name="reconfigLocations" value=";classpath*:spring-web-config.xml" />
   </bean>

@@ -40,23 +40,6 @@
       </tbody>
     </table>
   [/@]
-  [#--
-  [@b.tab label="Interceptors"]
-    <table width="100%"  class="table">
-        <thead>
-        <tr><th>Name</th><th>Type</th></tr>
-        </thead>
-        <tbody>
-        [#list config.profile.interceptors as i]
-          <tr>
-          <td>${action.stripPackage(i.interceptor.class)}</td>
-          <td>${i.interceptor.class.name}</td>
-        </tr>
-        [/#list]
-        </tbody>
-    </table>
-  [/@]
-  --]
   [@b.tab label="Properties"]
   <table width="100%" class="table">
         <thead>
