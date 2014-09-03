@@ -1,52 +1,51 @@
 [#ftl]
 [@b.head/]
-[#include "nav.ftl"/]
-  <p/>
+[#include "../nav.ftl"/]
   [@b.a href="!index"]Reload[/@] |
   [@b.a href="!index?do=${active?string('deactivate','activate')}"]${active?string('Deactivate','Activate')}[/@] | [@b.a href="!index?do=clear"]CLEAR[/@]
-  <p/>
   Last update: ${lastUpdate?string("MM-dd HH:mm:ss")}<br/>
   Activation: ${(activation?string("MM-dd HH:mm:ss"))!}<br/>
   Deactivation: ${(deactivation?string("dd.MM.yy HH:mm:ss"))!}<br/>
   Active duration:[#if duration??] ${((duration/1000)?floor)!}s[/#if]
-  <p/>
   [#if generalStatistics?size>0]
-  <table>
+  <table class="table">
     <tr>
-      <th class="c bd1 bg1">Connects</th>
+      <th class="c bd1 bg1">Connects:</th>
       <td>${generalStatistics[0]}</td>
-    </tr>
-    <tr>
       <th class="c bd1 bg1">Flushes</th>
       <td>${generalStatistics[1]}</td>
-    </tr>
-    <tr>
       <th class="c bd1 bg1">Prepare statements</th>
       <td>${generalStatistics[2]}</td>
     </tr>
     <tr>
       <th class="c bd1 bg1">Close statements</th>
       <td>${generalStatistics[3]}</td>
-    </tr>
-    <tr>
       <th class="c bd1 bg1">Session opens</th>
       <td>${generalStatistics[5]}</td>
-    </tr>
-    <tr>
       <th class="c bd1 bg1">Session closes</th>
       <td>${generalStatistics[4]}</td>
     </tr>
     <tr>
       <th class="c bd1 bg1">Total Transactions</th>
       <td>${generalStatistics[6]}</td>
-    </tr>
-    <tr>
       <th class="c bd1 bg1">Successfull Transactions</th>
       <td>${generalStatistics[7]}</td>
-    </tr>
       <th class="c bd1 bg1">Optimistic failures</th>
-      <td>${generalStatistics[8]}</td>
+      <td colspan="3">${generalStatistics[8]}</td>
     </tr>
   </table>
+<div class="container">
+  <div class="row">
+   <div class="col-md-2">
+     <ul class="nav nav-pills nav-stacked">
+       <li>[@b.a href="!entity" target="action_content"]实体类[/@]</li>
+       <li>[@b.a href="!collection" target="action_content"]集合[/@]</li>
+       <li>[@b.a href="!cache" target="action_content"]二级缓存[/@]</li>
+       <li>[@b.a href="!query" target="action_content"]查询缓存[/@]</li>
+      </ul>
+   </div>
+   [@b.div id="action_content" class="col-md-10" href="!entity"/]
+  </div>
+</div>
 [/#if]
 [@b.foot/]

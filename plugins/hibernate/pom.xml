@@ -24,5 +24,9 @@
       <groupId>org.beangle.data</groupId>
       <artifactId>beangle-data-jpa</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.beangle.spring</groupId>
+      <artifactId>beangle-spring-hibernate</artifactId>
+    </dependency>
   </dependencies>
 </project>

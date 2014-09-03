@@ -8,42 +8,44 @@ import org.beangle.commons.lang.Strings.isEmpty
 import org.beangle.webmvc.api.action.ActionSupport
 import org.hibernate.SessionFactory
 import org.beangle.commons.lang.annotation.description
+import org.beangle.webmvc.api.annotation.action
 
 @description("Hibernate运行/缓存统计查看器")
-class StatAction extends AbstractHibernateAction {
+@action("stat/{session_factory_id}")
+class StatAction extends AbstractAction {
 
   var activation: ju.Date = null
   var deactivation: ju.Date = null
 
   def index(): String = {
-    val sessionFactory = getFactory()
+    val sessionFactory = getSessionFactory()
     val statistics = sessionFactory.getStatistics()
-    val lastUpdate = new ju.Date();
+    val lastUpdate = new ju.Date()
 
     val generalStatistics = new mutable.ListBuffer[Long]
-    val action = get("do", "");
-    val info = new StringBuilder(512);
+    val action = get("do", "")
+    val info = new StringBuilder(512)
 
     if ("activate".equals(action) && !statistics.isStatisticsEnabled()) {
-      statistics.setStatisticsEnabled(true);
+      statistics.setStatisticsEnabled(true)
       activation = new ju.Date()
       deactivation = null
-      info.append("Statistics enabled\n");
+      info.append("Statistics enabled\n")
     } else if ("deactivate".equals(action) && statistics.isStatisticsEnabled()) {
-      statistics.setStatisticsEnabled(false);
-      deactivation = new ju.Date();
-      info.append("Statistics disabled\n");
+      statistics.setStatisticsEnabled(false)
+      deactivation = new ju.Date()
+      info.append("Statistics disabled\n")
     } else if ("clear".equals(action)) {
-      activation = null;
-      deactivation = null;
-      statistics.clear();
-      generalStatistics.clear();
-      info.append("Statistics cleared\n");
+      activation = null
+      deactivation = null
+      statistics.clear()
+      generalStatistics.clear()
+      info.append("Statistics cleared\n")
     }
 
-    if (info.length() > 0) addMessage(info.toString());
+    if (info.length() > 0) addMessage(info.toString())
 
-    val active = statistics.isStatisticsEnabled();
+    val active = statistics.isStatisticsEnabled()
     if (active) {
       generalStatistics += statistics.getConnectCount()
       generalStatistics += statistics.getFlushCount()
@@ -58,43 +60,42 @@ class StatAction extends AbstractHibernateAction {
       generalStatistics += statistics.getSuccessfulTransactionCount()
       generalStatistics += statistics.getOptimisticFailureCount()
     }
-    put("active", active);
-    put("lastUpdate", lastUpdate);
+    put("active", active)
+    put("lastUpdate", lastUpdate)
     if (null != activation) {
       if (null != deactivation) {
-        put("duration", deactivation.getTime() - activation.getTime());
+        put("duration", deactivation.getTime() - activation.getTime())
       } else {
-        put("duration", lastUpdate.getTime() - activation.getTime());
+        put("duration", lastUpdate.getTime() - activation.getTime())
       }
     }
-    put("activation", activation);
-    put("deactivation", deactivation);
-    put("generalStatistics", generalStatistics);
-    return forward();
+    put("activation", activation)
+    put("deactivation", deactivation)
+    put("generalStatistics", generalStatistics)
+    return forward()
   }
 
   def entity(): String = {
-    val statistics = getFactory().getStatistics();
-    put("statistics", statistics);
-    return forward();
+    val statistics = getSessionFactory().getStatistics()
+    put("statistics", statistics)
+    return forward()
   }
 
   def query(): String = {
-    val statistics = getFactory().getStatistics();
-    put("statistics", statistics);
-    return forward("queryCache");
+    val statistics = getSessionFactory().getStatistics()
+    put("statistics", statistics)
+    return forward("queryCache")
   }
 
   def collection(): String = {
-    val statistics = getFactory().getStatistics();
-    put("statistics", statistics);
-    return forward();
+    val statistics = getSessionFactory().getStatistics()
+    put("statistics", statistics)
+    return forward()
   }
 
   def cache(): String = {
-    val statistics = getFactory().getStatistics();
-    put("statistics", statistics);
-    return forward();
+    val statistics = getSessionFactory().getStatistics()
+    put("statistics", statistics)
+    return forward()
   }
-
 }

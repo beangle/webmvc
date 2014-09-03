@@ -1,6 +1,5 @@
 [#ftl]
 [@b.head/]
-[#include "nav.ftl"/]
   <table class="table table-striped">
     <thead>
     <tr>

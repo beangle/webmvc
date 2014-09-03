@@ -1,0 +1,6 @@
+[#ftl]
+[@b.navbar title="Hibernate Configuration&Statistic Browser"]
+  [@b.navitem href="/hibernate/config/${Parameters['session_factory_id']}/index"]Config[/@]
+  [@b.navitem href="/hibernate/config/${Parameters['session_factory_id']}/hbm"]Hbm[/@]
+  [@b.navitem href="/hibernate/stat/${Parameters['session_factory_id']}/index"]Statistics[/@]
+[/@]

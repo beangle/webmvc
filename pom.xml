@@ -12,8 +12,9 @@
   <version>0.1.0-SNAPSHOT</version>
   
   <properties>
-    <commons.version>4.1.0-SNAPSHOT</commons.version>
-    <data.version>4.1.0-SNAPSHOT</data.version>
+    <beangle.commons.version>4.1.0-SNAPSHOT</beangle.commons.version>
+    <beangle.data.version>4.1.0-SNAPSHOT</beangle.data.version>
+    <beangle.spring.version>4.0.3-SNAPSHOT</beangle.spring.version>
     <freemarker.version>2.3.20</freemarker.version>
   </properties>
 
@@ -29,22 +30,27 @@
       <dependency>
         <groupId>org.beangle.commons</groupId>
         <artifactId>beangle-commons-core</artifactId>
-        <version>${commons.version}</version>
+        <version>${beangle.commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.commons</groupId>
         <artifactId>beangle-commons-web</artifactId>
-        <version>${commons.version}</version>
+        <version>${beangle.commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.data</groupId>
         <artifactId>beangle-data-model</artifactId>
-        <version>${data.version}</version>
+        <version>${beangle.data.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.data</groupId>
         <artifactId>beangle-data-jpa</artifactId>
-        <version>${data.version}</version>
+        <version>${beangle.data.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.beangle.spring</groupId>
+        <artifactId>beangle-spring-hibernate</artifactId>
+        <version>${beangle.spring.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.webmvc</groupId>
