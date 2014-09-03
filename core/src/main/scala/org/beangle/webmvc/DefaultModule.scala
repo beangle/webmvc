@@ -6,10 +6,8 @@ import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConf
 import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, ParamLocaleResolver }
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, HierarchicalUrlMapper }
 import org.beangle.webmvc.execution.impl.DefaultInvocationReactor
-import org.beangle.webmvc.view.freemarker.{ FreemarkerConfigurer, FreemarkerTemplateEngine, HierarchicalTemplateResolver }
-import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender }
-import org.beangle.webmvc.view.tag.BeangleTagLibrary
-import org.beangle.webmvc.view.template.DefaultTemplatePathMapper
+import org.beangle.webmvc.view.freemarker.{ FreemarkerConfigurer, HierarchicalTemplateResolver }
+import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender }
 
 class DefaultModule extends AbstractBindModule {
 
@@ -24,7 +22,6 @@ class DefaultModule extends AbstractBindModule {
     bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerConfigurer])
     bind("mvc.TemplatePathMapper.default", classOf[DefaultTemplatePathMapper])
     bind("mvc.TemplateResolver.freemarker", classOf[HierarchicalTemplateResolver])
-    bind("mvc.TemplateEngine.freemarker", classOf[FreemarkerTemplateEngine]).property("enableCache", $("mvc.template_engine.cache", "true"))
 
     //view
     bind("mvc.ViewResolver.freemarker", classOf[FreemarkerViewResolver])
@@ -35,7 +32,6 @@ class DefaultModule extends AbstractBindModule {
     bind("mvc.ViewRender.chain", classOf[ForwardActionViewRender])
     bind("mvc.ViewRender.redirect", classOf[RedirectActionViewRender])
     bind("mvc.TaglibraryProvider.default", classOf[ContainerTaglibraryProvider])
-    bind("mvc.Taglibrary.b", classOf[BeangleTagLibrary])
 
     //dispatch
     bind("mvc.ActionUriRender.default", classOf[DefaultActionUriRender])

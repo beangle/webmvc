@@ -45,13 +45,11 @@ object QueryHelper extends Logging {
    */
   def extractConditions(clazz: Class[_], prefix: String, exclusiveAttrNames: String): List[Condition] = {
     var entity: Entity[_] = null
-    var newClazz: Class[_] = null
+    var newClazz: Class[_] = clazz
     var entityType = PopulateHelper.getType(clazz)
     try {
-      if (clazz.isInterface()) {
-        newClazz = entityType.entityClass
-      }
-      entity = clazz.newInstance().asInstanceOf[Entity[_]]
+      if (clazz.isInterface()) newClazz = entityType.entityClass
+      entity = newClazz.newInstance().asInstanceOf[Entity[_]]
     } catch {
       case e: Exception => throw new RuntimeException("[RequestUtil.extractConditions]: error in in initialize " + clazz)
     }

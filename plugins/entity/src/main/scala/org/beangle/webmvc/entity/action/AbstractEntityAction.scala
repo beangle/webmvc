@@ -8,8 +8,16 @@ import org.beangle.webmvc.api.action.EntityActionSupport
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.entity.helper.{ PopulateHelper, QueryHelper }
+import org.beangle.data.model.dao.GeneralDao
+import org.beangle.data.model.dao.QueryBuilder
+import org.beangle.data.model.meta.EntityMetadata
+import org.beangle.commons.config.property.PropertyConfig
+import org.beangle.commons.collection.Order
 
 abstract class AbstractEntityAction extends EntityActionSupport {
+  var entityDao: GeneralDao = _
+  var config: PropertyConfig = _
+  var entityMetaData: EntityMetadata = _
 
   /**
    * 将request中的参数设置到clazz对应的bean。
@@ -70,4 +78,28 @@ abstract class AbstractEntityAction extends EntityActionSupport {
   private def getCommandName(entityName: String): String = {
     Strings.uncapitalize(Strings.substringAfterLast(entityName, "."))
   }
+
+  // CURD----------------------------------------
+  protected def remove[T](list: Seq[T]): Unit = {
+    entityDao.remove(list)
+  }
+
+  protected def remove[T](obj: T): Unit = {
+    entityDao.remove(obj)
+  }
+
+  protected def saveOrUpdate[T](list: Iterable[T]): Unit = {
+    entityDao.saveOrUpdate(list)
+  }
+
+  protected def saveOrUpdate[T](obj: T): Unit = {
+    entityDao.saveOrUpdate(obj)
+  }
+
+  protected def getQueryBuilder[T](): OqlBuilder[T] = {
+    val builder: OqlBuilder[T] = OqlBuilder.from(entityName, shortName)
+    populateConditions(builder)
+    builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit())
+  }
+
 }

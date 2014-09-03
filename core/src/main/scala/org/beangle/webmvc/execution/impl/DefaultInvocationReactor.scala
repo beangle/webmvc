@@ -8,7 +8,7 @@ import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionMapping, Configurer }
 import org.beangle.webmvc.execution.{ Handler, Interceptor, InvocationReactor }
 import org.beangle.webmvc.view.{ ViewRender, ViewResolver }
-import org.beangle.webmvc.view.template.DefaultTemplatePathMapper
+import org.beangle.webmvc.view.impl.DefaultTemplatePathMapper
 
 @description("缺省的调用发生器")
 class DefaultInvocationReactor extends InvocationReactor with Initializing {

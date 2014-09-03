@@ -16,31 +16,6 @@ import org.beangle.webmvc.api.view.View
 
 abstract class EntityDrivenAction extends AbstractEntityAction {
 
-  var entityDao: GeneralDao = _
-  var config: PropertyConfig = _
-  var entityMetaData: EntityMetadata = _
-
-  // CURD----------------------------------------
-  protected def remove[T](list: Seq[T]): Unit = {
-    entityDao.remove(list)
-  }
-
-  protected def remove[T](obj: T): Unit = {
-    entityDao.remove(obj)
-  }
-
-  protected def saveOrUpdate[T](list: Iterable[T]): Unit = {
-    entityDao.saveOrUpdate(list)
-  }
-
-  protected def saveOrUpdate[T](obj: T): Unit = {
-    entityDao.saveOrUpdate(obj)
-  }
-
-  protected def search[T](query: QueryBuilder[T]): Seq[T] = {
-    entityDao.search(query)
-  }
-
   /**
    * main page
    */
@@ -53,7 +28,7 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
    * Seach Entitis
    */
   def search(): String = {
-    put(shortName + "s", search(getQueryBuilder()))
+    put(shortName + "s", entityDao.search(getQueryBuilder()))
     forward()
   }
 
@@ -70,7 +45,7 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
         case _ => None
       }
     } else None
-    result.getOrElse(search(getQueryBuilder().limit(null)).asInstanceOf)
+    result.getOrElse(entityDao.search(getQueryBuilder().limit(null)).asInstanceOf)
   }
   /**
    * Edit by entity.id or id
@@ -194,12 +169,6 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
         redirect("search", "info.delete.failure")
       }
     }
-  }
-
-  protected def getQueryBuilder[T](): OqlBuilder[T] = {
-    val builder: OqlBuilder[T] = OqlBuilder.from(entityName, shortName)
-    populateConditions(builder)
-    builder.orderBy(get(Order.OrderStr).get).limit(getPageLimit())
   }
 
   protected def getModel[T](entityName: String, id: Serializable): Entity[T] = {

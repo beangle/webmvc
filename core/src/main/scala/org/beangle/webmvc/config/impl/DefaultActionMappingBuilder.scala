@@ -13,9 +13,8 @@ import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ action, ignore, mapping, param, view, views }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Profile }
-import org.beangle.webmvc.view.ViewBuilder
-import org.beangle.webmvc.view.impl.FreemarkerView
-import org.beangle.webmvc.view.template.{ DefaultTemplatePathMapper, TemplateResolver }
+import org.beangle.webmvc.view.{ TemplateResolver, ViewBuilder }
+import org.beangle.webmvc.view.impl.{ DefaultTemplatePathMapper, FreemarkerView }
 
 @description("缺省的ActionMapping构建器")
 class DefaultActionMappingBuilder extends ActionMappingBuilder {

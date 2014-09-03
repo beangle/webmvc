@@ -9,9 +9,10 @@ import org.beangle.webmvc.api.context.Params
 
 abstract class RestfulEntityAction extends AbstractEntityAction {
 
-  var entityDao: GeneralDao = _
-  var config: PropertyConfig = _
-  var entityMetaData: EntityMetadata = _
+  def search(): String = {
+    put(shortName + "s", entityDao.search(getQueryBuilder()))
+    forward()
+  }
 
   def index(): String = {
     forward()

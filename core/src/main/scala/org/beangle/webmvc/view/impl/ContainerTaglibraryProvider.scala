@@ -3,7 +3,7 @@ package org.beangle.webmvc.view.impl
 import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.webmvc.view.tag.{ TagLibrary, TagLibraryProvider }
+import org.beangle.webmvc.view.{ TagLibrary, TagLibraryProvider }
 import org.beangle.commons.inject.ContainerRefreshedHook
 
 @description("所有标签库提供者")
