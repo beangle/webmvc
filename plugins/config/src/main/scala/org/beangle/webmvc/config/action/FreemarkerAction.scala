@@ -1,10 +1,11 @@
 package org.beangle.webmvc.config.action
 
+import org.beangle.commons.lang.ClassLoaders
 import org.beangle.commons.lang.annotation.description
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.view.freemarker.FreemarkerConfigurer
-import org.beangle.commons.lang.ClassLoaders
 
+@description("Freemarker配置查看器")
 class FreemarkerAction extends ActionSupport {
   var freemarkerConfigurer: FreemarkerConfigurer = _
 

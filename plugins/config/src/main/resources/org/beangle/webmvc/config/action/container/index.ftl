@@ -25,10 +25,18 @@
 </h4>
 [@b.grid items=beanNames?sort var="beanName"  style="table-layout:fixed"]
   [@b.row]
-    [@b.col title="Index" width="5%"][#assign className=(container.getType(beanName).name)!""/] ${beanName_index+1}[/@]
+    [@b.col title="Index" width="5%"]
+      [#assign className=(container.getType(beanName).name)!""/]
+      [#assign defn =container.getDefinition(beanName)/]
+      [#if className==""]
+        [#if (defn.beanClass.name)??][#assign className=defn.beanClass.name/]
+        [#else] [#assign className=defn.beanClass/] [/#if]
+      [/#if]
+       ${beanName_index+1}
+    [/@]
     [@b.col title="Bean Name"  width="23%" style="word-wrap:break-word;" ][#if className == beanName] --[#else]${beanName}[/#if][/@]
     [@b.col title="Type" width="42%"  ] ${className}[/@]
-    [@b.col title="Description"  width="30%"  ]${container.getDefinition(beanName).description!}[/@]
+    [@b.col title="Description"  width="30%"]${defn.description!}[#if defn.abstract](抽象模版)[#else][/#if][/@]
   [/@]
 [/@]
 <label class='laben-info'> -- 表示和Type相同</label>

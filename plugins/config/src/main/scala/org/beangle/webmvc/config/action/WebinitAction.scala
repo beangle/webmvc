@@ -6,7 +6,9 @@ import java.io.File
 import org.beangle.commons.lang.ClassLoaders
 import org.beangle.commons.io.IOs
 import java.net.URL
+import org.beangle.commons.lang.annotation.description
 
+@description("Web初始化配置查看器")
 class WebinitAction extends ActionSupport {
 
   def index(): String = {

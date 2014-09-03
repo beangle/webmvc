@@ -1,7 +1,6 @@
-package org.beangle.webmvc
+package org.beangle.webmvc.view.tag
 
 import org.beangle.commons.inject.bind.AbstractBindModule
-import org.beangle.webmvc.view.tag.BeangleTagLibrary
 import org.beangle.webmvc.view.tag.freemarker.FreemarkerTemplateEngine
 
 class DefaultModule extends AbstractBindModule {

@@ -1,10 +1,12 @@
 package org.beangle.webmvc.hibernate.action
 
-import java.io.FileInputStream
-import org.beangle.commons.io.IOs
-import org.beangle.data.jpa.hibernate.tool.HbmGenerator
-import java.io.File
+import java.io.{ File, FileInputStream }
 
+import org.beangle.commons.io.IOs
+import org.beangle.commons.lang.annotation.description
+import org.beangle.data.jpa.hibernate.tool.HbmGenerator
+
+@description("Hibernate配置查看器")
 class ConfigAction extends AbstractHibernateAction {
 
   def index(): String = {

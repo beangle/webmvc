@@ -1,15 +1,15 @@
 package org.beangle.webmvc.hibernate.action
 
 import java.{ util => ju }
-
 import scala.collection.mutable
-
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.Strings.isEmpty
 import org.beangle.webmvc.api.action.ActionSupport
 import org.hibernate.SessionFactory
+import org.beangle.commons.lang.annotation.description
 
+@description("Hibernate运行/缓存统计查看器")
 class StatAction extends AbstractHibernateAction {
 
   var activation: ju.Date = null
