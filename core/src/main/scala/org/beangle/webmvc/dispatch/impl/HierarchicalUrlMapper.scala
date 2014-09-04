@@ -25,7 +25,7 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
   private val directMappings = new collection.mutable.HashMap[String, RequestMapping]
 
   //reverse mapping
-  private val actionConfigs = new collection.mutable.HashMap[String, ActionConfig]
+  private val actionConfigMap = new collection.mutable.HashMap[String, ActionConfig]
 
   var actionFinder: ActionFinder = _
   var configurer: Configurer = _
@@ -46,14 +46,12 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
     info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in ${watch}.")
   }
 
-  def actionNames = actionConfigs.keySet.filter { k =>
-    k.indexOf('/') > -1
-  }
+  def actionConfigs = actionConfigMap.values.toSet
 
   private def add(url: String, mapping: RequestMapping): Unit = {
     val action = mapping.action
-    actionConfigs.put(action.config.clazz.getName, action.config)
-    actionConfigs.put(action.config.name, action.config)
+    actionConfigMap.put(action.config.clazz.getName, action.config)
+    actionConfigMap.put(action.config.name, action.config)
 
     val finalUrl = if (null != action.httpMethod && isNotEmpty(HttpMethodMap(action.httpMethod))) url + "/" + HttpMethodMap(action.httpMethod) else url
     if (!finalUrl.contains("{")) directMappings.put(finalUrl, mapping)
@@ -61,14 +59,14 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
   }
 
   override def antiResolve(name: String, method: String): Option[ActionMapping] = {
-    actionConfigs.get(name) match {
+    actionConfigMap.get(name) match {
       case Some(config) => config.mappings.get(method)
       case None => None
     }
   }
 
   override def antiResolve(name: String): Option[ActionConfig] = {
-    actionConfigs.get(name)
+    actionConfigMap.get(name)
   }
 
   override def resolve(uri: String): Option[RequestMapping] = {

@@ -73,7 +73,7 @@ trait To {
   def url: String = {
     val buf = new StringBuilder(uri)
     if (null != suffix) buf.append(suffix)
-    if (null != parameters && parameters.size > 0) {
+    if (parameters.size > 0) {
       var first = true
       for ((key, value) <- parameters) {
         try {
@@ -89,7 +89,7 @@ trait To {
         }
       }
     }
-    return buf.toString()
+    buf.toString
   }
 }
 
@@ -98,15 +98,14 @@ class ToClass(val clazz: Class[_], val method: String) extends To {
 }
 
 class ToStruts(val namespace: String, val name: String, val method: String, val path: String = null) extends To {
-  val uri = if (null == path) buildUri() else path
-
-  def buildUri(): String = {
+  def uri: String = {
+    if (null != path) return path
     val buf = new StringBuilder(40)
-    if (null == namespace || namespace.length() == 1) buf.append('/')
+    if (null == namespace) buf.append('/')
     else buf.append(namespace).append('/')
 
     if (null != name) buf.append(name)
-    if (Strings.isNotEmpty(method)) buf.append('/').append(method)
+    if (null != method) buf.append('/').append(method)
     buf.toString
   }
 }
@@ -129,11 +128,11 @@ class ToURL(val uri: String) extends To {
       }
       i -= 1
     }
-    val namespace = if (actionIndex < 2) "/" else uri.substring(0, actionIndex - 1)
+    val namespace = if (actionIndex < 2) "" else uri.substring(0, actionIndex - 1)
     val actionName = uri.substring(actionIndex, if (bandIndex > 0) bandIndex else endIndex)
     val methodName = if (bandIndex > 0 && bandIndex < endIndex) uri.substring(bandIndex + 1, endIndex) else null
     val sa = new ToStruts(namespace, actionName, methodName)
-    sa.params(parameters)
+    if (!parameters.isEmpty) sa.params(parameters)
     sa.suffix = suffix
     sa
   }

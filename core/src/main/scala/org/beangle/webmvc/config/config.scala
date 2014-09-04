@@ -17,7 +17,7 @@ trait Configurer {
 /**
  * action config (namespace endwith /)
  */
-class ActionConfig(val clazz: Class[_], val name: String, val views: Map[String, View], val profile: Profile) {
+class ActionConfig(val clazz: Class[_], val name: String, val namespace: String, val views: Map[String, View], val profile: Profile) {
   var mappings: Map[String, ActionMapping] = Map.empty
 }
 

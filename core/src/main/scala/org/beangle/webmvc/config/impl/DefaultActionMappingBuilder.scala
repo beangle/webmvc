@@ -24,9 +24,10 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
   var viewBuilder: ViewBuilder = _
 
   override def build(clazz: Class[_], profile: Profile): Seq[Tuple2[String, ActionMapping]] = {
-    val actionName = ActionNameBuilder.build(clazz, profile)
+    val nameAndspace = ActionNameBuilder.build(clazz, profile)
+    val actionName = nameAndspace._1
     val actions = new collection.mutable.ListBuffer[Tuple2[String, ActionMapping]]
-    val config = new ActionConfig(clazz, actionName, buildViews(clazz, profile), profile)
+    val config = new ActionConfig(clazz, actionName, nameAndspace._2, buildViews(clazz, profile), profile)
     val mappings = new collection.mutable.HashMap[String, ActionMapping]
     val classInfo = ClassInfo.get(clazz)
     classInfo.methods foreach {

@@ -9,36 +9,41 @@ object ActionNameBuilder {
   /**
    * Return action name start with /
    */
-  def build(clazz: Class[_], profile: Profile): String = {
+  def build(clazz: Class[_], profile: Profile): Tuple2[String, String] = {
     val className = clazz.getName
     val ann = clazz.getAnnotation(classOf[action])
-    val sb = new StringBuilder()
-    // namespace
-    sb.append(profile.urlPath)
+    val nameBuilder = new StringBuilder()
+    val namespace = new StringBuilder()
+    nameBuilder.append(profile.urlPath)
 
     if (null == ann) {
       if (Profile.SHORT_URI.equals(profile.urlStyle)) {
         val simpleName = className.substring(className.lastIndexOf('.') + 1)
-        sb.append(uncapitalize(simpleName.substring(0, simpleName.length - profile.actionSuffix.length)))
+        nameBuilder.append(uncapitalize(simpleName.substring(0, simpleName.length - profile.actionSuffix.length)))
       } else if (Profile.SIMPLE_URI.equals(profile.urlStyle)) {
-        sb.append(profile.getMatched(className))
+        nameBuilder.append(profile.getMatched(className))
       } else if (Profile.SEO_URI.equals(profile.urlStyle)) {
-        sb.append(unCamel(profile.getMatched(className)))
+        nameBuilder.append(unCamel(profile.getMatched(className)))
       } else {
         throw new RuntimeException("unsupported uri style " + profile.urlStyle)
       }
+      namespace ++= nameBuilder.substring(0, nameBuilder.lastIndexOf("/"))
     } else {
       val name = ann.value()
+      namespace ++= nameBuilder
       if (!name.startsWith("/")) {
         if (Profile.SEO_URI == profile.urlStyle) {
-          sb.append(unCamel(substringBeforeLast(profile.getMatched(className), "/")) + "/" + name)
+          val middleName = unCamel(substringBeforeLast(profile.getMatched(className), "/"))
+          namespace ++= middleName
+          nameBuilder.append(middleName + "/" + name)
         } else {
-          sb.append(name)
+          nameBuilder.append(name)
         }
       } else {
-        sb.append(name.substring(1))
+        nameBuilder.append(name.substring(1))
       }
     }
-    sb.toString
+    if (namespace.charAt(namespace.length - 1) == '/') namespace.deleteCharAt(namespace.length - 1)
+    (nameBuilder.toString, namespace.toString)
   }
 }
