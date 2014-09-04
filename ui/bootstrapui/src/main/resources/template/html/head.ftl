@@ -48,6 +48,7 @@
   <script type="text/javascript" src="${base}/static/scripts/jquery/jquery,/scripts/beangle/beangle.js?compress=no"></script>
 [/#if]
   <link rel="stylesheet" href="${base}/static/themes/default/bootstrap.min.css">
+  <link rel="stylesheet" href="${base}/static/themes/default/bootstrap-theme.min.css">
   <script src="${base}/static/scripts/bootstrap/bootstrap.min.js"></script>
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
