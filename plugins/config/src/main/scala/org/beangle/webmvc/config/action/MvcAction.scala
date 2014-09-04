@@ -71,7 +71,7 @@ class MvcAction extends ActionSupport {
   private def getNamespaces(): Seq[String] = {
     val namespaces = new collection.mutable.HashSet[String]
     mapper.actionNames foreach { name =>
-      namespaces += Strings.substringBeforeLast(name, "/")
+      namespaces += "/" + Strings.substringBefore(name.substring(1), "/")
     }
     namespaces.toList.sorted
   }
@@ -79,8 +79,8 @@ class MvcAction extends ActionSupport {
   private def getActionNames(namespace: String): Seq[String] = {
     val actionNames = new collection.mutable.HashSet[String]
     mapper.actionNames foreach { name =>
-      if (name.startsWith(namespace) && !Strings.substringAfter(name, namespace + "/").contains("/"))
-        actionNames += Strings.substringAfterLast(name, "/")
+      if (name.startsWith(namespace))
+        actionNames += Strings.substringAfter(name.substring(1), "/")
     }
     actionNames.toList.sorted
   }

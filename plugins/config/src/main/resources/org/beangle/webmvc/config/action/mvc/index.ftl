@@ -4,14 +4,11 @@
 <div class="container">
   <div class="row">
    <div class="col-md-2">
-   Profiles
-   <ul class="nav nav-pills nav-stacked">
-      <li>[@b.a href="!profiles" target="action_content"]Profiles[/@]</li>
-   </ul>
-   Namespaces
+   Profiles & Namespaces
      <ul class="nav nav-pills nav-stacked">
+       [@b.navitem active=true href="!profiles" target="action_content"]Profiles[/@]
        [#list namespaces as namespace]
-       <li>[@b.a href="!actions?namespace=${namespace}" target="action_content"][#if namespace=""]default[#else]${namespace}[/#if][/@]</li>
+       [@b.navitem href="!actions?namespace=${namespace}" target="action_content"][#if namespace=""]default[#else]${namespace}[/#if][/@]
        [/#list]
       </ul>
    </div>

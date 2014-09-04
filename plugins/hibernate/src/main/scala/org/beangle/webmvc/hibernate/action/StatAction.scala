@@ -72,6 +72,7 @@ class StatAction extends AbstractAction {
     put("activation", activation)
     put("deactivation", deactivation)
     put("generalStatistics", generalStatistics)
+    put("statistics",statistics)
     return forward()
   }
 
