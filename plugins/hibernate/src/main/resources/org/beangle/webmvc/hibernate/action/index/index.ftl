@@ -1,3 +1,8 @@
+[@b.head/]
+Found SessionFactories
+<ul>
 [#list factories?keys as k]
-[@b.a href="config/${k?replace('.','_')?replace('#','_')}/index"]${k}[/@]
+<li>[@b.a href="/hibernate/config/${k}/index"]${k}[/@]</li>
 [/#list]
+</ul>
+[@b.foot/]

@@ -20,10 +20,11 @@ class TagModel(context: ComponentContext, clazz: Class[_ <: Component] = null) e
     val objectWrapper = BeansWrapper.getDefaultInstance()
     val iterator = params.keySet().iterator()
     while (iterator.hasNext()) {
-      var key = iterator.next().asInstanceOf[String]
+      val key = iterator.next().asInstanceOf[String]
+      val property = if (key == "class") "cssClass" else key
       var value = params.get(key).asInstanceOf[Object]
       if (value != null) {
-        if (PropertyUtils.isWriteable(bean, key.asInstanceOf[String])) {
+        if (PropertyUtils.isWriteable(bean, property)) {
           if (value.isInstanceOf[TemplateModel]) {
             try {
               value = objectWrapper.unwrap(value.asInstanceOf[TemplateModel])
@@ -33,10 +34,10 @@ class TagModel(context: ComponentContext, clazz: Class[_ <: Component] = null) e
             }
           }
           try {
-            PropertyUtils.setProperty(bean, key, value)
+            PropertyUtils.setProperty(bean, property, value)
           } catch {
             case e: Exception =>
-              error("invoke set property [" + key + "] with value " + value, e)
+              error("invoke set property [" + property + "] with value " + value, e)
           }
         } else {
           bean.parameters.put(key, value)

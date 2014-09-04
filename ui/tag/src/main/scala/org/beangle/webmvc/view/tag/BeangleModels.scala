@@ -8,7 +8,7 @@ import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.context.ActionContextHelper
 import org.beangle.webmvc.view.UITheme
 import org.beangle.webmvc.view.tag.components.{ Agent, Anchor, Checkbox, Checkboxes, Css, Date, Dialog, Div, Email, Field, Foot, Form, Formfoot, Grid }
-import org.beangle.webmvc.view.tag.components.{ Head, Iframe, Messages, Module, Navbar, Navitem, Pagebar, Password, Radio, Radios, Reset, Select, Select2, Startend, Submit, Tab, Tabs, Textarea, Textfield, Textfields, Toolbar, Validity }
+import org.beangle.webmvc.view.tag.components.{ Head, Iframe, Messages, Module, Navbar, Navitem, Navlist, Pagebar, Password, Radio, Radios, Reset, Select, Select2, Startend, Submit, Tab, Tabs, Textarea, Textfield, Textfields, Toolbar, Validity }
 import org.beangle.webmvc.view.tag.components.Grid.{ Bar, Boxcol, Col, Filter, Row, Treecol }
 import org.beangle.webmvc.view.tag.freemarker.TagModel
 
@@ -153,6 +153,8 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
   def module: TagModel = get(classOf[Module])
 
   def navbar: TagModel = get(classOf[Navbar])
+
+  def navlist: TagModel = get(classOf[Navlist])
 
   def navitem: TagModel = get(classOf[Navitem])
 

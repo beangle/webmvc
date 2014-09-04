@@ -16,7 +16,15 @@ class Toolbar(context: ComponentContext) extends ClosingUIBean(context) {
 }
 
 class Navbar(context: ComponentContext) extends ClosingUIBean(context) {
-  var title: String = _
+  var brand: String = _
+}
+
+class Navlist(context: ComponentContext) extends ClosingUIBean(context) {
+
+  override def evaluateParams() {
+    if (cssClass == null) cssClass = "nav navbar-nav"
+    else if (!cssClass.startsWith("nav ")) cssClass = "nav " + cssClass
+  }
 }
 
 class Navitem(context: ComponentContext) extends ClosingUIBean(context) {

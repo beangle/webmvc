@@ -18,7 +18,7 @@
 </ul>
 <h4>
    [#if container.parent??]
-   Beans in Web Container([@b.a  href="!index?parent=true"]ROOT[/@])
+   Beans in Web Container(parent is [@b.a  href="!index?parent=true"]ROOT[/@])
    [#else]
    Beans in ROOT Container
    [/#if]

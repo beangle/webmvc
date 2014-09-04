@@ -37,12 +37,12 @@
 <div class="container">
   <div class="row">
    <div class="col-md-2">
-     <ul class="nav nav-pills nav-stacked">
+     [@b.navlist class="nav-pills nav-stacked"]
        [@b.navitem href="!entity" active=true target="action_content"]实体类<span class="badge">${statistics.entityNames?size}</span>[/@]
        [@b.navitem href="!collection" target="action_content"]集合<span class="badge">${statistics.collectionRoleNames?size}</span>[/@]
        [@b.navitem href="!cache" target="action_content"]二级缓存<span class="badge">${statistics.secondLevelCacheRegionNames?size}</span>[/@]
        [@b.navitem href="!query" target="action_content"]查询缓存<span class="badge">${statistics.queries?size}</span>[/@]
-     </ul>
+     [/@]
    </div>
    [@b.div id="action_content" class="col-md-10" href="!entity"/]
   </div>
