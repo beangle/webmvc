@@ -246,7 +246,7 @@ class Grid(context: ComponentContext) extends ClosingUIBean(context) {
   def notFullPage: Boolean = {
     if (items.isInstanceOf[Page[_]])
       items.asInstanceOf[Page[_]].size < items.asInstanceOf[Page[_]].pageSize
-    else (items.asInstanceOf[Seq[_]]).isEmpty
+    else (items.asInstanceOf[ju.Collection[_]]).isEmpty
   }
 
   def defaultSort(property: String) = Strings.concat(`var`, ".", property)

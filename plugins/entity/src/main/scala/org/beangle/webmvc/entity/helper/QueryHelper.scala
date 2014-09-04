@@ -64,7 +64,7 @@ object QueryHelper extends Logging {
             conditions += new Condition(prefix + "." + attr + " is null")
           } else {
             PopulateHelper.populator.populate(entity, entityType, attr, strValue)
-            var setValue = PropertyUtils.getProperty(entity, attr)
+            var setValue = PropertyUtils.getProperty[Object](entity, attr)
             if (null != setValue) {
               if (setValue.isInstanceOf[String]) {
                 conditions += new Condition(prefix + "." + attr + " like :" + attr.replace('.', '_'), "%"

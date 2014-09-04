@@ -80,7 +80,7 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
       baseName = baseName.substring(0, baseName.lastIndexOf('.'))
       if (!checked.contains(baseName)) {
         msg = getMessage(baseName + ".package", locale, key)
-        if (!msg.isEmpty) msg
+        if (!msg.isEmpty) return msg
         checked += baseName
       }
     }
