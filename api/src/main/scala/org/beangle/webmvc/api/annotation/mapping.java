@@ -11,5 +11,5 @@ public @interface mapping {
 
 	String value();
 
-	String method() default "";
+	String method() default "get";
 }

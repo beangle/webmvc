@@ -2,16 +2,16 @@ package org.beangle.webmvc.dispatch.impl
 
 import java.{ lang => jl }
 
-import org.beangle.commons.http.HttpMethods.GET
+import org.beangle.commons.http.HttpMethods.{ GET, POST }
 import org.beangle.commons.inject.{ Container, ContainerRefreshedHook }
-import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
+import org.beangle.commons.lang.Strings.split
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.config.{ ActionConfig, ActionMapping }
 import org.beangle.webmvc.config.{ ActionMappingBuilder, Configurer }
-import org.beangle.webmvc.config.ActionMapping.{ DefaultMethod, HttpMethodMap, HttpMethods, MethodParam }
+import org.beangle.webmvc.config.ActionMapping.{ DefaultMethod, HttpMethods, MethodParam }
 import org.beangle.webmvc.context.ActionFinder
 import org.beangle.webmvc.dispatch.{ RequestMapper, RequestMapping }
 
@@ -22,7 +22,7 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
 
   private val hierarchicalMappings = new HierarchicalMappings
 
-  private val directMappings = new collection.mutable.HashMap[String, RequestMapping]
+  private val directMappings = new collection.mutable.HashMap[String, MethodMappings]
 
   //reverse mapping
   private val actionConfigMap = new collection.mutable.HashMap[String, ActionConfig]
@@ -53,9 +53,9 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
     actionConfigMap.put(action.config.clazz.getName, action.config)
     actionConfigMap.put(action.config.name, action.config)
 
-    val finalUrl = if (null != action.httpMethod && isNotEmpty(HttpMethodMap(action.httpMethod))) url + "/" + HttpMethodMap(action.httpMethod) else url
-    if (!finalUrl.contains("{")) directMappings.put(finalUrl, mapping)
-    else hierarchicalMappings.add(finalUrl, mapping)
+    if (!url.contains("{")) {
+      directMappings.getOrElseUpdate(url, new MethodMappings).methods.put(action.httpMethod, mapping)
+    } else hierarchicalMappings.add(action.httpMethod, url, mapping)
   }
 
   override def antiResolve(name: String, method: String): Option[ActionMapping] = {
@@ -70,7 +70,10 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
   }
 
   override def resolve(uri: String): Option[RequestMapping] = {
-    val directMapping = directMappings.get(uri)
+    val directMapping = directMappings.get(uri) match {
+      case Some(m) => m.get(POST)
+      case None => None
+    }
     if (None != directMapping) return directMapping
     else hierarchicalMappings.resolve(GET, uri)
   }
@@ -81,7 +84,7 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
     val lastSlashIdx = uri.lastIndexOf('/')
     val sb = new jl.StringBuilder(uri.length + 10)
     if (lastSlashIdx == uri.length - 1) {
-      sb.append(uri).append(determineMethod(request, DefaultMethod))
+      sb.append(uri).append(DefaultMethod)
     } else {
       var i = lastSlashIdx + 2
       var chars = new Array[Char](uri.length)
@@ -95,67 +98,81 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
       sb.append(chars)
       if (dotIdx > 0) sb.delete(dotIdx, sb.length)
       if (bangIdx > 0) sb.setCharAt(bangIdx, '/')
-      else {
-        val method = determineMethod(request, null)
-        if (null != method && -1 == sb.indexOf(method, lastSlashIdx + 1)) sb.append('/').append(method)
-      }
     }
 
+    val httpMethod = determineHttpMethod(request)
     val finalUrl = sb.toString
-    val directMapping = directMappings.get(finalUrl)
+    val directMapping = directMappings.get(finalUrl) match {
+      case Some(dm) => dm.get(httpMethod)
+      case None => None
+    }
     if (None != directMapping) return directMapping
-    else hierarchicalMappings.resolve(request.getMethod, finalUrl)
+    else hierarchicalMappings.resolve(httpMethod, finalUrl)
   }
 
-  private def determineMethod(request: HttpServletRequest, defaultMethod: String): String = {
-    var httpMethod = HttpMethodMap(request.getMethod)
-    if ("" == httpMethod) {
-      httpMethod = request.getParameter(MethodParam)
-      if (null != httpMethod && !HttpMethods.contains(httpMethod)) httpMethod = null
+  private def determineHttpMethod(request: HttpServletRequest): String = {
+    var httpMethod = request.getParameter(MethodParam)
+    if (null == httpMethod) {
+      httpMethod = request.getMethod
+    } else {
+      if (!HttpMethods.contains(httpMethod)) httpMethod = request.getMethod
+      else httpMethod = httpMethod.toUpperCase()
     }
-    if (null == httpMethod) defaultMethod else httpMethod
+    httpMethod
+  }
+}
+
+class MethodMappings {
+  val methods = new collection.mutable.HashMap[String, RequestMapping]
+  def get(method: String): Option[RequestMapping] = {
+    var result = methods.get(method)
+    if (result.isEmpty && method == POST) result = methods.get(GET)
+    result
   }
 }
 
 class HierarchicalMappings {
   val children = new collection.mutable.HashMap[String, HierarchicalMappings]
-  val mappings = new collection.mutable.HashMap[String, RequestMapping]
-
-  def add(url: String, mapping: RequestMapping): Unit = {
-    add(url, mapping, this)
-  }
+  val mappings = new collection.mutable.HashMap[String, MethodMappings]
 
   def resolve(httpMethod: String, uri: String): Option[RequestMapping] = {
     val parts = split(uri, '/')
     val result = find(0, parts, this)
     result match {
-      case Some(m) =>
-        val action = m.action
-        if (action.httpMethodMatches(httpMethod)) {
-          val params = new collection.mutable.HashMap[String, String]
-          action.urlParams foreach {
-            case (k, v) =>
-              params.put(v, parts(k))
-          }
-          Some(new RequestMapping(action, m.handler, params))
-        } else None
+      case Some(methodMappings) =>
+        methodMappings.get(httpMethod) match {
+          case Some(m) =>
+            val action = m.action
+            val params = new collection.mutable.HashMap[String, String]
+            action.urlParams foreach {
+              case (k, v) =>
+                params.put(v, parts(k))
+            }
+            Some(new RequestMapping(action, m.handler, params))
+          case None => None
+        }
       case None => None
     }
   }
 
-  private def add(pattern: String, mapping: RequestMapping, mappings: HierarchicalMappings): Unit = {
+  def add(httpMethod: String, url: String, mapping: RequestMapping): Unit = {
+    add(httpMethod, url, mapping, this)
+  }
+
+  private def add(httpMethod: String, pattern: String, mapping: RequestMapping, mappings: HierarchicalMappings): Unit = {
     val slashIndex = pattern.indexOf('/', 1)
     val head = if (-1 == slashIndex) pattern.substring(1) else pattern.substring(1, slashIndex)
     val headPattern = RequestMappingBuilder.getMatcherName(head)
 
     if (-1 == slashIndex) {
-      mappings.mappings.put(headPattern, mapping)
+      val methodMappings = mappings.mappings.getOrElseUpdate(headPattern, new MethodMappings)
+      methodMappings.methods.put(httpMethod, mapping)
     } else {
-      add(pattern.substring(slashIndex), mapping, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
+      add(httpMethod, pattern.substring(slashIndex), mapping, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
     }
   }
 
-  private def find(index: Int, parts: Array[String], mappings: HierarchicalMappings): Option[RequestMapping] = {
+  private def find(index: Int, parts: Array[String], mappings: HierarchicalMappings): Option[MethodMappings] = {
     if (index < parts.length && null != mappings) {
       if (index == parts.length - 1) {
         val mapping = mappings.mappings.get(parts(index))
@@ -169,4 +186,5 @@ class HierarchicalMappings {
       None
     }
   }
+
 }

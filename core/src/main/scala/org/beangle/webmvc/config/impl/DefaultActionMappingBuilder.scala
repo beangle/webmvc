@@ -5,6 +5,7 @@ import java.lang.reflect.Method
 
 import scala.Range
 
+import org.beangle.commons.http.HttpMethods.GET
 import org.beangle.commons.lang.{ Arrays, Strings }
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.annotation.{ description, spi }
@@ -37,9 +38,9 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
           val method = actionMethodInfos.head.method
           if (isActionMethod(method, classInfo)) {
             val ann = method.getAnnotation(classOf[mapping])
-            val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else null
+            val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else GET
             val name = (if (null != ann) ann.value else methodName)
-            val url = actionName + "/" + name
+            val url = if (name == "") actionName else (actionName + "/" + name)
             val urlParams = parse(url)
             val urlPathNames = urlParams.keySet.toList.sorted.map { i => urlParams(i) }
 
@@ -52,7 +53,6 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
             }
 
             if (method.getParameterTypes().length != paramNames.size) throw new RuntimeException("Cannot find enough param name,Using @mapping or @param")
-
             val mapping = new ActionMapping(httpMethod, config, method, name, paramNames.toArray, urlParams)
             mappings.put(method.getName, mapping)
             actions += Tuple2(url, mapping)

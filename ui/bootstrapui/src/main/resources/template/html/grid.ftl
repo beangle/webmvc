@@ -1,11 +1,10 @@
 <div class="grid">[@b.messages slash="4"/]
 [#if tag.caption??]<div class="grid-caption">${tag.caption?html}</div>[/#if]
 [#if tag.hasbar]<div id="${tag.id}_bar1" class="gridbar"></div>[/#if]
-<table id="${tag.id}" class="table table-striped"${tag.parameterString}>
+<table id="${tag.id}" class="gridtable" ${tag.parameterString}>
 [#if tag.cols?size>0]
-<thead>
-
-[#assign filterable=(tag.filterable="true" || tag.filters?size>0)]
+<thead class="gridhead">
+[#assign filterable = (tag.filterable=="true" || tag.filters?size > 0 )]
 [#if filterable]
 <tr>
 [#list tag.cols as cln]

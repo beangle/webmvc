@@ -50,16 +50,17 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
               case Some(v) => v
               case None =>
                 val profile = configurer.getProfile(config.clazz.getName)
-                resolvers(profile.viewType).resolve(newViewName, mapping)
+                val newView = resolvers(profile.viewType).resolve(newViewName, mapping)
+                if (null == newView) throw new RuntimeException(s"Cannot find $newViewName for ${config.clazz}")
+                else newView
             }
           case view: View => view
         }
-        if (null == view) {
-          throw new RuntimeException(s"Cannot find $result for ${config.clazz}")
-        }
-        renders.get(view.getClass) match {
-          case Some(render) => render.render(view, ContextHolder.context)
-          case None => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
+        if (null != view) {
+          renders.get(view.getClass) match {
+            case Some(render) => render.render(view, ContextHolder.context)
+            case None => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
+          }
         }
       }
     }

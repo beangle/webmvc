@@ -105,8 +105,7 @@ class FriendlyMapModel(map: ju.Map[_, _], wrapper: BeansWrapper) extends MapMode
     `object`.asInstanceOf[ju.Map[_, _]].isEmpty()
   }
 
-  // 此处实现与MapModel不同，MapModel中复制了一个集合
-  // 影响了?keySet,?size方法
+  // 此处实现与MapModel不同，MapModel中复制了一个集合,同时不要复制object中的keys
   override protected def keySet(): ju.Set[_] = {
     `object`.asInstanceOf[ju.Map[_, _]].keySet()
   }

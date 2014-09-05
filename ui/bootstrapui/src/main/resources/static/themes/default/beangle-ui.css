@@ -21,7 +21,7 @@
  * LGPL version 3.
  */
 /* grid */
-.grid{border-color:#006CB2;margin: 0px 0px 0px 0px ;font-size: 13px;}
+.grid{border-color:#006CB2;margin: 0px 0px 0px 0px ;}
 
 .grid-caption{background-color: #333333;color: #FFFFFF;margin-bottom: 0;padding: 5px;font-weight: bold;}
 
@@ -39,7 +39,9 @@
 
 .gridselect-top{text-align:center;}
 
-.gridhead{color: #000000;text-decoration: none;text-align:center;letter-spacing:0;background-color: #c7dbff;}
+.gridhead{color: #000000;letter-spacing:0;background-color: #c7dbff;}
+
+.gridhead th{text-decoration: none;text-align:center;}
 
 .gridhead-icon{background-image: url(icons/16x16/actions.png);display:inline-block;}
 
@@ -60,7 +62,7 @@
 .griddata-over{background-color: #BFFFBF;}
 
 .gridbar{
-    height:22px;
+    height:24px;
     background-color: #c7dbff;
     border:solid;
     border-color:#006CB2;
@@ -82,7 +84,7 @@
 .pgbar-go{width:30px;height:18px;font-size: 0.8em;text-align:center;margin:0px;padding:0px 0px 2px 0px;border:solid;border-width:1px;border-color:#006CB2;}
 
 /*toolbar*/
-.toolbar{height:22px;border-collapse:separate;display:block;font-size: 13px;}
+.toolbar{height:22px;border-collapse:separate;display:block;}
 
 .toolbar-icon{
     background-image: url(icons/16x16/actions.png);
@@ -117,8 +119,8 @@
 .toolbar-item-disabled{display:none;}
 
 .toolbar-item-selected{background-color:#4791C5;float:left;padding:2px 3px 2px 3px;cursor:pointer;}
-
-.toolbar-item-transfer{float:left;padding:1px 2px 1px 2px;background-color:#e9f2f8;border:1px solid #336699;cursor:pointer;}
+/** FIXME 2.5 */
+.toolbar-item-transfer{float:left;padding:1px 2.5px 1px 2px;background-color:#e9f2f8;border:1px solid #336699;cursor:pointer;}
 
 .toolbar-menu{margin-top:1px;margin-left:0px;background-color:#e9f2f8;visibility:hidden;position:absolute;z-index:100;padding:1px;overflow:visible;border:solid 1px #4791C5;white-space:nowrap;}
 
@@ -246,7 +248,6 @@ div.message img.icon {
 
 /*详细信息页面*/
 table.infoTable {
-    font-size: 13px;
     vertical-align: middle;
     width:100%;
     table-layout:fixed;
@@ -347,7 +348,6 @@ table.settingTable td{
     clear: both;
     height: 30px;
     padding: 0 10px;
-    font-size: 13px;
 }
 
 .navmenu ul {

@@ -1,18 +1,21 @@
 package org.beangle.webmvc.entity.action
 
+import java.{util => ju}
+
+import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.PageLimit
+import org.beangle.commons.config.property.PropertyConfig
 import org.beangle.commons.lang.Strings
 import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
+import org.beangle.data.model.bean.UpdatedBean
+import org.beangle.data.model.dao.GeneralDao
+import org.beangle.data.model.meta.{EntityMetadata, EntityType}
 import org.beangle.webmvc.api.action.EntityActionSupport
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params
-import org.beangle.webmvc.entity.helper.{ PopulateHelper, QueryHelper }
-import org.beangle.data.model.dao.GeneralDao
-import org.beangle.data.model.dao.QueryBuilder
-import org.beangle.data.model.meta.EntityMetadata
-import org.beangle.commons.config.property.PropertyConfig
-import org.beangle.commons.collection.Order
+import org.beangle.webmvc.api.view.View
+import org.beangle.webmvc.entity.helper.{PopulateHelper, QueryHelper}
 
 abstract class AbstractEntityAction extends EntityActionSupport {
   var entityDao: GeneralDao = _
@@ -101,5 +104,75 @@ abstract class AbstractEntityAction extends EntityActionSupport {
     populateConditions(builder)
     builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit())
   }
+  protected def populateEntity(): Entity[_] = {
+    populateEntity(entityName, shortName)
+  }
 
+  protected def populateEntity(entityName: String, shortName: String): Entity[_] = {
+    val entityId: Serializable = getId(shortName, entityMetaData.getType(entityName).get.idClass)
+    if (null == entityId) {
+      populate(entityName, shortName).asInstanceOf[Entity[_]]
+    } else {
+      val entity: Entity[_] = getModel(entityName, entityId)
+      populate(entity, entityName, Params.sub(shortName).asInstanceOf[Map[String, Object]])
+      entity.asInstanceOf[Entity[_]]
+    }
+  }
+
+  protected def populateEntity[T](entityClass: Class[T], shortName: String): T = {
+    val entityType: EntityType = (if (entityClass.isInterface) {
+      entityMetaData.getType(entityClass.getName)
+    } else {
+      entityMetaData.getType(entityClass)
+    }).get
+    populateEntity(entityType.entityName, shortName).asInstanceOf[T]
+  }
+
+  protected def getEntity[T]: Entity[T] = {
+    getEntity(entityName, shortName)
+  }
+
+  protected def getEntity[T](entityName: String, name: String): Entity[T] = {
+    val entityType: EntityType = entityMetaData.getType(entityName).get
+    val entityId: Serializable = getId(name, entityType.idClass)
+    if (null == entityId)
+      populate(entityType.newInstance.asInstanceOf[Entity[_]], entityType.entityName, name).asInstanceOf[Entity[T]]
+    else getModel(entityName, entityId)
+  }
+
+  protected def getEntity[T](entityClass: Class[T], shortName: String): T = {
+    val entityType: EntityType = (if (entityClass.isInterface)
+      entityMetaData.getType(entityClass.getName)
+    else entityMetaData.getType(entityClass)).get
+    getEntity(entityType.entityName, shortName).asInstanceOf[T]
+  }
+
+  protected def getModel[T](entityName: String, id: Serializable): Entity[T] = {
+    entityDao.get(Class.forName(entityName).asInstanceOf, id)
+  }
+
+  protected def getModels(entityName: String, ids: Array[_]): List[_] = {
+    entityDao.find(Class.forName(entityName).asInstanceOf, "id", ids).asInstanceOf[List[_]]
+  }
+
+  /**
+   * 保存对象
+   *
+   * @param entity
+   */
+  protected def saveAndRedirect(entity: Entity[_]): View = {
+    try {
+      if (entity.isInstanceOf[UpdatedBean]) {
+        val timeEntity = entity.asInstanceOf[UpdatedBean]
+        timeEntity.updatedAt = new ju.Date()
+      }
+      saveOrUpdate(entity)
+      redirect("search", "info.save.success")
+    } catch {
+      case e: Exception => {
+        info("saveAndForwad failure", e)
+        redirect("search", "info.save.failure")
+      }
+    }
+  }
 }

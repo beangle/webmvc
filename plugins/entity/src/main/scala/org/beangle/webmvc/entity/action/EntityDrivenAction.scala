@@ -79,48 +79,6 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
     saveAndForward(populateEntity())
   }
 
-  protected def populateEntity(): Entity[_] = {
-    populateEntity(entityName, shortName)
-  }
-
-  protected def populateEntity(entityName: String, shortName: String): Entity[_] = {
-    val entityId: Serializable = getId(shortName, entityMetaData.getType(entityName).get.idClass)
-    if (null == entityId) {
-      populate(entityName, shortName).asInstanceOf[Entity[_]]
-    } else {
-      val entity: Entity[_] = getModel(entityName, entityId)
-      populate(entity, entityName, Params.sub(shortName).asInstanceOf[Map[String, Object]])
-      entity.asInstanceOf[Entity[_]]
-    }
-  }
-
-  protected def populateEntity[T](entityClass: Class[T], shortName: String): T = {
-    val entityType: EntityType = (if (entityClass.isInterface) {
-      entityMetaData.getType(entityClass.getName)
-    } else {
-      entityMetaData.getType(entityClass)
-    }).get
-    populateEntity(entityType.entityName, shortName).asInstanceOf[T]
-  }
-
-  protected def getEntity[T]: Entity[T] = {
-    getEntity(entityName, shortName)
-  }
-
-  protected def getEntity[T](entityName: String, name: String): Entity[T] = {
-    val entityType: EntityType = entityMetaData.getType(entityName).get
-    val entityId: Serializable = getId(name, entityType.idClass)
-    if (null == entityId)
-      populate(entityType.newInstance.asInstanceOf[Entity[_]], entityType.entityName, name).asInstanceOf[Entity[T]]
-    else getModel(entityName, entityId)
-  }
-
-  protected def getEntity[T](entityClass: Class[T], shortName: String): T = {
-    val entityType: EntityType = (if (entityClass.isInterface)
-      entityMetaData.getType(entityClass.getName)
-    else entityMetaData.getType(entityClass)).get
-    getEntity(entityType.entityName, shortName).asInstanceOf[T]
-  }
 
   /**
    * 查看信息
@@ -169,13 +127,5 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
         redirect("search", "info.delete.failure")
       }
     }
-  }
-
-  protected def getModel[T](entityName: String, id: Serializable): Entity[T] = {
-    entityDao.get(Class.forName(entityName).asInstanceOf, id)
-  }
-
-  protected def getModels(entityName: String, ids: Array[_]): List[_] = {
-    entityDao.find(Class.forName(entityName).asInstanceOf, "id", ids).asInstanceOf[List[_]]
   }
 }

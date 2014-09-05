@@ -806,7 +806,7 @@
     var selfaction = this;
 
     function applyMethod(action,method){
-      var last1=action.lastIndexOf("!"), lastDot=action.lastIndexOf("."), shortAction=action, sufix="";
+      var last1=action.lastIndexOf("/"), lastDot=action.lastIndexOf("."), shortAction=action, sufix="";
       if(-1 == last1) last1 = lastDot;
       if(-1!=last1){
         shortAction=action.substring(0,last1);
@@ -814,7 +814,7 @@
       if(-1!=lastDot){
         sufix=action.substring(lastDot);
       }
-      return shortAction+"!"+method+sufix;
+      return shortAction+"/"+method+sufix;
     }
     this.getForm=function (){
       return this.page.getForm();
@@ -861,7 +861,7 @@
         if(""!=selfaction.page.paramstr) bg.form.addHiddens(form,selfaction.page.paramstr);
         bg.form.addInput(form,selfaction.entity + '.id',"");
         if(""!=selfaction.page.paramstr) bg.form.addParamsInput(form,selfaction.page.paramstr);
-        bg.form.submit(form,applyMethod(selfaction.page.actionurl,"edit"));
+        bg.form.submit(form,applyMethod(selfaction.page.actionurl,"new"));
       });
     }
 
@@ -943,19 +943,19 @@
       if(bg.getContextPath().length>1)
         base = bg.getContextPath() + base;
       if(module=="validity"){
-        jQuery.struts2_jquery.requireCss("/themes/" + bg.uitheme + "/jquery.validity.css",base);
-        jQuery.struts2_jquery.require("/scripts/plugins/jquery-validity.js",null,base);
-        jQuery.struts2_jquery.require("/scripts/i18n/zh_CN/jquery.validity.js",callback,base);
+        bg.requireCss("/themes/" + bg.uitheme + "/jquery.validity.css",base);
+        bg.require("/scripts/jquery/jquery-validity.js",null,base);
+        bg.require("/scripts/i18n/zh_CN/jquery.validity.js",callback,base);
       }else if(module=="tabletree"){
-        jQuery.struts2_jquery.requireCss("/themes/" + bg.uitheme + "/beangle-ui-tabletree.css",base);
-        jQuery.struts2_jquery.require("/scripts/beangle/beangle-ui-tabletree.js",callback,base);
+        bg.requireCss("/themes/" + bg.uitheme + "/beangle-ui-tabletree.css",base);
+        bg.require("/scripts/beangle/beangle-ui-tabletree.js",callback,base);
       }else if(module=="colorbox"){
-        jQuery.struts2_jquery.requireCss("/themes/" + bg.uitheme + "/colorbox.css",base);
-        jQuery.struts2_jquery.require("/scripts/plugins/jquery-colorbox.min.js",callback,base);
+        bg.requireCss("/themes/" + bg.uitheme + "/colorbox.css",base);
+        bg.require("/scripts/jquery/jquery-colorbox.min.js",callback,base);
       }else if(module=="jquery.pstrength"){
-        jQuery.struts2_jquery.requireCss("/themes/" + bg.uitheme + "/jquery-pstrength.css",base);
-        jQuery.struts2_jquery.require("/scripts/plugins/jquery-pstrength.js",callback,base);
-        jQuery.struts2_jquery.require("/scripts/i18n/zh_CN/jquery-pstrength.js",callback,base);
+        bg.requireCss("/themes/" + bg.uitheme + "/jquery-pstrength.css",base);
+        bg.require("/scripts/jquery/jquery-pstrength.js",callback,base);
+        bg.require("/scripts/i18n/zh_CN/jquery-pstrength.js",callback,base);
       }
     }
   });

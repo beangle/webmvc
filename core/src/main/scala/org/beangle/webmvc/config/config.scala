@@ -25,19 +25,14 @@ object ActionMapping {
   final val DefaultMethod = "index"
   final val MethodParam = "_method"
   import org.beangle.commons.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
-  final val HttpMethodMap = Map((GET, ""), (POST, ""), (PUT, "put"), (DELETE, "delete"), (HEAD, "head"))
+  final val BrowserUnsupported = Map((PUT, "put"), (DELETE, "delete"), (HEAD, "head"))
   final val HttpMethods = Set("put", "delete", "head")
 }
 
 class ActionMapping(val httpMethod: String, val config: ActionConfig, val method: Method, val name: String,
   val params: Array[String], val urlParams: Map[Integer, String]) {
 
-  def httpMethodMatches(requestMethod: String): Boolean = {
-    if (null == httpMethod) requestMethod == GET || requestMethod == POST
-    else requestMethod == httpMethod
-  }
-
-  def url = config.name + "/" + name
+  def url = if ("" == name) config.name else (config.name + "/" + name)
 
   def fill(paramMaps: collection.Map[String, Any]*): String = {
     if (urlParams.isEmpty) return url
@@ -61,9 +56,8 @@ class ActionMapping(val httpMethod: String, val config: ActionConfig, val method
 
   def toURL(paramMaps: collection.Map[String, Any]*): ToURL = {
     val ua = new ToURL(fill(paramMaps: _*))
-    if (this.httpMethod != null) {
-      val method = ActionMapping.HttpMethodMap(this.httpMethod)
-      if ("" != method) ua.param(ActionMapping.MethodParam, method)
+    ActionMapping.BrowserUnsupported.get(this.httpMethod) foreach { m =>
+      ua.param(ActionMapping.MethodParam, m)
     }
     ua
   }

@@ -6,6 +6,7 @@ import org.beangle.data.model.dao.GeneralDao
 import org.beangle.data.model.meta.EntityMetadata
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.context.Params
+import org.beangle.webmvc.api.view.View
 
 abstract class RestfulEntityAction extends AbstractEntityAction {
 
@@ -32,7 +33,10 @@ abstract class RestfulEntityAction extends AbstractEntityAction {
 
   @mapping(value = "new", method = "get")
   def editNew(): String = {
-    forward()
+    var entity = getEntity
+    editSetting(entity)
+    put(shortName, entity)
+    forward("form")
   }
 
   @mapping(value = "{id}", method = "delete")
@@ -45,11 +49,12 @@ abstract class RestfulEntityAction extends AbstractEntityAction {
     null
   }
 
-  protected def getModel[T](entityName: String, id: Serializable): Entity[T] = {
-    entityDao.get(Class.forName(entityName).asInstanceOf, id)
+  @mapping(value = "", method = "post")
+  def save(): View = {
+    saveAndRedirect(populateEntity())
   }
 
-  protected def getModels(entityName: String, ids: Array[_]): List[_] = {
-    entityDao.find(Class.forName(entityName).asInstanceOf, "id", ids).asInstanceOf[List[_]]
-  }
+  protected def indexSetting(): Unit = {}
+
+  protected def editSetting(entity: Entity[_]): Unit = {}
 }

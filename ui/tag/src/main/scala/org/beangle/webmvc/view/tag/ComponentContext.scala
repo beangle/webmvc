@@ -16,7 +16,7 @@ class ComponentContext(val uriRender: ActionUriRender, val idGenerator: UIIdGene
   def find[T <: Component](clazz: Class[T]): T = {
     components.find { component => clazz == component.getClass } match {
       case Some(c) => c.asInstanceOf[T]
-      case None => throw new RuntimeException(s"Cannot find ancestor of type ${clazz.getName}")
+      case None => null.asInstanceOf[T]
     }
   }
 

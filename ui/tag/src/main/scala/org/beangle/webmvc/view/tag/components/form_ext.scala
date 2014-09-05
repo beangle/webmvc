@@ -51,7 +51,7 @@ class Radios(context: ComponentContext) extends UIBean(context) {
     var i = 0
     for (key <- keys) {
       radios(i) = new Radio(context)
-      radios(i).title = String.valueOf(items.asInstanceOf[Map[Any, _]].get(key))
+      radios(i).title = String.valueOf(items.asInstanceOf[collection.Map[Any, _]](key))
       radios(i).value = key.asInstanceOf[Object]
       radios(i).id = Strings.concat(this.id + "_" + String.valueOf(i))
       radios(i).evaluateParams()

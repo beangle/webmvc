@@ -62,7 +62,9 @@ class FreemarkerTemplateEngine(tagLibraryProvider: TagLibraryProvider) extends T
     config.setLocalizedLookup(false)
     config.setEncoding(config.getLocale(), "UTF-8")
 
-    config.setObjectWrapper(new BeangleObjectWrapper(false))
+    val wrapper = new BeangleObjectWrapper(true)
+    wrapper.setUseCache(false)
+    config.setObjectWrapper(wrapper)
     // Cache one hour(7200s) and Strong cache
     config.setTemplateUpdateDelay(if (enableCache) 7200 else 0)
     // config.setCacheStorage(new MruCacheStorage(100,250))

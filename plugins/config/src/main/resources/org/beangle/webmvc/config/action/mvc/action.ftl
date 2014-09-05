@@ -3,6 +3,7 @@
 
 <table>
   <tr><td>Action class:</td><td> ${config.clazz.name}</td></tr>
+  <tr><td>Namespace:</td><td>${config.namespace}</td></tr>
   <tr><td>Profile:</td><td>${config.profile.name}(${config.profile.actionPattern})</td></tr>
 </table>
 
@@ -32,7 +33,7 @@
         [#list config.mappings?values as mapping]
         <tr>
           <td>${mapping.httpMethod!"*"}</td>
-          <td>${Parameters['name']}/${mapping.name}</td>
+          <td>[#if mapping.name?length>0]${Parameters['name']}/${mapping.name}[#else]${Parameters['name']}[/#if]</td>
           <td>${mapping.method.name}([#list mapping.params as p]${p}[#if p_has_next],[/#if][/#list])</td>
         </tr>
       [/#list]
