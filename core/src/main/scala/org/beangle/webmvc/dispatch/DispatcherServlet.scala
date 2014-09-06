@@ -11,6 +11,8 @@ import org.beangle.webmvc.context.ContainerHelper
 
 class DispatcherServlet extends HttpServlet {
 
+  var defaultEncoding = "utf-8"
+
   var mapper: RequestMapper = _
   var reactor: InvocationReactor = _
   var localeResolver: LocaleResolver = _
@@ -25,6 +27,8 @@ class DispatcherServlet extends HttpServlet {
   }
 
   override def service(request: HttpServletRequest, response: HttpServletResponse): Unit = {
+    request.setCharacterEncoding(defaultEncoding)
+
     mapper.resolve(request) match {
       case Some(rm) =>
         ActionContextHelper.build(request, response, rm, localeResolver, textResourceProvider)

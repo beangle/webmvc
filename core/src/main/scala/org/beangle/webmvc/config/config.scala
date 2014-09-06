@@ -1,17 +1,25 @@
 package org.beangle.webmvc.config
 
-import scala.annotation.migration
-import org.beangle.commons.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
-import org.beangle.commons.lang.Strings.{ join, split }
-import org.beangle.webmvc.api.action.{ ToClass, ToURL }
-import org.beangle.webmvc.api.view.View
 import java.lang.reflect.Method
+
+import org.beangle.commons.http.HttpMethods.{ DELETE, HEAD, PUT }
+import org.beangle.commons.lang.Strings.{ join, split }
+import org.beangle.webmvc.api.action.ToURL
+import org.beangle.webmvc.api.view.View
 
 trait Configurer {
 
   def getProfile(className: String): Profile
 
   def profiles: Seq[Profile]
+
+  def build(): Seq[Tuple3[String, ActionMapping, Object]]
+
+  def actionConfigs: Map[String, ActionConfig]
+
+  def getActionMapping(name: String, method: String): Option[ActionMapping]
+
+  def getConfig(name: String): Option[ActionConfig]
 }
 
 /**

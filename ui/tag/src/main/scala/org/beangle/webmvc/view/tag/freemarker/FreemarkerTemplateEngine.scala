@@ -2,22 +2,22 @@ package org.beangle.webmvc.view.tag.freemarker
 
 import java.io.{ IOException, Writer }
 import java.util.{ ArrayList, HashMap }
+
+import org.beangle.commons.bean.Initializing
 import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.Throwables
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.view.TagLibraryProvider
+import org.beangle.webmvc.view.freemarker.{ BeangleClassTemplateLoader, BeangleObjectWrapper }
+import org.beangle.webmvc.view.tag.{ Component, TemplateEngine }
+
 import freemarker.cache.StrongCacheStorage
 import freemarker.core.ParseException
 import freemarker.ext.servlet.HttpRequestParametersHashModel
 import freemarker.template.{ Configuration, ObjectWrapper, SimpleHash, Template, TemplateModel }
 import javax.servlet.http.HttpServletRequest
-import org.beangle.commons.bean.Initializing
-import org.beangle.webmvc.view.TagLibraryProvider
-import org.beangle.webmvc.view.freemarker.BeangleClassTemplateLoader
-import org.beangle.webmvc.view.freemarker.BeangleObjectWrapper
-import org.beangle.webmvc.view.tag.TemplateEngine
-import org.beangle.webmvc.view.tag.Component
 
 /**
  * Freemarker Template Engine

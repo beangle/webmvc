@@ -6,7 +6,7 @@ import java.lang.reflect.Method
 @spi
 trait ProfileProvider {
 
-  def loadProfiles(): List[Profile]
+  def loadProfiles(): List[ProfileConfig]
 }
 
 @spi

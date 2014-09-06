@@ -24,49 +24,20 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
 
   private val directMappings = new collection.mutable.HashMap[String, MethodMappings]
 
-  //reverse mapping
-  private val actionConfigMap = new collection.mutable.HashMap[String, ActionConfig]
-
-  var actionFinder: ActionFinder = _
   var configurer: Configurer = _
-  var actionMappingBuilder: ActionMappingBuilder = _
 
   override def notify(container: Container): Unit = {
-    val watch = new Stopwatch(true)
-    var actionCount, mappingCount = 0
-    actionFinder.getActions(new ActionFinder.Test(configurer)) foreach { bean =>
-      val clazz = bean.getClass
-      actionCount += 1
-      actionMappingBuilder.build(clazz, configurer.getProfile(clazz.getName)).map {
-        case (url, action) =>
-          mappingCount += 1
-          add(url, RequestMappingBuilder.build(action, bean))
-      }
+    configurer.build() foreach {
+      case (url, actionmapping, bean) =>
+        add(url, RequestMappingBuilder.build(actionmapping, bean))
     }
-    info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in ${watch}.")
   }
-
-  def actionConfigs = actionConfigMap.values.toSet
 
   private def add(url: String, mapping: RequestMapping): Unit = {
     val action = mapping.action
-    actionConfigMap.put(action.config.clazz.getName, action.config)
-    actionConfigMap.put(action.config.name, action.config)
-
     if (!url.contains("{")) {
       directMappings.getOrElseUpdate(url, new MethodMappings).methods.put(action.httpMethod, mapping)
     } else hierarchicalMappings.add(action.httpMethod, url, mapping)
-  }
-
-  override def antiResolve(name: String, method: String): Option[ActionMapping] = {
-    actionConfigMap.get(name) match {
-      case Some(config) => config.mappings.get(method)
-      case None => None
-    }
-  }
-
-  override def antiResolve(name: String): Option[ActionConfig] = {
-    actionConfigMap.get(name)
   }
 
   override def resolve(uri: String): Option[RequestMapping] = {

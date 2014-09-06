@@ -11,6 +11,7 @@ import org.beangle.webmvc.api.view.View
 abstract class RestfulEntityAction extends AbstractEntityAction {
 
   def index(): String = {
+    var i=2/0
     forward()
   }
 

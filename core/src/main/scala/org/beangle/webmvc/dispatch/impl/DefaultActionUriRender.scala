@@ -6,13 +6,14 @@ import org.beangle.webmvc.api.action.to
 import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.config.ActionMapping
 import org.beangle.webmvc.dispatch.{ ActionUriRender, RequestMapper }
+import org.beangle.webmvc.config.Configurer
 
 @description("根据uri相对地址反向生成绝对地址")
 class DefaultActionUriRender extends ActionUriRender {
 
   val render = new UrlRender
 
-  var mapper: RequestMapper = _
+  var configurer: Configurer = _
 
   override def render(action: ActionMapping, uri: String): String = {
     val context = ContextHolder.context
@@ -53,7 +54,7 @@ class DefaultActionUriRender extends ActionUriRender {
 
         val actionName = new StringBuilder
         actionName.append(struts.namespace).append('/').append(struts.name)
-        mapper.antiResolve(actionName.toString) match {
+        configurer.getConfig(actionName.toString) match {
           case Some(cfg) => cfg.mappings(if (null == struts.method) cfg.profile.defaultMethod else struts.method)
           case None => throw new RuntimeException(s"Cannot find $actionName mapping")
         }

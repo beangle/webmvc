@@ -85,6 +85,7 @@ final class Profile(val name: String,
   val urlPath: String,
   val urlStyle: String,
   val urlSuffix: String,
+  val interceptorNames: Array[String],
   val interceptors: Array[Interceptor],
   val source: URL) extends Comparable[Profile] {
 
@@ -130,4 +131,41 @@ final class Profile(val name: String,
   }
 }
 
+final class ProfileConfig(val name: String, val actionPattern: String) {
+
+  // action类名后缀
+  var actionSuffix: String = _
+
+  // 缺省的action中的方法
+  var defaultMethod = "index"
+
+  // 路径前缀
+  var viewPath: String = _
+
+  // 路径模式
+  var viewPathStyle = "simple"
+
+  // 路径后缀
+  var viewSuffix: String = _
+
+  // View Type (freemarker chain)
+  var viewType: String = _
+
+  //end with /
+  var urlPath = "/"
+
+  // URI style
+  var urlStyle = "simple"
+
+  /** URL的后缀 */
+  var urlSuffix: String = _
+
+  var interceptorNames: Array[String] = Array()
+
+  var source: URL = _
+
+  def mkProfile(interceptors: Array[Interceptor]): Profile = {
+    new Profile(name, actionPattern, actionSuffix, defaultMethod, viewPath, viewPathStyle, viewSuffix, viewType, urlPath, urlStyle, urlSuffix, interceptorNames, interceptors, source)
+  }
+}
 

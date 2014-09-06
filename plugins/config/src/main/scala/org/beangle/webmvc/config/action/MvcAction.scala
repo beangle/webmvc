@@ -32,8 +32,6 @@ import org.beangle.webmvc.dispatch.impl.HierarchicalUrlMapper
 @description("Beange WebMVC 配置查看器")
 class MvcAction extends ActionSupport {
 
-  var mapper: HierarchicalUrlMapper = _
-
   var configurer: Configurer = _
 
   def index(): String = {
@@ -55,7 +53,7 @@ class MvcAction extends ActionSupport {
 
   def action(): String = {
     val actionName = get("name", "")
-    val config = mapper.antiResolve(actionName).get
+    val config = configurer.getConfig(actionName).get
     try {
       val clazz = config.clazz
       put("properties", BeanManifest.get(clazz).getters.values.filterNot(m => m.method.getName.contains("$") || m.method.getDeclaringClass == classOf[ActionSupport]))
@@ -70,15 +68,17 @@ class MvcAction extends ActionSupport {
   }
   private def getNamespaces(): Seq[String] = {
     val namespaces = new collection.mutable.HashSet[String]
-    mapper.actionConfigs foreach { config =>
-      namespaces += config.namespace
+    val configs = configurer.actionConfigs.values.toSet
+    configs foreach { c =>
+      namespaces += c.namespace
     }
     namespaces.toList.sorted
   }
 
   private def getActionNames(namespace: String): Seq[String] = {
     val actionNames = new collection.mutable.HashSet[String]
-    mapper.actionConfigs foreach { config =>
+    val configs = configurer.actionConfigs.values.toSet
+    configs foreach { config =>
       if (config.name.startsWith(namespace)) {
         actionNames += Strings.substringAfter(config.name, namespace + "/")
       }

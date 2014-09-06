@@ -1,21 +1,16 @@
 package org.beangle.webmvc.execution.interceptors
 
-import org.beangle.webmvc.api.context.{ ContextHolder, Flash }
-import org.beangle.webmvc.context.ActionContextHelper
-import org.beangle.webmvc.execution.{ Handler, Interceptor }
+import org.beangle.commons.lang.annotation.description
+import org.beangle.webmvc.api.context.ActionContext
+import org.beangle.webmvc.execution.{ Handler, OncePerRequestInterceptor }
 
 /**
  * Process Flash in context
  */
-class FlashInterceptor extends Interceptor {
+@description("请求之间传递参数的flash拦截器")
+class FlashInterceptor extends OncePerRequestInterceptor {
 
-  override def preHandle(handler: Handler): Boolean = {
-    true
-  }
-
-  override def postHandle(handler: Handler, mv: Any): Unit = {
-    //FIXME inner forward will invoke twice
-    val context = ContextHolder.context
+  override def doPostHandle(context: ActionContext, handler: Handler, mv: Any): Unit = {
     val flash = context.flashMap
     if (null != flash) flash.nextToNow()
   }

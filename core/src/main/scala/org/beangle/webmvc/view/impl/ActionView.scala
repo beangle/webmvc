@@ -10,6 +10,7 @@ import org.beangle.webmvc.view.TypeViewBuilder
 import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.action.to
 import org.beangle.commons.lang.annotation.description
+import org.beangle.webmvc.config.Configurer
 
 @description("前向调转视图构建者")
 class ForwardActionViewBuilder extends TypeViewBuilder {
@@ -35,12 +36,12 @@ class RedirectActionViewBuilder extends TypeViewBuilder {
   }
 }
 
-abstract class ActionViewRender(val mapper: RequestMapper) extends ViewRender {
+abstract class ActionViewRender(val configurer: Configurer) extends ViewRender {
 
   final def toURL(view: View): String = {
     view.asInstanceOf[ActionView].to match {
       case ca: ToClass =>
-        mapper.antiResolve(ca.clazz.getName, ca.method) match {
+        configurer.getActionMapping(ca.clazz.getName, ca.method) match {
           case Some(am) =>
             val ua = am.toURL(ca.parameters, ContextHolder.context.params)
             ca.parameters --= am.urlParams.values
@@ -53,7 +54,7 @@ abstract class ActionViewRender(val mapper: RequestMapper) extends ViewRender {
   }
 }
 @description("前向调转渲染者")
-class ForwardActionViewRender(mapper: RequestMapper) extends ActionViewRender(mapper) {
+class ForwardActionViewRender(configurer: Configurer) extends ActionViewRender(configurer) {
 
   override def supportViewClass: Class[_] = {
     classOf[ForwardActionView]
@@ -65,7 +66,7 @@ class ForwardActionViewRender(mapper: RequestMapper) extends ActionViewRender(ma
 }
 
 @description("重定向调转渲染者")
-class RedirectActionViewRender(mapper: RequestMapper) extends ActionViewRender(mapper) {
+class RedirectActionViewRender(configurer: Configurer) extends ActionViewRender(configurer) {
 
   override def supportViewClass: Class[_] = {
     classOf[RedirectActionView]

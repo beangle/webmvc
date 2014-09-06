@@ -5,7 +5,7 @@
     <view path="/" style="full" type="freemarker" suffix=".ftl" />
     <url path="/" suffix=""  style="seo" />
     <interceptors>
-      <interceptor class="org.beangle.webmvc.execution.interceptors.FlashInterceptor"/>
+      <interceptor name="mvc.Interceptor.flash"/>
     </interceptors>
   </profile>
 </profiles>
