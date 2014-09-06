@@ -526,7 +526,7 @@
   bg.extend({
     'ui.grid':{
       enableSingleRowSelect : false,
-      enableDynaBar:false,
+      enableDynaBar:true,
       enableSelectTip:true,
       // 鼠标经过和移出排序表格的表头时
       overSortTableHeader : function  (){
@@ -805,17 +805,14 @@
     //record self for closure method
     var selfaction = this;
 
-    function applyMethod(action,method){
+    this.applyMethod=function(method){
+      var action= this.page.actionurl
       var last1=action.lastIndexOf("/"), lastDot=action.lastIndexOf("."), shortAction=action, sufix="";
       if(-1 == last1) last1 = lastDot;
-      if(-1!=last1){
-        shortAction=action.substring(0,last1);
-      }
-      if(-1!=lastDot){
-        sufix=action.substring(lastDot);
-      }
+      if(-1!=last1) shortAction=action.substring(0,last1);
+      if(-1!=lastDot) sufix=action.substring(lastDot);
       return shortAction+"/"+method+sufix;
-    }
+    };
     this.getForm=function (){
       return this.page.getForm();
     };
@@ -827,27 +824,30 @@
       if(null!=fm) fm.target=this.page.target;
     }
 
-    this.beforeSubmmitId = function(method) {
-      var ids = bg.input.getCheckBoxValues(entity+".id");
+    this.submitIdAction = function(method,isMulti,confirmMsg,ajax) {
+      if(null==isMulti) isMulti=false;
+      var ids = bg.input.getCheckBoxValues(this.entity+".id");
       if (ids == null || ids == "") {
-        bg.alert("你没有选择要操作的记录！");
-        return false;
+        bg.alert(isMulti?"请选择一个或多个进行操作":"请选择一个进行操作");return;
+      }
+      if(!isMulti && (ids.indexOf(",")>0)){
+        alert("请仅选择一个");return;
+      }
+      if(null!=confirmMsg && ''!=confirmMsg){
+        if(!confirm(confirmMsg))return;
       }
       var form=this.getForm();
-      form.action = applyMethod(this.page.actionurl, method);
+      if(method.contains("{id}")) method = method.replace("{id}",ids)
+      else {
+        if(isMulti) bg.form.addInputs(form,this.entity+".id",ids);
+        else bg.form.addInput(form,this.entity+".id",ids);
+      }
+      form.action = this.applyMethod(method);
       if(this.page.paramstr){
         bg.form.addHiddens(form,this.page.paramstr);
         bg.form.addParamsInput(form,this.page.paramstr);
       }
-      return true;
-    }
-    this.submitIdAction=function (method,multiId,confirmMsg,ajax){
-      if (this.beforeSubmmitId(method)) {
-        if(null!=confirmMsg && ''!=confirmMsg){
-          if(!confirm(confirmMsg))return;
-        }
-        bg.form.submitId(this.getForm(),this.entity + ".id",multiId,null,null,ajax);
-      }
+      bg.form.submit(form,null,null,null,ajax);
     }
     this.remove=function(confirmMsg){
       confirmMsg=confirmMsg||'确认删除?';
@@ -861,7 +861,7 @@
         if(""!=selfaction.page.paramstr) bg.form.addHiddens(form,selfaction.page.paramstr);
         bg.form.addInput(form,selfaction.entity + '.id',"");
         if(""!=selfaction.page.paramstr) bg.form.addParamsInput(form,selfaction.page.paramstr);
-        bg.form.submit(form,applyMethod(selfaction.page.actionurl,"new"));
+        bg.form.submit(form,selfaction.applyMethod("new"));
       });
     }
 
@@ -873,7 +873,7 @@
 
     this.edit = function (){
       return new NamedFunction('edit',function(){
-        selfaction.submitIdAction('edit',false);
+        selfaction.submitIdAction('{id}/edit',false);
       },bg.ui.grid.enableDynaBar?'e1':'ge0');
     }
 
@@ -909,7 +909,7 @@
           bg.form.addHiddens(form,selfaction.page.paramstr);
           bg.form.addParamsInput(form,selfaction.page.paramstr);
         }
-        bg.form.submit(form,applyMethod(selfaction.page.actionurl ,methodName),null,null,ajax);
+        bg.form.submit(form,selfaction.applyMethod(methodName),null,null,ajax);
       });
     }
 

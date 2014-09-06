@@ -1,6 +1,6 @@
 package org.beangle.webmvc.entity.action
 
-import java.{util => ju}
+import java.{ util => ju, io => jo }
 
 import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.PageLimit
@@ -10,12 +10,12 @@ import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
 import org.beangle.data.model.bean.UpdatedBean
 import org.beangle.data.model.dao.GeneralDao
-import org.beangle.data.model.meta.{EntityMetadata, EntityType}
+import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
 import org.beangle.webmvc.api.action.EntityActionSupport
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.entity.helper.{PopulateHelper, QueryHelper}
+import org.beangle.webmvc.entity.helper.{ PopulateHelper, QueryHelper }
 
 abstract class AbstractEntityAction extends EntityActionSupport {
   var entityDao: GeneralDao = _
@@ -109,7 +109,7 @@ abstract class AbstractEntityAction extends EntityActionSupport {
   }
 
   protected def populateEntity(entityName: String, shortName: String): Entity[_] = {
-    val entityId: Serializable = getId(shortName, entityMetaData.getType(entityName).get.idClass)
+    val entityId: jo.Serializable = getId(shortName, entityMetaData.getType(entityName).get.idClass)
     if (null == entityId) {
       populate(entityName, shortName).asInstanceOf[Entity[_]]
     } else {
@@ -134,25 +134,26 @@ abstract class AbstractEntityAction extends EntityActionSupport {
 
   protected def getEntity[T](entityName: String, name: String): Entity[T] = {
     val entityType: EntityType = entityMetaData.getType(entityName).get
-    val entityId: Serializable = getId(name, entityType.idClass)
+    val entityId: jo.Serializable = getId(name, entityType.idClass)
     if (null == entityId)
       populate(entityType.newInstance.asInstanceOf[Entity[_]], entityType.entityName, name).asInstanceOf[Entity[T]]
     else getModel(entityName, entityId)
   }
 
   protected def getEntity[T](entityClass: Class[T], shortName: String): T = {
-    val entityType: EntityType = (if (entityClass.isInterface)
-      entityMetaData.getType(entityClass.getName)
-    else entityMetaData.getType(entityClass)).get
+    val entityType: EntityType =
+      (if (entityClass.isInterface) entityMetaData.getType(entityClass.getName)
+      else entityMetaData.getType(entityClass)).get
     getEntity(entityType.entityName, shortName).asInstanceOf[T]
   }
 
-  protected def getModel[T](entityName: String, id: Serializable): Entity[T] = {
-    entityDao.get(Class.forName(entityName).asInstanceOf, id)
+  protected def getModel[T](entityName: String, id: jo.Serializable): T = {
+    val entityType: EntityType = entityMetaData.getType(entityName).get
+    entityDao.get(entityType.entityClass.asInstanceOf[Class[T]], Params.converter.convert(id, entityType.idClass))
   }
 
   protected def getModels(entityName: String, ids: Array[_]): List[_] = {
-    entityDao.find(Class.forName(entityName).asInstanceOf, "id", ids).asInstanceOf[List[_]]
+    entityDao.find(Class.forName(entityName).asInstanceOf[Class[_]], "id", ids).asInstanceOf[List[_]]
   }
 
   /**

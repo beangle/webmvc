@@ -214,9 +214,9 @@ class Date(context: ComponentContext) extends UIBean(context) {
       if ("true".equals(required)) myform.addRequire(id)
       if (null != check) myform.addCheck(id, check)
     }
-    val format2 = Date.ResvervedFormats.get(format).getOrElse(format)
+    val format2 = Date.ResvervedFormats.getOrElse(format,format)
     if (null != format2) format = format2
-    if (value.isInstanceOf[Date]) {
+    if (value.isInstanceOf[ju.Date]) {
       val dformat = new SimpleDateFormat(format)
       value = dformat.format(value.asInstanceOf[java.util.Date])
     }

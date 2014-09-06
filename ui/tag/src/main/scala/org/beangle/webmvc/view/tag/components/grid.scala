@@ -1,12 +1,12 @@
 package org.beangle.webmvc.view.tag.components
 
 import java.io.Writer
-import java.{util => ju}
+import java.{ util => ju }
 
 import org.beangle.commons.collection.page.Page
-import org.beangle.commons.lang.{Objects, Strings}
+import org.beangle.commons.lang.{ Objects, Strings }
 import org.beangle.webmvc.api.context.ContextHolder
-import org.beangle.webmvc.view.tag.{ComponentContext, Themes}
+import org.beangle.webmvc.view.tag.{ ComponentContext, Themes }
 
 import freemarker.template.utility.StringUtil
 
@@ -118,7 +118,12 @@ object Grid {
     /**
      * find value of row.obj's property
      */
-    def getValue(): Any = getValue(row.curObj, property)
+    def getValue(): String = {
+      getValue(row.curObj, property) match {
+        case s: String => s
+        case any: Any => any.toString
+      }
+    }
 
     def setTitle(title: String) {
       this.title = title

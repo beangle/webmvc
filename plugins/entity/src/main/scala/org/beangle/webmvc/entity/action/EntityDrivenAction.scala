@@ -84,7 +84,7 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
    * 查看信息
    */
   def info(): String = {
-    val entityId: Serializable = getId(shortName, entityMetaData.getType(entityName).get.idClass)
+    val entityId = getId(shortName, entityMetaData.getType(entityName).get.idClass)
     if (null != entityId) {
       val entity: Entity[_] = getModel(entityName, entityId)
       put(shortName, entity)

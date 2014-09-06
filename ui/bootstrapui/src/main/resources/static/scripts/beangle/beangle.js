@@ -513,11 +513,20 @@
         if(form[name]!=null && (typeof form[name].tagName)!="undefined"){
           form[name].value=value;
         }else{
-          if(null==type)
-            type="hidden";
+          if(null==type) type="hidden";
           var input = document.createElement('input');
           input.setAttribute("name",name);
           input.setAttribute("value",value);
+          input.setAttribute("type",type);
+          form.appendChild(input);
+        }
+      },
+      addInputs : function (form,name,value,type){
+        if(null==type) type="hidden";
+        for(i=0;i<value.length;i++){
+          var input = document.createElement('input');
+          input.setAttribute("name",name);
+          input.setAttribute("value",value[i]);
           input.setAttribute("type",type);
           form.appendChild(input);
         }

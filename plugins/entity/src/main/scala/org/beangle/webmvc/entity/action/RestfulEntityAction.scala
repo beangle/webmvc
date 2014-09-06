@@ -10,33 +10,36 @@ import org.beangle.webmvc.api.view.View
 
 abstract class RestfulEntityAction extends AbstractEntityAction {
 
+  def index(): String = {
+    forward()
+  }
+
   def search(): String = {
     put(shortName + "s", entityDao.search(getQueryBuilder()))
     forward()
   }
 
-  def index(): String = {
-    forward()
-  }
-
-  @mapping(value = "{id}", method = "get")
+  @mapping(value = "{id}")
   def info(@param("id") id: String): String = {
     val entityId = Params.converter.convert(id, entityMetaData.getType(entityName).get.idClass)
     put(shortName, getModel(entityName, entityId))
     forward()
   }
 
-  @mapping(value = "{id}/edit", method = "get")
+  @mapping(value = "{id}/edit")
   def edit(@param("id") id: String): String = {
+    var entity = getEntity
+    editSetting(entity)
+    put(shortName, entity)
     forward()
   }
 
-  @mapping(value = "new", method = "get")
+  @mapping(value = "new")
   def editNew(): String = {
     var entity = getEntity
     editSetting(entity)
     put(shortName, entity)
-    forward("form")
+    forward("new")
   }
 
   @mapping(value = "{id}", method = "delete")
@@ -45,8 +48,10 @@ abstract class RestfulEntityAction extends AbstractEntityAction {
   }
 
   @mapping(value = "{id}", method = "put")
-  def update(@param("id") id: String): String = {
-    null
+  def update(@param("id") id: String): View = {
+    val entity: Entity[_] = getModel(entityName, id)
+    populate(entity, entityName, Params.sub(shortName).asInstanceOf[Map[String, Object]])
+    super.saveAndRedirect(entity)
   }
 
   @mapping(value = "", method = "post")

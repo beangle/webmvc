@@ -1,6 +1,6 @@
 [@b.head/]
 [#include "../nav.ftl"/]
-<h4> Modules Locations</h4>
+<h4> Modules Locations[#if container.parent??](parent is [@b.a  href="!index?parent=true"]ROOT[/@])[/#if]</h4>
 <ul>
   [#list container.moduleLocations as ml]
     <li>${ml.URL}</li>
@@ -17,13 +17,12 @@
     <li>${container.reconfigLocations!}</li>
 </ul>
 <h4>
-   [#if container.parent??]
-   Beans in Web Container(parent is [@b.a  href="!index?parent=true"]ROOT[/@])
-   [#else]
-   Beans in ROOT Container
-   [/#if]
+
 </h4>
-[@b.grid items=beanNames?sort var="beanName"  style="table-layout:fixed"]
+[#assign caption]
+   [#if container.parent??]Beans in Web Container[#else]Beans in ROOT Container[/#if]
+[/#assign]
+[@b.grid items=beanNames?sort var="beanName" caption=caption style="table-layout:fixed"]
   [@b.row]
     [@b.col title="Index" width="5%"]
       [#assign className=(container.getType(beanName).name)!""/]

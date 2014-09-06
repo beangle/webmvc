@@ -253,7 +253,6 @@ class Startend(context: ComponentContext) extends UIBean(context) {
     val labelArray = Strings.split(label, ',')
     for (i <- 0 until nameArray.length) {
       if (i < 2) {
-
         dates(i) = new Date(context)
         val name = nameArray(i)
         dates(i).name = name

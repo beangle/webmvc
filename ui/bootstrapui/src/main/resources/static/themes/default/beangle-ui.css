@@ -27,11 +27,11 @@
 
 .gridempty{border:solid;border-width:1px;border-top-width:0px;border-color:#006CB2;text-align:center;}
 
-.gridtable {width:100%;border-collapse: collapse;border:solid;border-width:1px;border-color:#006CB2;vertical-align: middle;table-layout:fixed}
+.gridtable {width:100%;border-collapse: collapse;border:solid;border-width:1px 0px 0px 0px;border-color:#006CB2;vertical-align: middle;table-layout:fixed}
 
-.gridtable td{border-color:#006CB2;border-style:solid;border-width:0 1px 1px 0;overflow:hidden;word-wrap:break-word;}
+.gridtable td{border-color:#006CB2;border-style:solid;border-width:0 0px 1px 0;overflow:hidden;word-wrap:break-word;}
 
-.gridtable th{border-color:#006CB2;border-style:solid;border-width:0 1px 1px 0;}
+.gridtable th{border-color:#006CB2;border-style:solid;border-width:0 0px 1px 0;}
 
 .grid-filter-submit {background-image: url(icons/16x16/actions/edit-find.png);background-repeat: no-repeat;background-color:transparent;width:16px;height:16px;border-style:none}
 
@@ -41,7 +41,7 @@
 
 .gridhead{color: #000000;letter-spacing:0;background-color: #c7dbff;}
 
-.gridhead th{text-decoration: none;text-align:center;}
+.gridhead th{text-decoration: none;}
 
 .gridhead-icon{background-image: url(icons/16x16/actions.png);display:inline-block;}
 
@@ -51,11 +51,11 @@
 
 .gridhead-sortable{cursor:pointer;}
 
-.griddata{text-align:center;}
+.griddata{}
 
-.griddata-odd{text-align:center;text-decoration: none;letter-spacing:0;background-color: #EBEBEB;}
+.griddata-odd{text-decoration: none;letter-spacing:0;background-color: #f9f9f9;}
 
-.griddata-even{text-align:center;text-decoration: none;letter-spacing:0;background-color: white;}
+.griddata-even{text-decoration: none;letter-spacing:0;background-color: white;}
 
 .griddata-selected{background-color: #BFFFBF;}
 
@@ -102,7 +102,7 @@
 
 .toolbar-title{float:left;}
 
-.toolbar-msg{float:left;height:15px;padding:2px 3px 2px 3px; margin:2px 0px 1px 10px;background-color:#F9EDBE;border-top-left-radius:5px;border-top-right-radius:5px;border-bottom-left-radius:5px;border-bottom-right-radius:5px}
+.toolbar-msg{float:left;height:21px;padding:2px 3px 2px 3px; margin:2px 0px 1px 10px;background-color:#F9EDBE;border-top-left-radius:5px;border-top-right-radius:5px;border-bottom-left-radius:5px;border-bottom-right-radius:5px}
 
 .toolbar-items{float:right;}
 
