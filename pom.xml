@@ -23,6 +23,7 @@
     <module>core</module>
     <module>ui</module>
     <module>plugins</module>
+    <module>archetypes</module>
   </modules>
 
   <dependencyManagement>
@@ -46,6 +47,11 @@
         <groupId>org.beangle.data</groupId>
         <artifactId>beangle-data-jpa</artifactId>
         <version>${beangle.data.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.beangle.spring</groupId>
+        <artifactId>beangle-spring-context</artifactId>
+        <version>${beangle.spring.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.spring</groupId>

@@ -15,18 +15,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>${hibernate.version}</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
       <groupId>org.beangle.data</groupId>
       <artifactId>beangle-data-jpa</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.beangle.spring</groupId>
-      <artifactId>beangle-spring-hibernate</artifactId>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernate.version}</version>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 </project>

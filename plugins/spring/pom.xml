@@ -4,26 +4,33 @@
     <artifactId>beangle-webmvc-plugins</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>beangle-webmvc-webxml-plugin</artifactId>
+  <artifactId>beangle-webmvc-spring-plugin</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMVC Web.xml</name>
-
+  <name>Beangle WebMvc Spring Plugin</name>
+  
   <properties>
-    <beangle.spring.version>4.0.3-SNAPSHOT</beangle.spring.version>
     <hibernate.version>4.3.1.Final</hibernate.version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-spring-plugin</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>${hibernate.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.data</groupId>
+      <artifactId>beangle-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.spring</groupId>
+      <artifactId>beangle-spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.spring</groupId>
+      <artifactId>beangle-spring-hibernate</artifactId>
     </dependency>
   </dependencies>
 </project>

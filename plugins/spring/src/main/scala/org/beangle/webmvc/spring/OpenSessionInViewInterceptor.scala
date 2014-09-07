@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Beangle.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beangle.webmvc.hibernate.interceptor
+package org.beangle.webmvc.spring
 
 import org.beangle.commons.inject.{ Container, ContainerRefreshedHook }
 import org.beangle.commons.lang.annotation.description
-import org.beangle.spring.hibernate.internal.SessionUtils
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.execution.{ Handler, OncePerRequestInterceptor }
 import org.hibernate.SessionFactory
+import org.beangle.spring.hibernate.internal.SessionUtils
 
 @description("打开Hibernate Session拦截器")
 class OpenSessionInViewInterceptor extends OncePerRequestInterceptor with ContainerRefreshedHook {

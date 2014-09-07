@@ -4,10 +4,10 @@
     <artifactId>beangle-webmvc-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>beangle-webmvc-ui</artifactId>
+  <artifactId>beangle-webmvc-ui-parent</artifactId>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMvc UI</name>
+  <name>Beangle WebMvc UI Parent</name>
 
   <modules>
     <module>tag</module>

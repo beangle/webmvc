@@ -1,18 +1,17 @@
 package org.beangle.webmvc.hibernate.helper
 
-import org.hibernate.SessionFactory
-import org.beangle.spring.hibernate.LocalSessionFactoryBean
-import org.beangle.commons.inject.Container
-import org.beangle.commons.lang.Strings.isEmpty
 import org.beangle.commons.bean.Initializing
+import org.beangle.commons.inject.Container
+import org.beangle.data.jpa.hibernate.ConfigurableSessionFactory
+import org.hibernate.SessionFactory
 
 class SessionFactoryHelper extends Initializing {
-  var factories: Map[Any, LocalSessionFactoryBean] = _
+  var factories: Map[Any, ConfigurableSessionFactory] = _
 
   var container: Container = _
 
   override def init() {
-    factories = container.parent.getBeans(classOf[LocalSessionFactoryBean]).map {
+    factories = container.parent.getBeans(classOf[ConfigurableSessionFactory]).map {
       case (k, v) =>
         var name = k.toString
         name = name.replace(".", "_")
@@ -25,7 +24,7 @@ class SessionFactoryHelper extends Initializing {
     factories(id).result
   }
 
-  def getFactory(id: String): LocalSessionFactoryBean = {
+  def getFactory(id: String): ConfigurableSessionFactory = {
     factories(id)
   }
 }
