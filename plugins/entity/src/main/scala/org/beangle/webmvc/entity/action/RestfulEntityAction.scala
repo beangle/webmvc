@@ -1,9 +1,6 @@
 package org.beangle.webmvc.entity.action
 
-import org.beangle.commons.config.property.PropertyConfig
 import org.beangle.data.model.Entity
-import org.beangle.data.model.dao.GeneralDao
-import org.beangle.data.model.meta.EntityMetadata
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
@@ -11,7 +8,6 @@ import org.beangle.webmvc.api.view.View
 abstract class RestfulEntityAction extends AbstractEntityAction {
 
   def index(): String = {
-    var i=2/0
     forward()
   }
 
@@ -60,7 +56,9 @@ abstract class RestfulEntityAction extends AbstractEntityAction {
     saveAndRedirect(populateEntity())
   }
 
+  @ignore
   protected def indexSetting(): Unit = {}
 
+  @ignore
   protected def editSetting(entity: Entity[_]): Unit = {}
 }

@@ -5,7 +5,7 @@ import org.beangle.commons.text.i18n.{ DefaultTextBundleRegistry, DefaultTextFor
 import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider }
 import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, ParamLocaleResolver }
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, HierarchicalUrlMapper }
-import org.beangle.webmvc.execution.impl.DefaultInvocationReactor
+import org.beangle.webmvc.execution.impl.{ DefaultInvocationReactor, MethodHandlerBuilder, StaticHandlerBuilder }
 import org.beangle.webmvc.execution.interceptors.FlashInterceptor
 import org.beangle.webmvc.view.freemarker.{ FreemarkerConfigurer, HierarchicalTemplateResolver }
 import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender }
@@ -41,12 +41,13 @@ class DefaultModule extends AbstractBindModule {
     //execution
     bind("mvc.InvocationReactor.default", classOf[DefaultInvocationReactor])
     bind("mvc.Interceptor.flash", classOf[FlashInterceptor])
+    bind("mvc.HandlerBuilder.method", classOf[MethodHandlerBuilder])
+    bind("mvc.HandlerBuilder.static", classOf[StaticHandlerBuilder]).primary
 
     //context
     bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
     bind("mvc.TextFormater.default", classOf[DefaultTextFormater])
     bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
     bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
-
   }
 }

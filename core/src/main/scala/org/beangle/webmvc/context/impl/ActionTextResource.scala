@@ -33,14 +33,10 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
 
     if (classOf[EntityActionSupport].isAssignableFrom(actionClass)) {
       // search up model's class hierarchy
-      mapping.handler match {
-        case mh: MethodHandler =>
-          val entityType = mh.action.asInstanceOf[EntityActionSupport].getEntityType
-          if (entityType != null) {
-            msg = getPackageMessage(entityType, key, checked)
-            if (msg != None) return msg
-          }
-        case _ =>
+      val entityType = mapping.handler.action.asInstanceOf[EntityActionSupport].getEntityType
+      if (entityType != null) {
+        msg = getPackageMessage(entityType, key, checked)
+        if (msg != None) return msg
       }
     }
 

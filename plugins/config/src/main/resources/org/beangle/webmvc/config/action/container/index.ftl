@@ -33,7 +33,7 @@
       [/#if]
        ${beanName_index+1}
     [/@]
-    [@b.col title="Bean Name"  width="23%" style="word-wrap:break-word;" ][#if className == beanName] --[#else]${beanName}[/#if][/@]
+    [@b.col title="Bean Name"  width="23%" style="word-wrap:break-word;" ][#if className == beanName] --[#else]${beanName}[#if defn.primary]<span style="color:red" title="primitive"> √</span>[/#if][/#if][/@]
     [@b.col title="Type" width="42%"  ] ${className}[/@]
     [@b.col title="Description"  width="30%"]${defn.description!}[#if defn.abstract](抽象模版)[#else][/#if][/@]
   [/@]

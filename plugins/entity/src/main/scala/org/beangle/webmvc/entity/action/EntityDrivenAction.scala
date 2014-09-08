@@ -79,7 +79,6 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
     saveAndForward(populateEntity())
   }
 
-
   /**
    * 查看信息
    */
@@ -92,8 +91,10 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
     forward()
   }
 
+  @ignore
   protected def indexSetting(): Unit = {}
 
+  @ignore
   protected def editSetting(entity: Entity[_]): Unit = {}
 
   /**
@@ -101,6 +102,7 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
    *
    * @param entity
    */
+  @ignore
   protected def saveAndForward(entity: Entity[_]): View = {
     try {
       if (entity.isInstanceOf[UpdatedBean]) {
@@ -117,6 +119,7 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
     }
   }
 
+  @ignore
   protected def removeAndForward(entities: Seq[_]): View = {
     try {
       remove(entities)

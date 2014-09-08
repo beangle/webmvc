@@ -45,10 +45,14 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
             val urlPathNames = urlParams.keySet.toList.sorted.map { i => urlParams(i) }
 
             val annotationsList = method.getParameterAnnotations
+            val parameterTypes = method.getParameterTypes()
             val paramNames = Range(0, annotationsList.length) map { i =>
               annotationsList(i).find { ann => ann.isInstanceOf[param] } match {
                 case Some(p) => p.asInstanceOf[param].value
-                case None => urlPathNames(i)
+                case None =>
+                  if (parameterTypes(i).getName == "javax.servlet.http.HttpServletRequest") "_request"
+                  else if (parameterTypes(i).getName == "javax.servlet.http.HttpServletResponse") "_response"
+                  else urlPathNames(i)
               }
             }
 
@@ -84,6 +88,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
     val methodName = method.getName
     if (methodName.startsWith("get") || methodName.contains("$")) return false
     if (null != method.getAnnotation(classOf[ignore])) return false
+    //FIXME ignore inheritance
     if (method.getParameterTypes.length == 0 && classInfo.getMethods(methodName + "_$eq").isEmpty) return true
     (null != method.getAnnotation(classOf[mapping])) || method.getParameterAnnotations().exists(annArray => !Arrays.isBlank(annArray))
   }

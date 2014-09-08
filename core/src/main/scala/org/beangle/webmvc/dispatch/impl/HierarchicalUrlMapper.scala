@@ -1,19 +1,17 @@
 package org.beangle.webmvc.dispatch.impl
 
-import java.{ lang => jl }
+import java.{lang => jl}
 
-import org.beangle.commons.http.HttpMethods.{ GET, POST }
-import org.beangle.commons.inject.{ Container, ContainerRefreshedHook }
+import org.beangle.commons.http.HttpMethods.{GET, POST}
+import org.beangle.commons.inject.{Container, ContainerRefreshedHook}
 import org.beangle.commons.lang.Strings.split
-import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.commons.lang.time.Stopwatch
+import org.beangle.commons.lang.annotation.{description, spi}
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.RequestUtils
-import org.beangle.webmvc.config.{ ActionConfig, ActionMapping }
-import org.beangle.webmvc.config.{ ActionMappingBuilder, Configurer }
-import org.beangle.webmvc.config.ActionMapping.{ DefaultMethod, HttpMethods, MethodParam }
-import org.beangle.webmvc.context.ActionFinder
-import org.beangle.webmvc.dispatch.{ RequestMapper, RequestMapping }
+import org.beangle.webmvc.config.ActionMapping.{DefaultMethod, HttpMethods, MethodParam}
+import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.dispatch.{RequestMapper, RequestMapping}
+import org.beangle.webmvc.execution.HandlerBuilder
 
 import javax.servlet.http.HttpServletRequest
 
@@ -26,10 +24,12 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
 
   var configurer: Configurer = _
 
+  var handlerBuilder: HandlerBuilder = _
+
   override def notify(container: Container): Unit = {
     configurer.build() foreach {
       case (url, actionmapping, bean) =>
-        add(url, RequestMappingBuilder.build(actionmapping, bean))
+        add(url, new RequestMapping(actionmapping, handlerBuilder.build(bean, actionmapping.method), Map.empty))
     }
   }
 
@@ -133,7 +133,7 @@ class HierarchicalMappings {
   private def add(httpMethod: String, pattern: String, mapping: RequestMapping, mappings: HierarchicalMappings): Unit = {
     val slashIndex = pattern.indexOf('/', 1)
     val head = if (-1 == slashIndex) pattern.substring(1) else pattern.substring(1, slashIndex)
-    val headPattern = RequestMappingBuilder.getMatcherName(head)
+    val headPattern = if (head.charAt(0) == '{' && head.charAt(head.length - 1) == '}') "*" else head
 
     if (-1 == slashIndex) {
       val methodMappings = mappings.mappings.getOrElseUpdate(headPattern, new MethodMappings)
