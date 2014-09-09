@@ -51,7 +51,7 @@ abstract class RestfulEntityAction extends AbstractEntityAction {
     super.saveAndRedirect(entity)
   }
 
-  @mapping(value = "", method = "post")
+  @mapping(method = "post")
   def save(): View = {
     saveAndRedirect(populateEntity())
   }

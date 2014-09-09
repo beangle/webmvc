@@ -24,7 +24,7 @@ class StaticHandlerBuilder extends HandlerBuilder with Logging {
   val template = config.getTemplate("/static_handler_handle.ftl")
 
   var handlerCount = 0
-  
+
   def build(action: AnyRef, method: Method): Handler = {
     val data = new ju.HashMap[String, Object]
     val actionClassName = action.getClass().getName()

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface mapping {
 
-	String value();
+	String value() default "";
 
 	String method() default "get";
 }

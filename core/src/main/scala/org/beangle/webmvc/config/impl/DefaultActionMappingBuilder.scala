@@ -2,9 +2,7 @@ package org.beangle.webmvc.config.impl
 
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
-
 import scala.Range
-
 import org.beangle.commons.http.HttpMethods.GET
 import org.beangle.commons.lang.{ Arrays, Strings }
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
@@ -16,6 +14,7 @@ import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Profile }
 import org.beangle.webmvc.view.{ TemplateResolver, ViewBuilder }
 import org.beangle.webmvc.view.impl.{ DefaultTemplatePathMapper, FreemarkerView }
+import org.beangle.commons.lang.reflect.Reflections
 
 @description("缺省的ActionMapping构建器")
 class DefaultActionMappingBuilder extends ActionMappingBuilder {
@@ -87,8 +86,9 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
   private def isActionMethod(method: Method, classInfo: ClassInfo): Boolean = {
     val methodName = method.getName
     if (methodName.startsWith("get") || methodName.contains("$")) return false
-    if (null != method.getAnnotation(classOf[ignore])) return false
-    //FIXME ignore inheritance
+    //filter ignore
+    if (null != Reflections.getAnnotation(method, classOf[ignore])) return false
+    //filter field
     if (method.getParameterTypes.length == 0 && classInfo.getMethods(methodName + "_$eq").isEmpty) return true
     (null != method.getAnnotation(classOf[mapping])) || method.getParameterAnnotations().exists(annArray => !Arrays.isBlank(annArray))
   }
