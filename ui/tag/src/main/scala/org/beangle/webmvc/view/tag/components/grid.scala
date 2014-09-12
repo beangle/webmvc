@@ -120,6 +120,7 @@ object Grid {
      */
     def getValue(): String = {
       getValue(row.curObj, property) match {
+        case null => ""
         case s: String => s
         case any: Any => any.toString
       }

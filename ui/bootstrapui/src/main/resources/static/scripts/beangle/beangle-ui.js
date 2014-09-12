@@ -837,7 +837,7 @@
         if(!confirm(confirmMsg))return;
       }
       var form=this.getForm();
-      if(method.contains("{id}")) method = method.replace("{id}",ids)
+      if(method.indexOf("{id}")>0) method = method.replace("{id}",ids)
       else {
         if(isMulti) bg.form.addInputs(form,this.entity+".id",ids);
         else bg.form.addInput(form,this.entity+".id",ids);
