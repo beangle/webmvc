@@ -60,7 +60,7 @@ class FreemarkerTemplateEngine(tagLibraryProvider: TagLibraryProvider) extends T
     config = new Configuration()
     config.setEncoding(config.getLocale(), "UTF-8")
     IOs.readJavaProperties(ClassLoaders.getResource("org/beangle/webmvc/view/tag/freemarker/tag.properties")) foreach {
-      case (k, v) => config.setSetting(k, v); println(k, v)
+      case (k, v) => config.setSetting(k, v)
     }
     val wrapper = new BeangleObjectWrapper(true)
     wrapper.setUseCache(false)
