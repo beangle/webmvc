@@ -5,7 +5,8 @@ import java.util.{ ArrayList, HashMap }
 
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.inject.Container
-import org.beangle.commons.lang.Throwables
+import org.beangle.commons.io.IOs
+import org.beangle.commons.lang.{ ClassLoaders, Throwables }
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.api.context.ContextHolder
@@ -57,23 +58,20 @@ class FreemarkerTemplateEngine(tagLibraryProvider: TagLibraryProvider) extends T
    */
   override def init(): Unit = {
     config = new Configuration()
-    config.setTemplateLoader(new HierarchicalTemplateLoader(new BeangleClassTemplateLoader()))
-    // Disable freemarker localized lookup
-    config.setLocalizedLookup(false)
     config.setEncoding(config.getLocale(), "UTF-8")
-
+    IOs.readJavaProperties(ClassLoaders.getResource("org/beangle/webmvc/view/tag/freemarker/tag.properties")) foreach {
+      case (k, v) => config.setSetting(k, v); println(k, v)
+    }
     val wrapper = new BeangleObjectWrapper(true)
     wrapper.setUseCache(false)
     config.setObjectWrapper(wrapper)
-    // Cache one hour(7200s) and Strong cache
-    config.setTemplateUpdateDelay(if (enableCache) 7200 else 0)
-    // config.setCacheStorage(new MruCacheStorage(100,250))
-    config.setCacheStorage(new StrongCacheStorage())
+    config.setTemplateLoader(new HierarchicalTemplateLoader(new BeangleClassTemplateLoader()))
 
+    if (!enableCache) config.setTemplateUpdateDelay(0)
+
+    config.setCacheStorage(new StrongCacheStorage())
     // Disable auto imports and includes
     config.setAutoImports(new HashMap(0))
-    config.setNumberFormat("0.##")
-    config.setTagSyntax(Configuration.SQUARE_BRACKET_TAG_SYNTAX)
     config.setAutoIncludes(new ArrayList(0))
   }
 
