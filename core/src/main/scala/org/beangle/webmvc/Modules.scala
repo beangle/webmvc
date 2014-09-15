@@ -1,6 +1,6 @@
 package org.beangle.webmvc
 
-import org.beangle.commons.inject.bind.AbstractBindModule
+import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
 import org.beangle.commons.text.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
 import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider }
 import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, ParamLocaleResolver }
@@ -41,13 +41,22 @@ class DefaultModule extends AbstractBindModule {
     //execution
     bind("mvc.InvocationReactor.default", classOf[DefaultInvocationReactor])
     bind("mvc.Interceptor.flash", classOf[FlashInterceptor])
+    bind("mvc.HandlerBuilder.default", classOf[StaticHandlerBuilder])
     bind("mvc.HandlerBuilder.method", classOf[MethodHandlerBuilder])
-    bind("mvc.HandlerBuilder.static", classOf[StaticHandlerBuilder]).primary
 
     //context
     bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
     bind("mvc.TextFormater.default", classOf[DefaultTextFormater])
     bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
     bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
+  }
+}
+
+@profile("dev")
+class DevModule extends AbstractBindModule {
+  protected override def binding() {
+    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", "true")
+    bind("mvc.HandlerBuilder.method", classOf[MethodHandlerBuilder]).primary
+    bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerConfigurer]).property("enableCache", "false")
   }
 }

@@ -29,7 +29,8 @@ object Themes {
     urls foreach { url =>
       val themeName = Strings.substringBetween(url.getPath(), "template/", "/theme.properties")
       val theme = new Theme(themeName)
-      theme.parent = IOs.readJavaProperties(url).get("parent")
+      val parent = IOs.readJavaProperties(url).get("parent").orNull
+      theme.parent = if (Strings.isEmpty(parent)) None else Some(parent.trim)
       themePropMap.put(themeName, theme)
     }
     themePropMap.toMap

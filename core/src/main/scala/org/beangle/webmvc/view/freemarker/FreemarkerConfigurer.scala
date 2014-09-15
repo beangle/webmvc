@@ -23,6 +23,8 @@ class FreemarkerConfigurer extends Logging with Initializing {
 
   var contentType: String = _
 
+  var enableCache = true
+
   override def init(): Unit = {
     config.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER)
     config.setDefaultEncoding("UTF-8")
@@ -101,10 +103,9 @@ class FreemarkerConfigurer extends Logging with Initializing {
     while (sysKeys.hasMoreElements) {
       val key = sysKeys.nextElement.asInstanceOf[String]
       val value: String = sysProps.getProperty(key)
-      if (key.startsWith("freemarker.")) {
-        properties.put(substringAfter(key, "freemarker."), value)
-      }
+      if (key.startsWith("freemarker.")) properties.put(substringAfter(key, "freemarker."), value)
     }
+    if (!enableCache) properties.put(Configuration.TEMPLATE_UPDATE_DELAY_KEY, "0")
     properties.toMap
   }
 
