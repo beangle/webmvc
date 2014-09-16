@@ -88,7 +88,7 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
     var i = 0
     while (i < interceptors.length) {
       val interceptor = interceptors(i)
-      if (!interceptor.preHandle(context, handler)) return i
+      if (!interceptor.preHandle(context, handler)) return i-1
       i += 1
     }
     i - 1
