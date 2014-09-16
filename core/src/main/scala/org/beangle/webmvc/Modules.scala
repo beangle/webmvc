@@ -55,6 +55,7 @@ class DefaultModule extends AbstractBindModule {
 @profile("dev")
 class DevModule extends AbstractBindModule {
   protected override def binding() {
+    bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan","false")
     bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", "true")
     bind("mvc.HandlerBuilder.method", classOf[MethodHandlerBuilder]).primary
     bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerConfigurer]).property("enableCache", "false")

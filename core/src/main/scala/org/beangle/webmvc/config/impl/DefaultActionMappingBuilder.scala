@@ -23,6 +23,8 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
 
   var viewBuilder: ViewBuilder = _
 
+  var viewScan = true
+
   override def build(clazz: Class[_], profile: Profile): Seq[Tuple2[String, ActionMapping]] = {
     val nameAndspace = ActionNameBuilder.build(clazz, profile)
     val actionName = nameAndspace._1
@@ -36,7 +38,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
         if (actionMethodInfos.size == 1) {
           val method = actionMethodInfos.head.method
           if (isActionMethod(method, classInfo)) {
-            val ann = method.getAnnotation(classOf[mapping])
+            val ann = Reflections.getAnnotation(method, classOf[mapping])
             val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else GET
             val name = (if (null != ann) ann.value else methodName)
             val url = if (name == "") actionName else (actionName + "/" + name)
@@ -94,6 +96,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
   }
 
   protected def buildViews(clazz: Class[_], profile: Profile): Map[String, View] = {
+    if (!viewScan) return Map.empty
     val viewMap = new collection.mutable.HashMap[String, View]
     // load annotation results
     var results = new Array[view](0)
