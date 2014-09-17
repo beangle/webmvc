@@ -34,8 +34,11 @@ object ActionNameBuilder {
       if (!name.startsWith("/")) {
         if (Profile.SEO_URI == profile.urlStyle) {
           val middleName = unCamel(substringBeforeLast(profile.getMatched(className), "/"))
-          namespace ++= middleName
-          nameBuilder.append(middleName + "/" + name)
+          if (middleName.length > 0) {
+            namespace ++= middleName
+            nameBuilder ++= middleName
+          }
+          if (name.length > 0) nameBuilder.append("/" + name)
         } else {
           nameBuilder.append(name)
         }
@@ -43,7 +46,7 @@ object ActionNameBuilder {
         nameBuilder.append(name.substring(1))
       }
     }
-    if (namespace.charAt(namespace.length - 1) == '/') namespace.deleteCharAt(namespace.length - 1)
+    if (namespace.length > 0 && namespace.charAt(namespace.length - 1) == '/') namespace.deleteCharAt(namespace.length - 1)
     (nameBuilder.toString, namespace.toString)
   }
 }
