@@ -80,7 +80,8 @@ class MvcAction extends ActionSupport {
     val configs = configurer.actionConfigs.values.toSet
     configs foreach { config =>
       if (config.name.startsWith(namespace)) {
-        actionNames += Strings.substringAfter(config.name, namespace + "/")
+        if (config.name == namespace) actionNames += ""
+        else actionNames += Strings.substringAfter(config.name, namespace + "/")
       }
     }
     actionNames.toList.sorted

@@ -40,7 +40,7 @@ class DefaultModule extends AbstractBindModule {
 
     //execution
     bind("mvc.InvocationReactor.default", classOf[DefaultInvocationReactor])
-    bind("mvc.Interceptor.flash", classOf[FlashInterceptor])
+    bind("web.Interceptor.flash", classOf[FlashInterceptor])
     bind("mvc.HandlerBuilder.default", classOf[StaticHandlerBuilder])
     bind("mvc.HandlerBuilder.method", classOf[MethodHandlerBuilder])
 

@@ -5,7 +5,7 @@
     <view path="/" style="full" type="freemarker" suffix=".ftl" />
     <url path="/" suffix=""  style="seo" />
     <interceptors>
-      <interceptor name="mvc.Interceptor.flash"/>
+      <interceptor name="web.Interceptor.flash"/>
     </interceptors>
   </profile>
 </profiles>
