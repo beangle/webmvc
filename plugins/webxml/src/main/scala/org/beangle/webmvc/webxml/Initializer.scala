@@ -3,9 +3,8 @@ package org.beangle.webmvc.webxml
 import org.beangle.commons.web.resource.StaticResourceServlet
 import org.beangle.commons.web.session.HttpSessionEventPublisher
 import org.beangle.webmvc.dispatch.DispatcherServlet
-import org.beangle.webmvc.spring.ContextListener
-
 import javax.servlet.ServletContext
+import org.beangle.spring.web.ContextListener
 
 class Initializer extends org.beangle.commons.web.init.Initializer {
 

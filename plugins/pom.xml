@@ -13,7 +13,6 @@
     <module>config</module>
     <module>webxml</module>
     <module>entity</module>
-    <module>spring</module>
     <module>hibernate</module>
   </modules>
   <dependencies>

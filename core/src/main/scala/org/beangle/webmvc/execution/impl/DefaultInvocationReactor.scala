@@ -3,10 +3,11 @@ package org.beangle.webmvc.execution.impl
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.annotation.{ description, spi }
+import org.beangle.commons.web.intercept.Interceptor
 import org.beangle.webmvc.api.context.{ ActionContext, ContextHolder }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionMapping, Configurer }
-import org.beangle.webmvc.execution.{ Handler, Interceptor, InvocationReactor }
+import org.beangle.webmvc.execution.{ Handler, InvocationReactor }
 import org.beangle.webmvc.view.{ ViewRender, ViewResolver }
 import org.beangle.webmvc.view.impl.DefaultTemplatePathMapper
 
@@ -39,7 +40,7 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
     val config = mapping.config
     val interceptors = config.profile.interceptors
     val context = ContextHolder.context
-    var lastInterceptorIndex = preHandle(interceptors, context, handler)
+    var lastInterceptorIndex = preHandle(interceptors, context)
     var result: Any = null
     var exception: Throwable = null
     if (lastInterceptorIndex == interceptors.length - 1) {
@@ -50,7 +51,7 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
       }
       //FIXME process exception
       if (null != exception) {
-        postHandle(interceptors, context, handler, lastInterceptorIndex, result)
+        postHandle(interceptors, context, lastInterceptorIndex)
         throw exception
       } else {
         if (null != result) {
@@ -75,30 +76,34 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
               }
             }
           } finally {
-            postHandle(interceptors, context, handler, lastInterceptorIndex, result)
+            postHandle(interceptors, context, lastInterceptorIndex)
           }
         }
       }
     } else {
-      postHandle(interceptors, context, handler, lastInterceptorIndex, result)
+      postHandle(interceptors, context, lastInterceptorIndex)
     }
   }
 
-  def preHandle(interceptors: Array[Interceptor], context: ActionContext, handler: Handler): Int = {
+  def preHandle(interceptors: Array[Interceptor], context: ActionContext): Int = {
+    val request = context.request
+    val response = context.response
     var i = 0
     while (i < interceptors.length) {
       val interceptor = interceptors(i)
-      if (!interceptor.preHandle(context, handler)) return i-1
+      if (!interceptor.preInvoke(request, response)) return i - 1
       i += 1
     }
     i - 1
   }
 
-  def postHandle(interceptors: Array[Interceptor], context: ActionContext, handler: Handler, lastInterceptorIndex: Int, view: Any): Unit = {
+  def postHandle(interceptors: Array[Interceptor], context: ActionContext, lastInterceptorIndex: Int): Unit = {
+    val request = context.request
+    val response = context.response
     var i = lastInterceptorIndex
     while (i >= 0) {
       val interceptor = interceptors(i)
-      interceptor.postHandle(context, handler, view)
+      interceptor.postInvoke(request, response)
       i -= 1
     }
   }

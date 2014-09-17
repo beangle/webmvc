@@ -16,9 +16,16 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-spring-plugin</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.beangle.data</groupId>
+      <artifactId>beangle-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.spring</groupId>
+      <artifactId>beangle-spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.spring</groupId>
+      <artifactId>beangle-spring-hibernate</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>

@@ -45,9 +45,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-spring-plugin</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.beangle.spring</groupId>
+      <artifactId>beangle-spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.spring</groupId>
+      <artifactId>beangle-spring-hibernate</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

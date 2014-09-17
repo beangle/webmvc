@@ -1,10 +1,13 @@
 package org.beangle.webmvc.config
 
-import org.beangle.commons.lang.Objects
-import org.beangle.commons.lang.Strings.{ isEmpty, split, substringBeforeLast, uncapitalize }
-import org.beangle.commons.logging.Logging
-import org.beangle.webmvc.execution.Interceptor
 import java.net.URL
+
+import scala.Range
+
+import org.beangle.commons.lang.Objects
+import org.beangle.commons.lang.Strings.{ isEmpty, split, uncapitalize }
+import org.beangle.commons.logging.Logging
+import org.beangle.commons.web.intercept.Interceptor
 
 object Profile extends Logging {
 

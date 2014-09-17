@@ -1,15 +1,12 @@
 package org.beangle.webmvc.config.impl
 
-import scala.annotation.elidable
-import scala.annotation.elidable.FINE
-
 import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging
+import org.beangle.commons.web.intercept.Interceptor
 import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Configurer, Profile, ProfileProvider }
 import org.beangle.webmvc.context.ActionFinder
-import org.beangle.webmvc.execution.Interceptor
 
 @description("缺省配置器")
 class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) extends Configurer with Logging {

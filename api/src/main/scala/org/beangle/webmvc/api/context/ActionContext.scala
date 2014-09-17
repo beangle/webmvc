@@ -14,7 +14,7 @@ final class ActionContext(val request: HttpServletRequest, var response: HttpSer
 
   var textResource: TextResource = _
 
-  var flashMap: Flash = _
+  private var flashMap: Flash = _
 
   private val temp = new collection.mutable.HashMap[String, Any]
 

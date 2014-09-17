@@ -15,7 +15,7 @@
 
   <properties>
     <beangle.version>${project.version}</beangle.version>
-    <beangle.version>${project.version}</beangle.version>
+    <beangle.spring.version>4.0.3-SNAPSHOT</beangle.spring.version>
     <hibernate.version>4.3.1.Final</hibernate.version>
   </properties>
 
@@ -51,9 +51,14 @@
       <version>\${beangle.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-spring-plugin</artifactId>
-      <version>\${beangle.version}</version>
+      <groupId>org.beangle.spring</groupId>
+      <artifactId>beangle-spring-context</artifactId>
+      <version>${beangle.spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.spring</groupId>
+      <artifactId>beangle-spring-hibernate</artifactId>
+      <version>${beangle.spring.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
