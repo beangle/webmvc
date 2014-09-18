@@ -9,6 +9,7 @@ import org.beangle.webmvc.execution.impl.{ DefaultInvocationReactor, MethodHandl
 import org.beangle.webmvc.execution.interceptors.FlashInterceptor
 import org.beangle.webmvc.view.freemarker.{ FreemarkerConfigurer, HierarchicalTemplateResolver }
 import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender }
+import org.beangle.webmvc.view.impl.StreamViewRender
 
 class DefaultModule extends AbstractBindModule {
 
@@ -33,6 +34,7 @@ class DefaultModule extends AbstractBindModule {
     bind("mvc.ViewRender.chain", classOf[ForwardActionViewRender])
     bind("mvc.ViewRender.redirect", classOf[RedirectActionViewRender])
     bind("mvc.TaglibraryProvider.default", classOf[ContainerTaglibraryProvider])
+    bind("mvc.ViewRender.stream", classOf[StreamViewRender])
 
     //dispatch
     bind("mvc.ActionUriRender.default", classOf[DefaultActionUriRender])
@@ -55,7 +57,7 @@ class DefaultModule extends AbstractBindModule {
 @profile("dev")
 class DevModule extends AbstractBindModule {
   protected override def binding() {
-    bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan","false")
+    bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan", "false")
     bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", "true")
     bind("mvc.HandlerBuilder.method", classOf[MethodHandlerBuilder]).primary
     bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerConfigurer]).property("enableCache", "false")
