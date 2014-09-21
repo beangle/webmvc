@@ -7,7 +7,7 @@
   <artifactId>beangle-webmvc-webxml-plugin</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMVC Web.xml</name>
+  <name>Beangle WebMVC Web.xml Plugin</name>
 
   <properties>
     <beangle.spring.version>4.0.3-SNAPSHOT</beangle.spring.version>

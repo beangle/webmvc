@@ -11,7 +11,7 @@
   <version>\${version}</version>
   <packaging>war</packaging>
   <name>\${artifactId}</name>
-  <description>Beangle Webmvc Starter</description>
+  <description>Beangle WebMVC Starter</description>
 
   <properties>
     <beangle.version>${project.version}</beangle.version>

@@ -7,5 +7,5 @@
   <artifactId>beangle-webmvc-bootstrap-ui</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMvc Bootstrap UI</name>
+  <name>Beangle WebMVC Bootstrap UI</name>
 </project>

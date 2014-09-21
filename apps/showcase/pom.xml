@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>beangle-webmvc-showcase</artifactId>
   <packaging>war</packaging>
-  <name>beangle WebMVC Show Case</name>
+  <name>Beangle WebMVC Show Case</name>
   
   <properties>
     <hibernate.version>4.3.1.Final</hibernate.version>

@@ -7,7 +7,7 @@
   <artifactId>beangle-webmvc-tag</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMvc Tag</name>
+  <name>Beangle WebMVC Tag</name>
   <dependencies>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
