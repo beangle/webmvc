@@ -1,18 +1,10 @@
 package org.beangle.webmvc.entity.action
 
-import java.{ util => ju }
-
-import org.beangle.commons.collection.Order
-import org.beangle.commons.config.property.PropertyConfig
 import org.beangle.commons.lang.Strings
-import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
-import org.beangle.data.model.bean.UpdatedBean
-import org.beangle.data.model.dao.{ GeneralDao, QueryBuilder }
-import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
 import org.beangle.webmvc.api.annotation.ignore
-import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
+import java.{ io => jo }
 
 abstract class EntityDrivenAction[T <: Entity[_]] extends AbstractEntityAction[T] {
 
@@ -32,14 +24,15 @@ abstract class EntityDrivenAction[T <: Entity[_]] extends AbstractEntityAction[T
     forward()
   }
 
-  def getExportDatas[T](): Seq[T] = {
+  def getExportDatas[T <: Entity[_]](): Seq[T] = {
     // 自动会考虑页面是否传入id
     val result: Option[Seq[T]] = if (Strings.isNotBlank(entityName)) {
       entityMetaData.getType(entityName) match {
         case Some(entityType) => {
-          val ids = getIds(shortName, entityType.idType).asInstanceOf[Array[Serializable]]
+          val ids = getIds(shortName, entityType.idType)
           if (ids != null && ids.length > 0) {
-            Some(entityDao.get(entityType.entityClass, ids).asInstanceOf)
+            val rs = entityDao.find(entityType.entityClass.asInstanceOf[Class[Entity[jo.Serializable]]], ids.toList)
+            Some(rs.asInstanceOf[Seq[T]])
           } else None
         }
         case _ => None
@@ -63,9 +56,9 @@ abstract class EntityDrivenAction[T <: Entity[_]] extends AbstractEntityAction[T
   def remove(): View = {
     val idclass = entityMetaData.getType(entityName).get.idType
     val entityId = getId(shortName, idclass)
-    val entities =
-      if (null == entityId) getModels[Object](entityName, getIds(shortName, idclass))
-      else List(getModel[Object](entityName, entityId))
+    val entities: Seq[T] =
+      if (null == entityId) getModels(entityName, getIds(shortName, idclass))
+      else List(getModel(entityName, entityId))
     removeAndRedirect(entities)
   }
 

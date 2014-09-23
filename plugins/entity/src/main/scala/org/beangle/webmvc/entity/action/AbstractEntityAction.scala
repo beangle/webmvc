@@ -158,17 +158,17 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
   }
 
   protected def getModel(id: jo.Serializable): T = {
-    val entityType: EntityType = entityMetaData.getType(entityName).get
-    entityDao.get(entityType.entityClass.asInstanceOf[Class[T]], Params.converter.convert(id, entityType.idType))
+    getModel[T](entityName, id)
   }
 
   protected def getModel[E](entityName: String, id: jo.Serializable): E = {
     val entityType: EntityType = entityMetaData.getType(entityName).get
-    entityDao.get(entityType.entityClass.asInstanceOf[Class[E]], Params.converter.convert(id, entityType.idType))
+    entityDao.get(entityType.entityClass.asInstanceOf[Class[Entity[jo.Serializable]]], Params.converter.convert(id, entityType.idType)).asInstanceOf[E]
   }
 
-  protected def getModels[E](entityName: String, ids: Array[_]): List[E] = {
-    entityDao.find(Class.forName(entityName).asInstanceOf[Class[E]], "id", ids).asInstanceOf[List[E]]
+  protected def getModels[E](entityName: String, ids: Array[_ <: jo.Serializable]): Seq[E] = {
+    val idlist: Iterable[jo.Serializable] = ids.toList
+    entityDao.find(Class.forName(entityName).asInstanceOf[Class[Entity[jo.Serializable]]], idlist).asInstanceOf[Seq[E]]
   }
 
   @ignore
@@ -189,7 +189,7 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
   }
 
   @ignore
-  protected def removeAndRedirect(entities: Seq[_]): View = {
+  protected def removeAndRedirect(entities: Seq[T]): View = {
     try {
       remove(entities)
       redirect("search", "info.remove.success")
