@@ -857,12 +857,12 @@
     this.remove=function(confirmMsg){
       confirmMsg=confirmMsg||'确认删除?';
       return new NamedFunction('remove',function(){
-        var ids = bg.input.getCheckBoxValues(this.entity+".id")
+        var ids = bg.input.getCheckBoxValues(selfaction.entity+".id")
         if (ids == null || ids == "") {
           bg.alert("请选择");return;
         }
-        if(ids.indexOf(",")>0) selfaction.submitIdAction('{id}?_method=delete',true,confirmMsg)
-        else selfaction.submitIdAction('?_method=delete',true,confirmMsg)
+        if(ids.indexOf(",")>0) selfaction.submitIdAction('?_method=delete',true,confirmMsg)
+        else selfaction.submitIdAction('{id}?_method=delete',true,confirmMsg)
       },bg.ui.grid.enableDynaBar?'ge1':'ge0');
     }
     this.add = function(){

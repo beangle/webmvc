@@ -33,7 +33,7 @@ abstract class RestfulEntityAction[T <: Entity[_]] extends AbstractEntityAction[
 
   @mapping(value = "new")
   def editNew(): String = {
-    var entity = getEntity(getEntityType, shortName)
+    var entity = getEntity(entityType, shortName)
     editSetting(entity)
     put(shortName, entity)
     forward("new")

@@ -51,7 +51,7 @@ abstract class EntityDrivenAction[T <: Entity[_]] extends AbstractEntityAction[T
    * Edit by entity.id or id
    */
   def edit(): String = {
-    var entity = getEntity(getEntityType, shortName)
+    var entity = getEntity(entityType, shortName)
     put(shortName, entity)
     editSetting(entity)
     return forward()

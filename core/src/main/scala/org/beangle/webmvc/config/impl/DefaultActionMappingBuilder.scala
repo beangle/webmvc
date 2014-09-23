@@ -2,19 +2,20 @@ package org.beangle.webmvc.config.impl
 
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
+
 import scala.Range
+
 import org.beangle.commons.http.HttpMethods.GET
 import org.beangle.commons.lang.{ Arrays, Strings }
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.commons.lang.reflect.ClassInfo
+import org.beangle.commons.lang.reflect.{ ClassInfo, Reflections }
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ action, ignore, mapping, param, view, views }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Profile }
 import org.beangle.webmvc.view.{ TemplateResolver, ViewBuilder }
 import org.beangle.webmvc.view.impl.{ DefaultTemplatePathMapper, FreemarkerView }
-import org.beangle.commons.lang.reflect.Reflections
 
 @description("缺省的ActionMapping构建器")
 class DefaultActionMappingBuilder extends ActionMappingBuilder {
@@ -34,35 +35,33 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
     val classInfo = ClassInfo.get(clazz)
     classInfo.methods foreach {
       case (methodName, minfos) =>
-        val actionMethodInfos = minfos.filter(m => m.method.getDeclaringClass != classOf[ActionSupport])
+        val actionMethodInfos = minfos.filter(m => m.method.getDeclaringClass != classOf[ActionSupport] && isActionMethod(m.method, classInfo))
         if (actionMethodInfos.size == 1) {
           val method = actionMethodInfos.head.method
-          if (isActionMethod(method, classInfo)) {
-            val ann = Reflections.getAnnotation(method, classOf[mapping])
-            val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else GET
-            val name = (if (null != ann) ann.value else methodName)
-            val url = if (name == "") actionName else (actionName + "/" + name)
-            val urlParams = parse(url)
-            val urlPathNames = urlParams.keySet.toList.sorted.map { i => urlParams(i) }
+          val ann = Reflections.getAnnotation(method, classOf[mapping])
+          val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else GET
+          val name = (if (null != ann) ann.value else methodName)
+          val url = if (name == "") actionName else (actionName + "/" + name)
+          val urlParams = parse(url)
+          val urlPathNames = urlParams.keySet.toList.sorted.map { i => urlParams(i) }
 
-            val annotationsList = method.getParameterAnnotations
-            val parameterTypes = method.getParameterTypes()
-            val paramNames = Range(0, annotationsList.length) map { i =>
-              annotationsList(i).find { ann => ann.isInstanceOf[param] } match {
-                case Some(p) => p.asInstanceOf[param].value
-                case None =>
-                  if (parameterTypes(i).getName == "javax.servlet.http.HttpServletRequest") "_request"
-                  else if (parameterTypes(i).getName == "javax.servlet.http.HttpServletResponse") "_response"
-                  else urlPathNames(i)
-              }
+          val annotationsList = method.getParameterAnnotations
+          val parameterTypes = method.getParameterTypes()
+          val paramNames = Range(0, annotationsList.length) map { i =>
+            annotationsList(i).find { ann => ann.isInstanceOf[param] } match {
+              case Some(p) => p.asInstanceOf[param].value
+              case None =>
+                if (parameterTypes(i).getName == "javax.servlet.http.HttpServletRequest") "_request"
+                else if (parameterTypes(i).getName == "javax.servlet.http.HttpServletResponse") "_response"
+                else urlPathNames(i)
             }
-
-            if (method.getParameterTypes().length != paramNames.size) throw new RuntimeException("Cannot find enough param name,Using @mapping or @param")
-            val mapping = new ActionMapping(httpMethod, config, method, name, paramNames.toArray, urlParams)
-            mappings.put(method.getName, mapping)
-            actions += Tuple2(url, mapping)
-            if (name == "index" && method.getParameterTypes.length == 0) actions += Tuple2(actionName, mapping)
           }
+
+          if (method.getParameterTypes().length != paramNames.size) throw new RuntimeException("Cannot find enough param name,Using @mapping or @param")
+          val mapping = new ActionMapping(httpMethod, config, method, name, paramNames.toArray, urlParams)
+          mappings.put(method.getName, mapping)
+          actions += Tuple2(url, mapping)
+          if (name == "index" && method.getParameterTypes.length == 0) actions += Tuple2(actionName, mapping)
         }
     }
     config.mappings = mappings.toMap

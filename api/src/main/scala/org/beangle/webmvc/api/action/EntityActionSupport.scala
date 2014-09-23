@@ -3,10 +3,14 @@ package org.beangle.webmvc.api.action
 import org.beangle.webmvc.api.context.Params
 import org.beangle.commons.lang.Strings
 import scala.reflect.ClassTag
+import org.beangle.webmvc.api.annotation.ignore
 
 trait EntityActionSupport[T] extends ActionSupport {
 
-  def getEntityType: Class[T]
+  @ignore
+  def entityType: Class[T] = {
+    throw new RuntimeException("override entityType!")
+  }
 
   protected def getId(name: String): String = {
     get(name + ".id").getOrElse(get(name + "Id").getOrElse(get("id").getOrElse(null)))
