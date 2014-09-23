@@ -844,7 +844,7 @@
       var form=this.getForm();
       if(method.indexOf("{id}")>=0) method = method.replace("{id}",ids)
       else {
-        if(isMulti) bg.form.addInputs(form,this.entity+".id",ids);
+        if(isMulti) bg.form.addInputs(form,this.entity+".id",ids.split(","));
         else bg.form.addInput(form,this.entity+".id",ids);
       }
       form.action = this.applyMethod(method);
