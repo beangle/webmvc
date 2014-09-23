@@ -5,7 +5,7 @@ import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
 
-abstract class RestfulEntityAction[T <: Entity[T]] extends AbstractEntityAction[T] {
+abstract class RestfulEntityAction[T <: Entity[_]] extends AbstractEntityAction[T] {
 
   def index(): String = {
     forward()
@@ -40,8 +40,17 @@ abstract class RestfulEntityAction[T <: Entity[T]] extends AbstractEntityAction[
   }
 
   @mapping(value = "{id}", method = "delete")
-  def remove(@param("id") id: String): String = {
-    null
+  def remove(@param("id") id: String): View = {
+    removeAndRedirect(List(getModel(id)))
+  }
+
+  def batchRemove(): View = {
+    val idclass = entityMetaData.getType(entityName).get.idType
+    val entityId = getId(shortName, idclass)
+    val entities =
+      if (null == entityId) getModels[Object](entityName, getIds(shortName, idclass))
+      else List(getModel[Object](entityName, entityId))
+    removeAndRedirect(entities)
   }
 
   @mapping(value = "{id}", method = "put")

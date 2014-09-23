@@ -14,7 +14,7 @@ import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
 
-abstract class EntityDrivenAction[T <: Entity[T]] extends AbstractEntityAction[T] {
+abstract class EntityDrivenAction[T <: Entity[_]] extends AbstractEntityAction[T] {
 
   /**
    * main page
@@ -66,14 +66,14 @@ abstract class EntityDrivenAction[T <: Entity[T]] extends AbstractEntityAction[T
     val entities =
       if (null == entityId) getModels[Object](entityName, getIds(shortName, idclass))
       else List(getModel[Object](entityName, entityId))
-    removeAndForward(entities)
+    removeAndRedirect(entities)
   }
 
   /**
    * Save single entity
    */
   def save(): View = {
-    saveAndForward(populateEntity())
+    saveAndRedirect(populateEntity())
   }
 
   /**
@@ -94,38 +94,4 @@ abstract class EntityDrivenAction[T <: Entity[T]] extends AbstractEntityAction[T
   @ignore
   protected def editSetting(entity: T): Unit = {}
 
-  /**
-   * 保存对象
-   *
-   * @param entity
-   */
-  @ignore
-  protected def saveAndForward(entity: T): View = {
-    try {
-      if (entity.isInstanceOf[UpdatedBean]) {
-        val timeEntity = entity.asInstanceOf[UpdatedBean]
-        timeEntity.updatedAt = new ju.Date()
-      }
-      saveOrUpdate(entity)
-      redirect("search", "info.save.success")
-    } catch {
-      case e: Exception => {
-        info("saveAndForwad failure", e)
-        redirect("search", "info.save.failure")
-      }
-    }
-  }
-
-  @ignore
-  protected def removeAndForward(entities: Seq[_]): View = {
-    try {
-      remove(entities)
-      redirect("search", "info.remove.success")
-    } catch {
-      case e: Exception => {
-        info("removeAndForwad failure", e)
-        redirect("search", "info.delete.failure")
-      }
-    }
-  }
 }

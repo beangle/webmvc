@@ -17,7 +17,7 @@ import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.helper.{ PopulateHelper, QueryHelper }
 
-abstract class AbstractEntityAction[T <: Entity[T]] extends EntityActionSupport[T] {
+abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[T] {
   var entityDao: GeneralDao = _
   var config: PropertyConfig = _
   var entityMetaData: EntityMetadata = _
@@ -25,11 +25,11 @@ abstract class AbstractEntityAction[T <: Entity[T]] extends EntityActionSupport[
   /**
    * 将request中的参数设置到clazz对应的bean。
    */
-  protected final def populate[E <: Entity[E]](clazz: Class[E], shortName: String): E = {
+  protected final def populate[E <: Entity[_]](clazz: Class[E], shortName: String): E = {
     PopulateHelper.populate(clazz, shortName);
   }
 
-  protected final def populate[E <: Entity[E]](obj: E, shortName: String): E = {
+  protected final def populate[E <: Entity[_]](obj: E, shortName: String): E = {
     PopulateHelper.populate(obj, Params.sub(shortName))
   }
 
@@ -41,16 +41,16 @@ abstract class AbstractEntityAction[T <: Entity[T]] extends EntityActionSupport[
 
   protected final def populate(entityName: String, shortName: String) = PopulateHelper.populate(entityName, shortName);
 
-  protected final def populate[E <: Entity[E]](obj: E, entityName: String, shortName: String) = {
+  protected final def populate[E <: Entity[_]](obj: E, entityName: String, shortName: String) = {
     PopulateHelper.populate(obj, entityName, shortName)
   }
 
-  protected final def populate[E <: Entity[E]](entity: E, entityName: String, params: Map[String, Object]): E = {
+  protected final def populate[E <: Entity[_]](entity: E, entityName: String, params: Map[String, Object]): E = {
     require(null != entity, "Cannot populate to null.")
     PopulateHelper.populate(entity, entityName, params)
   }
 
-  protected final def populate[E <: Entity[E]](entity: E, params: Map[String, Object]): E = {
+  protected final def populate[E <: Entity[_]](entity: E, params: Map[String, Object]): E = {
     require(null != entity, "Cannot populate to null.")
     PopulateHelper.populate(entity, params)
   }
@@ -117,7 +117,7 @@ abstract class AbstractEntityAction[T <: Entity[T]] extends EntityActionSupport[
     populateEntity(entityName, shortName).asInstanceOf[T]
   }
 
-  protected def populateEntity[E <: Entity[E]](entityName: String, shortName: String): E = {
+  protected def populateEntity[E <: Entity[_]](entityName: String, shortName: String): E = {
     val entityId: jo.Serializable = getId(shortName, entityMetaData.getType(entityName).get.idType)
     if (null == entityId) {
       populate(entityName, shortName).asInstanceOf[E]
@@ -136,7 +136,7 @@ abstract class AbstractEntityAction[T <: Entity[T]] extends EntityActionSupport[
     populateEntity(entityType.entityName, shortName)
   }
 
-  protected def getEntity[E <: Entity[E]](entityName: String, name: String): E = {
+  protected def getEntity[E <: Entity[_]](entityName: String, name: String): E = {
     val entityType: EntityType = entityMetaData.getType(entityName).get
     val entityId: jo.Serializable = getId(name, entityType.idType)
     if (null == entityId) populate(entityType.newInstance.asInstanceOf[E], entityType.entityName, name)
@@ -181,6 +181,19 @@ abstract class AbstractEntityAction[T <: Entity[T]] extends EntityActionSupport[
       case e: Exception => {
         info("saveAndForwad failure", e)
         redirect("search", "info.save.failure")
+      }
+    }
+  }
+
+  @ignore
+  protected def removeAndRedirect(entities: Seq[_]): View = {
+    try {
+      remove(entities)
+      redirect("search", "info.remove.success")
+    } catch {
+      case e: Exception => {
+        info("removeAndForwad failure", e)
+        redirect("search", "info.delete.failure")
       }
     }
   }
