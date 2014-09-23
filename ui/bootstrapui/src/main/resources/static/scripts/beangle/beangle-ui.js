@@ -811,7 +811,12 @@
       if(-1 == last1) last1 = lastDot;
       if(-1!=last1) shortAction=action.substring(0,last1);
       if(-1!=lastDot) sufix=action.substring(lastDot);
-      return shortAction+"/"+method+sufix;
+      if(method.length>0) {
+        if(method.charAt(0)=="?") return shortAction+method+sufix;
+        else return shortAction+"/"+method+sufix;
+      }else{
+        return shortAction+sufix;
+      }
     };
     this.getForm=function (){
       return this.page.getForm();
@@ -857,7 +862,7 @@
           bg.alert("请选择");return;
         }
         if(ids.indexOf(",")>0) selfaction.submitIdAction('{id}?_method=delete',true,confirmMsg)
-        else selfaction.submitIdAction('batchRemove',true,confirmMsg)
+        else selfaction.submitIdAction('?_method=delete',true,confirmMsg)
       },bg.ui.grid.enableDynaBar?'ge1':'ge0');
     }
     this.add = function(){

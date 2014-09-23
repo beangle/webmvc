@@ -44,6 +44,7 @@ abstract class RestfulEntityAction[T <: Entity[_]] extends AbstractEntityAction[
     removeAndRedirect(List(getModel(id)))
   }
 
+  @mapping(method = "delete")
   def batchRemove(): View = {
     val idclass = entityMetaData.getType(entityName).get.idType
     val entityId = getId(shortName, idclass)
