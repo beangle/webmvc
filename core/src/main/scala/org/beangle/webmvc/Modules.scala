@@ -8,7 +8,7 @@ import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, HierarchicalUr
 import org.beangle.webmvc.execution.impl.{ DefaultInvocationReactor, MethodHandlerBuilder, MvcRequestConvertor, StaticHandlerBuilder }
 import org.beangle.webmvc.execution.interceptors.FlashInterceptor
 import org.beangle.webmvc.view.freemarker.{ FreemarkerConfigurer, HierarchicalTemplateResolver }
-import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender, StreamViewRender }
+import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender }
 
 class DefaultModule extends AbstractBindModule {
 
@@ -34,6 +34,7 @@ class DefaultModule extends AbstractBindModule {
     bind("mvc.ViewRender.redirect", classOf[RedirectActionViewRender])
     bind("mvc.TaglibraryProvider.default", classOf[ContainerTaglibraryProvider])
     bind("mvc.ViewRender.stream", classOf[StreamViewRender])
+    bind("mvc.ViewRender.status", classOf[StatusViewRender])
 
     //dispatch
     bind("mvc.ActionUriRender.default", classOf[DefaultActionUriRender])

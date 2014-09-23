@@ -89,6 +89,11 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
     if (methodName.startsWith("get") || methodName.contains("$")) return false
     //filter ignore
     if (null != Reflections.getAnnotation(method, classOf[ignore])) return false
+
+    //filter method don't return string or view
+    val returnType = method.getReturnType()
+    if (returnType != classOf[String] && returnType != classOf[View]) return false
+
     //filter field
     if (method.getParameterTypes.length == 0 && classInfo.getMethods(methodName + "_$eq").isEmpty) return true
     (null != method.getAnnotation(classOf[mapping])) || method.getParameterAnnotations().exists(annArray => !Arrays.isBlank(annArray))
