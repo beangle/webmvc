@@ -14,7 +14,7 @@ import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
 
-abstract class EntityDrivenAction extends AbstractEntityAction {
+abstract class EntityDrivenAction[T <: Entity[T]] extends AbstractEntityAction[T] {
 
   /**
    * main page
@@ -37,7 +37,7 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
     val result: Option[Seq[T]] = if (Strings.isNotBlank(entityName)) {
       entityMetaData.getType(entityName) match {
         case Some(entityType) => {
-          val ids = getIds(shortName, entityType.idClass).asInstanceOf[Array[Serializable]]
+          val ids = getIds(shortName, entityType.idType).asInstanceOf[Array[Serializable]]
           if (ids != null && ids.length > 0) {
             Some(entityDao.get(entityType.entityClass, ids).asInstanceOf)
           } else None
@@ -51,7 +51,7 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
    * Edit by entity.id or id
    */
   def edit(): String = {
-    var entity = getEntity
+    var entity = getEntity(getEntityType, shortName)
     put(shortName, entity)
     editSetting(entity)
     return forward()
@@ -61,14 +61,11 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
    * Remove entities by [entity.id]/entityIds
    */
   def remove(): View = {
-    val idclass = entityMetaData.getType(entityName).get.idClass.asInstanceOf[Class[Serializable]]
-    val entityId: Serializable = getId(shortName, idclass)
-    val entities: Seq[_] = if (null == entityId) {
-      getModels(entityName, getIds(shortName, idclass))
-    } else {
-      val entity: Entity[_] = getModel(entityName, entityId)
-      List(entity)
-    }
+    val idclass = entityMetaData.getType(entityName).get.idType
+    val entityId = getId(shortName, idclass)
+    val entities =
+      if (null == entityId) getModels[Object](entityName, getIds(shortName, idclass))
+      else List(getModel[Object](entityName, entityId))
     removeAndForward(entities)
   }
 
@@ -83,7 +80,7 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
    * 查看信息
    */
   def info(): String = {
-    val entityId = getId(shortName, entityMetaData.getType(entityName).get.idClass)
+    val entityId = getId(shortName, entityMetaData.getType(entityName).get.idType)
     if (null != entityId) {
       val entity: Entity[_] = getModel(entityName, entityId)
       put(shortName, entity)
@@ -95,7 +92,7 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
   protected def indexSetting(): Unit = {}
 
   @ignore
-  protected def editSetting(entity: Entity[_]): Unit = {}
+  protected def editSetting(entity: T): Unit = {}
 
   /**
    * 保存对象
@@ -103,7 +100,7 @@ abstract class EntityDrivenAction extends AbstractEntityAction {
    * @param entity
    */
   @ignore
-  protected def saveAndForward(entity: Entity[_]): View = {
+  protected def saveAndForward(entity: T): View = {
     try {
       if (entity.isInstanceOf[UpdatedBean]) {
         val timeEntity = entity.asInstanceOf[UpdatedBean]

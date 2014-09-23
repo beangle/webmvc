@@ -1,16 +1,16 @@
 package org.beangle.webmvc.dispatch.impl
 
-import java.{lang => jl}
+import java.{ lang => jl }
 
-import org.beangle.commons.http.HttpMethods.{GET, POST}
-import org.beangle.commons.inject.{Container, ContainerRefreshedHook}
+import org.beangle.commons.http.HttpMethods.{ GET, POST }
+import org.beangle.commons.inject.{ Container, ContainerRefreshedHook }
 import org.beangle.commons.lang.Strings.split
-import org.beangle.commons.lang.annotation.{description, spi}
+import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.RequestUtils
-import org.beangle.webmvc.config.ActionMapping.{DefaultMethod, HttpMethods, MethodParam}
+import org.beangle.webmvc.config.ActionMapping.{ DefaultMethod, MethodParam }
 import org.beangle.webmvc.config.Configurer
-import org.beangle.webmvc.dispatch.{RequestMapper, RequestMapping}
+import org.beangle.webmvc.dispatch.{ RequestMapper, RequestMapping }
 import org.beangle.webmvc.execution.HandlerBuilder
 
 import javax.servlet.http.HttpServletRequest
@@ -83,12 +83,8 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
 
   private def determineHttpMethod(request: HttpServletRequest): String = {
     var httpMethod = request.getParameter(MethodParam)
-    if (null == httpMethod) {
-      httpMethod = request.getMethod
-    } else {
-      if (!HttpMethods.contains(httpMethod)) httpMethod = request.getMethod
-      else httpMethod = httpMethod.toUpperCase()
-    }
+    if (null == httpMethod) httpMethod = request.getMethod
+    else httpMethod = httpMethod.toUpperCase()
     httpMethod
   }
 }

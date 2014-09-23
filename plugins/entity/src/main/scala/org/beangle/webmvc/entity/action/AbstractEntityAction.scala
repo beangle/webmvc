@@ -17,7 +17,7 @@ import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.helper.{ PopulateHelper, QueryHelper }
 
-abstract class AbstractEntityAction extends EntityActionSupport {
+abstract class AbstractEntityAction[T <: Entity[T]] extends EntityActionSupport[T] {
   var entityDao: GeneralDao = _
   var config: PropertyConfig = _
   var entityMetaData: EntityMetadata = _
@@ -25,26 +25,34 @@ abstract class AbstractEntityAction extends EntityActionSupport {
   /**
    * 将request中的参数设置到clazz对应的bean。
    */
-  protected final def populate[T <: Entity[_]](clazz: Class[T], shortName: String): T = PopulateHelper.populate(clazz, shortName);
+  protected final def populate[E <: Entity[E]](clazz: Class[E], shortName: String): E = {
+    PopulateHelper.populate(clazz, shortName);
+  }
 
-  protected final def populate(obj: Entity[_], shortName: String) = PopulateHelper.populate(obj, Params.sub(shortName))
+  protected final def populate[E <: Entity[E]](obj: E, shortName: String): E = {
+    PopulateHelper.populate(obj, Params.sub(shortName))
+  }
 
-  protected final def populate[T <: Entity[_]](clazz: Class[T]) = PopulateHelper.populate(clazz);
+  protected final def populate[E <: Entity[_]](clazz: Class[E]) = {
+    PopulateHelper.populate(clazz);
+  }
 
   protected final def populate(entityName: String) = PopulateHelper.populate(entityName);
 
   protected final def populate(entityName: String, shortName: String) = PopulateHelper.populate(entityName, shortName);
 
-  protected final def populate(obj: Entity[_], entityName: String, shortName: String) = PopulateHelper.populate(obj, entityName, shortName);
-
-  protected final def populate(entity: Entity[_], entityName: String, params: Map[String, Object]): Unit = {
-    require(null != entity, "Cannot populate to null.")
-    PopulateHelper.populate(entity, entityName, params);
+  protected final def populate[E <: Entity[E]](obj: E, entityName: String, shortName: String) = {
+    PopulateHelper.populate(obj, entityName, shortName)
   }
 
-  protected final def populate(entity: Entity[_], params: Map[String, Object]) {
+  protected final def populate[E <: Entity[E]](entity: E, entityName: String, params: Map[String, Object]): E = {
     require(null != entity, "Cannot populate to null.")
-    PopulateHelper.populate(entity, params);
+    PopulateHelper.populate(entity, entityName, params)
+  }
+
+  protected final def populate[E <: Entity[E]](entity: E, params: Map[String, Object]): E = {
+    require(null != entity, "Cannot populate to null.")
+    PopulateHelper.populate(entity, params)
   }
 
   // query------------------------------------------------------
@@ -83,77 +91,77 @@ abstract class AbstractEntityAction extends EntityActionSupport {
   }
 
   // CURD----------------------------------------
-  protected def remove[T](list: Seq[T]): Unit = {
+  protected def remove[E](list: Seq[E]): Unit = {
     entityDao.remove(list)
   }
 
-  protected def remove[T](obj: T): Unit = {
+  protected def remove[E](obj: E): Unit = {
     entityDao.remove(obj)
   }
 
-  protected def saveOrUpdate[T](list: Iterable[T]): Unit = {
+  protected def saveOrUpdate[E](list: Iterable[E]): Unit = {
     entityDao.saveOrUpdate(list)
   }
 
-  protected def saveOrUpdate[T](obj: T): Unit = {
+  protected def saveOrUpdate[E](obj: E): Unit = {
     entityDao.saveOrUpdate(obj)
   }
 
-  protected def getQueryBuilder[T](): OqlBuilder[T] = {
+  protected def getQueryBuilder(): OqlBuilder[T] = {
     val builder: OqlBuilder[T] = OqlBuilder.from(entityName, shortName)
     populateConditions(builder)
     builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit())
   }
-  protected def populateEntity(): Entity[_] = {
-    populateEntity(entityName, shortName)
+
+  protected def populateEntity(): T = {
+    populateEntity(entityName, shortName).asInstanceOf[T]
   }
 
-  protected def populateEntity(entityName: String, shortName: String): Entity[_] = {
-    val entityId: jo.Serializable = getId(shortName, entityMetaData.getType(entityName).get.idClass)
+  protected def populateEntity[E <: Entity[E]](entityName: String, shortName: String): E = {
+    val entityId: jo.Serializable = getId(shortName, entityMetaData.getType(entityName).get.idType)
     if (null == entityId) {
-      populate(entityName, shortName).asInstanceOf[Entity[_]]
+      populate(entityName, shortName).asInstanceOf[E]
     } else {
-      val entity: Entity[_] = getModel(entityName, entityId)
-      populate(entity, entityName, Params.sub(shortName).asInstanceOf[Map[String, Object]])
-      entity.asInstanceOf[Entity[_]]
+      populate(getModel[E](entityName, entityId), entityName, Params.sub(shortName).asInstanceOf[Map[String, Object]])
     }
   }
 
-  protected def populateEntity[T](entityClass: Class[T], shortName: String): T = {
-    val entityType: EntityType = (if (entityClass.isInterface) {
-      entityMetaData.getType(entityClass.getName)
-    } else {
-      entityMetaData.getType(entityClass)
-    }).get
-    populateEntity(entityType.entityName, shortName).asInstanceOf[T]
+  protected def populateEntity[E](entityClass: Class[E], shortName: String): E = {
+    val entityType: EntityType =
+      (if (entityClass.isInterface) {
+        entityMetaData.getType(entityClass.getName)
+      } else {
+        entityMetaData.getType(entityClass)
+      }).get
+    populateEntity(entityType.entityName, shortName)
   }
 
-  protected def getEntity[T]: Entity[T] = {
-    getEntity(entityName, shortName)
-  }
-
-  protected def getEntity[T](entityName: String, name: String): Entity[T] = {
+  protected def getEntity[E <: Entity[E]](entityName: String, name: String): E = {
     val entityType: EntityType = entityMetaData.getType(entityName).get
-    val entityId: jo.Serializable = getId(name, entityType.idClass)
-    if (null == entityId)
-      populate(entityType.newInstance.asInstanceOf[Entity[_]], entityType.entityName, name).asInstanceOf[Entity[T]]
-    else getModel(entityName, entityId)
+    val entityId: jo.Serializable = getId(name, entityType.idType)
+    if (null == entityId) populate(entityType.newInstance.asInstanceOf[E], entityType.entityName, name)
+    else getModel(entityName, entityId).asInstanceOf[E]
   }
 
-  protected def getEntity[T](entityClass: Class[T], shortName: String): T = {
+  protected def getEntity[E](entityClass: Class[E], shortName: String): E = {
     val entityType: EntityType =
       (if (entityClass.isInterface) entityMetaData.getType(entityClass.getName)
       else entityMetaData.getType(entityClass)).get
-    getEntity(entityType.entityName, shortName).asInstanceOf[T]
+    getEntity(entityType.entityName, shortName).asInstanceOf[E]
   }
 
-  protected def getModel[T](entityName: String, id: jo.Serializable): T = {
+  protected def getModel(id: jo.Serializable): T = {
     val entityType: EntityType = entityMetaData.getType(entityName).get
-    entityDao.get(entityType.entityClass.asInstanceOf[Class[T]], Params.converter.convert(id, entityType.idClass))
+    entityDao.get(entityType.entityClass.asInstanceOf[Class[T]], Params.converter.convert(id, entityType.idType))
   }
 
-  protected def getModels(entityName: String, ids: Array[_]): List[_] = {
-    entityDao.find(Class.forName(entityName).asInstanceOf[Class[_]], "id", ids).asInstanceOf[List[_]]
+  protected def getModel[E](entityName: String, id: jo.Serializable): E = {
+    val entityType: EntityType = entityMetaData.getType(entityName).get
+    entityDao.get(entityType.entityClass.asInstanceOf[Class[E]], Params.converter.convert(id, entityType.idType))
+  }
+
+  protected def getModels[E](entityName: String, ids: Array[_]): List[E] = {
+    entityDao.find(Class.forName(entityName).asInstanceOf[Class[E]], "id", ids).asInstanceOf[List[E]]
   }
 
   /**
@@ -161,7 +169,7 @@ abstract class AbstractEntityAction extends EntityActionSupport {
    *
    * @param entity
    */
-  protected def saveAndRedirect(entity: Entity[_]): View = {
+  protected def saveAndRedirect(entity: T): View = {
     try {
       if (entity.isInstanceOf[UpdatedBean]) {
         val timeEntity = entity.asInstanceOf[UpdatedBean]

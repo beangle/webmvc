@@ -1,16 +1,15 @@
 package org.beangle.webmvc.view.impl
 
-import org.beangle.commons.lang.annotation.spi
-import org.beangle.webmvc.api.action.{ ToClass, ToURL }
+import org.beangle.commons.http.HttpMethods
+import org.beangle.commons.lang.annotation.{ description, spi }
+import org.beangle.webmvc.api.action.{ ToClass, ToURL, to }
+import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.context.{ ActionContext, ContextHolder }
 import org.beangle.webmvc.api.view.{ ActionView, ForwardActionView, RedirectActionView, View }
-import org.beangle.webmvc.dispatch.RequestMapper
-import org.beangle.webmvc.view.ViewRender
-import org.beangle.webmvc.view.TypeViewBuilder
-import org.beangle.webmvc.api.annotation.view
-import org.beangle.webmvc.api.action.to
-import org.beangle.commons.lang.annotation.description
-import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.config.{ ActionMapping, Configurer }
+import org.beangle.webmvc.view.{ TypeViewBuilder, ViewRender }
+
+import javax.servlet.http.HttpServletRequest
 
 @description("前向调转视图构建者")
 class ForwardActionViewBuilder extends TypeViewBuilder {
@@ -36,16 +35,28 @@ class RedirectActionViewBuilder extends TypeViewBuilder {
   }
 }
 
-abstract class ActionViewRender(val configurer: Configurer) extends ViewRender {
+@description("前向调转渲染者")
+class ForwardActionViewRender(val configurer: Configurer) extends ViewRender {
 
-  final def toURL(view: View): String = {
+  override def supportViewClass: Class[_] = {
+    classOf[ForwardActionView]
+  }
+
+  override def render(view: View, context: ActionContext): Unit = {
+    context.request.getRequestDispatcher(toURL(view, context.request)).forward(context.request, context.response)
+  }
+
+  final def toURL(view: View, request: HttpServletRequest): String = {
     view.asInstanceOf[ActionView].to match {
       case ca: ToClass =>
         configurer.getActionMapping(ca.clazz.getName, ca.method) match {
           case Some(am) =>
+            if (am.httpMethod != HttpMethods.GET && am.httpMethod != HttpMethods.POST)
+              throw new RuntimeException(s"Cannot forward action mapping using ${am.httpMethod}")
             val ua = am.toURL(ca.parameters, ContextHolder.context.params)
             ca.parameters --= am.urlParams.values
             ua.params(ca.parameters)
+            if (am.httpMethod != request.getMethod) ua.param(ActionMapping.MethodParam, am.httpMethod)
             ua.url
           case None => throw new RuntimeException(s"Cannot find action mapping for ${ca.clazz.getName} ${ca.method}")
         }
@@ -53,20 +64,9 @@ abstract class ActionViewRender(val configurer: Configurer) extends ViewRender {
     }
   }
 }
-@description("前向调转渲染者")
-class ForwardActionViewRender(configurer: Configurer) extends ActionViewRender(configurer) {
-
-  override def supportViewClass: Class[_] = {
-    classOf[ForwardActionView]
-  }
-
-  override def render(view: View, context: ActionContext): Unit = {
-    context.request.getRequestDispatcher(toURL(view)).forward(context.request, context.response)
-  }
-}
 
 @description("重定向调转渲染者")
-class RedirectActionViewRender(configurer: Configurer) extends ActionViewRender(configurer) {
+class RedirectActionViewRender(val configurer: Configurer) extends ViewRender {
 
   override def supportViewClass: Class[_] = {
     classOf[RedirectActionView]
@@ -92,5 +92,21 @@ class RedirectActionViewRender(configurer: Configurer) extends ActionViewRender(
     val encodedLocation = response.encodeRedirectURL(finalLocation)
 
     response.sendRedirect(encodedLocation)
+  }
+
+  final def toURL(view: View): String = {
+    view.asInstanceOf[ActionView].to match {
+      case ca: ToClass =>
+        configurer.getActionMapping(ca.clazz.getName, ca.method) match {
+          case Some(am) =>
+            if (am.httpMethod != HttpMethods.GET) throw new RuntimeException(s"Cannot redirect action mapping using ${am.httpMethod}")
+            val ua = am.toURL(ca.parameters, ContextHolder.context.params)
+            ca.parameters --= am.urlParams.values
+            ua.params(ca.parameters)
+            ua.url
+          case None => throw new RuntimeException(s"Cannot find action mapping for ${ca.clazz.getName} ${ca.method}")
+        }
+      case ua: ToURL => ua.url
+    }
   }
 }

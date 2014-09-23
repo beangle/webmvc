@@ -31,9 +31,9 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
     msg = getPackageMessage(actionClass, key, checked)
     if (msg != None) return msg
 
-    if (classOf[EntityActionSupport].isAssignableFrom(actionClass)) {
+    if (classOf[EntityActionSupport[_]].isAssignableFrom(actionClass)) {
       // search up model's class hierarchy
-      val entityType = mapping.handler.action.asInstanceOf[EntityActionSupport].getEntityType
+      val entityType = mapping.handler.action.asInstanceOf[EntityActionSupport[_]].getEntityType
       if (entityType != null) {
         msg = getPackageMessage(entityType, key, checked)
         if (msg != None) return msg

@@ -34,7 +34,6 @@ object ActionMapping {
   final val MethodParam = "_method"
   import org.beangle.commons.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
   final val BrowserUnsupported = Map((PUT, "put"), (DELETE, "delete"), (HEAD, "head"))
-  final val HttpMethods = Set("put", "delete", "head")
 }
 
 class ActionMapping(val httpMethod: String, val config: ActionConfig, val method: Method, val name: String,

@@ -58,7 +58,7 @@ class UIBean(context: ComponentContext) extends Component(context) {
   protected def getValue(obj: Any, property: String): Any = {
     obj match {
       case null => null
-      case map: collection.Map[String, _] => map.get(property).orNull
+      case map: collection.Map[_, _] => map.asInstanceOf[collection.Map[String, Any]].get(property).orNull
       case javaMap: ju.Map[_, _] => javaMap.get(property)
       case o: AnyRef => PropertyUtils.getProperty(o, property)
     }

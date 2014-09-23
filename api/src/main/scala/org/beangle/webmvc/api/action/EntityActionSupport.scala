@@ -4,9 +4,9 @@ import org.beangle.webmvc.api.context.Params
 import org.beangle.commons.lang.Strings
 import scala.reflect.ClassTag
 
-trait EntityActionSupport extends ActionSupport {
+trait EntityActionSupport[T] extends ActionSupport {
 
-  def getEntityType: Class[_]
+  def getEntityType: Class[T]
 
   protected def getId(name: String): String = {
     get(name + ".id").getOrElse(get(name + "Id").getOrElse(get("id").getOrElse(null)))
@@ -14,9 +14,9 @@ trait EntityActionSupport extends ActionSupport {
   /**
    * Get entity's id from shortname.id,shortnameId,id
    */
-  protected final def getId[T](name: String, clazz: Class[T]): T = {
+  protected final def getId[E](name: String, clazz: Class[E]): E = {
     val entityId = getId(name)
-    if (entityId == null) null.asInstanceOf[T]
+    if (entityId == null) null.asInstanceOf[E]
     else Params.converter.convert(entityId, clazz)
   }
 

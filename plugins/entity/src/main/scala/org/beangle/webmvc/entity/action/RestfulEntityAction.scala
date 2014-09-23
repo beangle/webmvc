@@ -5,7 +5,7 @@ import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
 
-abstract class RestfulEntityAction extends AbstractEntityAction {
+abstract class RestfulEntityAction[T <: Entity[T]] extends AbstractEntityAction[T] {
 
   def index(): String = {
     forward()
@@ -18,14 +18,14 @@ abstract class RestfulEntityAction extends AbstractEntityAction {
 
   @mapping(value = "{id}")
   def info(@param("id") id: String): String = {
-    val entityId = Params.converter.convert(id, entityMetaData.getType(entityName).get.idClass)
+    val entityId = Params.converter.convert(id, entityMetaData.getType(entityName).get.idType)
     put(shortName, getModel(entityName, entityId))
     forward()
   }
 
   @mapping(value = "{id}/edit")
   def edit(@param("id") id: String): String = {
-    var entity = getEntity
+    var entity = getModel(id)
     editSetting(entity)
     put(shortName, entity)
     forward()
@@ -33,7 +33,7 @@ abstract class RestfulEntityAction extends AbstractEntityAction {
 
   @mapping(value = "new")
   def editNew(): String = {
-    var entity = getEntity
+    var entity = getEntity(getEntityType, shortName)
     editSetting(entity)
     put(shortName, entity)
     forward("new")
@@ -46,9 +46,8 @@ abstract class RestfulEntityAction extends AbstractEntityAction {
 
   @mapping(value = "{id}", method = "put")
   def update(@param("id") id: String): View = {
-    val entity: Entity[_] = getModel(entityName, id)
-    populate(entity, entityName, Params.sub(shortName).asInstanceOf[Map[String, Object]])
-    super.saveAndRedirect(entity)
+    val entity = populate(getModel(id), entityName, shortName)
+    saveAndRedirect(entity)
   }
 
   @mapping(method = "post")
@@ -60,5 +59,5 @@ abstract class RestfulEntityAction extends AbstractEntityAction {
   protected def indexSetting(): Unit = {}
 
   @ignore
-  protected def editSetting(entity: Entity[_]): Unit = {}
+  protected def editSetting(entity: T): Unit = {}
 }
