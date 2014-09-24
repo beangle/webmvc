@@ -65,9 +65,7 @@ abstract class RestfulEntityAction[T <: Entity[_ <: java.io.Serializable]] exten
     saveAndRedirect(populateEntity())
   }
 
-  @ignore
   protected def indexSetting(): Unit = {}
 
-  @ignore
   protected def editSetting(entity: T): Unit = {}
 }

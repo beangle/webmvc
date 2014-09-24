@@ -33,15 +33,17 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
     PopulateHelper.populate(obj, Params.sub(shortName))
   }
 
-  protected final def populate[E <: Entity[_]](clazz: Class[E]) = {
+  protected final def populate[E <: Entity[_]](clazz: Class[E]): E = {
     PopulateHelper.populate(clazz);
   }
 
   protected final def populate(entityName: String) = PopulateHelper.populate(entityName);
 
-  protected final def populate(entityName: String, shortName: String) = PopulateHelper.populate(entityName, shortName);
+  protected final def populate(entityName: String, shortName: String): Object = {
+    PopulateHelper.populate(entityName, shortName);
+  }
 
-  protected final def populate[E <: Entity[_]](obj: E, entityName: String, shortName: String) = {
+  protected final def populate[E <: Entity[_]](obj: E, entityName: String, shortName: String): E = {
     PopulateHelper.populate(obj, entityName, shortName)
   }
 
@@ -91,22 +93,18 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
   }
 
   // CURD----------------------------------------
-  @ignore
   protected def remove[E](list: Seq[E]): Unit = {
     entityDao.remove(list)
   }
 
-  @ignore
   protected def remove[E](obj: E): Unit = {
     entityDao.remove(obj)
   }
 
-  @ignore
   protected def saveOrUpdate[E](list: Iterable[E]): Unit = {
     entityDao.saveOrUpdate(list)
   }
 
-  @ignore
   protected def saveOrUpdate[E](obj: E): Unit = {
     entityDao.saveOrUpdate(obj)
   }
@@ -117,12 +115,10 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
     builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit())
   }
 
-  @ignore
   protected def populateEntity(): T = {
     populateEntity(entityName, shortName).asInstanceOf[T]
   }
 
-  @ignore
   protected def populateEntity[E <: Entity[_]](entityName: String, shortName: String): E = {
     val entityId: jo.Serializable = getId(shortName, entityMetaData.getType(entityName).get.idType)
     if (null == entityId) {
@@ -132,7 +128,6 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
     }
   }
 
-  @ignore
   protected def populateEntity[E](entityClass: Class[E], shortName: String): E = {
     val entityType: EntityType =
       (if (entityClass.isInterface) {

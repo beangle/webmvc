@@ -81,10 +81,8 @@ abstract class EntityDrivenAction[T <: Entity[_]] extends AbstractEntityAction[T
     forward()
   }
 
-  @ignore
   protected def indexSetting(): Unit = {}
 
-  @ignore
   protected def editSetting(entity: T): Unit = {}
 
 }

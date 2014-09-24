@@ -6,10 +6,11 @@ import java.lang.reflect.Method
 import scala.Range
 
 import org.beangle.commons.http.HttpMethods.GET
-import org.beangle.commons.lang.{ Arrays, Strings }
+import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.commons.lang.reflect.{ ClassInfo, Reflections }
+import org.beangle.commons.lang.reflect.ClassInfo
+import org.beangle.commons.lang.reflect.Reflections.{ getAnnotation, isAnnotationPresent }
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ action, ignore, mapping, param, view, views }
 import org.beangle.webmvc.api.view.View
@@ -38,14 +39,16 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
         val actionMethodInfos = minfos.filter(m => m.method.getDeclaringClass != classOf[ActionSupport] && isActionMethod(m.method, classInfo))
         if (actionMethodInfos.size == 1) {
           val method = actionMethodInfos.head.method
-          val ann = Reflections.getAnnotation(method, classOf[mapping])
+          val annTuple = getAnnotation(method, classOf[mapping])
+          val ann = if (null == annTuple) null else annTuple._1
           val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else GET
           val name = (if (null != ann) ann.value else methodName)
           val url = if (name == "") actionName else (actionName + "/" + name)
           val urlParams = parse(url)
           val urlPathNames = urlParams.keySet.toList.sorted.map { i => urlParams(i) }
 
-          val annotationsList = method.getParameterAnnotations
+          val annotationsList = if (null == annTuple) method.getParameterAnnotations else annTuple._2.getParameterAnnotations
+
           val parameterTypes = method.getParameterTypes()
           val paramNames = Range(0, annotationsList.length) map { i =>
             annotationsList(i).find { ann => ann.isInstanceOf[param] } match {
@@ -88,15 +91,15 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
     val methodName = method.getName
     if (methodName.startsWith("get") || methodName.contains("$")) return false
     //filter ignore
-    if (null != Reflections.getAnnotation(method, classOf[ignore])) return false
+    if (null != getAnnotation(method, classOf[ignore])) return false
 
     //filter method don't return string or view
     val returnType = method.getReturnType()
     if (returnType != classOf[String] && returnType != classOf[View]) return false
 
     //filter field
-    if (method.getParameterTypes.length == 0 && classInfo.getMethods(methodName + "_$eq").isEmpty) return true
-    (null != method.getAnnotation(classOf[mapping])) || method.getParameterAnnotations().exists(annArray => !Arrays.isBlank(annArray))
+    if (method.getParameterTypes.length == 0 && !classInfo.getMethods(methodName + "_$eq").isEmpty) return false
+    true
   }
 
   protected def buildViews(clazz: Class[_], profile: Profile): Map[String, View] = {
@@ -136,7 +139,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
   }
 
   protected def shouldGenerateResult(m: Method): Boolean = {
-    if (classOf[String].equals(m.getReturnType) && null == m.getAnnotation(classOf[ignore])) {
+    if (classOf[String].equals(m.getReturnType) && null == isAnnotationPresent(m, classOf[ignore])) {
       if (m.getParameterTypes.length == 0 || null != m.getAnnotation(classOf[mapping]) || containParamAnnotation(m.getParameterAnnotations)) {
         var name = m.getName.toLowerCase
         !(name.startsWith("save") || name.startsWith("remove")
