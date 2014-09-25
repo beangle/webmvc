@@ -18,7 +18,7 @@ class ParamLocaleResolver extends LocaleResolver {
     var locale: ju.Locale = request.getAttribute("locale").asInstanceOf[ju.Locale]
     if (null == locale) {
       // get session locale
-      var session = request.getSession()
+      var session = request.getSession(false)
       if (null != session) {
         var session_locale = request.getParameter(SessionParameter)
         if (null == session_locale) {

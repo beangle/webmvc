@@ -751,15 +751,13 @@
         return unescape(cookieString.substring(start, end));
       },
       set : function (name, value, path){
-        if(null==path)
-          path="/";
+        if(null==path) path="/";
         var expires=new Date();
         expires.setTime(expires.getTime()+(86400*30));
         document.cookie=name+"="+value+"; expires="+expires.toGMTString()+"; path="+path;
       }
     }
   });
-
   // Page---------------------------------------------------------------------
   function Page(action,target,pageNo,pageSize,total){
     this.formid = "form_" + bg.randomInt();

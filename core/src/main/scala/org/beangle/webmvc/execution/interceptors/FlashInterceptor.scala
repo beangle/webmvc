@@ -13,7 +13,7 @@ import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 class FlashInterceptor extends OncePerRequestInterceptor {
 
   override def doPostInvoke(request: HttpServletRequest, response: HttpServletResponse): Unit = {
-    val session = request.getSession()
+    val session = request.getSession(false)
     if (null != session) {
       val flash = session.getAttribute("flash").asInstanceOf[Flash]
       if (null != flash) flash.nextToNow()

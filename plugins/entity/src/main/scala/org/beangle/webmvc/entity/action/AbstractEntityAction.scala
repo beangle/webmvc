@@ -9,7 +9,7 @@ import org.beangle.commons.lang.Strings
 import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
 import org.beangle.data.model.bean.UpdatedBean
-import org.beangle.data.model.dao.GeneralDao
+import org.beangle.data.model.dao.EntityDao
 import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
 import org.beangle.webmvc.api.action.EntityActionSupport
 import org.beangle.webmvc.api.annotation.ignore
@@ -18,7 +18,7 @@ import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.helper.{ PopulateHelper, QueryHelper }
 
 abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[T] {
-  var entityDao: GeneralDao = _
+  var entityDao: EntityDao = _
   var config: PropertyConfig = _
   var entityMetaData: EntityMetadata = _
 
