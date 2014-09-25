@@ -4,7 +4,7 @@ import java.net.URLEncoder
 
 import org.beangle.commons.lang.Strings
 
-object to {
+object To {
   def apply(clazz: Class[_], method: String = "index"): ToClass = {
     new ToClass(clazz, method)
   }

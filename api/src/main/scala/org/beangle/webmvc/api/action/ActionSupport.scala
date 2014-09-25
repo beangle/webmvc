@@ -55,6 +55,36 @@ class ActionSupport extends Logging {
     new ForwardActionView(action)
   }
 
+  @inline
+  protected final def to(obj: Object, method: String): ToClass = {
+    new ToClass(obj.getClass, method)
+  }
+
+  @inline
+  protected final def to(obj: Object, method: String, params: String): ToClass = {
+    new ToClass(obj.getClass, method).params(params)
+  }
+
+  @inline
+  protected final def to(clazz: Class[_], method: String): ToClass = {
+    new ToClass(clazz, method)
+  }
+
+  @inline
+  protected final def to(clazz: Class[_], method: String, params: String): ToClass = {
+    new ToClass(clazz, method).params(params)
+  }
+
+  @inline
+  protected final def to(uri: String, params: String): ToURL = {
+    new ToURL(uri).params(params)
+  }
+
+  @inline
+  protected final def to(uri: String): ToURL = {
+    To(uri)
+  }
+
   protected final def redirect(method: String, message: String, params: String): View = {
     redirect(to(this, method, params), message)
   }

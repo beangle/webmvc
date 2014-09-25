@@ -2,7 +2,7 @@ package org.beangle.webmvc.view.impl
 
 import org.beangle.commons.http.HttpMethods
 import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.webmvc.api.action.{ ToClass, ToURL, to }
+import org.beangle.webmvc.api.action.{ ToClass, ToURL, To }
 import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.context.{ ActionContext, ContextHolder }
 import org.beangle.webmvc.api.view.{ ActionView, ForwardActionView, RedirectActionView, View }
@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 class ForwardActionViewBuilder extends TypeViewBuilder {
 
   override def build(view: view): View = {
-    new ForwardActionView(to(view.location))
+    new ForwardActionView(To(view.location))
   }
 
   override def supportViewType: String = {
@@ -27,7 +27,7 @@ class ForwardActionViewBuilder extends TypeViewBuilder {
 class RedirectActionViewBuilder extends TypeViewBuilder {
 
   override def build(view: view): View = {
-    new RedirectActionView(to(view.location))
+    new RedirectActionView(To(view.location))
   }
 
   override def supportViewType: String = {

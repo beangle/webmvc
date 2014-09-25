@@ -2,7 +2,7 @@ package org.beangle.webmvc.dispatch.impl
 
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.web.url.UrlRender
-import org.beangle.webmvc.api.action.to
+import org.beangle.webmvc.api.action.To
 import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.config.ActionMapping
 import org.beangle.webmvc.dispatch.{ ActionUriRender, RequestMapper }
@@ -25,7 +25,7 @@ class DefaultActionUriRender extends ActionUriRender {
     val mapping =
       if (uri.charAt(0) == '!') {
         var dotIdx = uriEndIndexOf(uri)
-        params = to(uri).parameters
+        params = To(uri).parameters
         config.mappings(uri.substring(1, dotIdx))
       } else {
         val namespace = config.namespace
@@ -49,7 +49,7 @@ class DefaultActionUriRender extends ActionUriRender {
             namespace + "/"
           }
         val finalURL = goNamespace + (if (index == 0) uri else uri.substring(index))
-        val struts = to(finalURL).toStruts
+        val struts = To(finalURL).toStruts
         params = struts.parameters
 
         val actionName = new StringBuilder

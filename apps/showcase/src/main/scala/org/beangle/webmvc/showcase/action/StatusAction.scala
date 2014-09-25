@@ -12,4 +12,8 @@ class StatusAction extends ActionSupport {
   def code403(): View = {
     Status.forbidden
   }
+  
+  def json():String={
+    forward()
+  }
 }
