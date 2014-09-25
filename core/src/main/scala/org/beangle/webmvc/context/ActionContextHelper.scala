@@ -11,7 +11,10 @@ object ActionContextHelper {
 
   private final val RequestMappingAttribute = "_request_mapping"
 
-  def build(request: HttpServletRequest, response: HttpServletResponse, mapping: RequestMapping, localeResolver: LocaleResolver, textResourceProvider: TextResourceProvider, paramMaps: collection.Map[String, Any]*): ActionContext = {
+  def build(request: HttpServletRequest, response: HttpServletResponse, mapping: RequestMapping,
+    localeResolver: LocaleResolver, textResourceProvider: TextResourceProvider,
+    paramMaps: collection.Map[String, Any]*): ActionContext = {
+
     val params = new collection.mutable.HashMap[String, Any]
     val paramIter = request.getParameterMap.entrySet.iterator
     while (paramIter.hasNext) {

@@ -1,15 +1,17 @@
 package org.beangle.webmvc.api.action
 
-import org.beangle.webmvc.api.context.Params
-import org.beangle.commons.lang.Strings
 import scala.reflect.ClassTag
-import org.beangle.webmvc.api.annotation.ignore
+
+import org.beangle.commons.lang.Strings
+import org.beangle.commons.lang.reflect.Reflections
+import org.beangle.webmvc.api.context.Params
 
 trait EntityActionSupport[T] extends ActionSupport {
 
-  @ignore
-  def entityType: Class[T] = {
-    throw new RuntimeException("override entityType!")
+  val entityType: Class[T] = {
+    val tClass = Reflections.getGenericParamType(getClass, classOf[EntityActionSupport[_]]).get("T")
+    if (tClass.isEmpty) throw new RuntimeException(s"Cannot guess entity type from ${this.getClass.getName}")
+    else tClass.get.asInstanceOf[Class[T]]
   }
 
   protected def getId(name: String): String = {

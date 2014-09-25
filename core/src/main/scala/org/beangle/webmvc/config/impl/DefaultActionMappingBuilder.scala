@@ -139,7 +139,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
   }
 
   protected def shouldGenerateResult(m: Method): Boolean = {
-    if (classOf[String].equals(m.getReturnType) && null == isAnnotationPresent(m, classOf[ignore])) {
+    if (classOf[String].equals(m.getReturnType) && !isAnnotationPresent(m, classOf[ignore])) {
       if (m.getParameterTypes.length == 0 || null != m.getAnnotation(classOf[mapping]) || containParamAnnotation(m.getParameterAnnotations)) {
         var name = m.getName.toLowerCase
         !(name.startsWith("save") || name.startsWith("remove")

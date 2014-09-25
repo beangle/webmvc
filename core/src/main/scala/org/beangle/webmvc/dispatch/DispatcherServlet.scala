@@ -12,7 +12,6 @@ import javax.servlet.http.{ HttpServlet, HttpServletRequest, HttpServletResponse
 class DispatcherServlet extends HttpServlet with Logging {
 
   var defaultEncoding = "utf-8"
-
   var mapper: RequestMapper = _
   var reactor: InvocationReactor = _
   var localeResolver: LocaleResolver = _
@@ -28,14 +27,12 @@ class DispatcherServlet extends HttpServlet with Logging {
 
   override def service(request: HttpServletRequest, response: HttpServletResponse): Unit = {
     request.setCharacterEncoding(defaultEncoding)
-    //    var watch = new Stopwatch(true)
     mapper.resolve(request) match {
       case Some(rm) =>
         ActionContextHelper.build(request, response, rm, localeResolver, textResourceProvider)
         reactor.invoke(rm.handler, rm.action)
       case None => response.setStatus(HttpServletResponse.SC_NOT_FOUND)
     }
-    //    println(watch.elapsedTime(java.util.concurrent.TimeUnit.MICROSECONDS))
   }
 
   override def destroy(): Unit = {}
