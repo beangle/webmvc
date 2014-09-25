@@ -13,7 +13,7 @@ trait EntityActionSupport[T] extends ActionSupport {
   }
 
   protected def getId(name: String): String = {
-    get(name + ".id").getOrElse(get(name + "Id").getOrElse(get("id").getOrElse(null)))
+    get(name + ".id").getOrElse(get(name + "_id").getOrElse(get(name + "Id").getOrElse(null)))
   }
   /**
    * Get entity's id from shortname.id,shortnameId,id
