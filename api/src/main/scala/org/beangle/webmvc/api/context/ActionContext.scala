@@ -42,14 +42,12 @@ final class ActionContext(val request: HttpServletRequest, var response: HttpSer
 
   def flash: Flash = {
     if (null == flashMap) {
-      val session = request.getSession(false)
-      if (null != session) {
-        val flashObj = session.getAttribute("flash")
-        if (null != flashObj) flashMap = flashObj.asInstanceOf[Flash]
-        else {
-          flashMap = new Flash
-          session.setAttribute("flash", flashMap)
-        }
+      val session = request.getSession()
+      val flashObj = session.getAttribute("flash")
+      if (null != flashObj) flashMap = flashObj.asInstanceOf[Flash]
+      else {
+        flashMap = new Flash
+        session.setAttribute("flash", flashMap)
       }
     }
     flashMap
