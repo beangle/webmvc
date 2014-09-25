@@ -2,7 +2,7 @@ package org.beangle.webmvc.api.view
 
 import javax.servlet.http.HttpServletResponse._
 
-object status {
+object Status {
 
   def apply(code: Int): View = {
     new StatusView(code)

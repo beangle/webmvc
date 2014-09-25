@@ -6,7 +6,7 @@ import java.net.URL
 import org.beangle.commons.http.mime.MimeTypeProvider
 import org.beangle.commons.lang.Strings.{ isBlank, substringAfterLast }
 
-object stream {
+object Stream {
 
   def apply(url: URL): StreamView = {
     val fileName = substringAfterLast(url.toString(), "/")
