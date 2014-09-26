@@ -6,7 +6,7 @@ import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConf
 import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, ParamLocaleResolver }
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, HierarchicalUrlMapper }
 import org.beangle.webmvc.execution.impl.{ DefaultInvocationReactor, MethodHandlerBuilder, MvcRequestConvertor, StaticHandlerBuilder }
-import org.beangle.webmvc.execution.interceptors.FlashInterceptor
+import org.beangle.webmvc.execution.interceptors.{ CorsInterceptor, FlashInterceptor }
 import org.beangle.webmvc.view.freemarker.{ FreemarkerConfigurer, HierarchicalTemplateResolver }
 import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender }
 
@@ -43,6 +43,7 @@ class DefaultModule extends AbstractBindModule {
     //execution
     bind("mvc.InvocationReactor.default", classOf[DefaultInvocationReactor])
     bind("web.Interceptor.flash", classOf[FlashInterceptor])
+    bind("web.Interceptor.cors", classOf[CorsInterceptor])
     bind("mvc.HandlerBuilder.default", classOf[StaticHandlerBuilder])
     bind("mvc.HandlerBuilder.method", classOf[MethodHandlerBuilder])
 

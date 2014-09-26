@@ -1,0 +1,124 @@
+package org.beangle.webmvc.execution.interceptors
+
+import org.beangle.commons.bean.Initializing
+import org.beangle.commons.lang.annotation.description
+import org.beangle.commons.web.intercept.Interceptor
+
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+
+object CorsInterceptor {
+  // Request headers
+  val OriginHeader = "Origin"
+  val RequestMethodHeader = "Access-Control-Request-Method"
+  val RequestHeadersHeader = "Access-Control-Request-Headers"
+  // Response headers
+  val AllowOriginHeader = "Access-Control-Allow-Origin"
+  val AllowMethodsHeader = "Access-Control-Allow-Methods"
+  val AllowHeadersHeader = "Access-Control-Allow-Headers"
+  val MaxAgeHeader = "Access-Control-Max-Age"
+  val AllowCredentialsHeader = "Access-Control-Allow-Credentials"
+  val ExposeHeadersHeader = "Access-Control-Expose-Headers"
+
+  val AnyOrigin = "*"
+  val ComplexHttpMethods = Set("PUT", "DELETE", "TRACE", "CONNECT")
+  val SimpleHttpContentTypes = Set("application/x-www-form-urlencoded", "multipart/form-data", "text/plain")
+}
+
+object CORSRequestType {
+  val SIMPLE = 1
+  val ACTUAL = 2
+  val PRE_FLIGHT = 3
+  val INVALID_CORS = 9
+}
+
+@description("支持跨域调用CORS的拦截器")
+class CorsInterceptor extends Interceptor with Initializing {
+
+  import CorsInterceptor._
+  import CORSRequestType._
+
+  var anyOriginAllowed: Boolean = _
+  var allowedOrigins = new collection.mutable.HashSet[String] + (AnyOrigin)
+  var allowedMethods = new collection.mutable.HashSet[String] ++ Set("GET", "POST", "HEAD", "OPTIONS")
+  val allowedHeaders = new collection.mutable.HashSet[String] ++ Set("X-Requested-With", "Content-Type", "Accept", "Origin")
+  val exposedHeaders = new collection.mutable.HashSet[String]
+  var preflightMaxAge: Int = 1800 //30min
+  var allowCredentials = false
+  var chainPreflight = true
+
+  def init() {
+    anyOriginAllowed = allowedOrigins.contains(AnyOrigin)
+  }
+
+  def preInvoke(req: HttpServletRequest, res: HttpServletResponse): Boolean = {
+    val origin = req.getHeader(OriginHeader)
+    if (origin == null) return true
+    checkRequestType(origin, req) match {
+      case SIMPLE | ACTUAL => handleSimpleCors(req, res, origin)
+      case PRE_FLIGHT => handlePreflightCors(req, res, origin)
+      case INVALID_CORS => handleInvalidCORS(res)
+    }
+  }
+
+  def postInvoke(req: HttpServletRequest, res: HttpServletResponse): Unit = {
+  }
+
+  private def handleInvalidCORS(res: HttpServletResponse): Boolean = {
+    res.setContentType("text/plain")
+    res.setStatus(HttpServletResponse.SC_FORBIDDEN)
+    res.resetBuffer()
+    false
+  }
+
+  private def handleSimpleCors(req: HttpServletRequest, res: HttpServletResponse, origin: String): Boolean = {
+    if (anyOriginAllowed && !allowCredentials) res.addHeader(AllowOriginHeader, AnyOrigin)
+    else res.addHeader(AllowOriginHeader, origin)
+    if (allowCredentials) res.setHeader(AllowCredentialsHeader, "true")
+    if (!exposedHeaders.isEmpty) res.setHeader(ExposeHeadersHeader, exposedHeaders.mkString(","))
+    true
+  }
+
+  private def handlePreflightCors(req: HttpServletRequest, res: HttpServletResponse, origin: String): Boolean = {
+    if (!allowedMethods.contains(req.getHeader(RequestMethodHeader))) return false
+    val headersAllowed = areHeadersAllowed(req)
+    if (!headersAllowed) return false
+    res.setHeader(AllowOriginHeader, origin)
+    if (allowCredentials) res.setHeader(AllowCredentialsHeader, "true")
+    if (preflightMaxAge > 0) res.setHeader(MaxAgeHeader, String.valueOf(preflightMaxAge))
+    res.setHeader(AllowMethodsHeader, allowedMethods.mkString(","))
+    res.setHeader(AllowHeadersHeader, allowedHeaders.mkString(","))
+    chainPreflight
+  }
+
+  private def areHeadersAllowed(req: HttpServletRequest): Boolean = {
+    val accessControlRequestHeaders = req.getHeader(RequestHeadersHeader)
+    (accessControlRequestHeaders == null) || accessControlRequestHeaders.split(",").toSet.subsetOf(allowedHeaders)
+  }
+
+  private def checkRequestType(origin: String, req: HttpServletRequest): Int = {
+    if (isOriginAllowed(origin)) {
+      val method = req.getMethod
+      if (allowedMethods.contains(method)) {
+        if ("OPTIONS".equals(method)) {
+          val methodHeader = req.getHeader(RequestMethodHeader)
+          if (allowedMethods.contains(methodHeader)) PRE_FLIGHT else INVALID_CORS
+        } else if ("GET" == method || "HEAD" == method) {
+          SIMPLE
+        } else if ("POST" == method) {
+          var contentType = req.getContentType
+          if (contentType != null) if (SimpleHttpContentTypes.contains(contentType.toLowerCase.trim)) SIMPLE else ACTUAL
+          else INVALID_CORS
+        } else if (ComplexHttpMethods.contains(method)) {
+          ACTUAL
+        } else {
+          INVALID_CORS
+        }
+      } else INVALID_CORS
+    } else INVALID_CORS
+  }
+
+  private def isOriginAllowed(origin: String): Boolean = {
+    if (anyOriginAllowed) origin.indexOf('%') == -1
+    else allowedOrigins.contains(origin)
+  }
+}

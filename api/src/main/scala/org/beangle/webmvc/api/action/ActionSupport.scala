@@ -1,37 +1,22 @@
 package org.beangle.webmvc.api.action
 
 import java.net.URL
+
 import scala.reflect.ClassTag
+
 import org.beangle.commons.lang.{ Chars, ClassLoaders, Strings }
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.{ CookieUtils, RequestUtils }
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.{ ActionMessages, ContextHolder, Flash, Params }
+import org.beangle.webmvc.api.view.{ ForwardActionView, RedirectActionView, View }
+
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.api.view.ForwardActionView
-import org.beangle.webmvc.api.view.RedirectActionView
 
 object ActionSupport {
-  /**
-   * The action execution was successful. Show result
-   * view to the end user.
-   */
   val SUCCESS = "success"
-
-  /**
-   * The action execution was a failure.
-   * Show an error view, possibly asking the
-   * user to retry entering data.
-   */
   val ERROR = "error"
-
-  /**
-   * The action execution require more input
-   * in order to succeed.
-   */
   val INPUT = "input"
-
 }
 
 class ActionSupport extends Logging {
