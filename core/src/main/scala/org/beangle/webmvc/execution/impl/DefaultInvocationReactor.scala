@@ -68,12 +68,15 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
                     else newView
                 }
               case view: View => view
+              case _ => null
             }
             if (null != view) {
               renders.get(view.getClass) match {
                 case Some(render) => render.render(view, context)
                 case None => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
               }
+            }else{
+              
             }
           } finally {
             postHandle(interceptors, context, lastInterceptorIndex)

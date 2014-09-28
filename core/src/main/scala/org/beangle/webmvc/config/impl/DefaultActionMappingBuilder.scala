@@ -12,7 +12,7 @@ import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.lang.reflect.ClassInfo
 import org.beangle.commons.lang.reflect.Reflections.{ getAnnotation, isAnnotationPresent }
 import org.beangle.webmvc.api.action.ActionSupport
-import org.beangle.webmvc.api.annotation.{ action, ignore, mapping, param, view, views }
+import org.beangle.webmvc.api.annotation.{ action, ignore, mapping, param, response, view, views }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Profile }
 import org.beangle.webmvc.view.{ TemplateResolver, ViewBuilder }
@@ -93,10 +93,11 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
     //filter ignore
     if (null != getAnnotation(method, classOf[ignore])) return false
 
-    //filter method don't return string or view
-    val returnType = method.getReturnType()
-    if (returnType != classOf[String] && returnType != classOf[View]) return false
-
+    if (null == getAnnotation(method, classOf[response])) {
+      //filter method don't return string or view
+      val returnType = method.getReturnType()
+      if (returnType != classOf[String] && returnType != classOf[View]) return false
+    }
     //filter field
     if (method.getParameterTypes.length == 0 && !classInfo.getMethods(methodName + "_$eq").isEmpty) return false
     true
