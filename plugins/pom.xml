@@ -14,6 +14,7 @@
     <module>config</module>
     <module>webxml</module>
     <module>entity</module>
+    <module>serializer</module>
     <module>hibernate</module>
     <module>captcha</module>
   </modules>

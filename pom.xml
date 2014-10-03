@@ -49,6 +49,11 @@
         <version>${beangle.data.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.beangle.data</groupId>
+        <artifactId>beangle-data-serializer</artifactId>
+        <version>${beangle.data.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.beangle.spring</groupId>
         <artifactId>beangle-spring-context</artifactId>
         <version>${beangle.spring.version}</version>

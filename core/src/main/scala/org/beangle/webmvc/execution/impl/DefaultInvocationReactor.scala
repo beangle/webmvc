@@ -1,15 +1,20 @@
 package org.beangle.webmvc.execution.impl
 
 import org.beangle.commons.bean.Initializing
+import org.beangle.commons.http.accept.ContentNegotiationManager
 import org.beangle.commons.inject.Container
+import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.web.intercept.Interceptor
 import org.beangle.webmvc.api.context.{ ActionContext, ContextHolder }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionMapping, Configurer }
+import org.beangle.webmvc.context.SerializerManager
 import org.beangle.webmvc.execution.{ Handler, InvocationReactor }
 import org.beangle.webmvc.view.{ ViewRender, ViewResolver }
 import org.beangle.webmvc.view.impl.DefaultTemplatePathMapper
+
+import javax.activation.MimeType
 
 @description("缺省的调用反应堆")
 class DefaultInvocationReactor extends InvocationReactor with Initializing {
@@ -19,6 +24,10 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
   var resolvers: Map[String, ViewResolver] = Map.empty
 
   var renders: Map[Class[_], ViewRender] = Map.empty
+
+  var serializerManager: SerializerManager = _
+
+  var contentNegotiationManager: ContentNegotiationManager = _
 
   var configurer: Configurer = _
 
@@ -75,8 +84,22 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
                 case Some(render) => render.render(view, context)
                 case None => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
               }
-            }else{
-              
+            } else {
+              if (null != contentNegotiationManager) {
+                val mimeTypes = contentNegotiationManager.resolve(context.request).iterator
+                var serializer: Serializer = null
+                var mimeType: MimeType = null
+                while (mimeTypes.hasNext && serializer == null) {
+                  mimeType = mimeTypes.next()
+                  serializer = serializerManager.getSerializer(mimeType)
+                }
+                if (null != serializer) {
+                  val response = context.response
+                  response.setCharacterEncoding("UTF-8")
+                  response.setContentType(mimeType.toString + "; charset=UTF-8")
+                  serializer.serialize(result.asInstanceOf[AnyRef], response.getOutputStream)
+                }
+              }
             }
           } finally {
             postHandle(interceptors, context, lastInterceptorIndex)

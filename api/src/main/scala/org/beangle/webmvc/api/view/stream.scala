@@ -3,8 +3,8 @@ package org.beangle.webmvc.api.view
 import java.io.{ File, FileInputStream, InputStream }
 import java.net.URL
 
+import org.beangle.commons.activation.{ MimeTypeProvider, MimeTypes }
 import org.beangle.commons.lang.Strings.{ isBlank, substringAfterLast }
-import org.beangle.commons.media.{ MimeType, MimeTypeProvider }
 
 object Stream {
 
@@ -42,7 +42,7 @@ object Stream {
   }
 
   private def decideContentType(fileName: String): String = {
-    MimeTypeProvider.getMimeType(substringAfterLast(fileName, "."), MimeType.ApplicationOctetStream).toString
+    MimeTypeProvider.getMimeType(substringAfterLast(fileName, "."), MimeTypes.ApplicationOctetStream).toString
   }
 
   private def getAttachName(name: String, display: String = null): String = {

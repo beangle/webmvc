@@ -9,6 +9,7 @@ import org.beangle.webmvc.execution.impl.{ DefaultInvocationReactor, MethodHandl
 import org.beangle.webmvc.execution.interceptors.{ CorsInterceptor, FlashInterceptor }
 import org.beangle.webmvc.view.freemarker.{ FreemarkerConfigurer, HierarchicalTemplateResolver }
 import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender }
+import org.beangle.webmvc.context.impl.DefaultSerializerManager
 
 class DefaultModule extends AbstractBindModule {
 
@@ -52,6 +53,7 @@ class DefaultModule extends AbstractBindModule {
     bind("mvc.TextFormater.default", classOf[DefaultTextFormater])
     bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
     bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
+    bind("mvc.SerializerManager.default", classOf[DefaultSerializerManager])
 
     //security
     bind("web.RequestConvertor.mvc", classOf[MvcRequestConvertor])
