@@ -13,5 +13,5 @@ public @interface param {
 
 	boolean required() default true;
 
-	String defaults() default DefaultNone.value;
+	String defaultValue() default DefaultNone.value;
 }

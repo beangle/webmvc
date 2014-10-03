@@ -13,8 +13,8 @@ import org.beangle.webmvc.context.SerializerManager
 import org.beangle.webmvc.execution.{ Handler, InvocationReactor }
 import org.beangle.webmvc.view.{ ViewRender, ViewResolver }
 import org.beangle.webmvc.view.impl.DefaultTemplatePathMapper
-
 import javax.activation.MimeType
+import org.beangle.webmvc.api.annotation.response
 
 @description("缺省的调用反应堆")
 class DefaultInvocationReactor extends InvocationReactor with Initializing {
@@ -58,8 +58,8 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
       } catch {
         case ex: Throwable => exception = ex
       }
-      //FIXME process exception
       if (null != exception) {
+        //FIXME process exception
         postHandle(interceptors, context, lastInterceptorIndex)
         throw exception
       } else {
@@ -67,15 +67,17 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
           try {
             val view = result match {
               case viewName: String =>
-                val newViewName = DefaultTemplatePathMapper.defaultView(mapping.method.getName, viewName)
-                config.views.get(newViewName) match {
-                  case Some(v) => v
-                  case None =>
-                    val profile = configurer.getProfile(config.clazz.getName)
-                    val newView = resolvers(profile.viewType).resolve(newViewName, mapping)
-                    if (null == newView) throw new RuntimeException(s"Cannot find view[$newViewName] for ${config.clazz.getName}")
-                    else newView
-                }
+                if (mapping.hasView) {
+                  val newViewName = DefaultTemplatePathMapper.defaultView(mapping.method.getName, viewName)
+                  config.views.get(newViewName) match {
+                    case Some(v) => v
+                    case None =>
+                      val profile = configurer.getProfile(config.clazz.getName)
+                      val newView = resolvers(profile.viewType).resolve(newViewName, mapping)
+                      if (null == newView) throw new RuntimeException(s"Cannot find view[$newViewName] for ${config.clazz.getName}")
+                      newView
+                  }
+                } else null
               case view: View => view
               case _ => null
             }

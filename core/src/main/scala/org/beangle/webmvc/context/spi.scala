@@ -1,12 +1,11 @@
 package org.beangle.webmvc.context
 
 import java.{ util => ju }
-
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.commons.lang.functor.Predicate
 import org.beangle.webmvc.config.Configurer
-
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.webmvc.api.context.ActionContext
 @spi
 trait LocaleResolver {
   def resolve(request: HttpServletRequest): ju.Locale
@@ -35,4 +34,9 @@ trait ActionFinder {
 
   def getActions(test: ActionFinder.Test): Seq[Object]
 
+}
+
+@spi
+trait Argument{
+  def value(context:ActionContext):AnyRef
 }

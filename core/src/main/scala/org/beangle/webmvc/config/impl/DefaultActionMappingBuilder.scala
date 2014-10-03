@@ -12,9 +12,11 @@ import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.lang.reflect.ClassInfo
 import org.beangle.commons.lang.reflect.Reflections.{ getAnnotation, isAnnotationPresent }
 import org.beangle.webmvc.api.action.ActionSupport
-import org.beangle.webmvc.api.annotation.{ action, ignore, mapping, param, response, view, views }
+import org.beangle.webmvc.api.annotation.{ action, cookie, header, ignore, mapping, param, response, view, views }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Profile }
+import org.beangle.webmvc.context.Argument
+import org.beangle.webmvc.context.impl.{ CookieArgument, HeaderArgument, ParamArgument, RequestArgument, ResponseArgument }
 import org.beangle.webmvc.view.{ TemplateResolver, ViewBuilder }
 import org.beangle.webmvc.view.impl.{ DefaultTemplatePathMapper, FreemarkerView }
 
@@ -50,18 +52,29 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
           val annotationsList = if (null == annTuple) method.getParameterAnnotations else annTuple._2.getParameterAnnotations
 
           val parameterTypes = method.getParameterTypes()
-          val paramNames = Range(0, annotationsList.length) map { i =>
-            annotationsList(i).find { ann => ann.isInstanceOf[param] } match {
-              case Some(p) => p.asInstanceOf[param].value
-              case None =>
-                if (parameterTypes(i).getName == "javax.servlet.http.HttpServletRequest") "_request"
-                else if (parameterTypes(i).getName == "javax.servlet.http.HttpServletResponse") "_response"
-                else urlPathNames(i)
+          val arguments = Range(0, annotationsList.length) map { i =>
+            var argument: Argument = null
+            var j = 0
+            val annotations = annotationsList(i)
+            while (j < annotations.length && null == argument) {
+              argument = annotations(j) match {
+                case p: param => new ParamArgument(p.value, p.required, p.defaultValue)
+                case c: cookie => new CookieArgument(c.value, c.required, c.defaultValue)
+                case h: header => new HeaderArgument(h.value, h.required, h.defaultValue)
+                case _ => null
+              }
+              j += 1
             }
+            if (argument == null) {
+              argument = if (parameterTypes(i).getName == "javax.servlet.http.HttpServletRequest") RequestArgument
+              else if (parameterTypes(i).getName == "javax.servlet.http.HttpServletResponse") ResponseArgument
+              else new ParamArgument(urlPathNames(i), true, null)
+            }
+            argument
           }
 
-          if (method.getParameterTypes().length != paramNames.size) throw new RuntimeException("Cannot find enough param name,Using @mapping or @param")
-          val mapping = new ActionMapping(httpMethod, config, method, name, paramNames.toArray, urlParams)
+          if (method.getParameterTypes().length != arguments.size) throw new RuntimeException("Cannot find enough param name,Using @mapping or @param")
+          val mapping = new ActionMapping(httpMethod, config, method, name, arguments.toArray, urlParams, !method.isAnnotationPresent(classOf[response]))
           mappings.put(method.getName, mapping)
           actions += Tuple2(url, mapping)
           if (name == "index" && method.getParameterTypes.length == 0) actions += Tuple2(actionName, mapping)
@@ -140,7 +153,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
   }
 
   protected def shouldGenerateResult(m: Method): Boolean = {
-    if (classOf[String].equals(m.getReturnType) && !isAnnotationPresent(m, classOf[ignore])) {
+    if (classOf[String].equals(m.getReturnType) && !isAnnotationPresent(m, classOf[ignore]) && !isAnnotationPresent(m, classOf[response])) {
       if (m.getParameterTypes.length == 0 || null != m.getAnnotation(classOf[mapping]) || containParamAnnotation(m.getParameterAnnotations)) {
         var name = m.getName.toLowerCase
         !(name.startsWith("save") || name.startsWith("remove")

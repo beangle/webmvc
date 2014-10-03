@@ -1,11 +1,11 @@
 package org.beangle.webmvc.config
 
 import java.lang.reflect.Method
-
 import org.beangle.commons.http.HttpMethods.{ DELETE, HEAD, PUT }
 import org.beangle.commons.lang.Strings.{ join, split }
 import org.beangle.webmvc.api.action.ToURL
 import org.beangle.webmvc.api.view.View
+import org.beangle.webmvc.context.Argument
 
 trait Configurer {
 
@@ -37,7 +37,7 @@ object ActionMapping {
 }
 
 class ActionMapping(val httpMethod: String, val config: ActionConfig, val method: Method, val name: String,
-  val params: Array[String], val urlParams: Map[Integer, String]) {
+  val arguments: Array[Argument], val urlParams: Map[Integer, String], val hasView: Boolean) {
 
   def url = if ("" == name) config.name else (config.name + "/" + name)
 
@@ -58,7 +58,7 @@ class ActionMapping(val httpMethod: String, val config: ActionConfig, val method
 
   override def toString: String = {
     (if (null == httpMethod) "*" else httpMethod) + " " + url + " " + config.clazz.getName + "." +
-      method.getName + "(" + join(params, ",") + ")"
+      method.getName + "(" + join(arguments, ",") + ")"
   }
 
   def toURL(paramMaps: collection.Map[String, Any]*): ToURL = {
