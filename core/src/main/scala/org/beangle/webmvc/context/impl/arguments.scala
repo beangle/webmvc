@@ -60,6 +60,9 @@ object RequestArgument extends Argument {
   override def toString: String = {
     "request"
   }
+  override def required: Boolean = {
+    true
+  }
 }
 
 object ResponseArgument extends Argument {
@@ -68,5 +71,8 @@ object ResponseArgument extends Argument {
   }
   override def toString: String = {
     "response"
+  }
+  override def required: Boolean = {
+    true
   }
 }

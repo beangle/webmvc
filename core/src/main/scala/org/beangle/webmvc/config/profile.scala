@@ -92,6 +92,9 @@ final class Profile(val name: String,
   val interceptors: Array[Interceptor],
   val source: URL) extends Comparable[Profile] {
 
+  def this(name: String, actionPattern: String) {
+    this(name, actionPattern, "Action", "index", "/", "full", ".ftl", "freemarker", "/", "seo", "", Array(), Array(), null)
+  }
   import Profile._
 
   // 匹配缓存[className,matched_info]
@@ -146,7 +149,7 @@ final class ProfileConfig(val name: String, val actionPattern: String) {
   var viewPath: String = _
 
   // 路径模式
-  var viewPathStyle = "simple"
+  var viewPathStyle = "full"
 
   // 路径后缀
   var viewSuffix: String = _
@@ -158,7 +161,7 @@ final class ProfileConfig(val name: String, val actionPattern: String) {
   var urlPath = "/"
 
   // URI style
-  var urlStyle = "simple"
+  var urlStyle = "seo"
 
   /** URL的后缀 */
   var urlSuffix: String = _

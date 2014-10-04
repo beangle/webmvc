@@ -12,7 +12,7 @@ import org.beangle.webmvc.execution.{ Handler, HandlerBuilder }
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
-class MethodHandler(val action: AnyRef, val method: Method) extends Handler {
+class DynaMethodHandler(val action: AnyRef, val method: Method) extends Handler {
   val paramTypes = method.getParameterTypes
 
   override def handle(mapping: ActionMapping): Any = {
@@ -34,8 +34,13 @@ class MethodHandler(val action: AnyRef, val method: Method) extends Handler {
           if (Primitives.isWrapperType(pt)) {
             values(i) = Params.converter.convert(pValue, pt).asInstanceOf[Object]
           } else {
-            values(i) = Params.converter.convert(pValue, Primitives.wrap(pt)).asInstanceOf[Object]
+            if (pt.isPrimitive) {
+              values(i) = Params.converter.convert(pValue, Primitives.wrap(pt)).asInstanceOf[Object]
+            } else {
+              values(i) = Params.converter.convert(pValue, pt).asInstanceOf[Object]
+            }
           }
+          if (arguments(i).required && null == values(i)) throw new RuntimeException(s"Cannot convert $pValue to ${pt.getName}")
         }
       }
       method.invoke(action, values: _*)
@@ -44,9 +49,9 @@ class MethodHandler(val action: AnyRef, val method: Method) extends Handler {
 }
 
 @description("句柄构建者,使用method反射调用")
-class MethodHandlerBuilder extends HandlerBuilder {
+class DynaMethodHandlerBuilder extends HandlerBuilder {
 
-  override def build(action: AnyRef, method: Method): Handler = {
-    new MethodHandler(action, method)
+  override def build(action: AnyRef, mapping: ActionMapping): Handler = {
+    new DynaMethodHandler(action, mapping.method)
   }
 }

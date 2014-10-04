@@ -37,6 +37,8 @@ trait ActionFinder {
 }
 
 @spi
-trait Argument{
-  def value(context:ActionContext):AnyRef
+trait Argument {
+  def value(context: ActionContext): AnyRef
+
+  def required: Boolean
 }

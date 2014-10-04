@@ -38,7 +38,7 @@ class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) 
       val clazz = bean.getClass
       val mappings = actionMappingBuilder.build(clazz, this.getProfile(clazz.getName))
       if (!mappings.isEmpty) {
-        mappings.map {
+        mappings.foreach {
           case (url, action) =>
             mappingCount += 1
             results += Tuple3(url, action, bean)

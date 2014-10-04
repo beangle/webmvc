@@ -45,9 +45,36 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.beangle.webmvc</groupId>
+      <artifactId>beangle-webmvc-serializer-plugin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.beangle.spring</groupId>
       <artifactId>beangle-spring-context</artifactId>
     </dependency>
+    <!--
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>4.0.4.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-scala_2.11</artifactId>
+      <version>2.4.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
+      <version>1.4.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalaxb</groupId>
+      <artifactId>scalaxb_2.11</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    -->
     <dependency>
       <groupId>org.beangle.spring</groupId>
       <artifactId>beangle-spring-hibernate</artifactId>

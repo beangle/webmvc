@@ -12,7 +12,7 @@ import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.lang.reflect.ClassInfo
 import org.beangle.commons.lang.reflect.Reflections.{ getAnnotation, isAnnotationPresent }
 import org.beangle.webmvc.api.action.ActionSupport
-import org.beangle.webmvc.api.annotation.{ action, cookie, header, ignore, mapping, param, response, view, views }
+import org.beangle.webmvc.api.annotation.{ DefaultNone, action, cookie, header, ignore, mapping, param, response, view, views }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Profile }
 import org.beangle.webmvc.context.Argument
@@ -29,10 +29,10 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
 
   var viewScan = true
 
-  override def build(clazz: Class[_], profile: Profile): Seq[Tuple2[String, ActionMapping]] = {
+  override def build(clazz: Class[_], profile: Profile): Map[String, ActionMapping] = {
     val nameAndspace = ActionNameBuilder.build(clazz, profile)
     val actionName = nameAndspace._1
-    val actions = new collection.mutable.ListBuffer[Tuple2[String, ActionMapping]]
+    val actions = new collection.mutable.HashMap[String, ActionMapping]
     val config = new ActionConfig(clazz, actionName, nameAndspace._2, buildViews(clazz, profile), profile)
     val mappings = new collection.mutable.HashMap[String, ActionMapping]
     val classInfo = ClassInfo.get(clazz)
@@ -44,7 +44,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
           val annTuple = getAnnotation(method, classOf[mapping])
           val ann = if (null == annTuple) null else annTuple._1
           val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else GET
-          val name = (if (null != ann) ann.value else methodName)
+          val name = if (null != ann) (if (ann.value.startsWith("/")) ann.value.substring(1) else ann.value) else methodName
           val url = if (name == "") actionName else (actionName + "/" + name)
           val urlParams = parse(url)
           val urlPathNames = urlParams.keySet.toList.sorted.map { i => urlParams(i) }
@@ -58,9 +58,9 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
             val annotations = annotationsList(i)
             while (j < annotations.length && null == argument) {
               argument = annotations(j) match {
-                case p: param => new ParamArgument(p.value, p.required, p.defaultValue)
-                case c: cookie => new CookieArgument(c.value, c.required, c.defaultValue)
-                case h: header => new HeaderArgument(h.value, h.required, h.defaultValue)
+                case p: param => new ParamArgument(p.value, p.required || parameterTypes(i).isPrimitive, p.defaultValue)
+                case c: cookie => new CookieArgument(c.value, c.required || parameterTypes(i).isPrimitive, c.defaultValue)
+                case h: header => new HeaderArgument(h.value, h.required || parameterTypes(i).isPrimitive, h.defaultValue)
                 case _ => null
               }
               j += 1
@@ -68,7 +68,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
             if (argument == null) {
               argument = if (parameterTypes(i).getName == "javax.servlet.http.HttpServletRequest") RequestArgument
               else if (parameterTypes(i).getName == "javax.servlet.http.HttpServletResponse") ResponseArgument
-              else new ParamArgument(urlPathNames(i), true, null)
+              else new ParamArgument(urlPathNames(i), true, DefaultNone.value)
             }
             argument
           }
@@ -81,7 +81,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
         }
     }
     config.mappings = mappings.toMap
-    actions
+    actions.toMap
   }
 
   def parse(pattern: String): Map[Integer, String] = {
@@ -106,10 +106,12 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
     //filter ignore
     if (null != getAnnotation(method, classOf[ignore])) return false
 
+    val returnType = method.getReturnType()
     if (null == getAnnotation(method, classOf[response])) {
       //filter method don't return string or view
-      val returnType = method.getReturnType()
-      if (returnType != classOf[String] && returnType != classOf[View]) return false
+      if (returnType != classOf[String] && returnType != classOf[View] && returnType != classOf[Unit]) return false
+    } else {
+      if (returnType == classOf[Unit]) throw new RuntimeException(s"${method} return type is unit ")
     }
     //filter field
     if (method.getParameterTypes.length == 0 && !classInfo.getMethods(methodName + "_$eq").isEmpty) return false
@@ -128,7 +130,6 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
     } else {
       results = rs.value()
     }
-
     val annotationResults = new collection.mutable.HashSet[String]
     if (null != results) {
       for (result <- results) {
@@ -136,7 +137,6 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
         annotationResults += result.name
       }
     }
-
     // load ftl convension results
     val suffix = profile.viewSuffix
     if (suffix.endsWith(".ftl")) {

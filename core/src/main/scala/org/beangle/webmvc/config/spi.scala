@@ -12,5 +12,5 @@ trait ProfileProvider {
 @spi
 trait ActionMappingBuilder {
 
-  def build(clazz: Class[_], profile: Profile): Seq[Tuple2[String, ActionMapping]]
+  def build(clazz: Class[_], profile: Profile): Map[String, ActionMapping]
 }

@@ -29,7 +29,7 @@ class HierarchicalUrlMapper extends RequestMapper with ContainerRefreshedHook wi
   override def notify(container: Container): Unit = {
     configurer.build() foreach {
       case (url, actionmapping, bean) =>
-        add(url, new RequestMapping(actionmapping, handlerBuilder.build(bean, actionmapping.method), Map.empty))
+        add(url, new RequestMapping(actionmapping, handlerBuilder.build(bean, actionmapping), Map.empty))
     }
   }
 

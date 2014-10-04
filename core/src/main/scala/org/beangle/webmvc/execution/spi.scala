@@ -11,5 +11,5 @@ trait InvocationReactor {
 
 @spi
 trait HandlerBuilder {
-  def build(action: AnyRef, method: Method): Handler
+  def build(action: AnyRef, mapping: ActionMapping): Handler
 }

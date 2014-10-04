@@ -3,13 +3,12 @@ package org.beangle.webmvc
 import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
 import org.beangle.commons.text.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
 import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider }
-import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, ParamLocaleResolver }
+import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, DefaultSerializerManager, ParamLocaleResolver }
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, HierarchicalUrlMapper }
-import org.beangle.webmvc.execution.impl.{ DefaultInvocationReactor, MethodHandlerBuilder, MvcRequestConvertor, StaticHandlerBuilder }
+import org.beangle.webmvc.execution.impl.{ DefaultInvocationReactor, DynaMethodHandlerBuilder, MvcRequestConvertor, StaticMethodHandlerBuilder }
 import org.beangle.webmvc.execution.interceptors.{ CorsInterceptor, FlashInterceptor }
 import org.beangle.webmvc.view.freemarker.{ FreemarkerConfigurer, HierarchicalTemplateResolver }
 import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, FreemarkerViewBuilder, FreemarkerViewResolver, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender }
-import org.beangle.webmvc.context.impl.DefaultSerializerManager
 
 class DefaultModule extends AbstractBindModule {
 
@@ -45,8 +44,8 @@ class DefaultModule extends AbstractBindModule {
     bind("mvc.InvocationReactor.default", classOf[DefaultInvocationReactor])
     bind("web.Interceptor.flash", classOf[FlashInterceptor])
     bind("web.Interceptor.cors", classOf[CorsInterceptor])
-    bind("mvc.HandlerBuilder.default", classOf[StaticHandlerBuilder])
-    bind("mvc.HandlerBuilder.method", classOf[MethodHandlerBuilder])
+    bind("mvc.HandlerBuilder.default", classOf[StaticMethodHandlerBuilder])
+    bind("mvc.HandlerBuilder.method", classOf[DynaMethodHandlerBuilder])
 
     //context
     bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
@@ -65,7 +64,7 @@ class DevModule extends AbstractBindModule {
   protected override def binding() {
     bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan", "false")
     bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", "true")
-    bind("mvc.HandlerBuilder.method", classOf[MethodHandlerBuilder]).primary
+    bind("mvc.HandlerBuilder.method", classOf[DynaMethodHandlerBuilder]).primary
     bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerConfigurer]).property("enableCache", "false")
   }
 }
