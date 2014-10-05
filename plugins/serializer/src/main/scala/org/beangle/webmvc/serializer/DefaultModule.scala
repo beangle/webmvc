@@ -1,14 +1,12 @@
 package org.beangle.webmvc.serializer
 
-import org.beangle.commons.inject.bind.AbstractBindModule
 import org.beangle.commons.http.accept.ContentNegotiationManagerFactory
-import org.beangle.data.serializer.JsonSerializer
-import org.beangle.data.serializer.XmlSerializer
+import org.beangle.commons.inject.bind.AbstractBindModule
+import org.beangle.data.serializer.{AbstractSerializer, JsonSerializer, XmlSerializer}
 import org.beangle.data.serializer.converter.DefaultConverterRegistry
-import org.beangle.data.serializer.mapper.DefaultMapper
-import org.beangle.data.serializer.io.xml.DomDriver
 import org.beangle.data.serializer.io.json.DefaultJsonDriver
-import org.beangle.data.serializer.AbstractSerializer
+import org.beangle.data.serializer.io.xml.DomDriver
+import org.beangle.data.serializer.mapper.DefaultMapper
 
 class DefaultModule extends AbstractBindModule {
 
@@ -22,5 +20,6 @@ class DefaultModule extends AbstractBindModule {
     bind(classOf[DefaultJsonDriver]).constructor("UTF-8")
     bind("web.Serializer.xml", classOf[XmlSerializer]).property("mode", AbstractSerializer.SINGLE_NODE_XPATH_ABSOLUTE_REFERENCES)
     bind("web.Serializer.json", classOf[JsonSerializer]).property("mode", AbstractSerializer.SINGLE_NODE_XPATH_ABSOLUTE_REFERENCES )
+    bind("web.Serializer.jsonp",classOf[JsonpSerializer])
   }
 }
