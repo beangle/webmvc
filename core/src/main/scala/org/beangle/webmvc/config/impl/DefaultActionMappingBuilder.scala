@@ -2,9 +2,7 @@ package org.beangle.webmvc.config.impl
 
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
-
 import scala.Range
-
 import org.beangle.commons.http.HttpMethods.GET
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
@@ -19,9 +17,10 @@ import org.beangle.webmvc.context.Argument
 import org.beangle.webmvc.context.impl.{ CookieArgument, HeaderArgument, ParamArgument, RequestArgument, ResponseArgument }
 import org.beangle.webmvc.view.{ TemplateResolver, ViewBuilder }
 import org.beangle.webmvc.view.impl.{ DefaultTemplatePathMapper, FreemarkerView }
+import org.beangle.commons.logging.Logging
 
 @description("缺省的ActionMapping构建器")
-class DefaultActionMappingBuilder extends ActionMappingBuilder {
+class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
 
   var templateResolver: TemplateResolver = _
 
@@ -29,18 +28,18 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
 
   var viewScan = true
 
-  override def build(clazz: Class[_], profile: Profile): Map[String, ActionMapping] = {
+  override def build(clazz: Class[_], profile: Profile): Seq[Tuple2[String, ActionMapping]] = {
     val nameAndspace = ActionNameBuilder.build(clazz, profile)
     val actionName = nameAndspace._1
-    val actions = new collection.mutable.HashMap[String, ActionMapping]
+    val actions = new collection.mutable.ListBuffer[Tuple2[String, ActionMapping]]
     val config = new ActionConfig(clazz, actionName, nameAndspace._2, buildViews(clazz, profile), profile)
     val mappings = new collection.mutable.HashMap[String, ActionMapping]
     val classInfo = ClassInfo.get(clazz)
     classInfo.methods foreach {
       case (methodName, minfos) =>
-        val actionMethodInfos = minfos.filter(m => m.method.getDeclaringClass != classOf[ActionSupport] && isActionMethod(m.method, classInfo))
-        if (actionMethodInfos.size == 1) {
-          val method = actionMethodInfos.head.method
+        val mappingMehtods = new collection.mutable.HashSet[Method]
+        minfos.filter(m => m.method.getDeclaringClass != classOf[ActionSupport] && isActionMethod(m.method, classInfo)) foreach { methodinfo =>
+          val method = methodinfo.method
           val annTuple = getAnnotation(method, classOf[mapping])
           val ann = if (null == annTuple) null else annTuple._1
           val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else GET
@@ -68,20 +67,31 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
             if (argument == null) {
               argument = if (parameterTypes(i).getName == "javax.servlet.http.HttpServletRequest") RequestArgument
               else if (parameterTypes(i).getName == "javax.servlet.http.HttpServletResponse") ResponseArgument
-              else new ParamArgument(urlPathNames(i), true, DefaultNone.value)
+              else {
+                if (i < urlPathNames.length) new ParamArgument(urlPathNames(i), true, DefaultNone.value)
+                else null
+              }
             }
             argument
           }
-
-          if (method.getParameterTypes().length != arguments.size) throw new RuntimeException("Cannot find enough param name,Using @mapping or @param")
-          val mapping = new ActionMapping(httpMethod, config, method, name, arguments.toArray, urlParams, !method.isAnnotationPresent(classOf[response]))
-          mappings.put(method.getName, mapping)
-          actions += Tuple2(url, mapping)
-          if (name == "index" && method.getParameterTypes.length == 0) actions += Tuple2(actionName, mapping)
+          if (arguments.size == 0 || !arguments.exists(a => a == null)) {
+            mappingMehtods += method
+            if (mappingMehtods.size == 1) {
+              val mapping = new ActionMapping(httpMethod, config, method, name, arguments.toArray, urlParams, !method.isAnnotationPresent(classOf[response]))
+              mappings.put(method.getName, mapping)
+              actions += Tuple2(url, mapping)
+              if (name == "index" && method.getParameterTypes.length == 0 && mapping.httpMethod == GET) actions += Tuple2(actionName, mapping)
+            } else {
+              warn("Only support one method, by already have $mappingMehtods")
+            }
+          } else {
+            //ignore arguments contain  all null
+            if (arguments.exists(a => a != null)) throw new RuntimeException(s"Cannot find enough param for $method,Using @mapping or @param")
+          }
         }
     }
     config.mappings = mappings.toMap
-    actions.toMap
+    actions
   }
 
   def parse(pattern: String): Map[Integer, String] = {
