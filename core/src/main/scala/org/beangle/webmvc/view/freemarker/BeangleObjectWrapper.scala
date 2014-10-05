@@ -3,16 +3,14 @@ package org.beangle.webmvc.view.freemarker
 import java.beans.PropertyDescriptor
 import java.lang.reflect.{ Method, Modifier }
 import java.{ util => ju }
-
 import scala.collection.JavaConversions
-
 import org.beangle.webmvc.api.context.ContextHolder
-
 import freemarker.core.CollectionAndSequence
 import freemarker.ext.beans.BeansWrapper
 import freemarker.ext.beans.BeansWrapper.MethodAppearanceDecision
 import freemarker.ext.beans.MapModel
 import freemarker.template.{ AdapterTemplateModel, DefaultObjectWrapper, SimpleCollection, SimpleDate, SimpleNumber, SimpleScalar, SimpleSequence, TemplateBooleanModel, TemplateCollectionModel, TemplateHashModelEx, TemplateMethodModelEx, TemplateModel }
+import org.beangle.commons.collection.IdentityCache
 
 class BeangleObjectWrapper(val altMapWrapper: Boolean) extends DefaultObjectWrapper {
 
@@ -27,16 +25,16 @@ class BeangleObjectWrapper(val altMapWrapper: Boolean) extends DefaultObjectWrap
     }
   }
 
-  override def wrap(obj: Any): TemplateModel = {
+  override def wrap(obj: AnyRef): TemplateModel = {
     if (null == obj || None == obj) return null
     //FIXME need ab test
     val context = ContextHolder.context
-    var models = context.temp[collection.mutable.Map[Any, TemplateModel]]("_TemplateModels")
+    var models = context.temp[IdentityCache[AnyRef, TemplateModel]]("_TemplateModels")
     if (models == null) {
-      models = new collection.mutable.HashMap[Any, TemplateModel]
+      models = new IdentityCache[AnyRef, TemplateModel]
       context.temp("_TemplateModels", models)
     }
-    var model = models.get(obj).orNull
+    var model = models.get(obj)
     if (null != model) return model
     model = obj match {
       //basic types
@@ -53,7 +51,7 @@ class BeangleObjectWrapper(val altMapWrapper: Boolean) extends DefaultObjectWrap
       case b: java.lang.Boolean => if (b) TemplateBooleanModel.TRUE else TemplateBooleanModel.FALSE
 
       //wrap types
-      case Some(p) => wrap(p)
+      case Some(p) => wrap(p.asInstanceOf[Object])
       case tm: TemplateModel => tm
 
       // scala collections

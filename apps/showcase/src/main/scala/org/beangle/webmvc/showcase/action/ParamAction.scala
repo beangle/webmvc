@@ -1,12 +1,8 @@
 package org.beangle.webmvc.showcase.action
 
-import org.beangle.webmvc.api.annotation.cookie
-import org.beangle.webmvc.api.annotation.response
-import org.springframework.http.HttpRequest
-import org.beangle.webmvc.api.annotation.param
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpServletRequest
-import org.beangle.webmvc.api.annotation.header
+import org.beangle.webmvc.api.annotation.{cookie, header, param, response}
+
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 class ParamAction {
 
