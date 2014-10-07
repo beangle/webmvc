@@ -1,6 +1,6 @@
 [#ftl]
 <form id="${tag.id}" name="${tag.name}" action="${tag.action}" method="post" [#if tag.target??]target="${tag.target}"[/#if]${tag.parameterString} [#if tag.validate=="true" || tag.onsubmit??]onsubmit="return onsubmit${tag.id}()"[/#if]>
-[#if Parameters['params']??]<input name="params" type="hidden" value="${Parameters['params']?html}" />[/#if]
+[#if Parameters['_params']??]<input name="_params" type="hidden" value="${Parameters['_params']?html}" />[/#if]
 ${tag.body}
 </form>
 [#if (tag.validate!"")=="true" ||tag.onsubmit??]

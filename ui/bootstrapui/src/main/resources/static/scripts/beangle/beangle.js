@@ -569,7 +569,7 @@
       },
 
       addParamsInput : function (form,value){
-        bg.form.addInput(form,"params",value,"hidden");
+        bg.form.addInput(form,"_params",value,"hidden");
       },
       transferParams : function (from ,to,prefix,getEmpty){
         if(getEmpty==null)
@@ -594,7 +594,7 @@
 
         for(i = 0;i < elems.length; i++){
           if(""!=elems[i].name){
-            if("params"==elems[i].name) continue;
+            if("_params"==elems[i].name) continue;
             //alert(elems[i].tagName+":"+elems[i].value);
             if((elems[i].value=="")&&(!getEmpty)) continue;
             if(null!=prefix){

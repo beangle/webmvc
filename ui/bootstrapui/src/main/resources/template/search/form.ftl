@@ -1,6 +1,6 @@
 [#ftl]
 <form id="${tag.id}" name="${tag.name}" action="${tag.action}" method="post"[#if tag.target??] target="${tag.target}"[/#if][#if tag.onsubmit??] onsubmit="${tag.onsubmit}"[/#if]>
-[#if Parameters['params']??]<input name="params" type="hidden" value="${Parameters['params']?html}" />[/#if]
+[#if Parameters['_params']??]<input name="_params" type="hidden" value="${Parameters['_params']?html}" />[/#if]
 <table class="search-widget">
 [#if tag.title??]
 <tr><td><span class="toolbar-icon action-info"></span><em>${tag.title}</em></td></tr>
