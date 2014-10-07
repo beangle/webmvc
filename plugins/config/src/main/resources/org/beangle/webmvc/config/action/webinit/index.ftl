@@ -16,9 +16,12 @@
   </tbody>
 </table>
 
+[#if webxml??]
 <h4>web.xml</h4>
 <pre class="code">
 ${webxml?html}
 </pre>
-
+[#else]
+<h4>No web.xml</h4>
+[/#if]
 [@b.foot/]

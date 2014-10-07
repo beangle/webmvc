@@ -14,12 +14,13 @@ class WebinitAction extends ActionSupport {
   def index(): String = {
     val context = ContextHolder.context.request.getServletContext
     val webxml = context.getRealPath("WEB-INF/web.xml")
-    val url = if (new File(webxml).exists) {
-      new File(webxml).toURI.toURL
-    } else {
-      ClassLoaders.getResource("WEB-INF/web.xml")
-    }
-    put("webxml", IOs.readString(url.openStream))
+    val url =
+      if (null != webxml && new File(webxml).exists) {
+        new File(webxml).toURI.toURL
+      } else {
+        ClassLoaders.getResource("WEB-INF/web.xml")
+      }
+    if (null != url) put("webxml", IOs.readString(url.openStream))
     val initializers = new collection.mutable.HashMap[String, URL]
 
     val initURLs = ClassLoaders.getResources("META-INF/beangle/web-init.properties")
