@@ -16,15 +16,13 @@ class Messages(context: ComponentContext) extends UIBean(context) {
 
       actionMessages = messages.messages.toList
       actionErrors = messages.errors.toList
-      if ("true".equals(clear)) {
-        messages.clear()
-      }
+      if ("true".equals(clear)) messages.clear()
     }
   }
 
-  def hasActionErrors: Boolean = !actionErrors.isEmpty
+  def hasErrors: Boolean = !actionErrors.isEmpty
 
-  def hasActionMessages: Boolean = !actionMessages.isEmpty
+  def hasMessages: Boolean = !actionMessages.isEmpty
 
 }
 

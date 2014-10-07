@@ -1,6 +1,6 @@
 [#if tag.id??]
 <div class="ui-widget" id="${tag.id}">
-[#if tag.hasActionMessages()]
+[#if tag.hasMessages]
 <div class="actionMessage">
   <div class="ui-state-highlight ui-corner-all"> 
     [#list tag.actionMessages as message]
@@ -10,7 +10,7 @@
   </div>
 </div>
 [/#if]
-[#if tag.hasActionErrors()]
+[#if tag.hasErrors]
 <div class="actionError">
   <div class="ui-state-error ui-corner-all" style="padding: 0.3em 0.7em;"> 
     [#list tag.actionErrors as message]

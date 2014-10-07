@@ -78,36 +78,36 @@ class Flash extends Map[Object, Object] with Serializable {
    * 添加消息到下一次请求
    */
   def addMessage(message: String) {
-    getActionMessages(next, message).messages += message
+    getActionMessages(next).messages += message
   }
 
   /**
    * 添加错误消息到下一次请求
    */
   def addError(error: String) {
-    getActionMessages(next, error).errors += error
+    getActionMessages(next).errors += error
   }
 
   /**
    * 添加消息到本次请求
    */
   def addMessageNow(message: String) {
-    getActionMessages(now, message).messages += message
+    getActionMessages(now).messages += message
   }
 
   /**
    * 添加错误到本次请求
    */
   def addErrorNow(message: String): Unit = {
-    getActionMessages(now, message).errors += message
+    getActionMessages(now).errors += message
   }
 
-  private def getActionMessages(map: Map[Object, Object], message: String): ActionMessages = {
+  private def getActionMessages(map: Map[Object, Object]): ActionMessages = {
     map.get(Flash.MESSAGES) match {
       case messages: ActionMessages => messages
       case _ => {
         val messages = new ActionMessages()
-        now.put(Flash.MESSAGES, messages)
+        map.put(Flash.MESSAGES, messages)
         messages
       }
     }
