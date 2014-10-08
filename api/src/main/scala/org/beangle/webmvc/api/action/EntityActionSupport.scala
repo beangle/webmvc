@@ -26,19 +26,19 @@ trait EntityActionSupport[T] extends ActionSupport {
     else Params.converter.convert(entityId, clazz)
   }
 
-  protected final def getIntId(shortName: String): Int = getId(shortName, classOf[Int])
+  protected final def getIntId(shortName: String): java.lang.Integer = getId(shortName, classOf[java.lang.Integer])
 
-  protected final def getLongId(shortName: String): Long = getId(shortName, classOf[Long])
-
-  /**
-   * Get entity's long id array from parameters shortname.id,shortname.ids,shortnameIds
-   */
-  protected final def getLongIds(shortName: String): Array[Long] = getIds(shortName, classOf[Long])
+  protected final def getLongId(shortName: String): java.lang.Long = getId(shortName, classOf[java.lang.Long])
 
   /**
    * Get entity's long id array from parameters shortname.id,shortname.ids,shortnameIds
    */
-  protected final def getIntIds(shortName: String): Array[Int] = getIds(shortName, classOf[Int])
+  protected final def getLongIds(shortName: String): Array[java.lang.Long] = getIds(shortName, classOf[java.lang.Long])
+
+  /**
+   * Get entity's long id array from parameters shortname.id,shortname.ids,shortnameIds
+   */
+  protected final def getIntIds(shortName: String): Array[java.lang.Integer] = getIds(shortName, classOf[java.lang.Integer])
 
   /**
    * Get entity's id array from parameters shortname.id,shortname.ids,shortnameIds
