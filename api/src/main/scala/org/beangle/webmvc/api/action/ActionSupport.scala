@@ -70,16 +70,16 @@ class ActionSupport extends Logging {
     To(uri)
   }
 
-  protected final def redirect(method: String, message: String, params: String): View = {
-    redirect(to(this, method, params), message)
-  }
-
   protected final def redirect(method: String): View = {
     redirect(to(this, method), null)
   }
 
   protected final def redirect(method: String, message: String): View = {
     redirect(to(this, method), message)
+  }
+
+  protected final def redirect(method: String, params: String, message: String): View = {
+    redirect(to(this, method, params), message)
   }
 
   protected final def redirect(action: To, message: String): View = {
