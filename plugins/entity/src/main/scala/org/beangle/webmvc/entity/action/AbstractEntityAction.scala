@@ -1,7 +1,6 @@
 package org.beangle.webmvc.entity.action
 
 import java.{ util => ju, io => jo }
-
 import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.PageLimit
 import org.beangle.commons.config.property.PropertyConfig
@@ -16,6 +15,8 @@ import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.helper.{ PopulateHelper, QueryHelper }
+import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.context.ActionContextHelper
 
 abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[T] {
   var entityDao: EntityDao = _
@@ -164,23 +165,6 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
   protected def getModels[E](entityName: String, ids: Array[_ <: jo.Serializable]): Seq[E] = {
     val idlist: Iterable[jo.Serializable] = ids.toList
     entityDao.find(Class.forName(entityName).asInstanceOf[Class[Entity[jo.Serializable]]], idlist).asInstanceOf[Seq[E]]
-  }
-
-  @ignore
-  protected def saveAndRedirect(entity: T): View = {
-    try {
-      if (entity.isInstanceOf[UpdatedBean]) {
-        val timeEntity = entity.asInstanceOf[UpdatedBean]
-        timeEntity.updatedAt = new ju.Date()
-      }
-      saveOrUpdate(entity)
-      redirect("search", "info.save.success")
-    } catch {
-      case e: Exception => {
-        info("saveAndForwad failure", e)
-        redirect("search", "info.save.failure")
-      }
-    }
   }
 
   @ignore

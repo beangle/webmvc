@@ -1,10 +1,14 @@
 package org.beangle.webmvc.entity.action
 
+import java.{ io => jo, util => ju }
+
 import org.beangle.commons.lang.Strings
 import org.beangle.data.model.Entity
+import org.beangle.data.model.bean.UpdatedBean
 import org.beangle.webmvc.api.annotation.ignore
+import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.api.view.View
-import java.{ io => jo }
+import org.beangle.webmvc.context.ActionContextHelper
 
 abstract class EntityDrivenAction[T <: Entity[_]] extends AbstractEntityAction[T] {
 
@@ -67,6 +71,20 @@ abstract class EntityDrivenAction[T <: Entity[_]] extends AbstractEntityAction[T
    */
   def save(): View = {
     saveAndRedirect(populateEntity())
+  }
+
+  @ignore
+  protected def saveAndRedirect(entity: T): View = {
+    try {
+      if (entity.isInstanceOf[UpdatedBean]) {
+        val timeEntity = entity.asInstanceOf[UpdatedBean]
+        timeEntity.updatedAt = new ju.Date()
+      }
+      saveOrUpdate(entity)
+      redirect("search", "info.save.success")
+    } catch {
+      case e: Exception => redirect("edit", "info.save.failure")
+    }
   }
 
   /**

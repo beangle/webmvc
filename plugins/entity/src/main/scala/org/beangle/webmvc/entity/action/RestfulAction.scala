@@ -1,9 +1,13 @@
 package org.beangle.webmvc.entity.action
 
+import java.{ util => ju }
+
 import org.beangle.data.model.Entity
+import org.beangle.data.model.bean.UpdatedBean
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
-import org.beangle.webmvc.api.context.Params
+import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.api.view.View
+import org.beangle.webmvc.context.ActionContextHelper
 
 abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends AbstractRestfulAction[T] {
 
@@ -45,14 +49,34 @@ abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends Abs
   }
 
   @mapping(method = "put")
-  def batchUpdate(@param("id") id: String): View = {
-    val entity = populate(getModel(id), entityName, shortName)
-    saveAndRedirect(entity)
+  def batchUpdate(): View = {
+    throw new RuntimeException("Need implementation")
   }
 
   @mapping(method = "post")
   def save(): View = {
     saveAndRedirect(populateEntity())
+  }
+
+  @ignore
+  protected def saveAndRedirect(entity: T): View = {
+    try {
+      if (entity.isInstanceOf[UpdatedBean]) {
+        val timeEntity = entity.asInstanceOf[UpdatedBean]
+        timeEntity.updatedAt = new ju.Date()
+      }
+      saveOrUpdate(entity)
+      redirect("search", "info.save.success")
+    } catch {
+      case e: Exception => {
+        val redirectTo = ActionContextHelper.getMapping(ContextHolder.context).action.method.getName match {
+          case "save" => "editNew"
+          case "update" => "edit"
+        }
+        info("saveAndForwad failure", e)
+        redirect(redirectTo, "info.save.failure")
+      }
+    }
   }
 
   protected def editSetting(entity: T): Unit = {}
