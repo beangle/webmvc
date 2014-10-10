@@ -246,8 +246,7 @@ class Startend(context: ComponentContext) extends UIBean(context) {
   override def evaluateParams() {
     val nameArray = Strings.split(name, ',')
     dates = new Array[Date](nameArray.length)
-    val format2 = Date.ResvervedFormats.get(format)
-    if (null != format2) format = format2.get
+    Date.ResvervedFormats.get(format) foreach { f => format = f }
     val requiredArray = Strings.split(required, ',')
     val commentArray = Strings.split(comment, ',')
     val labelArray = Strings.split(label, ',')
