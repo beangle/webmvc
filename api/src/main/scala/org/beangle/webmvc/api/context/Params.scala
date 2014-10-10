@@ -38,7 +38,7 @@ object Params {
     }
   }
 
-  def getAll[T >: Any: ClassTag](attr: String, clazz: Class[T]): Array[T] = {
+  def getAll[T: ClassTag](attr: String, clazz: Class[T]): Array[T] = {
     val value = getAll(attr)
     if (null == value) null
     else converter.convert(value.asInstanceOf[Array[AnyRef]], clazz)

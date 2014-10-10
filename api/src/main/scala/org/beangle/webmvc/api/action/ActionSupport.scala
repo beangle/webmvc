@@ -145,7 +145,7 @@ class ActionSupport extends Logging {
 
   protected final def getAll(paramName: String) = Params.getAll(paramName)
 
-  protected final def getAll[T >: Any: ClassTag](paramName: String, clazz: Class[T]) = Params.getAll(paramName, clazz)
+  protected final def getAll[T: ClassTag](paramName: String, clazz: Class[T]) = Params.getAll(paramName, clazz)
 
   protected final def get(paramName: String) = Params.get(paramName)
 
@@ -162,6 +162,11 @@ class ActionSupport extends Logging {
 
   protected final def getBoolean(name: String) = Params.getBoolean(name)
 
+  protected final def getBoolean(name: String, defaultValue: Boolean): Boolean = {
+    this.getAll("a", classOf[Long])
+    Params.getBoolean(name).getOrElse(defaultValue)
+  }
+
   protected final def getDate(name: String) = Params.getDate(name)
 
   protected final def getDateTime(name: String) = Params.getDateTime(name)
@@ -171,6 +176,10 @@ class ActionSupport extends Logging {
   protected final def getShort(name: String) = Params.getShort(name)
 
   protected final def getInt(name: String) = Params.getInt(name)
+
+  protected final def getInt(name: String, defaultValue: Int): Int = {
+    Params.getInt(name).getOrElse(defaultValue)
+  }
 
   protected final def getLong(name: String) = Params.getLong(name)
 
