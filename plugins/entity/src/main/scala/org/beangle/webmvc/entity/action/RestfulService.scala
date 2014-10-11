@@ -12,10 +12,11 @@ class RestfulService[T <: Entity[_ <: java.io.Serializable]] extends AbstractEnt
     entityDao.search(getQueryBuilder())
   }
 
+  @response
   @mapping(value = "{id}")
   def info(@param("id") id: String): T = {
     val entityId = Params.converter.convert(id, entityMetaData.getType(entityName).get.idType)
-    getModel(entityName, entityId)
+    getModel[T](entityName, entityId)
   }
 
 }
