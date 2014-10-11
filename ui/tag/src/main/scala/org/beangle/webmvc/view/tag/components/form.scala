@@ -2,11 +2,11 @@ package org.beangle.webmvc.view.tag.components
 
 import java.io.Writer
 import java.text.SimpleDateFormat
-import java.{util => ju}
-
+import java.{ util => ju }
 import org.beangle.commons.bean.PropertyUtils
 import org.beangle.commons.lang.Strings
 import org.beangle.webmvc.view.tag.ComponentContext
+import org.beangle.commons.lang.Primitives
 
 class Form(context: ComponentContext) extends ClosingUIBean(context) {
   var name: String = _
@@ -214,7 +214,7 @@ class Date(context: ComponentContext) extends UIBean(context) {
       if ("true".equals(required)) myform.addRequire(id)
       if (null != check) myform.addCheck(id, check)
     }
-    val format2 = Date.ResvervedFormats.getOrElse(format,format)
+    val format2 = Date.ResvervedFormats.getOrElse(format, format)
     if (null != format2) format = format2
     if (value.isInstanceOf[ju.Date]) {
       val dformat = new SimpleDateFormat(format)
@@ -267,6 +267,10 @@ class Select(context: ComponentContext) extends ClosingUIBean(context) {
   /** option text template */
   var _option: String = _
 
+  var href: String = _
+
+  var mutiple: String = _
+
   override def evaluateParams() {
     if (null == keyName) {
       if (items.isInstanceOf[ju.Map[_, _]]) {
@@ -289,23 +293,31 @@ class Select(context: ComponentContext) extends ClosingUIBean(context) {
       if (null != check) myform.addCheck(id, check)
     }
     if (null == value) value = requestParameter(name)
-    // trim empty string to null for speed up isSelected
-    if ((value.isInstanceOf[String]) && Strings.isEmpty(value.asInstanceOf[String])) value = null
+    if (null != value) {
+      value = value match {
+        case str: String => if (Strings.isEmpty(str)) null else str
+        case tuple: Tuple2[_, _] => tuple._1.toString
+        case _ =>
+          if (Primitives.isWrapperType(value.getClass())) value
+          else PropertyUtils.getProperty(value, keyName)
+      }
+    }
+    if (null != href) href = render(href)
   }
 
   def isSelected(obj: Object): Boolean = {
     if (null == value) return false
     else try {
-      var nobj = obj
-      if (obj.isInstanceOf[Tuple2[_, _]]) nobj = obj.asInstanceOf[Tuple2[Object, _]]._1
-      else if (obj.isInstanceOf[ju.Map.Entry[_, _]]) nobj = obj.asInstanceOf[ju.Map.Entry[Object, _]].getKey()
-      val rs = value.equals(nobj) || value.equals(PropertyUtils.getProperty(nobj, keyName))
-      return rs || value.toString().equals(nobj.toString()) ||
-        value.toString().equals(String.valueOf(PropertyUtils.getProperty(nobj, keyName).toString))
+      var nobj =
+        if (obj.isInstanceOf[Tuple2[_, _]]) obj.asInstanceOf[Tuple2[Object, _]]._1
+        else if (obj.isInstanceOf[ju.Map.Entry[_, _]]) obj.asInstanceOf[ju.Map.Entry[Object, _]].getKey()
+        else obj
+
+      val propertyObj = PropertyUtils.getProperty(nobj, keyName)
+      val rs = value == propertyObj
+      rs || value.toString == nobj.toString || value.toString == propertyObj.toString
     } catch {
-      case e: Exception =>
-        e.printStackTrace()
-        return false
+      case e: Exception => false
     }
   }
 

@@ -31,16 +31,16 @@ object Params {
   def getAll(attr: String): Array[Any] = {
     ContextHolder.context.params.get(attr) match {
       case Some(value) =>
-        if (null == value) null
+        if (null == value) Array()
         if (value.getClass.isArray()) value.asInstanceOf[Array[Any]]
         else Array(value)
-      case None => null
+      case None => Array()
     }
   }
 
   def getAll[T: ClassTag](attr: String, clazz: Class[T]): Array[T] = {
     val value = getAll(attr)
-    if (null == value) null
+    if (null == value) Array()
     else converter.convert(value.asInstanceOf[Array[AnyRef]], clazz)
   }
 

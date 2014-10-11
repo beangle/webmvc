@@ -13,6 +13,7 @@ class JsonpSerializer extends Serializer {
 
   var callbackName = "callback"
 
+  //FIXME use commons.core 4.1.1
   val TextScript = new MimeType("text/javascript")
 
   def serialize(data: AnyRef, os: OutputStream) = {
