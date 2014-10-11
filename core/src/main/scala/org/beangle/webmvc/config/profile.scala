@@ -15,9 +15,11 @@ object Profile extends Logging {
 
   val SHORT_URI = "short"
 
+  val SIMPLE_URI = "simple"
+
   val SEO_URI = "seo"
 
-  val SIMPLE_URI = "simple"
+  val PLUR_SEO_URI = "plur-seo"
 
   val FULL_VIEWPATH = "full"
 
