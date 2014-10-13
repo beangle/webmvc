@@ -255,13 +255,13 @@ table.infoTable {
     background-color: #EEEEEE;
 }
 
-table.infoTable td {
+table.infoTable > tbody > td {
     border: 1px solid #FFFFFF;
     overflow:hidden;
     word-wrap:break-word;
 }
 
-table.infoTable th {
+table.infoTable > thead > th {
     background-color: #E1ECFF;
     height: 22px;
 }
