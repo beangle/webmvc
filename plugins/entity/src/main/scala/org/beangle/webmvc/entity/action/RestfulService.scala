@@ -9,7 +9,10 @@ class RestfulService[T <: Entity[_ <: java.io.Serializable]] extends AbstractEnt
 
   @response
   def index(): Seq[T] = {
-    entityDao.search(getQueryBuilder().limit(null))
+    getInt("page") match {
+      case Some(p) => entityDao.search(getQueryBuilder())
+      case None => entityDao.search(getQueryBuilder().limit(null))
+    }
   }
 
   @response
