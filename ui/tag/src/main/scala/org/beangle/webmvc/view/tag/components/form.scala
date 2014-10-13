@@ -308,14 +308,12 @@ class Select(context: ComponentContext) extends ClosingUIBean(context) {
   def isSelected(obj: Object): Boolean = {
     if (null == value) return false
     else try {
-      var nobj =
+      var pObj =
         if (obj.isInstanceOf[Tuple2[_, _]]) obj.asInstanceOf[Tuple2[Object, _]]._1
         else if (obj.isInstanceOf[ju.Map.Entry[_, _]]) obj.asInstanceOf[ju.Map.Entry[Object, _]].getKey()
-        else obj
+        else PropertyUtils.getProperty(obj, keyName)
 
-      val propertyObj = PropertyUtils.getProperty(nobj, keyName)
-      val rs = value == propertyObj
-      rs || value.toString == nobj.toString || value.toString == propertyObj.toString
+      value == pObj || value.toString == pObj.toString
     } catch {
       case e: Exception => false
     }

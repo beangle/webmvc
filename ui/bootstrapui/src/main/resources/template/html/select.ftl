@@ -12,7 +12,10 @@ ${tag.body}
 </select>
 [#if !(tag.items??) && tag.href??]
 <script type="text/javascript">
-  jQuery.get("${tag.href}",function(datas){
+jQuery.ajax({
+  url: "${tag.href}",
+  headers:{"Accept":"application/json"},
+  success: function(datas){
     var select = $("#${tag.id}")
     for(var i in datas){
       var data = datas[i], value = data.${tag.keyName}
@@ -21,6 +24,7 @@ ${tag.body}
     [#if tag.value??]
     select.val("${tag.value}")
     [/#if]
-  })
+  }
+});
 </script>
 [/#if]
