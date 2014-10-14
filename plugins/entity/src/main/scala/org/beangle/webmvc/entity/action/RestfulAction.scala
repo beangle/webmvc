@@ -61,9 +61,9 @@ abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends Abs
   @ignore
   protected def saveAndRedirect(entity: T): View = {
     try {
-      if (entity.isInstanceOf[UpdatedBean]) {
-        val timeEntity = entity.asInstanceOf[UpdatedBean]
-        timeEntity.updatedAt = new ju.Date()
+      entity match {
+        case updated: UpdatedBean => updated.updatedAt = new ju.Date()
+        case _ =>
       }
       saveOrUpdate(entity)
       redirect("search", "info.save.success")

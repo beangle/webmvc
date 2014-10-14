@@ -167,6 +167,10 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
     entityDao.find(Class.forName(entityName).asInstanceOf[Class[Entity[jo.Serializable]]], idlist).asInstanceOf[Seq[E]]
   }
 
+  protected def convertId[ID](id: String): ID = {
+    Params.converter.convert(id, entityMetaData.getType(entityName).get.idType).asInstanceOf[ID]
+  }
+
   @ignore
   protected def removeAndRedirect(entities: Seq[T]): View = {
     try {

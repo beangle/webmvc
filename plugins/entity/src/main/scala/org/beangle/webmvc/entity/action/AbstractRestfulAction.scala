@@ -19,8 +19,7 @@ abstract class AbstractRestfulAction[T <: Entity[_ <: java.io.Serializable]] ext
 
   @mapping(value = "{id}")
   def info(@param("id") id: String): String = {
-    val entityId = Params.converter.convert(id, entityMetaData.getType(entityName).get.idType)
-    put(shortName, getModel(entityName, entityId))
+    put(shortName, getModel(entityName, convertId(id)))
     forward()
   }
 
