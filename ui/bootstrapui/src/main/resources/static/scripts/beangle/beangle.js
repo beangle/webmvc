@@ -629,9 +629,9 @@
             alert("输入分页的页码是:"+pageNo+",它不是个整数");
             return;
           }
-          bg.form.addInput(form,"pageNo",pageNo,"hidden");
+          bg.form.addInput(form,"page",pageNo,"hidden");
         }else{
-          bg.form.addInput(form,"pageNo",1,"hidden");
+          bg.form.addInput(form,"page",1,"hidden");
         }
         if(null!=pageSize){
           if(!/^[1-9]\d*$/.test(pageSize)){
@@ -840,7 +840,7 @@
             pageNo=this.maxPageNo;
           }
         }
-        this.paramMap['pageNo']=pageNo;
+        this.paramMap['page']=pageNo;
       }
       if(null!=pageSize){
         if(!/^[1-9]\d*$/.test(pageSize)){

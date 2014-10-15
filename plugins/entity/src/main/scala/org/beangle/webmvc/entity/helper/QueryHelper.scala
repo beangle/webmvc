@@ -15,9 +15,9 @@ import org.beangle.webmvc.api.context.{ ContextHolder, Params }
 
 object QueryHelper extends Logging {
 
-  val PAGENO = "pageNo"
+  val PageParam = "page"
 
-  val PAGESIZE = "pageSize"
+  val PageSizeParam = "pageSize"
 
   val RESERVED_NULL = true
 
@@ -91,7 +91,7 @@ object QueryHelper extends Logging {
    * 获得请求中的页码
    */
   def getPageNo(): Int = {
-    var pageNo = Params.getInt(PAGENO).getOrElse(Page.DefaultPageNo)
+    var pageNo = Params.getInt(PageParam).getOrElse(Page.DefaultPageNo)
     if (pageNo < 1) Page.DefaultPageNo else pageNo
   }
 
@@ -99,12 +99,12 @@ object QueryHelper extends Logging {
    * 获得请求中的页长
    */
   def getPageSize(): Int = {
-    var pageSize = Params.get(PAGESIZE).getOrElse("")
+    var pageSize = Params.get(PageSizeParam).getOrElse("")
     var pagesize = Page.DefaultPageSize
     if (Strings.isNotBlank(pageSize)) {
       pagesize = Numbers.toInt(pageSize.trim())
     } else {
-      pageSize = CookieUtils.getCookieValue(ContextHolder.context.request, PAGESIZE)
+      pageSize = CookieUtils.getCookieValue(ContextHolder.context.request, PageSizeParam)
       if (Strings.isNotEmpty(pageSize)) pagesize = Numbers.toInt(pageSize)
     }
     if (pagesize < 1) Page.DefaultPageSize else pagesize
