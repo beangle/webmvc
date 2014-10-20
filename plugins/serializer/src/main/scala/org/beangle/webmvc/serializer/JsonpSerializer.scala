@@ -1,20 +1,19 @@
 package org.beangle.webmvc.serializer
 
-import org.beangle.commons.io.Serializer
 import java.io.OutputStream
-import javax.activation.MimeType
+
 import org.beangle.commons.activation.MimeTypes
-import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.commons.io.Serializer
 import org.beangle.data.serializer.JsonSerializer
+import org.beangle.webmvc.api.context.ContextHolder
+
+import javax.activation.MimeType
 
 class JsonpSerializer extends Serializer {
 
   var jsonSerializer: JsonSerializer = _
 
   var callbackName = "callback"
-
-  //FIXME use commons.core 4.1.1
-  val TextScript = new MimeType("text/javascript")
 
   def serialize(data: AnyRef, os: OutputStream) = {
     val params = ContextHolder.context.params
@@ -26,6 +25,6 @@ class JsonpSerializer extends Serializer {
   }
 
   def supportMediaTypes: Seq[MimeType] = {
-    List(TextScript)
+    List(MimeTypes.TextJavaScript)
   }
 }

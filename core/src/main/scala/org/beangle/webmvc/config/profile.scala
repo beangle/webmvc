@@ -1,13 +1,12 @@
 package org.beangle.webmvc.config
 
 import java.net.URL
-
 import scala.Range
-
 import org.beangle.commons.lang.Objects
 import org.beangle.commons.lang.Strings.{ isEmpty, split, uncapitalize }
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.intercept.Interceptor
+import org.beangle.commons.lang.Strings
 
 object Profile extends Logging {
 
@@ -126,7 +125,18 @@ final class Profile(val name: String,
    * first com.beangle.aa.bb.web.action then com.beangle.*.web.action
    */
   override def compareTo(other: Profile): Int = {
-    other.actionPattern.compareTo(this.actionPattern)
+    val others = Strings.split(other.actionPattern, ".")
+    val me = Strings.split(this.actionPattern, ".")
+    var i = 0
+    val length = Math.min(others.length, me.length)
+    while (i < length) {
+      if (others(i) != me(i)) {
+        if (others(i) == "*" && me(i) != "*") return -1
+        return if (others(i) < me(i)) -1 else 1
+      }
+      i += 1
+    }
+    others.length - me.length
   }
 
   override def toString: String = {

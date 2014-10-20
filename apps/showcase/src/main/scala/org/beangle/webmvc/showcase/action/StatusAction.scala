@@ -10,7 +10,7 @@ class StatusAction extends ActionSupport {
   }
 
   def code403(): View = {
-    Status.forbidden
+    Status.Forbidden
   }
   
   def json():String={
