@@ -14,16 +14,17 @@ import org.beangle.webmvc.api.view.{ ForwardActionView, RedirectActionView, View
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 object ActionSupport {
-  val SUCCESS = "success"
   val ERROR = "error"
   val INPUT = "input"
 }
 
 class ActionSupport extends Logging {
 
-  protected final def forward(view: String = ActionSupport.SUCCESS) = view
+  protected final def forward(view: String = null): String = {
+    view
+  }
 
-  protected final def forward(view: String, message: String) = {
+  protected final def forward(view: String, message: String): String = {
     addMessage(getText(message))
     view
   }

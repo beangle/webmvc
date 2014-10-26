@@ -12,4 +12,6 @@ public @interface mapping {
 	String value() default "";
 
 	String method() default "get";
+
+	String view() default "";
 }

@@ -4,6 +4,7 @@ import org.beangle.commons.bean.Initializing
 import org.beangle.commons.http.accept.ContentNegotiationManager
 import org.beangle.commons.inject.Container
 import org.beangle.commons.io.Serializer
+import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.web.intercept.Interceptor
 import org.beangle.webmvc.api.context.{ ActionContext, ContextHolder }
@@ -12,9 +13,8 @@ import org.beangle.webmvc.config.{ ActionMapping, Configurer }
 import org.beangle.webmvc.context.SerializerManager
 import org.beangle.webmvc.execution.{ Handler, InvocationReactor }
 import org.beangle.webmvc.view.{ ViewRender, ViewResolver }
-import org.beangle.webmvc.view.impl.DefaultTemplatePathMapper
+
 import javax.activation.MimeType
-import org.beangle.webmvc.api.annotation.response
 
 @description("缺省的调用反应堆")
 class DefaultInvocationReactor extends InvocationReactor with Initializing {
@@ -63,21 +63,25 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
         postHandle(interceptors, context, lastInterceptorIndex)
         throw exception
       } else {
+        if (null == result && null != mapping.defaultView) result = mapping.defaultView
         if (null != result) {
           try {
             val view = result match {
               case viewName: String =>
-                if (null != mapping.defaultView) {
-                  val newViewName = if ("success" == viewName) mapping.defaultView else viewName
-                  config.views.get(newViewName) match {
-                    case Some(v) => v
-                    case None =>
-                      val profile = configurer.getProfile(config.clazz.getName)
-                      val newView = resolvers(profile.viewType).resolve(newViewName, mapping)
-                      if (null == newView) throw new RuntimeException(s"Cannot find view[$newViewName] for ${config.clazz.getName}")
-                      newView
-                  }
-                } else null
+                config.views.get(viewName) match {
+                  case Some(v) => v
+                  case None =>
+                    val profile = configurer.getProfile(config.clazz.getName)
+                    val candidates = Strings.split(viewName, ",")
+                    var newView: View = null
+                    var i = 0
+                    while (i < candidates.length && null == newView) {
+                      newView = resolvers(profile.viewType).resolve(candidates(i), mapping)
+                      i += 1
+                    }
+                    require(null != newView, s"Cannot find view[$viewName] for ${config.clazz.getName}")
+                    newView
+                }
               case view: View => view
               case _ => null
             }

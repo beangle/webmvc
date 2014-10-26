@@ -8,15 +8,6 @@ import org.beangle.webmvc.config.Profile
 import org.beangle.webmvc.config.Profile.{ / => /, FULL_VIEWPATH, SEO_VIEWPATH, SIMPLE_VIEWPATH }
 import org.beangle.webmvc.view.TemplatePathMapper
 
-object DefaultTemplatePathMapper {
-  private val methodViews = Map(("search", "list"), ("query", "list"), ("edit", "form"), ("home", "index"), ("execute", "index"), ("add", "new"))
-
-  def defaultView(methodName: String, viewName: String): String = {
-    if (null == viewName || "success" == viewName) methodViews.getOrElse(methodName, methodName)
-    else methodViews.getOrElse(viewName, viewName)
-  }
-}
-
 @description("缺省的模板路径映射器")
 class DefaultTemplatePathMapper extends TemplatePathMapper {
 

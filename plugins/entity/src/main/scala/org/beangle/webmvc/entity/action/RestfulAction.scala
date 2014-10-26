@@ -19,12 +19,12 @@ abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends Abs
     forward()
   }
 
-  @mapping(value = "new")
+  @mapping(value = "new", view = "new,form")
   def editNew(): String = {
     var entity = getEntity(entityType, shortName)
     editSetting(entity)
     put(shortName, entity)
-    forward("new")
+    forward()
   }
 
   @mapping(value = "{id}", method = "delete")

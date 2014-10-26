@@ -32,7 +32,8 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     val nameAndspace = ActionNameBuilder.build(clazz, profile)
     val actionName = nameAndspace._1
     val actions = new collection.mutable.ListBuffer[Tuple2[String, ActionMapping]]
-    val config = new ActionConfig(clazz, actionName, nameAndspace._2, buildViews(clazz, profile), profile)
+    val views = buildViews(clazz, profile)
+    val config = new ActionConfig(clazz, actionName, nameAndspace._2, views, profile)
     val mappings = new collection.mutable.HashMap[String, ActionMapping]
     val classInfo = ClassInfo.get(clazz)
     classInfo.methods foreach {
@@ -77,9 +78,13 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
           if (arguments.size == 0 || !arguments.exists(a => a == null)) {
             mappingMehtods += method
             if (mappingMehtods.size == 1) {
-              val defaultView =
-                if (method.isAnnotationPresent(classOf[response])) null
-                else DefaultTemplatePathMapper.defaultView(method.getName, null)
+              var defaultView = defaultViewName(method)
+              if (null != defaultView && defaultView.contains(",") && !views.isEmpty) {
+                defaultView = Strings.split(defaultView, ",") find (v => views.contains(v)) match {
+                  case Some(v) => v
+                  case _ => defaultView
+                }
+              }
               val mapping = new ActionMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
               mappings.put(method.getName, mapping)
               actions += Tuple2(url, mapping)
@@ -154,26 +159,33 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     val suffix = profile.viewSuffix
     if (suffix.endsWith(".ftl")) {
       ClassInfo.get(clazz).getMethods foreach { mi =>
-        val m = mi.method
-        var name = m.getName
-        if (!annotationResults.contains(name) && shouldGenerateResult(m)) {
-          val path = templateResolver.resolve(clazz, DefaultTemplatePathMapper.defaultView(name, name), suffix)
-          if (null != path) viewMap.put(name, new FreemarkerView(path))
+        val viewName = defaultViewName(mi.method)
+        if (null != viewName && !annotationResults.contains(viewName)) {
+          Strings.split(viewName, ",") foreach { v =>
+            val path = templateResolver.resolve(clazz, v, suffix)
+            if (null != path) viewMap.put(v, new FreemarkerView(path))
+          }
         }
       }
     }
     viewMap.toMap
   }
 
-  protected def shouldGenerateResult(m: Method): Boolean = {
+  protected def defaultViewName(m: Method): String = {
     if (classOf[String].equals(m.getReturnType) && !isAnnotationPresent(m, classOf[ignore]) && !isAnnotationPresent(m, classOf[response])) {
-      if (m.getParameterTypes.length == 0 || null != m.getAnnotation(classOf[mapping]) || containParamAnnotation(m.getParameterAnnotations)) {
-        var name = m.getName.toLowerCase
-        !(name.startsWith("save") || name.startsWith("remove")
-          || name.startsWith("export") || name.startsWith("import")
-          || name.startsWith("get") || Strings.contains(name, "$"))
-      } else false
-    } else false
+      val mappingAnn = getAnnotation(m, classOf[mapping])
+      if (m.getParameterTypes.length == 0 || null != mappingAnn || containParamAnnotation(m.getParameterAnnotations)) {
+        val name = m.getName.toLowerCase
+        if (name.startsWith("get") || Strings.contains(name, "$")) {
+          null
+        } else {
+          if (null != mappingAnn && Strings.isNotEmpty(mappingAnn._1.view)) mappingAnn._1.view
+          else DefaultActionMappingBuilder.defaultView(m.getName, m.getName)
+        }
+      } else null
+    } else {
+      null
+    }
   }
 
   private def containParamAnnotation(annotations: Array[Array[Annotation]]): Boolean = {
@@ -187,5 +199,14 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
       i += 1
     }
     false
+  }
+}
+
+object DefaultActionMappingBuilder {
+  private val methodViews = Map(("search", "list"), ("query", "list"), ("edit", "form"), ("home", "index"), ("execute", "index"), ("add", "new"))
+
+  def defaultView(methodName: String, viewName: String): String = {
+    if (null == viewName) methodViews.getOrElse(methodName, methodName)
+    else methodViews.getOrElse(viewName, viewName)
   }
 }
