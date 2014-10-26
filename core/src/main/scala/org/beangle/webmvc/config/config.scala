@@ -37,7 +37,7 @@ object ActionMapping {
 }
 
 class ActionMapping(val httpMethod: String, val config: ActionConfig, val method: Method, val name: String,
-  val arguments: Array[Argument], val urlParams: Map[Integer, String], val hasView: Boolean) {
+  val arguments: Array[Argument], val urlParams: Map[Integer, String], val defaultView: String) {
 
   def url = if ("" == name) config.name else (config.name + "/" + name)
 

@@ -77,7 +77,10 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
           if (arguments.size == 0 || !arguments.exists(a => a == null)) {
             mappingMehtods += method
             if (mappingMehtods.size == 1) {
-              val mapping = new ActionMapping(httpMethod, config, method, name, arguments.toArray, urlParams, !method.isAnnotationPresent(classOf[response]))
+              val defaultView =
+                if (method.isAnnotationPresent(classOf[response])) null
+                else DefaultTemplatePathMapper.defaultView(method.getName, null)
+              val mapping = new ActionMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
               mappings.put(method.getName, mapping)
               actions += Tuple2(url, mapping)
               if (name == "index" && method.getParameterTypes.length == 0 && mapping.httpMethod == GET) actions += Tuple2(actionName, mapping)

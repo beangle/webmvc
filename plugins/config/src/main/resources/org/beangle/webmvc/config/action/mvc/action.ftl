@@ -25,8 +25,9 @@
       <thead>
         <tr>
           <th width="10%">Method</th>
-          <th width="45%">Mapping</th>
-          <th width="45%">Action Method</th>
+          <th width="37%">Mapping</th>
+          <th width="38%">Action Method</th>
+          <th width="15%">Default View</th>
         </tr>
       </thead>
       <tbody>
@@ -35,6 +36,7 @@
           <td>${mapping.httpMethod!"*"}</td>
           <td>[#if mapping.name?length>0]${Parameters['name']}/${mapping.name}[#else]${Parameters['name']}[/#if]</td>
           <td>${mapping.method.name}([#list mapping.arguments as p]${p.toString()}[#if p_has_next],[/#if][/#list])</td>
+          <td>${mapping.defaultView!}</td>
         </tr>
       [/#list]
       </tbody>

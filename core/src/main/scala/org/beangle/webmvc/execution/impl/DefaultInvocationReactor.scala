@@ -67,8 +67,8 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
           try {
             val view = result match {
               case viewName: String =>
-                if (mapping.hasView) {
-                  val newViewName = DefaultTemplatePathMapper.defaultView(mapping.method.getName, viewName)
+                if (null != mapping.defaultView) {
+                  val newViewName = if ("success" == viewName) mapping.defaultView else viewName
                   config.views.get(newViewName) match {
                     case Some(v) => v
                     case None =>
