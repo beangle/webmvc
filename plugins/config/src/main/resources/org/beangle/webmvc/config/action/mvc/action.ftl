@@ -1,5 +1,5 @@
 [@b.head/]
-<h4>Action information - ${Parameters['name']}</h4>
+<h4>Action information - <a href="${request.contextPath}${Parameters['name']}" target="_blank">${Parameters['name']}</a></h4>
 
 <table>
   <tr><td>Action class:</td><td> ${config.clazz.name}</td></tr>
@@ -8,18 +8,6 @@
 </table>
 
 [@b.tabs]
-  [@b.tab label="Views"]
-      <table width="100%" class="table">
-      <tr><th>Name</th><th>Type</th><th>location</th></tr>
-      [#list  config.views?keys as viewName]
-        <tr>
-         <td>${viewName}</td>
-         <td>${config.views[viewName].class.name}</td>
-         <td>${config.views[viewName].location}</td>
-        </tr>
-      [/#list]
-    </table>
-  [/@]
   [@b.tab label="Mappings"]
     <table width="100%" class="table">
       <thead>
@@ -40,6 +28,18 @@
         </tr>
       [/#list]
       </tbody>
+    </table>
+  [/@]
+  [@b.tab label="Views"]
+      <table width="100%" class="table">
+      <tr><th>Name</th><th>Type</th><th>location</th></tr>
+      [#list  config.views?keys as viewName]
+        <tr>
+         <td>${viewName}</td>
+         <td>${config.views[viewName].class.name}</td>
+         <td>${config.views[viewName].location}</td>
+        </tr>
+      [/#list]
     </table>
   [/@]
   [@b.tab label="Properties"]

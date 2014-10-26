@@ -78,6 +78,7 @@ class FreemarkerViewResolver(configurer: Configurer, freemarkerConfigurer: Freem
     val session = request.getSession(false)
     if (session != null) model.put(KEY_SESSION, new HttpSessionHashModel(session, wrapper))
     model.put(KEY_REQUEST, new HttpRequestHashModel(request, wrapper))
+    model.put("request",request)
     model.put(KEY_REQUEST_PARAMETERS, new ParametersHashModel(context.params))
     tagLibraryProvider.tagLibraries foreach {
       case (tagName, tag) =>
