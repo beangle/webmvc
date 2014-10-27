@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<profiles>
+  <profile name="default" pattern="*">
+    <action suffix="Action" defaultMethod="index"/>
+    <view path="/" style="full" type="freemarker" suffix=".ftl" />
+    <url path="/" suffix=""  style="seo" />
+    <interceptors>
+      <interceptor name="web.Interceptor.flash"/>
+    </interceptors>
+  </profile>
+</profiles>

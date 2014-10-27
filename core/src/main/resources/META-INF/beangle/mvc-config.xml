@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<profiles>
+  <profile name="beangle" pattern="org.beangle.webmvc.*.action">
+    <url path="/" suffix=""  style="seo" />
+    <interceptors>
+      <interceptor name="web.Interceptor.flash"/>
+      <interceptor name="web.Interceptor.cors"/>
+    </interceptors>
+  </profile>
+</profiles>
