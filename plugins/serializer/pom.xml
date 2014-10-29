@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-plugins</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.1-SNAPSHOT</version>
   </parent>
   <artifactId>beangle-webmvc-serializer-plugin</artifactId>
   <packaging>jar</packaging>

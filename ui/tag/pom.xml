@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-ui-parent</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.1-SNAPSHOT</version>
   </parent>
   <artifactId>beangle-webmvc-tag</artifactId>
   <packaging>jar</packaging>
