@@ -66,25 +66,27 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
         if (null == result && null != mapping.defaultView) result = mapping.defaultView
         if (null != result) {
           try {
-            val view = result match {
-              case viewName: String =>
-                config.views.get(viewName) match {
-                  case Some(v) => v
-                  case None =>
-                    val profile = configurer.getProfile(config.clazz.getName)
-                    val candidates = Strings.split(viewName, ",")
-                    var newView: View = null
-                    var i = 0
-                    while (i < candidates.length && null == newView) {
-                      newView = resolvers(profile.viewType).resolve(candidates(i), mapping)
-                      i += 1
-                    }
-                    require(null != newView, s"Cannot find view[$viewName] for ${config.clazz.getName}")
-                    newView
-                }
-              case view: View => view
-              case _ => null
-            }
+            val view =
+              if (null == mapping.defaultView) null
+              else result match {
+                case viewName: String =>
+                  config.views.get(viewName) match {
+                    case Some(v) => v
+                    case None =>
+                      val profile = configurer.getProfile(config.clazz.getName)
+                      val candidates = Strings.split(viewName, ",")
+                      var newView: View = null
+                      var i = 0
+                      while (i < candidates.length && null == newView) {
+                        newView = resolvers(profile.viewType).resolve(candidates(i), mapping)
+                        i += 1
+                      }
+                      require(null != newView, s"Cannot find view[$viewName] for ${config.clazz.getName}")
+                      newView
+                  }
+                case view: View => view
+                case _ => null
+              }
             if (null != view) {
               renders.get(view.getClass) match {
                 case Some(render) => render.render(view, context)
