@@ -8,4 +8,12 @@
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Config Browser Plugin</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.beangle.webmvc</groupId>
+      <artifactId>beangle-webmvc-tag</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
