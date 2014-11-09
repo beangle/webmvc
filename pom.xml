@@ -16,6 +16,7 @@
     <beangle.data.version>4.1.1</beangle.data.version>
     <beangle.spring.version>4.0.4</beangle.spring.version>
     <freemarker.version>2.3.20</freemarker.version>
+    <hibernate.version>4.3.1.Final</hibernate.version>
   </properties>
 
   <modules>

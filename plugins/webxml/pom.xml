@@ -9,11 +9,6 @@
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Web.xml Plugin</name>
 
-  <properties>
-    <beangle.spring.version>4.0.3</beangle.spring.version>
-    <hibernate.version>4.3.1.Final</hibernate.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.beangle.data</groupId>
