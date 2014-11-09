@@ -105,7 +105,7 @@ class CorsInterceptor extends Interceptor with Initializing {
         } else if ("GET" == method || "HEAD" == method) {
           SIMPLE
         } else if ("POST" == method) {
-          var contentType = req.getContentType
+          val contentType = req.getContentType
           if (contentType != null) if (SimpleHttpContentTypes.contains(contentType.toLowerCase.trim)) SIMPLE else ACTUAL
           else INVALID_CORS
         } else if (ComplexHttpMethods.contains(method)) {

@@ -15,7 +15,10 @@ import org.beangle.webmvc.execution.{ Handler, InvocationReactor }
 import org.beangle.webmvc.view.{ ViewRender, ViewResolver }
 
 import javax.activation.MimeType
-
+/**
+ * 缺省的调用反应堆
+ * 负责调用Action,渲染结果
+ */
 @description("缺省的调用反应堆")
 class DefaultInvocationReactor extends InvocationReactor with Initializing {
 
@@ -67,22 +70,24 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
         if (null != result) {
           try {
             val view =
-              if (null == mapping.defaultView) null
-              else result match {
+              result match {
                 case viewName: String =>
-                  config.views.get(viewName) match {
-                    case Some(v) => v
-                    case None =>
-                      val profile = configurer.getProfile(config.clazz.getName)
-                      val candidates = Strings.split(viewName, ",")
-                      var newView: View = null
-                      var i = 0
-                      while (i < candidates.length && null == newView) {
-                        newView = resolvers(profile.viewType).resolve(candidates(i), mapping)
-                        i += 1
-                      }
-                      require(null != newView, s"Cannot find view[$viewName] for ${config.clazz.getName}")
-                      newView
+                  if (null == mapping.defaultView) null
+                  else {
+                    config.views.get(viewName) match {
+                      case Some(v) => v
+                      case None =>
+                        val profile = configurer.getProfile(config.clazz.getName)
+                        val candidates = Strings.split(viewName, ",")
+                        var newView: View = null
+                        var i = 0
+                        while (i < candidates.length && null == newView) {
+                          newView = resolvers(profile.viewType).resolve(candidates(i), mapping)
+                          i += 1
+                        }
+                        require(null != newView, s"Cannot find view[$viewName] for ${config.clazz.getName}")
+                        newView
+                    }
                   }
                 case view: View => view
                 case _ => null
