@@ -69,12 +69,31 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
+
+  <build>
+      <plugins>
+        <plugin>
+          <groupId>org.beangle.maven</groupId>
+          <artifactId>beangle-maven-plugin</artifactId>
+          <version>0.1.2</version>
+          <executions>
+            <execution>
+              <id>generate</id>
+              <phase>compile</phase>
+              <goals>
+                <goal>gen-dependency</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
 </project>
