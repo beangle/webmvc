@@ -15,7 +15,7 @@
 
   <properties>
     <beangle.version>${project.version}</beangle.version>
-    <beangle.spring.version>4.0.3</beangle.spring.version>
+    <beangle.spring.version>4.0.4</beangle.spring.version>
     <hibernate.version>4.3.1.Final</hibernate.version>
   </properties>
 
