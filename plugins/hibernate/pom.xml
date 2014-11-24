@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-plugins</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
   </parent>
   <artifactId>beangle-webmvc-hibernate-plugin</artifactId>
   <packaging>jar</packaging>
@@ -17,6 +17,11 @@
     <dependency>
       <groupId>org.beangle.data</groupId>
       <artifactId>beangle-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.webmvc</groupId>
+      <artifactId>beangle-webmvc-tag</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>

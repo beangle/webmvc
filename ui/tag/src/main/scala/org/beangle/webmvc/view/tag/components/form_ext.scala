@@ -64,6 +64,10 @@ class Radios(context: ComponentContext) extends UIBean(context) {
 
   private def convertItems(): Iterable[_] = {
     if (items.isInstanceOf[collection.Map[_, _]]) return items.asInstanceOf[collection.Map[_, _]].keys.toList
+    if (items.isInstanceOf[java.util.Map[_, _]]) {
+      items = collection.JavaConversions.mapAsScalaMap(items.asInstanceOf[java.util.Map[_, _]])
+      return items.asInstanceOf[collection.Map[_, _]].keys.toList
+    }
     import Radio._
     var keys: Seq[Object] = null
     if (null == items) {
@@ -183,7 +187,7 @@ class Checkboxes(context: ComponentContext) extends UIBean(context) {
       case iter: Iterable[_] =>
         (for (obj <- iter) yield PropertyUtils.getProperty(obj, "id")).toSet
       case arry: Array[Object] => arry.toSet
-      case str: String => if (Strings.isNotBlank(str)) Strings.split(str).toSet else Set.empty
+      case str: String         => if (Strings.isNotBlank(str)) Strings.split(str).toSet else Set.empty
     }
   }
 }

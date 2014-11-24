@@ -2,6 +2,7 @@ package org.beangle.webmvc.view.tag.components
 
 import org.beangle.commons.lang.{ Objects, Strings }
 import org.beangle.webmvc.view.tag.ComponentContext
+import java.io.Writer
 
 class Div(context: ComponentContext) extends ClosingUIBean(context) {
   var href: String = _

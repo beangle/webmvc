@@ -2,17 +2,12 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-plugins</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
   </parent>
   <artifactId>beangle-webmvc-webxml-plugin</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Web.xml Plugin</name>
-
-  <properties>
-    <beangle.spring.version>4.0.3</beangle.spring.version>
-    <hibernate.version>4.3.1.Final</hibernate.version>
-  </properties>
 
   <dependencies>
     <dependency>
@@ -30,6 +25,11 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
+      <version>${hibernate.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-ehcache</artifactId>
       <version>${hibernate.version}</version>
     </dependency>
   </dependencies>

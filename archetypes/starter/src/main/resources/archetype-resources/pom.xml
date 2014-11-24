@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.beangle</groupId>
     <artifactId>beangle-scala</artifactId>
-    <version>16</version>
+    <version>19</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>\${groupId}</groupId>
@@ -15,8 +15,6 @@
 
   <properties>
     <beangle.version>${project.version}</beangle.version>
-    <beangle.spring.version>4.0.4</beangle.spring.version>
-    <hibernate.version>4.3.1.Final</hibernate.version>
   </properties>
 
   <dependencies>
@@ -51,23 +49,8 @@
       <version>\${beangle.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.beangle.spring</groupId>
-      <artifactId>beangle-spring-context</artifactId>
-      <version>${beangle.spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.beangle.spring</groupId>
-      <artifactId>beangle-spring-hibernate</artifactId>
-      <version>${beangle.spring.version}</version>
-    </dependency>
-    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-ehcache</artifactId>
-      <version>${hibernate.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
