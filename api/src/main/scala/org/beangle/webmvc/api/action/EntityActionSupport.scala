@@ -33,21 +33,26 @@ trait EntityActionSupport[T] extends ActionSupport {
   /**
    * Get entity's long id array from parameters shortname.id,shortname.ids,shortnameIds
    */
-  protected final def getLongIds(shortName: String): Array[java.lang.Long] = getIds(shortName, classOf[java.lang.Long])
+  protected final def getLongIds(shortName: String): Array[java.lang.Long] = {
+    getIds(shortName, classOf[java.lang.Long])
+  }
 
   /**
    * Get entity's long id array from parameters shortname.id,shortname.ids,shortnameIds
    */
-  protected final def getIntIds(shortName: String): Array[java.lang.Integer] = getIds(shortName, classOf[java.lang.Integer])
+  protected final def getIntIds(shortName: String): Array[java.lang.Integer] = {
+    getIds(shortName, classOf[java.lang.Integer])
+  }
 
   /**
    * Get entity's id array from parameters shortname.id,shortname.ids,shortnameIds
    */
   protected final def getIds[T: ClassTag](name: String, clazz: Class[T]): Array[T] = {
-    val datas = Params.getAll(name + ".id", clazz.asInstanceOf[Class[Any]])
+    var datas: Any = Params.getAll(name + ".id", clazz.asInstanceOf[Class[Any]])
     if (null == datas) {
       val datastring = Params.get(name + ".ids").getOrElse(Params.get(name + "Ids").getOrElse(null))
-      if (datastring == null) new Array[T](0) else Params.converter.convert(Strings.split(datastring, ","), clazz)
+      datas = if (datastring == null) java.lang.reflect.Array.newInstance(clazz, 0)
+      else Params.converter.convert(Strings.split(datastring, ","), clazz)
     }
     datas.asInstanceOf[Array[T]]
   }

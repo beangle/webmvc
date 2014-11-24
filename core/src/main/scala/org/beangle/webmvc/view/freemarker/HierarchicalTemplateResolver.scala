@@ -24,10 +24,8 @@ class HierarchicalTemplateResolver(freemarkerConfigurer: FreemarkerConfigurer, t
       buf.append(templatePathMapper.map(superClass.getName, viewName, profile))
       buf.append(suffix)
       path = buf.toString
-      var templateName = path
-      if (path.charAt(0) != '/') templateName = "/" + templateName
       try {
-        source = configuration.getTemplate(templateName)
+        source = configuration.getTemplate(path)
       } catch {
         case e: FileNotFoundException => null //ignore
         case e: IOException => {

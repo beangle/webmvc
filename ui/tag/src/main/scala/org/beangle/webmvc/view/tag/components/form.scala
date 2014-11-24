@@ -31,7 +31,7 @@ class Form(context: ComponentContext) extends ClosingUIBean(context) {
     } else if (null == id) {
       id = name
     }
-    action = render(action)
+    if (null != action) action = render(action)
     if (null != title) title = getText(title)
   }
 
@@ -295,7 +295,7 @@ class Select(context: ComponentContext) extends ClosingUIBean(context) {
     if (null == value) value = requestParameter(name)
     if (null != value) {
       value = value match {
-        case str: String => if (Strings.isEmpty(str)) null else str
+        case str: String         => if (Strings.isEmpty(str)) null else str
         case tuple: Tuple2[_, _] => tuple._1.toString
         case _ =>
           if (Primitives.isWrapperType(value.getClass())) value

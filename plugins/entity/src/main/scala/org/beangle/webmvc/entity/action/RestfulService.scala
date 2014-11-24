@@ -8,10 +8,10 @@ import org.beangle.webmvc.api.annotation.response
 class RestfulService[T <: Entity[_ <: java.io.Serializable]] extends AbstractEntityAction[T] {
 
   @response
-  def index(): Seq[T] = {
+  def index(): Any = {
     getInt("page") match {
       case Some(p) => entityDao.search(getQueryBuilder())
-      case None => entityDao.search(getQueryBuilder().limit(null))
+      case None    => entityDao.search(getQueryBuilder().limit(null))
     }
   }
 
