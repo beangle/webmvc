@@ -2,11 +2,12 @@ package org.beangle.webmvc.dispatch
 
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.config.ActionMapping
+import org.beangle.webmvc.context.LauncherListener
 
 import javax.servlet.http.HttpServletRequest
 
 @spi
-trait RequestMapper {
+trait RequestMapper extends LauncherListener {
 
   def resolve(request: HttpServletRequest): Option[RequestMapping]
 

@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.config.action
 
-import org.beangle.commons.lang.{ ClassLoaders, Strings }
+import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.context.ContainerHelper
