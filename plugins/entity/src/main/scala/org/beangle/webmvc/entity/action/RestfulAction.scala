@@ -27,13 +27,8 @@ abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends Abs
     forward()
   }
 
-  @mapping(value = "{id}", method = "delete")
-  def remove(@param("id") id: String): View = {
-    removeAndRedirect(List(getModel(id)))
-  }
-
   @mapping(method = "delete")
-  def batchRemove(): View = {
+  def remove(): View = {
     val idclass = entityMetaData.getType(entityName).get.idType
     val entityId = getId(shortName, idclass)
     val entities: Seq[T] =
@@ -46,11 +41,6 @@ abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends Abs
   def update(@param("id") id: String): View = {
     val entity = populate(getModel(id), entityName, shortName)
     saveAndRedirect(entity)
-  }
-
-  @mapping(method = "put")
-  def batchUpdate(): View = {
-    throw new RuntimeException("Need implementation")
   }
 
   @mapping(method = "post")

@@ -38,7 +38,12 @@ trait ActionFinder {
 
 @spi
 trait Argument {
+
+  def name: String
+
   def value(context: ActionContext): AnyRef
 
   def required: Boolean
+
+  def defaultValue: Any
 }

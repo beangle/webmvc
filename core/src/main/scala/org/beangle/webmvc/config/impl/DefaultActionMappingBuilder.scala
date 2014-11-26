@@ -16,17 +16,17 @@ import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBui
 import org.beangle.webmvc.context.Argument
 import org.beangle.webmvc.context.impl.{ CookieArgument, HeaderArgument, ParamArgument, RequestArgument, ResponseArgument }
 import org.beangle.webmvc.view.{ TemplateResolver, ViewBuilder }
-import org.beangle.webmvc.view.impl.{ DefaultTemplatePathMapper, FreemarkerView }
 import org.beangle.commons.logging.Logging
+import org.beangle.webmvc.view.impl.ViewResolverRegistry
 
 @description("缺省的ActionMapping构建器")
 class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
 
-  var templateResolver: TemplateResolver = _
-
   var viewBuilder: ViewBuilder = _
 
   var viewScan = true
+
+  var viewResolverRegistry: ViewResolverRegistry = _
 
   override def build(clazz: Class[_], profile: Profile): Seq[Tuple2[String, ActionMapping]] = {
     val nameAndspace = ActionNameBuilder.build(clazz, profile)
@@ -157,13 +157,14 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     }
     // load ftl convension results
     val suffix = profile.viewSuffix
+    val resolver = viewResolverRegistry.resolver(profile.viewType)
     if (suffix.endsWith(".ftl")) {
       ClassInfo.get(clazz).getMethods foreach { mi =>
         val viewName = defaultViewName(mi.method)
         if (null != viewName && !annotationResults.contains(viewName)) {
           Strings.split(viewName, ",") foreach { v =>
-            val path = templateResolver.resolve(clazz, v, suffix)
-            if (null != path) viewMap.put(v, new FreemarkerView(path))
+            val view = resolver.resolve(clazz, v, suffix)
+            if (null != view) viewMap.put(v, view)
           }
         }
       }

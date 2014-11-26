@@ -13,8 +13,8 @@ import org.beangle.webmvc.config.{ ActionMapping, Configurer }
 import org.beangle.webmvc.context.SerializerManager
 import org.beangle.webmvc.execution.{ Handler, InvocationReactor }
 import org.beangle.webmvc.view.{ ViewRender, ViewResolver }
-
 import javax.activation.MimeType
+import org.beangle.webmvc.view.impl.ViewResolverRegistry
 /**
  * 缺省的调用反应堆
  * 负责调用Action,渲染结果
@@ -24,7 +24,7 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
 
   var container: Container = _
 
-  var resolvers: Map[String, ViewResolver] = Map.empty
+  var viewResolverRegistry: ViewResolverRegistry = _
 
   var renders: Map[Class[_], ViewRender] = Map.empty
 
@@ -35,12 +35,6 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
   var configurer: Configurer = _
 
   override def init(): Unit = {
-    val resolverMap = new collection.mutable.HashMap[String, ViewResolver]
-    container.getBeans(classOf[ViewResolver]).values foreach { resolver =>
-      resolverMap.put(resolver.supportViewType, resolver)
-    }
-    resolvers = resolverMap.toMap
-
     val renderMaps = new collection.mutable.HashMap[Class[_], ViewRender]
     container.getBeans(classOf[ViewRender]).values foreach { render =>
       renderMaps.put(render.supportViewClass, render)
@@ -82,7 +76,7 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
                         var newView: View = null
                         var i = 0
                         while (i < candidates.length && null == newView) {
-                          newView = resolvers(profile.viewType).resolve(candidates(i), mapping)
+                          newView = viewResolverRegistry.resolver(profile.viewType).resolve(candidates(i), mapping)
                           i += 1
                         }
                         require(null != newView, s"Cannot find view[$viewName] for ${config.clazz.getName}")

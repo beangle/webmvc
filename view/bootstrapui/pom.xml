@@ -1,19 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.beangle.webmvc</groupId>
-    <artifactId>beangle-webmvc-plugins</artifactId>
+    <artifactId>beangle-webmvc-view-parent</artifactId>
     <version>0.1.4-SNAPSHOT</version>
   </parent>
-  <artifactId>beangle-webmvc-config-plugin</artifactId>
+  <artifactId>beangle-webmvc-bootstrap-ui</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMVC Plugin - Config Browser</name>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-tag</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
+  <name>Beangle WebMVC View - Bootstrap UI</name>
 </project>

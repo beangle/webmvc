@@ -85,8 +85,8 @@ class RedirectActionViewRender(val configurer: Configurer) extends ViewRender {
     } else if (null != request.getHeader(ajaxHead)) redirectParams = "x-requested-with=1"
 
     if (null != redirectParams) {
-      if (url.contains("?")) url.append("&").append(redirectParams)
-      else url.append("?").append(redirectParams)
+      if (url.contains('?')) url.append("&").append(redirectParams)
+      else url.append('?').append(redirectParams)
     }
     val finalLocation = if (request.getContextPath.length > 1) request.getContextPath + url.toString else url.toString
     val encodedLocation = response.encodeRedirectURL(finalLocation)

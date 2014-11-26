@@ -53,12 +53,19 @@ class HeaderArgument(name: String, required: Boolean, defaultValue: String) exte
 }
 
 object RequestArgument extends Argument {
+
+  override def name = "request"
+
+  override def defaultValue: String = {
+    null
+  }
+
   override def value(context: ActionContext): AnyRef = {
     context.request
   }
 
   override def toString: String = {
-    "request"
+    name
   }
   override def required: Boolean = {
     true
@@ -66,11 +73,19 @@ object RequestArgument extends Argument {
 }
 
 object ResponseArgument extends Argument {
+
   override def value(context: ActionContext): AnyRef = {
     context.response
   }
+
+  override def defaultValue: String = {
+    null
+  }
+
+  override def name = "response"
+
   override def toString: String = {
-    "response"
+    name
   }
   override def required: Boolean = {
     true

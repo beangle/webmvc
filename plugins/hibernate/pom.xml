@@ -7,7 +7,7 @@
   <artifactId>beangle-webmvc-hibernate-plugin</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMVC Hibernate Config Browser Plugin</name>
+  <name>Beangle WebMVC Plugin - Hibernate Config Browser</name>
   
   <properties>
     <hibernate.version>4.3.1.Final</hibernate.version>
