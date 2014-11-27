@@ -23,7 +23,6 @@
   <body class="container">
 [/#if]
 
-
 [#macro beangle_uijs_head]
   <script type="text/javascript" src="${base}/static/scripts/jquery/jquery.min,jquery-ui.min.js?bg=3.4.3"></script>
   <script type="text/javascript" src="${base}/static/scripts/common/require,bootstrap.min.js"></script>
