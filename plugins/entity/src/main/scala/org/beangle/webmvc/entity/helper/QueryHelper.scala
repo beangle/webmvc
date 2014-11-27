@@ -55,7 +55,11 @@ object QueryHelper extends Logging {
     }
     var conditions = new collection.mutable.ListBuffer[Condition]()
     var params = Params.sub(prefix, exclusiveAttrNames)
-    for ((attr, value) <- params) {
+    val paramIter = params.iterator
+    while (paramIter.hasNext) {
+      val entry = paramIter.next()
+      val attr = entry._1
+      val value = entry._2
       var strValue = value.toString.trim
       // 过滤空属性
       if (Strings.isNotEmpty(strValue)) {
@@ -64,14 +68,10 @@ object QueryHelper extends Logging {
             conditions += new Condition(prefix + "." + attr + " is null")
           } else {
             PopulateHelper.populator.populate(entity, entityType, attr, strValue)
-            var setValue = PropertyUtils.getProperty[Object](entity, attr)
-            if (null != setValue) {
-              if (setValue.isInstanceOf[String]) {
-                conditions += new Condition(prefix + "." + attr + " like :" + attr.replace('.', '_'), "%"
-                  + setValue.asInstanceOf[String] + "%")
-              } else {
-                conditions += new Condition(prefix + "." + attr + "=:" + attr.replace('.', '_'), setValue)
-              }
+            PropertyUtils.getProperty[Object](entity, attr) match {
+              case null => error("Error populate entity " + prefix + "'s attribute " + attr)
+              case sv: String => conditions += new Condition(s"$prefix.$attr like :${attr.replace('.', '_')}", s"%$sv%")
+              case sv => conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", sv)
             }
           }
         } catch {

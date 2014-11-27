@@ -1,7 +1,7 @@
 package org.beangle.webmvc.view.tag
 
 import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
-import org.beangle.webmvc.view.freemarker.{ FreemarkerViewBuilder, FreemarkerViewResolver, HierarchicalTemplateResolver, WebFreemarkerConfigurer }
+import org.beangle.webmvc.view.freemarker.{ FreemarkerManager, FreemarkerViewBuilder, FreemarkerViewResolver, HierarchicalTemplateResolver }
 import org.beangle.webmvc.view.tag.freemarker.FreemarkerTemplateEngine
 
 class DefaultModule extends AbstractBindModule {
@@ -12,7 +12,7 @@ class DefaultModule extends AbstractBindModule {
     bind("mvc.Taglibrary.b", classOf[BeangleTagLibrary])
 
     //template
-    bind("mvc.FreemarkerConfigurer.default", classOf[WebFreemarkerConfigurer])
+    bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerManager])
     bind("mvc.TemplateResolver.freemarker", classOf[HierarchicalTemplateResolver])
 
     //view
@@ -26,6 +26,6 @@ class DevModule extends AbstractBindModule {
   protected override def binding() {
     bind("mvc.TemplateEngine.freemarker", classOf[FreemarkerTemplateEngine]).property("enableCache", "false")
 
-    bind("mvc.FreemarkerConfigurer.default", classOf[WebFreemarkerConfigurer]).property("enableCache", "false")
+    bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerManager]).property("enableCache", "false")
   }
 }

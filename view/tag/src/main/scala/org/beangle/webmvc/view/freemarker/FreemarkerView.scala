@@ -28,18 +28,11 @@ class FreemarkerViewBuilder extends TypeViewBuilder {
 }
 
 @description("Freemaker视图解析器")
-class FreemarkerViewResolver(configurer: Configurer, freemarkerConfigurer: FreemarkerConfigurer, tagLibraryProvider: TagLibraryProvider)
-  extends ViewResolver with ViewRender {
-  final val KEY_APPLICATION = "Application"
-  final val KEY_SESSION = "Session"
-  final val KEY_REQUEST = "Request"
-  final val KEY_REQUEST_PARAMETERS = "Parameters"
+class FreemarkerViewResolver(configurer: Configurer, freemarkerManager: FreemarkerManager) extends ViewResolver with ViewRender {
 
   var templateResolver: TemplateResolver = _
 
-  val configuration = freemarkerConfigurer.config
-  val servletContext = ServletContextHolder.context
-  val servletContextModel = new ServletContextHashModel(servletContext, configuration.getObjectWrapper)
+  val configuration = freemarkerManager.config
 
   def resolve(actionClass: Class[_], viewName: String, suffix: String): View = {
     val path = templateResolver.resolve(actionClass, viewName, suffix)
@@ -55,13 +48,13 @@ class FreemarkerViewResolver(configurer: Configurer, freemarkerConfigurer: Freem
   def render(view: View, context: ActionContext): Unit = {
     val freemarkerView = view.asInstanceOf[FreemarkerView]
     val template = configuration.getTemplate(freemarkerView.location, context.locale)
-    val model = createModel(configuration.getObjectWrapper, context.request, context.response, context)
+    val model = freemarkerManager.createModel(configuration.getObjectWrapper, context.request, context.response, context)
     processTemplate(template, model, context.response)
   }
 
   protected def processTemplate(template: Template, model: SimpleHash, response: HttpServletResponse): Unit = {
     val attrContentType = template.getCustomAttribute("content_type").asInstanceOf[String]
-    if (attrContentType == null) response.setContentType(freemarkerConfigurer.contentType)
+    if (attrContentType == null) response.setContentType(freemarkerManager.contentType)
     else {
       if (!attrContentType.contains("charset")) response.setCharacterEncoding(configuration.getDefaultEncoding())
       response.setContentType(attrContentType.toString)
@@ -76,20 +69,4 @@ class FreemarkerViewResolver(configurer: Configurer, freemarkerConfigurer: Freem
   def supportViewType: String = {
     "freemarker"
   }
-
-  protected def createModel(wrapper: ObjectWrapper, request: HttpServletRequest, response: HttpServletResponse, context: ActionContext): SimpleHash = {
-    val model = new AllHttpScopesHashModel(wrapper, servletContext, request)
-    model.put(KEY_APPLICATION, servletContextModel)
-    val session = request.getSession(false)
-    if (session != null) model.put(KEY_SESSION, new HttpSessionHashModel(session, wrapper))
-    model.put(KEY_REQUEST, new HttpRequestHashModel(request, wrapper))
-    model.put("request", request)
-    model.put(KEY_REQUEST_PARAMETERS, new ParametersHashModel(context.params))
-    tagLibraryProvider.tagLibraries foreach {
-      case (tagName, tag) =>
-        model.put(tagName.toString, tag.getModels(request, response))
-    }
-    model
-  }
-
 }
