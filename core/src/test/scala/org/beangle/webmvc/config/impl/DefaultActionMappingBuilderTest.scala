@@ -39,7 +39,7 @@ class DefaultActionMappingBuilderTest extends FunSpec with Matchers {
       pp.matches(classOf[ShowcaseAction].getName)
       val mappings = builder.build(classOf[ShowcaseAction], pp).toMap
       assert(null != mappings)
-      assert(None != mappings.get("/showcases/string"))
+      assert(None != mappings.get("/showcase/string"))
     }
   }
 }

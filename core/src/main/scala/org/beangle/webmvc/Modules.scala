@@ -52,9 +52,6 @@ class DefaultModule extends AbstractBindModule {
     bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
     bind("mvc.SerializerManager.default", classOf[DefaultSerializerManager])
 
-    //security
-    bind("web.RequestConvertor.mvc", classOf[MvcRequestConvertor])
-
     bind("mvc.ActionLauncher", classOf[ActionLauncher])
   }
 }
@@ -65,5 +62,11 @@ class DevModule extends AbstractBindModule {
     bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan", "false")
     bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", "true")
     bind("mvc.HandlerBuilder.method", classOf[DynaMethodHandlerBuilder]).primary
+  }
+}
+
+class SecurityModule extends AbstractBindModule {
+  protected override def binding() {
+    bind("web.RequestConvertor.mvc", classOf[MvcRequestConvertor])
   }
 }
