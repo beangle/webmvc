@@ -4,6 +4,7 @@ import org.beangle.commons.lang.Strings.{ substringBeforeLast, unCamel, uncapita
 import org.beangle.webmvc.api.annotation.action
 import org.beangle.webmvc.config.Profile
 import org.beangle.commons.text.inflector.en.EnNounPluralizer
+import org.beangle.webmvc.api.action.EntityActionSupport
 
 object ActionNameBuilder {
 
@@ -28,13 +29,17 @@ object ActionNameBuilder {
         case Profile.SEO_URI =>
           nameBuilder.append(unCamel(profile.getMatched(className)))
         case Profile.PLUR_SEO_URI =>
-          val matchedName = profile.getMatched(className)
-          val lastSlash = matchedName.lastIndexOf('/')
-          if (-1 == lastSlash) {
-            nameBuilder.append(unCamel(pluralizer.pluralize(matchedName)))
+          if (classOf[EntityActionSupport[_]].isAssignableFrom(clazz)) {
+            val matchedName = profile.getMatched(className)
+            val lastSlash = matchedName.lastIndexOf('/')
+            if (-1 == lastSlash) {
+              nameBuilder.append(unCamel(pluralizer.pluralize(matchedName)))
+            } else {
+              nameBuilder.append(unCamel(matchedName.substring(0, lastSlash + 1)))
+              nameBuilder.append(unCamel(pluralizer.pluralize(matchedName.substring(lastSlash + 1))))
+            }
           } else {
-            nameBuilder.append(unCamel(matchedName.substring(0, lastSlash + 1)))
-            nameBuilder.append(unCamel(pluralizer.pluralize(matchedName.substring(lastSlash + 1))))
+            nameBuilder.append(unCamel(profile.getMatched(className)))
           }
         case _ =>
           throw new RuntimeException("unsupported uri style " + profile.urlStyle)

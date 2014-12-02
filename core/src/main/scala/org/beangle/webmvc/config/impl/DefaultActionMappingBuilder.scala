@@ -88,7 +88,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
               val mapping = new ActionMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
               mappings.put(method.getName, mapping)
               actions += Tuple2(url, mapping)
-              if (name == "index" && method.getParameterTypes.length == 0 && mapping.httpMethod == GET) actions += Tuple2(actionName, mapping)
+              if (name == "index") actions += Tuple2(actionName, mapping)
             } else {
               warn(s"Only support one method, but $mappingMehtods finded")
             }
@@ -138,6 +138,9 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
 
   protected def buildViews(clazz: Class[_], profile: Profile): Map[String, View] = {
     if (!viewScan) return Map.empty
+    val resolver = viewResolverRegistry.getResolver(profile.viewType).orNull
+    if (null == resolver) return Map.empty
+
     val viewMap = new collection.mutable.HashMap[String, View]
     // load annotation results
     var results = new Array[view](0)
@@ -157,7 +160,6 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     }
     // load ftl convension results
     val suffix = profile.viewSuffix
-    val resolver = viewResolverRegistry.resolver(profile.viewType)
     if (suffix.endsWith(".ftl")) {
       ClassInfo.get(clazz).getMethods foreach { mi =>
         val viewName = defaultViewName(mi.method)

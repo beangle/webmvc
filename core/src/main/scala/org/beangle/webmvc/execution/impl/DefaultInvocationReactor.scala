@@ -75,8 +75,9 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
                         val candidates = Strings.split(viewName, ",")
                         var newView: View = null
                         var i = 0
+                        val resolver = viewResolverRegistry.getResolver(profile.viewType).get
                         while (i < candidates.length && null == newView) {
-                          newView = viewResolverRegistry.resolver(profile.viewType).resolve(candidates(i), mapping)
+                          newView = resolver.resolve(candidates(i), mapping)
                           i += 1
                         }
                         require(null != newView, s"Cannot find view[$viewName] for ${config.clazz.getName}")

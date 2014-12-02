@@ -12,6 +12,8 @@ import org.beangle.webmvc.api.context.{ ActionMessages, ContextHolder, Flash, Pa
 import org.beangle.webmvc.api.view.{ ForwardActionView, RedirectActionView, View }
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import java.sql
+import java.{ util => ju }
 
 object ActionSupport {
   val ERROR = "error"
@@ -157,34 +159,53 @@ class ActionSupport extends Logging {
 
   protected final def getAttribute(name: String): Any = ContextHolder.context.attribute(name)
 
-  protected final def getAttribute[T](name: String, clazz: Class[T]): T = ContextHolder.context.attribute(name).asInstanceOf[T]
+  protected final def getAttribute[T](name: String, clazz: Class[T]): T = {
+    ContextHolder.context.attribute(name).asInstanceOf[T]
+  }
 
-  protected final def get[T](name: String, clazz: Class[T]) = Params.get(name, clazz)
+  protected final def get[T](name: String, clazz: Class[T]): Option[T] = {
+    Params.get(name, clazz)
+  }
 
-  protected final def getBoolean(name: String) = Params.getBoolean(name)
+  protected final def getBoolean(name: String): Option[Boolean] = {
+    Params.getBoolean(name)
+  }
 
   protected final def getBoolean(name: String, defaultValue: Boolean): Boolean = {
-    this.getAll("a", classOf[Long])
     Params.getBoolean(name).getOrElse(defaultValue)
   }
 
-  protected final def getDate(name: String) = Params.getDate(name)
+  protected final def getDate(name: String): Option[sql.Date] = {
+    Params.getDate(name)
+  }
 
-  protected final def getDateTime(name: String) = Params.getDateTime(name)
+  protected final def getDateTime(name: String): Option[ju.Date] = {
+    Params.getDateTime(name)
+  }
 
-  protected final def getFloat(name: String) = Params.getFloat(name)
+  protected final def getFloat(name: String): Option[Float] = {
+    Params.getFloat(name)
+  }
 
-  protected final def getShort(name: String) = Params.getShort(name)
+  protected final def getShort(name: String): Option[Short] = {
+    Params.getShort(name)
+  }
 
-  protected final def getInt(name: String) = Params.getInt(name)
+  protected final def getInt(name: String): Option[Int] = {
+    Params.getInt(name)
+  }
 
   protected final def getInt(name: String, defaultValue: Int): Int = {
     Params.getInt(name).getOrElse(defaultValue)
   }
 
-  protected final def getLong(name: String) = Params.getLong(name)
+  protected final def getLong(name: String): Option[Long] = {
+    Params.getLong(name)
+  }
 
-  protected final def getCookieValue(cookieName: String): String = CookieUtils.getCookieValue(request, cookieName)
+  protected final def getCookieValue(cookieName: String): String = {
+    CookieUtils.getCookieValue(request, cookieName)
+  }
 
   protected final def addCookie(name: String, value: String, path: String, age: Int) {
     try {

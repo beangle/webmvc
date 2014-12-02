@@ -17,7 +17,7 @@ class ViewResolverRegistry extends LauncherListener {
     resolvers = resolverMap.toMap
   }
 
-  def resolver(viewType: String): ViewResolver = {
-    resolvers(viewType)
+  def getResolver(viewType: String): Option[ViewResolver] = {
+    resolvers.get(viewType)
   }
 }
