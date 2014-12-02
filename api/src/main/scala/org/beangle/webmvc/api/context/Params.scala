@@ -1,5 +1,7 @@
 package org.beangle.webmvc.api.context
 
+import java.{ sql, util => ju }
+
 import scala.collection.Map
 import scala.reflect.ClassTag
 
@@ -26,7 +28,9 @@ object Params {
     }
   }
 
-  def get[T](name: String, clazz: Class[T]) = converter.get(ContextHolder.context.params, name, clazz)
+  def get[T](name: String, clazz: Class[T]): Option[T] = {
+    converter.get(ContextHolder.context.params, name, clazz)
+  }
 
   def getAll(attr: String): Array[Any] = {
     ContextHolder.context.params.get(attr) match {
@@ -44,19 +48,33 @@ object Params {
     else converter.convert(value.asInstanceOf[Array[AnyRef]], clazz)
   }
 
-  def getBoolean(name: String) = converter.getBoolean(ContextHolder.context.params, name)
+  def getBoolean(name: String): Option[Boolean] = {
+    converter.getBoolean(ContextHolder.context.params, name)
+  }
 
-  def getDate(name: String) = converter.getDate(ContextHolder.context.params, name)
+  def getDate(name: String): Option[sql.Date] = {
+    converter.getDate(ContextHolder.context.params, name)
+  }
 
-  def getDateTime(name: String) = converter.getDateTime(ContextHolder.context.params, name)
+  def getDateTime(name: String): Option[ju.Date] = {
+    converter.getDateTime(ContextHolder.context.params, name)
+  }
 
-  def getFloat(name: String) = converter.getFloat(ContextHolder.context.params, name)
+  def getFloat(name: String): Option[Float] = {
+    converter.getFloat(ContextHolder.context.params, name)
+  }
 
-  def getShort(name: String) = converter.getShort(ContextHolder.context.params, name)
+  def getShort(name: String): Option[Short] = {
+    converter.getShort(ContextHolder.context.params, name)
+  }
 
-  def getInt(name: String) = converter.getInt(ContextHolder.context.params, name)
+  def getInt(name: String): Option[Int] = {
+    converter.getInt(ContextHolder.context.params, name)
+  }
 
-  def getLong(name: String) = converter.getLong(ContextHolder.context.params, name)
+  def getLong(name: String): Option[Long] = {
+    converter.getLong(ContextHolder.context.params, name)
+  }
 
   def sub(prefix: String): Map[String, Any] = converter.sub(ContextHolder.context.params, prefix)
 
