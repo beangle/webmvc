@@ -20,7 +20,7 @@
     [/#if]
     ${tag.body}
   </head>
-  <body class="container">
+  <body>
 [/#if]
 
 [#macro beangle_uijs_head]

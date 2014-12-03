@@ -40,11 +40,7 @@ class StaticMethodHandlerBuilder extends HandlerBuilder with Logging {
     ctor.setBody("this.action=$1;")
     cct.addConstructor(ctor)
     val handleMethod = javac.compile("public Object handle(org.beangle.webmvc.config.ActionMapping mapping) {return null;}").asInstanceOf[CtMethod]
-    try{
     handleMethod.setBody(body)
-    }catch{
-      case t:Throwable => println(body)
-    }
     cct.addMethod(handleMethod)
 
     //cct.debugWriteFile("/tmp/handlers")
@@ -151,11 +147,11 @@ class CodeGenerator {
       if (argument.defaultValue == DefaultNone.value) {
         s"throw new IllegalArgumentException(${q}Cannot bind parameter ${argument} for ${actionClass.getName}.${method.getName}$q);"
       } else {
-        s"v$idx=$q${argument.defaultValue}$q"
+        s"v$idx=$q${argument.defaultValue}$q;"
       }
     } else {
       if (argument.defaultValue != DefaultNone.value) {
-        s"v$idx=$q${argument.defaultValue}$q"
+        s"v$idx=$q${argument.defaultValue}$q;"
       } else {
         ""
       }
