@@ -23,7 +23,7 @@ trait EntityActionSupport[T] extends ActionSupport {
   protected final def getId[E](name: String, clazz: Class[E]): E = {
     val entityId = getId(name)
     if (entityId == null) null.asInstanceOf[E]
-    else Params.converter.convert(entityId, clazz)
+    else Params.converter.convert(entityId, clazz).getOrElse(null.asInstanceOf[E])
   }
 
   protected final def getIntId(shortName: String): java.lang.Integer = getId(shortName, classOf[java.lang.Integer])

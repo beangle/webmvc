@@ -154,7 +154,7 @@ class ActionSupport extends Logging {
 
   protected final def get[T](paramName: String, defaultValue: T): T = {
     val value = Params.get(paramName)
-    if (value.isEmpty) defaultValue else Params.converter.convert(value.get, defaultValue.getClass())
+    if (value.isEmpty) defaultValue else Params.converter.convert(value.get, defaultValue.getClass).getOrElse(defaultValue)
   }
 
   protected final def getAttribute(name: String): Any = ContextHolder.context.attribute(name)
