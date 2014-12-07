@@ -159,7 +159,10 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
 
   protected def getModel[E](entityName: String, id: jo.Serializable): E = {
     val entityType: EntityType = entityMetaData.getType(entityName).get
-    entityDao.get(entityType.entityClass.asInstanceOf[Class[Entity[jo.Serializable]]], Params.converter.convert(id, entityType.idType)).asInstanceOf[E]
+    Params.converter.convert(id, entityType.idType) match {
+      case Some(rid) => entityDao.get(entityType.entityClass.asInstanceOf[Class[Entity[jo.Serializable]]], rid).asInstanceOf[E]
+      case None => null.asInstanceOf[E]
+    }
   }
 
   protected def getModels[E](entityName: String, ids: Array[_ <: jo.Serializable]): Seq[E] = {
