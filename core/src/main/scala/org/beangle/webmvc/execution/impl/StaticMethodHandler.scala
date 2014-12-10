@@ -118,13 +118,17 @@ class CodeGenerator {
           paramList += (if (paramAsString && pt == classOf[String]) s"v$pt_index" else s"vp$pt_index")
           if (!pt.isPrimitive) {
             if (!(paramAsString && pt == classOf[String])) {
-              sb ++= s"${pt.getName} vp$pt_index = (${pt.getName})converter.convert(v$pt_index, ${pt.getName}.class);\n"
+              sb ++= s"${pt.getName} vp$pt_index=null;\n"
+              sb ++= s"scala.Option tmp =  converter.convert(v$pt_index, ${pt.getName}.class);\n"
+              sb ++= s"if(!tmp.isEmpty()) vp$pt_index = (${pt.getName})tmp.get();\n"
               if (argument.required) {
                 sb ++= s"if(null == vp$pt_index) throw new IllegalArgumentException(${q}Cannot bind parameter ${argument} for ${action.getClass.getName}.${method.getName}$q);\n"
               }
             }
           } else {
-            sb ++= s"Object vWrapper$pt_index = converter.convert(v$pt_index, ${Primitives.wrap(pt).getName}.class);"
+            sb ++= s"Object vWrapper$pt_index = null;\n"
+            sb ++= s"scala.Option tmp =  converter.convert(v$pt_index, ${Primitives.wrap(pt).getName}.class);\n"
+            sb ++= s"if(!tmp.isEmpty()) vWrapper$pt_index =tmp.get();\n"
             sb ++= s"if(null== vWrapper$pt_index) throw new IllegalArgumentException(${q}Cannot bind parameter ${argument} for ${action.getClass.getName}.${method.getName}$q);\n"
             sb ++= s"${pt.getName} vp$pt_index = ((${Primitives.wrap(pt).getName})vWrapper$pt_index).${pt.getName}Value();"
           }

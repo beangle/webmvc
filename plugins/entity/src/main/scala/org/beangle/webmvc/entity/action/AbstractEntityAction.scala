@@ -171,7 +171,10 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
   }
 
   protected def convertId[ID](id: String): ID = {
-    Params.converter.convert(id, entityMetaData.getType(entityName).get.idType).asInstanceOf[ID]
+    Params.converter.convert(id, entityMetaData.getType(entityName).get.idType) match{
+      case None => null.asInstanceOf[ID]
+      case Some(nid)=> nid.asInstanceOf[ID]
+    }
   }
 
   @ignore

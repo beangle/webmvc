@@ -32,12 +32,12 @@ class DynaMethodHandler(val action: AnyRef, val method: Method) extends Handler 
           val ov = arguments(i).value(context)
           val pValue = if (null != ov && !pt.isArray() && ov.getClass.isArray()) ov.asInstanceOf[Array[_]](0) else ov
           if (Primitives.isWrapperType(pt)) {
-            values(i) = Params.converter.convert(pValue, pt).asInstanceOf[Object]
+            Params.converter.convert(pValue, pt) foreach { v => values(i) = v.asInstanceOf[Object] }
           } else {
             if (pt.isPrimitive) {
-              values(i) = Params.converter.convert(pValue, Primitives.wrap(pt)).asInstanceOf[Object]
+              Params.converter.convert(pValue, Primitives.wrap(pt)) foreach { v => values(i) = v.asInstanceOf[Object] }
             } else {
-              values(i) = Params.converter.convert(pValue, pt).asInstanceOf[Object]
+              Params.converter.convert(pValue, pt) foreach { v => values(i) = v.asInstanceOf[Object] }
             }
           }
           if (arguments(i).required && null == values(i)) throw new RuntimeException(s"Cannot convert $pValue to ${pt.getName}")
