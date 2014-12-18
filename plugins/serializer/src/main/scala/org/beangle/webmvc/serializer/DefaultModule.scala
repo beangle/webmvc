@@ -2,11 +2,12 @@ package org.beangle.webmvc.serializer
 
 import org.beangle.commons.http.accept.ContentNegotiationManagerFactory
 import org.beangle.commons.inject.bind.AbstractBindModule
-import org.beangle.data.serializer.{AbstractSerializer, JsonSerializer, XmlSerializer}
-import org.beangle.data.serializer.converter.DefaultConverterRegistry
-import org.beangle.data.serializer.io.json.DefaultJsonDriver
-import org.beangle.data.serializer.io.xml.DomDriver
-import org.beangle.data.serializer.mapper.DefaultMapper
+import org.beangle.data.serialize.{ JsonSerializer, JsonpSerializer, XmlSerializer }
+import org.beangle.data.serialize.io.json.DefaultJsonDriver
+import org.beangle.data.serialize.io.jsonp.DefaultJsonpDriver
+import org.beangle.data.serialize.io.xml.DomDriver
+import org.beangle.data.serialize.mapper.DefaultMapper
+import org.beangle.data.serialize.marshal.DefaultMarshallerRegistry
 
 class DefaultModule extends AbstractBindModule {
 
@@ -14,12 +15,13 @@ class DefaultModule extends AbstractBindModule {
     bind(classOf[ContentNegotiationManagerFactory]).property("favorPathExtension", "true")
       .property("favorParameter", "true").property("parameterName", "format").property("ignoreAcceptHeader", "false")
 
-    bind(classOf[DefaultConverterRegistry])
+    bind(classOf[DefaultMarshallerRegistry])
     bind(classOf[DefaultMapper])
     bind(classOf[DomDriver]).constructor("UTF-8")
     bind(classOf[DefaultJsonDriver]).constructor("UTF-8")
-    bind("web.Serializer.xml", classOf[XmlSerializer]).property("mode", AbstractSerializer.SINGLE_NODE_XPATH_ABSOLUTE_REFERENCES)
-    bind("web.Serializer.json", classOf[JsonSerializer]).property("mode", AbstractSerializer.SINGLE_NODE_XPATH_ABSOLUTE_REFERENCES )
-    bind("web.Serializer.jsonp",classOf[JsonpSerializer])
+    bind(classOf[DefaultJsonpDriver]).constructor("UTF-8")
+    bind("web.Serializer.xml", classOf[XmlSerializer])
+    bind("web.Serializer.json", classOf[JsonSerializer])
+    bind("web.Serializer.jsonp", classOf[JsonpSerializer])
   }
 }
