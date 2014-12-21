@@ -103,9 +103,17 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
                 }
                 if (null != serializer) {
                   val response = context.response
+                  val request = context.request
                   response.setCharacterEncoding("UTF-8")
                   response.setContentType(mimeType.toString + "; charset=UTF-8")
-                  serializer.serialize(result.asInstanceOf[AnyRef], response.getOutputStream)
+                  val params = new collection.mutable.HashMap[String, Any]
+                  val enum = request.getAttributeNames
+                  while (enum.hasMoreElements()) {
+                    val attr = enum.nextElement()
+                    params.put(attr, request.getAttribute(attr))
+                  }
+                  params ++= context.params
+                  serializer.serialize(result.asInstanceOf[AnyRef], response.getOutputStream, params.toMap)
                 }
               }
             }

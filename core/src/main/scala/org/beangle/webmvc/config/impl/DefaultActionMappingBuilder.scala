@@ -120,7 +120,13 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
 
   private def isActionMethod(method: Method, classInfo: ClassInfo): Boolean = {
     val methodName = method.getName
-    if (methodName.startsWith("get") || methodName.contains("$")) return false
+
+    if (methodName.contains("$")) return false
+    if (methodName.startsWith("get") && Character.isUpperCase(methodName.charAt(3))
+      || methodName.startsWith("is") && Character.isUpperCase(methodName.charAt(2))) {
+      return false
+    }
+
     //filter ignore
     if (null != getAnnotation(method, classOf[ignore])) return false
 

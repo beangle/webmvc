@@ -1,19 +1,17 @@
 package org.beangle.webmvc.api.action
 
 import java.net.URL
-
 import scala.reflect.ClassTag
-
 import org.beangle.commons.lang.{ Chars, ClassLoaders, Strings }
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.{ CookieUtils, RequestUtils }
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.{ ActionMessages, ContextHolder, Flash, Params }
 import org.beangle.webmvc.api.view.{ ForwardActionView, RedirectActionView, View }
-
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import java.sql
 import java.{ util => ju }
+import org.beangle.commons.http.accept.ContentNegotiationManager
 
 object ActionSupport {
   val ERROR = "error"
@@ -21,6 +19,15 @@ object ActionSupport {
 }
 
 class ActionSupport extends Logging {
+
+  var contentNegotiationManager: ContentNegotiationManager = _
+
+  def isRequestCsv: Boolean = {
+    if (null == contentNegotiationManager) false
+    else {
+      contentNegotiationManager.resolve(request).exists { p => p.getBaseType == "text/csv" }
+    }
+  }
 
   protected final def forward(view: String = null): String = {
     view
