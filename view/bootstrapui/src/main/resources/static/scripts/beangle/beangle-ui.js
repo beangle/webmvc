@@ -433,13 +433,13 @@
   }});
 
   bg.extend({'ui.pagebar':function (onePage,pageDiv,ranks,titles){
-    if(onePage.total==0) return;
+    if(onePage.totalItems==0) return;
 
     if(!ranks) ranks=[10,20,30,50,70,100,200,500,1000];
     else if(ranks.length==0) ranks=[onePage.pageSize];
 
     if(!titles) titles={first:'« First',previous:'‹ Previous',next:'Next ›',last:'Last »',no:'No:',size:'Size:',change:'Click me to change page size',pagesize:'Page Size'};
-    var maxPageNo = onePage.maxPageNo;
+    var totalPages = onePage.totalPages;
     addAnchor=function(text,pageNumber){
       var pageHref=document.createElement('a');
       pageHref.setAttribute("href","javascript:void(0)");
@@ -448,12 +448,12 @@
       pageDiv.appendChild(pageHref);
       jQuery(pageHref).click(function(){onePage.goPage(pageNumber)});
     }
-    if(onePage.pageNo>1){
+    if(onePage.pageIndex>1){
       addAnchor(titles['first'],1);
-      addAnchor(titles['previous'],onePage.pageNo-1);
+      addAnchor(titles['previous'],onePage.pageIndex-1);
     }
     var labelspan=document.createElement('span');
-    labelspan.innerHTML="<strong>" + onePage.startNo +"</strong> - <strong>"+ onePage.endNo + "</strong> of <strong>" + onePage.total + "</strong>";
+    labelspan.innerHTML="<strong>" + onePage.startNo +"</strong> - <strong>"+ onePage.endNo + "</strong> of <strong>" + onePage.totalItems + "</strong>";
     labelspan.style.padding="0px 2px 0px 2px";
     pageDiv.appendChild(labelspan);
     var numSpan=jQuery(labelspan)
@@ -467,17 +467,17 @@
     pagespan.style.display="none";
     //add pagesize select
     if(ranks && (ranks.length>0)){
-      var pageNoSelect=document.createElement('select');
-      pageNoSelect.id=pageDiv.id+"_select";
-      pagespan.appendChild(pageNoSelect);
-      pageNoSelect.className="pgbar-selbox";
-      pageNoSelect.title=titles['pagesize']||'Page Size';
+      var pageIdxSelect=document.createElement('select');
+      pageIdxSelect.id=pageDiv.id+"_select";
+      pagespan.appendChild(pageIdxSelect);
+      pageIdxSelect.className="pgbar-selbox";
+      pageIdxSelect.title=titles['pagesize']||'Page Size';
       var selectIndex=0;
       for(var i=0;i<ranks.length;i++){
         if(ranks[i]==onePage.pageSize) selectIndex=i;
-        pageNoSelect.options.add(new Option(titles['size']+ranks[i], ranks[i]));
+        pageIdxSelect.options.add(new Option(titles['size']+ranks[i], ranks[i]));
       }
-      pageNoSelect.selectedIndex = selectIndex;
+      pageIdxSelect.selectedIndex = selectIndex;
     }
 
     //add pageno input
@@ -488,14 +488,14 @@
     var pageInputLabel = document.createElement('label');
     pagespan.appendChild(pageInputLabel);
 
-    jQuery(pageInputLabel).attr("for",pageDiv.id+"_input").text("/"+maxPageNo+" ").toggleClass("pgbar-input-label");
+    jQuery(pageInputLabel).attr("for",pageDiv.id+"_input").text("/"+totalPages+" ").toggleClass("pgbar-input-label");
 
     var pageInputJ=jQuery(pageInput)
-    pageInputJ.attr("value",onePage.pageNo);
+    pageInputJ.attr("value",onePage.pageIndex);
     pageInputJ.attr("id",pageDiv.id+"_input");
-    pageInputJ.attr('title',(onePage.startNo +" - " + onePage.endNo + " of " + onePage.total));
+    pageInputJ.attr('title',(onePage.startNo +" - " + onePage.endNo + " of " + onePage.totalItems));
     pageInputJ.focus(function(){this.value=''});
-    pageInputJ.blur(function(){if(!this.value) this.value= onePage.pageNo});
+    pageInputJ.blur(function(){if(!this.value) this.value= onePage.pageIndex});
 
     //add go button
     var submitBtn = document.createElement('input');
@@ -505,9 +505,9 @@
     submitBtn.className="pgbar-go";
     pagespan.appendChild(submitBtn);
     var changePage=function(){
-      var pageNo=document.getElementById(pageDiv.id+'_input').value;var endIndex=pageNo.indexOf("/"+onePage.maxPageNo);
-      if(-1!=endIndex){pageNo=pageNo.substring(0,endIndex)}
-      onePage.goPage(pageNo,document.getElementById(pageDiv.id+'_select').value);
+      var pageIndex=document.getElementById(pageDiv.id+'_input').value;var endIndex=pageIndex.indexOf("/"+onePage.totalPages);
+      if(-1!=endIndex){pageIndex=pageIndex.substring(0,endIndex)}
+      onePage.goPage(pageIndex,document.getElementById(pageDiv.id+'_select').value);
     }
     jQuery(submitBtn).click(function (){changePage()});
 
@@ -517,9 +517,9 @@
       if (event && event.keyCode && event.keyCode == 13) {changePage();return false;}
     });
 
-    if(onePage.pageNo<onePage.maxPageNo){
-      addAnchor(titles['next'],onePage.pageNo+1);
-      addAnchor(titles['last'],onePage.maxPageNo);
+    if(onePage.pageIndex<onePage.totalPages){
+      addAnchor(titles['next'],onePage.pageIndex+1);
+      addAnchor(titles['last'],onePage.totalPages);
     }
   }
   });

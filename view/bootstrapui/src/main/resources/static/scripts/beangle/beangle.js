@@ -621,15 +621,15 @@
         //alert("[getInputParams]:"+params);
         return params;
       },
-      goToPage : function (form,pageNo,pageSize,orderBy){
+      goToPage : function (form,pageIndex,pageSize,orderBy){
         if((typeof form)!="object"){alert("[goToPage:]form is not well defined.");return;}
         //form.method="post"; for avoid "method" input
-        if(null!=pageNo){
-          if(!/^[1-9]\d*$/.test(pageNo)){
-            alert("输入分页的页码是:"+pageNo+",它不是个整数");
+        if(null!=pageIndex){
+          if(!/^[1-9]\d*$/.test(pageIndex)){
+            alert("输入分页的页码是:"+pageIndex+",它不是个整数");
             return;
           }
-          bg.form.addInput(form,"page",pageNo,"hidden");
+          bg.form.addInput(form,"page",pageIndex,"hidden");
         }else{
           bg.form.addInput(form,"page",1,"hidden");
         }
@@ -759,28 +759,28 @@
     }
   });
   // Page---------------------------------------------------------------------
-  function Page(action,target,pageNo,pageSize,total){
+  function Page(action,target,pageIndex,pageSize,totalItems){
     this.formid = "form_" + bg.randomInt();
     this.actionurl=action;
     this.target=target;
     this.paramMap={};
     this.params = function(){ return this.paramMap;}
 
-    this.pageInfo = function(pageNo,pageSize,total){
-      this.pageNo=pageNo;
+    this.pageInfo = function(pageIndex,pageSize,totalItems){
+      this.pageIndex=pageIndex;
       this.pageSize=pageSize;
-      this.total=total;
-      if(null!=total && null!=pageSize && null!=pageNo){
-        quotient=Math.floor(total/pageSize);
-        this.maxPageNo = (0 == total%pageSize) ? quotient : (quotient + 1);
-        this.startNo=(pageNo-1)*pageSize+1;
-        this.endNo=(this.startNo+pageSize-1)<=total?(this.startNo+pageSize-1):total;
+      this.totalItems=totalItems;
+      if(null!=totalItems && null!=pageSize && null!=pageIndex){
+        quotient=Math.floor(totalItems/pageSize);
+        this.totalPages = (0 == totalItems%pageSize) ? quotient : (quotient + 1);
+        this.startNo=(pageIndex-1)*pageSize+1;
+        this.endNo=((this.startNo+pageSize-1)<=totalItems)?(this.startNo+pageSize-1):totalItems;
       }else{
-        this.maxPageNo=1;
+        this.totalPages=1;
       }
     }
 
-    this.pageInfo(pageNo,pageSize,total);
+    this.pageInfo(pageIndex,pageSize,totalItems);
 
     this.action=function(actionurl){
       this.actionurl=actionurl;
@@ -829,18 +829,18 @@
       return this;
     }
     // 检查分页参数
-    this.checkPageParams = function (pageNo, pageSize,orderBy){
-      if(null!=pageNo){
-        if(!/^[1-9]\d*$/.test(pageNo)){
-          bg.alert("输入分页的页码是:"+pageNo+",它不是个整数");
+    this.checkPageParams = function (pageIndex, pageSize,orderBy){
+      if(null!=pageIndex){
+        if(!/^[1-9]\d*$/.test(pageIndex)){
+          bg.alert("输入分页的页码是:"+pageIndex+",它不是个整数");
           return false;
         }
-        if(this.maxPageNo!=null){
-          if(pageNo>this.maxPageNo){
-            pageNo=this.maxPageNo;
+        if(this.totalPages!=null){
+          if(pageIndex>this.totalPages){
+            pageIndex=this.totalPages;
           }
         }
-        this.paramMap['page']=pageNo;
+        this.paramMap['page']=pageIndex;
       }
       if(null!=pageSize){
         if(!/^[1-9]\d*$/.test(pageSize)){
@@ -854,9 +854,9 @@
       }
       return true;
     }
-    this.goPage = function (pageNo,pageSize,orderBy){
+    this.goPage = function (pageIndex,pageSize,orderBy){
       var myForm=this.getForm(), key, value;
-      if(this.checkPageParams(pageNo,pageSize,orderBy)){
+      if(this.checkPageParams(pageIndex,pageSize,orderBy)){
         for(key in this.paramMap){
           value=this.paramMap[key];
           if(value!="")  bg.form.addInput(myForm,key,value,"hidden");

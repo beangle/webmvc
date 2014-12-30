@@ -91,11 +91,11 @@ object QueryHelper extends Logging {
    * 获得请求中的页码
    */
   def pageIndex(): Int = {
-    var pageNo = Params.getInt(PageParam) match {
+    var pageIndex = Params.getInt(PageParam) match {
       case Some(p) => p
       case None => Params.getInt("pageIndex").getOrElse(Page.DefaultPageNo)
     }
-    if (pageNo < 1) Page.DefaultPageNo else pageNo
+    if (pageIndex < 1) Page.DefaultPageNo else pageIndex
   }
 
   /**
