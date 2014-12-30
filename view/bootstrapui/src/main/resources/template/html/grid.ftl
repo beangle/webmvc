@@ -52,7 +52,7 @@
   bar=new bg.ui.gridbar(['${tag.id}_bar1','${tag.id}_bar2'],'${(tag.parameters['title']?default(''))?replace("'","\"")}');
   bar.pageId('${tag.id}')
   [#if tag.pageable]
-  page_${tag.id}.pageInfo(${tag.items.pageNo},${tag.items.pageSize},${tag.items.total});
+  page_${tag.id}.pageInfo(${tag.items.pageIndex},${tag.items.pageSize},${tag.items.totalItems});
   bar.addPage(page_${tag.id},[#if tag.parameters['fixPageSize']??][][#else]null[/#if],{${b.text('page.description')}});
   [/#if]
   [#if tag.hasbar && tag.notFullPage]bg.ui.grid.fillEmpty('${tag.id}_empty',[#if tag.pageable]${tag.items.pageSize}[#else]10[/#if],${tag.items?size},'${tag.emptyMsg!b.text("page.noData")}');[/#if]

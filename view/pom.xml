@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-parent</artifactId>
-    <version>0.2.5</version>
+    <version>0.2.6</version>
   </parent>
   <artifactId>beangle-webmvc-view-parent</artifactId>
   <packaging>pom</packaging>
