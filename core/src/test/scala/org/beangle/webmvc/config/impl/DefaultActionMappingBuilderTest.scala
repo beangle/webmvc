@@ -23,9 +23,8 @@ class DefaultActionMappingBuilderTest extends FunSpec with Matchers {
       profile.matches(classOf[ShowcaseAction].getName)
       val mappings = builder.build(classOf[ShowcaseAction], profile).toMap
       assert(null != mappings)
-      assert(mappings.size == 8)
+      assert(mappings.size == 7)
       assert(None != mappings.get("/showcase/string"))
-      assert(None != mappings.get("/showcase/unit"))
       assert(None != mappings.get("/showcase/request"))
       assert(None != mappings.get("/showcase/param"))
       assert(None != mappings.get("/showcase/cookie"))

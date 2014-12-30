@@ -86,12 +86,15 @@ class RedirectActionViewRender(val configurer: Configurer) extends ViewRender {
 
     if (null != redirectParams) {
       if (url.contains('?')) url.append("&").append(redirectParams)
-      else url.append('?').append(redirectParams)
+      else url.append("?").append(redirectParams)
     }
-    val finalLocation = if (request.getContextPath.length > 1) request.getContextPath + url.toString else url.toString
-    val encodedLocation = response.encodeRedirectURL(finalLocation)
-
-    response.sendRedirect(encodedLocation)
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      response.sendRedirect(url.toString)
+    } else {
+      val finalLocation = if (request.getContextPath.length > 1) request.getContextPath + url.toString else url.toString
+      val encodedLocation = response.encodeRedirectURL(finalLocation)
+      response.sendRedirect(encodedLocation)
+    }
   }
 
   final def toURL(view: View): String = {
