@@ -14,39 +14,39 @@
   <description>Beangle WebMVC Starter</description>
 
   <properties>
-    <beangle.version>${project.version}</beangle.version>
+    <beangle.mvc.version>${project.version}</beangle.mvc.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
       <artifactId>beangle-webmvc-webxml-plugin</artifactId>
-      <version>\${beangle.version}</version>
+      <version>\${beangle.mvc.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
       <artifactId>beangle-webmvc-entity-plugin</artifactId>
-      <version>\${beangle.version}</version>
+      <version>\${beangle.mvc.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
       <artifactId>beangle-webmvc-bootstrap-ui</artifactId>
-      <version>\${beangle.version}</version>
+      <version>\${beangle.mvc.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
       <artifactId>beangle-webmvc-tag</artifactId>
-      <version>\${beangle.version}</version>
+      <version>\${beangle.mvc.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
       <artifactId>beangle-webmvc-config-plugin</artifactId>
-      <version>\${beangle.version}</version>
+      <version>\${beangle.mvc.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
       <artifactId>beangle-webmvc-hibernate-plugin</artifactId>
-      <version>\${beangle.version}</version>
+      <version>\${beangle.mvc.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
