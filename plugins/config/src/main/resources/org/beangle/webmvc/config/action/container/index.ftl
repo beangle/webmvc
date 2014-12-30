@@ -1,5 +1,6 @@
 [@b.head/]
 [#include "../nav.ftl"/]
+<div class="container-fluid">
 <h4> Modules Locations[#if container.parent??](parent is [@b.a  href="!index?parent=true"]ROOT[/@])[/#if]</h4>
 <ul>
   [#list container.moduleLocations as ml]
@@ -39,4 +40,5 @@
   [/@]
 [/@]
 <label class='laben-info'> -- 表示和Type相同</label>
+</div>
 [@b.foot/]
