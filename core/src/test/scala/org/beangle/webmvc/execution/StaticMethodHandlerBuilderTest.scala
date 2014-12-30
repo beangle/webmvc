@@ -23,7 +23,6 @@ class StaticMethodHandlerBuilderTest extends FunSpec with Matchers {
       val mappings = mappingBuilder.build(classOf[ShowcaseAction], profile).toMap
       val action = new ShowcaseAction
       builder.build(action, mappings("/showcase/string")).handle(null)
-      builder.build(action, mappings("/showcase/unit"))
       builder.build(action, mappings("/showcase/request"))
       builder.build(action, mappings("/showcase/param"))
       builder.build(action, mappings("/showcase/cookie"))

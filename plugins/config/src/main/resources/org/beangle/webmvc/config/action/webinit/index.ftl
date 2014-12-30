@@ -1,5 +1,6 @@
 [@b.head/]
 [#include "../nav.ftl"/]
+<div class="container-fluid">
 <h4>Initializers Support By BootstrapListener</h4>
 <table class="table  table-striped">
   <thead>
@@ -24,4 +25,5 @@ ${webxml?html}
 [#else]
 <h4>No web.xml</h4>
 [/#if]
+</div>
 [@b.foot/]

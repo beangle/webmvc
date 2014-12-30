@@ -1,5 +1,6 @@
 [@b.head/]
 [#include "../nav.ftl"/]
+<div class="container-fluid">
 <h4> Config Locations</h4>
 <ul>
   [#list configLocations as url]
@@ -72,5 +73,5 @@
     [/#list]
   </tbody>
 </table>
-
+</div>
 [@b.foot/]

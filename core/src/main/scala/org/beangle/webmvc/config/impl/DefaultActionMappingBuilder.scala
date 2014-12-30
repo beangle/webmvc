@@ -94,7 +94,9 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
             }
           } else {
             //ignore arguments contain  all null
-            if (arguments.exists(a => a != null)) throw new RuntimeException(s"Cannot find enough param for $method,Using @mapping or @param")
+            if (arguments.exists(a => a != null)) {
+              throw new RuntimeException(s"Cannot find enough param for $method,Using @mapping or @param")
+            }
           }
         }
     }
@@ -133,7 +135,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     val returnType = method.getReturnType()
     if (null == getAnnotation(method, classOf[response])) {
       //filter method don't return string or view
-      if (returnType != classOf[String] && returnType != classOf[View] && returnType != classOf[Unit]) return false
+      if (returnType != classOf[String] && returnType != classOf[View]) return false
     } else {
       if (returnType == classOf[Unit]) throw new RuntimeException(s"${method} return type is unit ")
     }

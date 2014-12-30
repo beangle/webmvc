@@ -85,20 +85,23 @@ object QueryHelper extends Logging {
   /**
    * 从的参数或者cookie中(参数优先)取得分页信息
    */
-  def getPageLimit(): PageLimit = new PageLimit(getPageNo(), getPageSize())
+  def pageLimit: PageLimit = new PageLimit(pageIndex, pageSize)
 
   /**
    * 获得请求中的页码
    */
-  def getPageNo(): Int = {
-    var pageNo = Params.getInt(PageParam).getOrElse(Page.DefaultPageNo)
+  def pageIndex(): Int = {
+    var pageNo = Params.getInt(PageParam) match {
+      case Some(p) => p
+      case None => Params.getInt("pageIndex").getOrElse(Page.DefaultPageNo)
+    }
     if (pageNo < 1) Page.DefaultPageNo else pageNo
   }
 
   /**
    * 获得请求中的页长
    */
-  def getPageSize(): Int = {
+  def pageSize: Int = {
     var pageSize = Params.get(PageSizeParam).getOrElse("")
     var pagesize = Page.DefaultPageSize
     if (Strings.isNotBlank(pageSize)) {

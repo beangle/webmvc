@@ -59,20 +59,26 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
   }
 
   // query------------------------------------------------------
-  protected final def getPageNo(): Int = QueryHelper.getPageNo();
+  protected final def getPageIndex: Int = {
+    QueryHelper.pageIndex
+  }
 
-  protected final def getPageSize(): Int = QueryHelper.getPageSize();
+  protected final def getPageSize: Int = {
+    QueryHelper.pageSize
+  }
 
   /**
    * 从request的参数或者cookie中(参数优先)取得分页信息
    */
-  protected final def getPageLimit(): PageLimit = QueryHelper.getPageLimit();
+  protected final def getPageLimit: PageLimit = {
+    QueryHelper.pageLimit
+  }
 
-  protected final def populateConditions(builder: OqlBuilder[_]) {
+  protected final def populateConditions(builder: OqlBuilder[_]): Unit = {
     QueryHelper.populateConditions(builder);
   }
 
-  protected final def populateConditions(builder: OqlBuilder[_], exclusiveAttrNames: String) {
+  protected final def populateConditions(builder: OqlBuilder[_], exclusiveAttrNames: String): Unit = {
     QueryHelper.populateConditions(builder, exclusiveAttrNames);
   }
 
@@ -113,7 +119,7 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
   protected def getQueryBuilder(): OqlBuilder[T] = {
     val builder: OqlBuilder[T] = OqlBuilder.from(entityName, shortName)
     populateConditions(builder)
-    builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit())
+    builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit)
   }
 
   protected def populateEntity(): T = {
@@ -171,9 +177,9 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
   }
 
   protected def convertId[ID](id: String): ID = {
-    Params.converter.convert(id, entityMetaData.getType(entityName).get.idType) match{
+    Params.converter.convert(id, entityMetaData.getType(entityName).get.idType) match {
       case None => null.asInstanceOf[ID]
-      case Some(nid)=> nid.asInstanceOf[ID]
+      case Some(nid) => nid.asInstanceOf[ID]
     }
   }
 
