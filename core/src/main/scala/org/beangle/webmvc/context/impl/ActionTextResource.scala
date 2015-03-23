@@ -4,7 +4,7 @@ import java.{ util => jl }
 
 import scala.collection.mutable.{ HashSet, Set }
 
-import org.beangle.commons.bean.PropertyUtils
+import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.text.i18n.{ DefaultTextResource, TextBundleRegistry, TextFormater }
 import org.beangle.webmvc.api.action.EntityActionSupport
@@ -59,7 +59,7 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
               prop = newKey.substring(idx + 1, nextIdx)
               newKey = newKey.substring(idx + 1)
               idx = nextIdx
-              if (Strings.isNotEmpty(prop)) aClass = PropertyUtils.getPropertyType(aClass, prop)
+              if (Strings.isNotEmpty(prop)) aClass = Properties.getType(aClass, prop)
               else aClass = null
             }
           }

@@ -18,13 +18,14 @@
  */
 package org.beangle.webmvc.config.action
 
-import org.beangle.commons.io.{ IOs, ResourcePatternResolver }
+import java.util.Locale
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.reflect.BeanManifest
+import org.beangle.commons.text.i18n.Messages
 import org.beangle.webmvc.api.action.ActionSupport
-import org.beangle.webmvc.config.Configurer
-import org.beangle.webmvc.dispatch.impl.HierarchicalUrlMapper
+import org.beangle.webmvc.config.{ ActionConfig, Configurer }
+import javax.servlet.http.Part
 
 /**
  * @author chaostone
@@ -66,6 +67,29 @@ class MvcAction extends ActionSupport {
     put("mapping", config.mappings)
     forward()
   }
+
+  def jekyll(): String = {
+    val packageName = get("packageName", "")
+    val actionNames = new collection.mutable.HashSet[String]
+    val configs = configurer.actionConfigs.values.toSet
+    val descriptions = new collection.mutable.HashMap[String, String]
+    val messages = Messages(Locale.SIMPLIFIED_CHINESE)
+    val configMap = new collection.mutable.HashMap[String, ActionConfig]
+    configs foreach { config =>
+      if (config.clazz.getName.startsWith(packageName)) {
+        val actionName = config.name
+        actionNames += actionName
+        descriptions.put(actionName, messages.get(config.clazz, "class"))
+        configMap.put(actionName, config)
+      }
+    }
+    put("messages", messages)
+    put("configMap", configMap)
+    put("actionNames", actionNames.toList.sorted)
+    put("descriptions", descriptions)
+    forward()
+  }
+
   private def getNamespaces(): Seq[String] = {
     val configs = configurer.actionConfigs.values.toSet
     configs.map(config => config.namespace).toList.sorted

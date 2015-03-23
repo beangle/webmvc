@@ -22,10 +22,7 @@ class StreamViewRender(configurer: Configurer) extends ViewRender with Logging {
       val response = context.response
       response.reset()
       response.setContentType(stream.contentType)
-      val encodeName = RequestUtils.encodeAttachName(context.request, stream.displayName)
-      response.setHeader("Content-Disposition", "attachment; filename=" + encodeName)
-      response.setHeader("Location", encodeName)
-
+      RequestUtils.setFileDownloadHeader(response, stream.displayName)
       IOs.copy(stream.inputStream, response.getOutputStream)
     } catch {
       case e: Exception => warn(s"download file error ${stream.displayName}", e)

@@ -12,8 +12,8 @@
   <version>0.2.7-SNAPSHOT</version>
   
   <properties>
-    <beangle.commons.version>4.2.1</beangle.commons.version>
-    <beangle.data.version>4.1.8</beangle.data.version>
+    <beangle.commons.version>4.2.4-SNAPSHOT</beangle.commons.version>
+    <beangle.data.version>4.1.11-SNAPSHOT</beangle.data.version>
     <beangle.spring.version>4.0.7</beangle.spring.version>
     <beangle.template.version>0.0.1</beangle.template.version>
     <hibernate.version>4.3.1.Final</hibernate.version>
@@ -86,6 +86,10 @@
     <dependency>
       <groupId>org.beangle.commons</groupId>
       <artifactId>beangle-commons-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.beangle.commons</groupId>

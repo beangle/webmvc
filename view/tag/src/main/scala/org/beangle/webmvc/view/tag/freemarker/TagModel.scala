@@ -4,7 +4,7 @@ import java.io.Writer
 import java.lang.reflect.Constructor
 import java.{util => ju}
 
-import org.beangle.commons.bean.PropertyUtils
+import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.view.tag.{Component, ComponentContext}
@@ -26,13 +26,13 @@ class TagModel(context: ComponentContext, clazz: Class[_ <: Component] = null) e
       val property = if (key == "class") "cssClass" else key
       val value = params.get(key).asInstanceOf[Object]
       if (value != null) {
-        if (PropertyUtils.isWriteable(bean, property)) {
+        if (Properties.isWriteable(bean, property)) {
           val unwrapped = value match {
             case tm: TemplateModel => wrapper.unwrap(tm)
             case _ => value
           }
           try {
-            PropertyUtils.setProperty(bean, property, unwrapped)
+            Properties.set(bean, property, unwrapped)
           } catch {
             case e: Exception =>
               error("invoke set property [" + property + "] with value " + unwrapped, e)

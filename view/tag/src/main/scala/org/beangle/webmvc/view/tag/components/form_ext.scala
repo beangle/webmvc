@@ -1,6 +1,6 @@
 package org.beangle.webmvc.view.tag.components
 
-import org.beangle.commons.bean.PropertyUtils
+import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.{ Numbers, Strings }
 import org.beangle.webmvc.view.tag.ComponentContext
 
@@ -167,8 +167,8 @@ class Checkboxes(context: ComponentContext) extends UIBean(context) {
       }
     } else if (items.isInstanceOf[Iterable[_]]) {
       for (obj <- items.asInstanceOf[Iterable[_]]) {
-        val value = PropertyUtils.getProperty(obj, "id")
-        val title = PropertyUtils.getProperty(obj, valueName)
+        val value = Properties.get(obj, "id")
+        val title = Properties.get(obj, valueName)
         keys += value
         itemMap.put(value, title)
       }
@@ -185,7 +185,7 @@ class Checkboxes(context: ComponentContext) extends UIBean(context) {
     value match {
       case null => Set.empty
       case iter: Iterable[_] =>
-        (for (obj <- iter) yield PropertyUtils.getProperty(obj, "id")).toSet
+        (for (obj <- iter) yield Properties.get(obj, "id")).toSet
       case arry: Array[Object] => arry.toSet
       case str: String         => if (Strings.isNotBlank(str)) Strings.split(str).toSet else Set.empty
     }

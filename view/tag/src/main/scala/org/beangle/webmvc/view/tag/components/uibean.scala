@@ -3,7 +3,7 @@ package org.beangle.webmvc.view.tag.components
 import java.io.Writer
 import java.{ util => ju }
 
-import org.beangle.commons.bean.PropertyUtils
+import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.{ Chars, Strings }
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.api.context.ContextHolder
@@ -60,7 +60,7 @@ class UIBean(context: ComponentContext) extends Component(context) {
       case null => null
       case map: collection.Map[_, _] => map.asInstanceOf[collection.Map[String, Any]].get(property).orNull
       case javaMap: ju.Map[_, _] => javaMap.get(property)
-      case o: AnyRef => PropertyUtils.getProperty(o, property)
+      case o: AnyRef => Properties.get(o, property)
     }
   }
 

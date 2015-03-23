@@ -10,6 +10,7 @@
        [#list namespaces as namespace]
        [@b.navitem href="!actions?namespace=${namespace}" target="action_content"][#if namespace=""]default[#else]${namespace}[/#if][/@]
        [/#list]
+       [@b.navitem active=false href="!jekyll" target="action_content"]Jekyll[/@]
       [/@]
    </div>
    [@b.div id="action_content" class="col-md-10" href="!profiles"/]
