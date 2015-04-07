@@ -190,7 +190,7 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
       redirect("search", "info.remove.success")
     } catch {
       case e: Exception => {
-        info("removeAndForwad failure", e)
+        logger.info("removeAndForwad failure", e)
         redirect("search", "info.delete.failure")
       }
     }

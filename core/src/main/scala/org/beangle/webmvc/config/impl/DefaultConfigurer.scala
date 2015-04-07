@@ -50,7 +50,7 @@ class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) 
       }
     }
     actionConfigs = configs.toMap
-    info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in ${watch}.")
+    logger.info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in ${watch}.")
     results
   }
 
@@ -61,7 +61,7 @@ class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) 
       case Some(p) =>
         class2Profiles.put(className, p)
         matched = p
-        debug(s"${className} match profile:${p}")
+        logger.debug(s"${className} match profile:${p}")
       case None =>
     }
     matched

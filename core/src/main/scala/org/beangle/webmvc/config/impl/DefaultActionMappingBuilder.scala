@@ -90,7 +90,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
               actions += Tuple2(url, mapping)
               if (name == "index") actions += Tuple2(actionName, mapping)
             } else {
-              warn(s"Only support one method, but $mappingMehtods finded")
+              logger.warn(s"Only support one method, but $mappingMehtods finded")
             }
           } else {
             //ignore arguments contain  all null

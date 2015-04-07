@@ -69,13 +69,13 @@ object QueryHelper extends Logging {
           } else {
             PopulateHelper.populator.populate(entity, entityType, attr, strValue)
             Properties.get[Object](entity, attr) match {
-              case null => error("Error populate entity " + prefix + "'s attribute " + attr)
+              case null => logger.error("Error populate entity " + prefix + "'s attribute " + attr)
               case sv: String => conditions += new Condition(s"$prefix.$attr like :${attr.replace('.', '_')}", s"%$sv%")
               case sv => conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", sv)
             }
           }
         } catch {
-          case e: Exception => error("Error populate entity " + prefix + "'s attribute " + attr, e)
+          case e: Exception => logger.error("Error populate entity " + prefix + "'s attribute " + attr, e)
         }
       }
     }

@@ -18,7 +18,7 @@ object ActionSupport {
   val INPUT = "input"
 }
 
-class ActionSupport extends Logging {
+abstract class ActionSupport extends Logging {
 
   var contentNegotiationManager: ContentNegotiationManager = _
 
@@ -153,18 +153,26 @@ class ActionSupport extends Logging {
     ContextHolder.context.attribute(key, value)
   }
 
-  protected final def getAll(paramName: String) = Params.getAll(paramName)
+  protected final def getAll(paramName: String): Array[Any] = {
+    Params.getAll(paramName)
+  }
 
-  protected final def getAll[T: ClassTag](paramName: String, clazz: Class[T]) = Params.getAll(paramName, clazz)
+  protected final def getAll[T: ClassTag](paramName: String, clazz: Class[T]): Array[T] = {
+    Params.getAll(paramName, clazz)
+  }
 
-  protected final def get(paramName: String) = Params.get(paramName)
+  protected final def get(paramName: String): Option[String] = {
+    Params.get(paramName)
+  }
 
   protected final def get[T](paramName: String, defaultValue: T): T = {
     val value = Params.get(paramName)
     if (value.isEmpty) defaultValue else Params.converter.convert(value.get, defaultValue.getClass).getOrElse(defaultValue)
   }
 
-  protected final def getAttribute(name: String): Any = ContextHolder.context.attribute(name)
+  protected final def getAttribute(name: String): Any = {
+    ContextHolder.context.attribute(name)
+  }
 
   protected final def getAttribute[T](name: String, clazz: Class[T]): T = {
     ContextHolder.context.attribute(name).asInstanceOf[T]
@@ -218,7 +226,7 @@ class ActionSupport extends Logging {
     try {
       CookieUtils.addCookie(request, response, name, value, path, age)
     } catch {
-      case e: Exception => error("setCookie error", e)
+      case e: Exception => logger.error("setCookie error", e)
     }
   }
 
@@ -227,7 +235,7 @@ class ActionSupport extends Logging {
       CookieUtils.addCookie(request, response, name,
         value, age)
     } catch {
-      case e: Exception => error("setCookie error", e)
+      case e: Exception => logger.error("setCookie error", e)
     }
   }
 
@@ -237,7 +245,7 @@ class ActionSupport extends Logging {
 
   protected final def getResource(name: String): URL = {
     val url = ClassLoaders.getResource(name)
-    if (url == null) error(s"Cannot load template $name")
+    if (url == null) logger.error(s"Cannot load template $name")
     url
   }
 

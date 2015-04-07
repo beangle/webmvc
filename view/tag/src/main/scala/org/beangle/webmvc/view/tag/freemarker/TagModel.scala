@@ -35,7 +35,7 @@ class TagModel(context: ComponentContext, clazz: Class[_ <: Component] = null) e
             Properties.set(bean, property, unwrapped)
           } catch {
             case e: Exception =>
-              error("invoke set property [" + property + "] with value " + unwrapped, e)
+              logger.error("invoke set property [" + property + "] with value " + unwrapped, e)
           }
         } else {
           bean.parameters.put(key, value)

@@ -25,7 +25,7 @@ class StreamViewRender(configurer: Configurer) extends ViewRender with Logging {
       RequestUtils.setFileDownloadHeader(response, stream.displayName)
       IOs.copy(stream.inputStream, response.getOutputStream)
     } catch {
-      case e: Exception => warn(s"download file error ${stream.displayName}", e)
+      case e: Exception => logger.warn(s"download file error ${stream.displayName}", e)
     } finally {
       IOs.close(stream.inputStream)
     }

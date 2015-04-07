@@ -63,7 +63,7 @@ abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends Abs
           case "save" => "editNew"
           case "update" => "edit"
         }
-        info("saveAndForwad failure", e)
+        logger.info("saveAndForwad failure", e)
         redirect(redirectTo, "info.save.failure")
       }
     }

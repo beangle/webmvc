@@ -82,7 +82,7 @@ class FreemarkerTemplateEngine(freemarkerManager: FreemarkerManager) extends Tem
     } catch {
       case e: ParseException => throw e
       case e: IOException =>
-        error(s"Couldn't load template '${templateName}',loader is ${config.getTemplateLoader().getClass()}")
+        logger.error(s"Couldn't load template '${templateName}',loader is ${config.getTemplateLoader().getClass()}")
         throw Throwables.propagate(e)
     }
   }

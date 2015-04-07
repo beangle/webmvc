@@ -60,7 +60,7 @@ class MvcAction extends ActionSupport {
       put("properties", BeanManifest.get(clazz).getters.values.filterNot(m => m.method.getName.contains("$") || m.method.getDeclaringClass == classOf[ActionSupport]))
     } catch {
       case e: Throwable =>
-        error("Unable to get properties for action " + actionName, e)
+        logger.error("Unable to get properties for action " + actionName, e)
         addError("Unable to retrieve action properties: " + e.toString())
     }
     put("config", config)
