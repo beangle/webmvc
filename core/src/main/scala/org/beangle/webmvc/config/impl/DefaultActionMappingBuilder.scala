@@ -124,8 +124,8 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     val methodName = method.getName
 
     if (methodName.contains("$")) return false
-    if (methodName.startsWith("get") && Character.isUpperCase(methodName.charAt(3))
-      || methodName.startsWith("is") && Character.isUpperCase(methodName.charAt(2))) {
+    if (methodName == "get" || methodName.startsWith("get") && methodName.length > 3 && Character.isUpperCase(methodName.charAt(3))
+      || methodName.startsWith("is") && methodName.length > 2 && Character.isUpperCase(methodName.charAt(2))) {
       return false
     }
 

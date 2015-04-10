@@ -3,8 +3,9 @@ package org.beangle.webmvc.entity.action
 import org.beangle.data.model.Entity
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param, response }
 import org.beangle.webmvc.api.context.Params
+import org.beangle.webmvc.api.action.ActionSupport
 
-class RestfulService[T <: Entity[_ <: java.io.Serializable]] extends AbstractEntityAction[T] {
+class RestfulService[T <: Entity[_ <: java.io.Serializable]] extends ActionSupport with EntityAction[T] {
 
   @response
   def index(): Any = {
