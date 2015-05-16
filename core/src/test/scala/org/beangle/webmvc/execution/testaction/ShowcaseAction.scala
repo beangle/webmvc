@@ -1,17 +1,12 @@
 package org.beangle.webmvc.execution.testaction
 
-import org.beangle.webmvc.api.action.ActionSupport
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpServletRequest
-import org.beangle.webmvc.api.annotation.param
-import org.beangle.webmvc.api.annotation.cookie
-import org.beangle.webmvc.api.annotation.header
-import org.beangle.webmvc.api.annotation.mapping
-import org.beangle.webmvc.api.annotation.response
-import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.api.view.Status
+import org.beangle.webmvc.api.action.RouteSupport
+import org.beangle.webmvc.api.annotation.{ cookie, header, mapping, param, response }
+import org.beangle.webmvc.api.view.{ Status, View }
 
-class ShowcaseAction extends ActionSupport {
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+
+class ShowcaseAction extends RouteSupport {
 
   def string(): String = {
     println("in Showcase string")

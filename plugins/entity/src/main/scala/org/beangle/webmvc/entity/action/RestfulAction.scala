@@ -2,8 +2,7 @@ package org.beangle.webmvc.entity.action
 
 import java.{ util => ju }
 
-import org.beangle.data.model.Entity
-import org.beangle.data.model.bean.UpdatedBean
+import org.beangle.data.model.{ Entity, Updated }
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.context.ContextHolder
@@ -71,7 +70,7 @@ abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends Act
   protected def saveAndRedirect(entity: T): View = {
     try {
       entity match {
-        case updated: UpdatedBean => updated.updatedAt = new ju.Date()
+        case updated: Updated => updated.updatedAt = new ju.Date()
         case _ =>
       }
       saveOrUpdate(entity)

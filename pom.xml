@@ -12,10 +12,10 @@
   <version>0.2.7-SNAPSHOT</version>
   
   <properties>
-    <beangle.commons.version>4.2.4-SNAPSHOT</beangle.commons.version>
-    <beangle.data.version>4.1.11-SNAPSHOT</beangle.data.version>
-    <beangle.spring.version>4.0.7</beangle.spring.version>
-    <beangle.template.version>0.0.1</beangle.template.version>
+    <beangle.commons.version>4.2.4</beangle.commons.version>
+    <beangle.data.version>4.2.2-SNAPSHOT</beangle.data.version>
+    <beangle.spring.version>4.0.9</beangle.spring.version>
+    <beangle.template.version>0.0.2</beangle.template.version>
     <hibernate.version>4.3.1.Final</hibernate.version>
   </properties>
 

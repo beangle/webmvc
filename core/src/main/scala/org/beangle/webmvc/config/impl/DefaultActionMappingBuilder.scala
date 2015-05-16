@@ -9,7 +9,6 @@ import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.lang.reflect.ClassInfo
 import org.beangle.commons.lang.reflect.Reflections.{ getAnnotation, isAnnotationPresent }
-import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ DefaultNone, action, cookie, header, ignore, mapping, param, response, view, views }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Profile }
@@ -39,7 +38,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     classInfo.methods foreach {
       case (methodName, minfos) =>
         val mappingMehtods = new collection.mutable.HashSet[Method]
-        minfos.filter(m => m.method.getDeclaringClass != classOf[ActionSupport] && isActionMethod(m.method, classInfo)) foreach { methodinfo =>
+        minfos.filter(m => isActionMethod(m.method, classInfo)) foreach { methodinfo =>
           val method = methodinfo.method
           val annTuple = getAnnotation(method, classOf[mapping])
           val ann = if (null == annTuple) null else annTuple._1

@@ -6,10 +6,10 @@ import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.reflect.Reflections
 import org.beangle.webmvc.api.context.Params
 
-trait EntityActionSupport[T] {
+trait EntitySupport[T] {
 
   val entityType: Class[T] = {
-    val tClass = Reflections.getGenericParamType(getClass, classOf[EntityActionSupport[_]]).get("T")
+    val tClass = Reflections.getGenericParamType(getClass, classOf[EntitySupport[_]]).get("T")
     if (tClass.isEmpty) throw new RuntimeException(s"Cannot guess entity type from ${this.getClass.getName}")
     else tClass.get.asInstanceOf[Class[T]]
   }

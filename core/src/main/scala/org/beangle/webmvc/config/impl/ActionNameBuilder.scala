@@ -4,7 +4,7 @@ import org.beangle.commons.lang.Strings.{ substringBeforeLast, unCamel, uncapita
 import org.beangle.webmvc.api.annotation.action
 import org.beangle.webmvc.config.Profile
 import org.beangle.commons.text.inflector.en.EnNounPluralizer
-import org.beangle.webmvc.api.action.EntityActionSupport
+import org.beangle.webmvc.api.action.EntitySupport
 
 object ActionNameBuilder {
 
@@ -29,7 +29,7 @@ object ActionNameBuilder {
         case Profile.SEO_URI =>
           nameBuilder.append(unCamel(profile.getMatched(className)))
         case Profile.PLUR_SEO_URI =>
-          if (classOf[EntityActionSupport[_]].isAssignableFrom(clazz)) {
+          if (classOf[EntitySupport[_]].isAssignableFrom(clazz)) {
             val matchedName = profile.getMatched(className)
             val lastSlash = matchedName.lastIndexOf('/')
             if (-1 == lastSlash) {
