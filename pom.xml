@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.beangle</groupId>
     <artifactId>beangle-scala</artifactId>
-    <version>22.1</version>
+    <version>22.2</version>
   </parent>
   <groupId>org.beangle.webmvc</groupId>
   <artifactId>beangle-webmvc-parent</artifactId>
@@ -10,12 +10,12 @@
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Parent</name>
   <version>0.2.7-SNAPSHOT</version>
-  
+
   <properties>
-    <beangle.commons.version>4.2.4</beangle.commons.version>
-    <beangle.data.version>4.2.2-SNAPSHOT</beangle.data.version>
-    <beangle.spring.version>4.0.9</beangle.spring.version>
-    <beangle.template.version>0.0.2</beangle.template.version>
+    <beangle.commons.version>4.2.5</beangle.commons.version>
+    <beangle.data.version>4.2.2</beangle.data.version>
+    <beangle.spring.version>4.0.10</beangle.spring.version>
+    <beangle.template.version>0.0.3</beangle.template.version>
     <hibernate.version>4.3.1.Final</hibernate.version>
   </properties>
 
