@@ -2,12 +2,17 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-plugins</artifactId>
-    <version>0.2.7-SNAPSHOT</version>
+    <version>0.2.7</version>
   </parent>
   <artifactId>beangle-webmvc-serializer-plugin</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Plugin - Serializer</name>
+
+  <properties>
+    <bundle.symbolicName>org.beangle.webmvc.serializer.plugin</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc.serializer</bundle.namespace>
+  </properties>
 
   <dependencies>
     <dependency>

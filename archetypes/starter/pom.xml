@@ -2,12 +2,18 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-archetype-parent</artifactId>
-    <version>0.2.7-SNAPSHOT</version>
+    <version>0.2.7</version>
   </parent>
   <artifactId>beangle-webmvc-archetype-starter</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Archetype Starter</name>
+
+  <properties>
+    <bundle.symbolicName>org.beangle.webmvc.archetype.starter</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc</bundle.namespace>
+  </properties>
+
   <build>
     <resources>
       <resource>
