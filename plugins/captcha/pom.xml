@@ -9,6 +9,11 @@
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Plugin - Captcha</name>
 
+  <properties>
+    <bundle.symbolicName>org.beangle.webmvc.capatcha-plugin</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc.capatcha</bundle.namespace>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.beangle.data</groupId>

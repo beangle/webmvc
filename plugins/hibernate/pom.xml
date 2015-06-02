@@ -8,9 +8,11 @@
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Plugin - Hibernate Config Browser</name>
-  
+
   <properties>
     <hibernate.version>4.3.1.Final</hibernate.version>
+    <bundle.symbolicName>org.beangle.webmvc.hibernate.plugin</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc.hibernate</bundle.namespace>
   </properties>
 
   <dependencies>

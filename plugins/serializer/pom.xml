@@ -9,6 +9,11 @@
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Plugin - Serializer</name>
 
+  <properties>
+    <bundle.symbolicName>org.beangle.webmvc.serializer.plugin</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc.serializer</bundle.namespace>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.beangle.data</groupId>

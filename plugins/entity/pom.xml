@@ -9,6 +9,11 @@
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Plugin - Entity Support</name>
 
+  <properties>
+    <bundle.symbolicName>org.beangle.webmvc.entity-plugin</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc.entity</bundle.namespace>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.beangle.data</groupId>

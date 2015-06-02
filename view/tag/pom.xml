@@ -8,6 +8,12 @@
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC View - Tag</name>
+
+  <properties>
+    <bundle.symbolicName>org.beangle.webmvc.tag</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc.view</bundle.namespace>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.beangle.template</groupId>

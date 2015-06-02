@@ -9,6 +9,11 @@
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Core</name>
 
+  <properties>
+    <bundle.symbolicName>org.beangle.webmvc.core</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc</bundle.namespace>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
