@@ -6,6 +6,7 @@ import org.beangle.webmvc.dispatch.RequestMapping
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.commons.text.i18n.TextResourceProvider
 import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.commons.web.multipart.StandardMultipartResolver
 
 object ActionContextHelper {
 
@@ -22,6 +23,10 @@ object ActionContextHelper {
       val values = paramEntry.getValue
       if (values.length == 1) params.put(paramEntry.getKey, values(0))
       else params.put(paramEntry.getKey, values)
+    }
+
+    if (StandardMultipartResolver.isMultipart(request)) {
+      params ++= StandardMultipartResolver.resolve(request)
     }
 
     params ++= mapping.params

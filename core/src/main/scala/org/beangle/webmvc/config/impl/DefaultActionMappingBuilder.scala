@@ -9,7 +9,6 @@ import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.lang.reflect.ClassInfo
 import org.beangle.commons.lang.reflect.Reflections.{ getAnnotation, isAnnotationPresent }
-import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ DefaultNone, action, cookie, header, ignore, mapping, param, response, view, views }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Profile }
@@ -39,7 +38,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     classInfo.methods foreach {
       case (methodName, minfos) =>
         val mappingMehtods = new collection.mutable.HashSet[Method]
-        minfos.filter(m => m.method.getDeclaringClass != classOf[ActionSupport] && isActionMethod(m.method, classInfo)) foreach { methodinfo =>
+        minfos.filter(m => isActionMethod(m.method, classInfo)) foreach { methodinfo =>
           val method = methodinfo.method
           val annTuple = getAnnotation(method, classOf[mapping])
           val ann = if (null == annTuple) null else annTuple._1
@@ -90,7 +89,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
               actions += Tuple2(url, mapping)
               if (name == "index") actions += Tuple2(actionName, mapping)
             } else {
-              warn(s"Only support one method, but $mappingMehtods finded")
+              logger.warn(s"Only support one method, but $mappingMehtods finded")
             }
           } else {
             //ignore arguments contain  all null
@@ -124,8 +123,8 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     val methodName = method.getName
 
     if (methodName.contains("$")) return false
-    if (methodName.startsWith("get") && Character.isUpperCase(methodName.charAt(3))
-      || methodName.startsWith("is") && Character.isUpperCase(methodName.charAt(2))) {
+    if (methodName == "get" || methodName.startsWith("get") && methodName.length > 3 && Character.isUpperCase(methodName.charAt(3))
+      || methodName.startsWith("is") && methodName.length > 2 && Character.isUpperCase(methodName.charAt(2))) {
       return false
     }
 

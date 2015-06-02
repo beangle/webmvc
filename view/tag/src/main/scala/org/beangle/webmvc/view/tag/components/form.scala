@@ -3,7 +3,7 @@ package org.beangle.webmvc.view.tag.components
 import java.io.Writer
 import java.text.SimpleDateFormat
 import java.{ util => ju }
-import org.beangle.commons.bean.PropertyUtils
+import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.Strings
 import org.beangle.webmvc.view.tag.ComponentContext
 import org.beangle.commons.lang.Primitives
@@ -299,7 +299,7 @@ class Select(context: ComponentContext) extends ClosingUIBean(context) {
         case tuple: Tuple2[_, _] => tuple._1.toString
         case _ =>
           if (Primitives.isWrapperType(value.getClass())) value
-          else PropertyUtils.getProperty(value, keyName)
+          else Properties.get(value, keyName)
       }
     }
     if (null != href) href = render(href)
@@ -311,7 +311,7 @@ class Select(context: ComponentContext) extends ClosingUIBean(context) {
       var pObj =
         if (obj.isInstanceOf[Tuple2[_, _]]) obj.asInstanceOf[Tuple2[Object, _]]._1
         else if (obj.isInstanceOf[ju.Map.Entry[_, _]]) obj.asInstanceOf[ju.Map.Entry[Object, _]].getKey()
-        else PropertyUtils.getProperty(obj, keyName)
+        else Properties.get(obj, keyName)
 
       value == pObj || value.toString == pObj.toString
     } catch {

@@ -4,7 +4,7 @@ import java.net.URL
 
 import scala.xml.{ Node, XML }
 
-import org.beangle.commons.bean.PropertyUtils.{ copyProperty, getProperty }
+import org.beangle.commons.bean.Properties.{ copy, get }
 import org.beangle.commons.lang.ClassLoaders
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.webmvc.config.{ ProfileConfig, ProfileProvider }
@@ -91,15 +91,15 @@ class XmlProfileProvider extends ProfileProvider {
   private def readProperty(elem: Node, profile: ProfileConfig, attrName: String, propertyName: String): Unit = {
     val xmlAttribute = "@" + attrName
     if (!(elem \ xmlAttribute).isEmpty) {
-      copyProperty(profile, propertyName, (elem \ xmlAttribute).text.intern)
+      copy(profile, propertyName, (elem \ xmlAttribute).text.intern)
     } else {
-      copyProperty(profile, propertyName, getProperty(defaultProfile, propertyName))
+      copy(profile, propertyName, get(defaultProfile, propertyName))
     }
   }
 
   private def copyDefaultProperties(profile: ProfileConfig, properties: String*): Unit = {
     properties foreach { propertyName =>
-      copyProperty(profile, propertyName, getProperty(defaultProfile, propertyName))
+      copy(profile, propertyName, get(defaultProfile, propertyName))
     }
   }
 }

@@ -5,6 +5,8 @@ import org.beangle.commons.web.session.HttpSessionEventPublisher
 import org.beangle.webmvc.dispatch.DispatcherServlet
 import javax.servlet.ServletContext
 import org.beangle.spring.web.ContextListener
+import javax.servlet.MultipartConfigElement
+import org.beangle.commons.lang.SystemInfo
 
 class Initializer extends org.beangle.commons.web.init.Initializer {
 
@@ -15,7 +17,9 @@ class Initializer extends org.beangle.commons.web.init.Initializer {
 
     addListener(new ContextListener)
     sc.addListener(new HttpSessionEventPublisher)
-    sc.addServlet("Action", new DispatcherServlet).addMapping("/*")
+    val dispatch = sc.addServlet("Action", new DispatcherServlet)
+    dispatch.addMapping("/*")
+    dispatch.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))
     sc.addServlet("StaticResource", new StaticResourceServlet()).addMapping("/static/*")
   }
 }

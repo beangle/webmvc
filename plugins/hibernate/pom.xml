@@ -2,15 +2,17 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-plugins</artifactId>
-    <version>0.2.6</version>
+    <version>0.2.7</version>
   </parent>
   <artifactId>beangle-webmvc-hibernate-plugin</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Plugin - Hibernate Config Browser</name>
-  
+
   <properties>
     <hibernate.version>4.3.1.Final</hibernate.version>
+    <bundle.symbolicName>org.beangle.webmvc.hibernate.plugin</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc.hibernate</bundle.namespace>
   </properties>
 
   <dependencies>

@@ -3,7 +3,7 @@ package org.beangle.webmvc.entity.helper
 import java.text.{ ParseException, SimpleDateFormat }
 import java.{ util => ju }
 
-import org.beangle.commons.bean.PropertyUtils
+import org.beangle.commons.bean.Properties
 import org.beangle.commons.collection.page.{ Page, PageLimit }
 import org.beangle.commons.lang.{ Numbers, Strings }
 import org.beangle.commons.logging.Logging
@@ -68,14 +68,14 @@ object QueryHelper extends Logging {
             conditions += new Condition(prefix + "." + attr + " is null")
           } else {
             PopulateHelper.populator.populate(entity, entityType, attr, strValue)
-            PropertyUtils.getProperty[Object](entity, attr) match {
-              case null => error("Error populate entity " + prefix + "'s attribute " + attr)
+            Properties.get[Object](entity, attr) match {
+              case null => logger.error("Error populate entity " + prefix + "'s attribute " + attr)
               case sv: String => conditions += new Condition(s"$prefix.$attr like :${attr.replace('.', '_')}", s"%$sv%")
               case sv => conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", sv)
             }
           }
         } catch {
-          case e: Exception => error("Error populate entity " + prefix + "'s attribute " + attr, e)
+          case e: Exception => logger.error("Error populate entity " + prefix + "'s attribute " + attr, e)
         }
       }
     }

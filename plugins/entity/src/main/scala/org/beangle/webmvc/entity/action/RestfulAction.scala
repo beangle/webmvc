@@ -2,14 +2,32 @@ package org.beangle.webmvc.entity.action
 
 import java.{ util => ju }
 
-import org.beangle.data.model.Entity
-import org.beangle.data.model.bean.UpdatedBean
+import org.beangle.data.model.{ Entity, Updated }
+import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.context.ActionContextHelper
 
-abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends AbstractRestfulAction[T] {
+abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends ActionSupport with EntityAction[T] {
+
+  def index(): String = {
+    indexSetting()
+    forward()
+  }
+
+  def search(): String = {
+    put(shortName + "s", entityDao.search(getQueryBuilder()))
+    forward()
+  }
+
+  @mapping(value = "{id}")
+  def info(@param("id") id: String): String = {
+    put(shortName, getModel(entityName, convertId(id)))
+    forward()
+  }
+
+  protected def indexSetting(): Unit = {}
 
   @mapping(value = "{id}/edit")
   def edit(@param("id") id: String): String = {
@@ -52,7 +70,7 @@ abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends Abs
   protected def saveAndRedirect(entity: T): View = {
     try {
       entity match {
-        case updated: UpdatedBean => updated.updatedAt = new ju.Date()
+        case updated: Updated => updated.updatedAt = new ju.Date()
         case _ =>
       }
       saveOrUpdate(entity)
@@ -63,7 +81,7 @@ abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends Abs
           case "save" => "editNew"
           case "update" => "edit"
         }
-        info("saveAndForwad failure", e)
+        logger.info("saveAndForwad failure", e)
         redirect(redirectTo, "info.save.failure")
       }
     }

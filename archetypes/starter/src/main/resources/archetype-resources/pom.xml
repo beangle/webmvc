@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.beangle</groupId>
     <artifactId>beangle-scala</artifactId>
-    <version>20</version>
+    <version>22.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>\${groupId}</groupId>
@@ -65,7 +65,7 @@
     <dependency>
       <groupId>org.scala-lang.modules</groupId>
       <artifactId>scala-xml_2.11</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -93,4 +93,3 @@
     </plugins>
   </build>
 </project>
-

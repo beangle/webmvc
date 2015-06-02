@@ -2,12 +2,17 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-plugins</artifactId>
-    <version>0.2.6</version>
+    <version>0.2.7</version>
   </parent>
   <artifactId>beangle-webmvc-config-plugin</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Plugin - Config Browser</name>
+
+  <properties>
+    <bundle.symbolicName>org.beangle.webmvc.config-plugin</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc.config</bundle.namespace>
+  </properties>
 
   <dependencies>
     <dependency>

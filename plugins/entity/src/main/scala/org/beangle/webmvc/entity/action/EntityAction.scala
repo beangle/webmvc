@@ -1,24 +1,23 @@
 package org.beangle.webmvc.entity.action
 
-import java.{ util => ju, io => jo }
+import java.{ io => jo }
+
 import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.PageLimit
 import org.beangle.commons.config.property.PropertyConfig
 import org.beangle.commons.lang.Strings
+import org.beangle.commons.logging.Logging
 import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
-import org.beangle.data.model.bean.UpdatedBean
 import org.beangle.data.model.dao.EntityDao
 import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
-import org.beangle.webmvc.api.action.EntityActionSupport
+import org.beangle.webmvc.api.action.{ EntitySupport, ParamSupport, RouteSupport }
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.helper.{ PopulateHelper, QueryHelper }
-import org.beangle.webmvc.api.context.ContextHolder
-import org.beangle.webmvc.context.ActionContextHelper
 
-abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[T] {
+trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with EntitySupport[T] with Logging {
   var entityDao: EntityDao = _
   var config: PropertyConfig = _
   var entityMetaData: EntityMetadata = _
@@ -190,7 +189,7 @@ abstract class AbstractEntityAction[T <: Entity[_]] extends EntityActionSupport[
       redirect("search", "info.remove.success")
     } catch {
       case e: Exception => {
-        info("removeAndForwad failure", e)
+        logger.info("removeAndForwad failure", e)
         redirect("search", "info.delete.failure")
       }
     }

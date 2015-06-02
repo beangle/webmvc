@@ -6,16 +6,16 @@ import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.reflect.Reflections
 import org.beangle.webmvc.api.context.Params
 
-trait EntityActionSupport[T] extends ActionSupport {
+trait EntitySupport[T] {
 
   val entityType: Class[T] = {
-    val tClass = Reflections.getGenericParamType(getClass, classOf[EntityActionSupport[_]]).get("T")
+    val tClass = Reflections.getGenericParamType(getClass, classOf[EntitySupport[_]]).get("T")
     if (tClass.isEmpty) throw new RuntimeException(s"Cannot guess entity type from ${this.getClass.getName}")
     else tClass.get.asInstanceOf[Class[T]]
   }
 
   protected def getId(name: String): String = {
-    get(name + ".id").getOrElse(get(name + "_id").getOrElse(get(name + "Id").getOrElse(null)))
+    Params.get(name + ".id").getOrElse(Params.get(name + "_id").getOrElse(Params.get(name + "Id").getOrElse(null)))
   }
   /**
    * Get entity's id from shortname.id,shortnameId,id

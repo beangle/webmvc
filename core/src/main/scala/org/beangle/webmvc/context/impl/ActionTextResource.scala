@@ -4,10 +4,10 @@ import java.{ util => jl }
 
 import scala.collection.mutable.{ HashSet, Set }
 
-import org.beangle.commons.bean.PropertyUtils
+import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.text.i18n.{ DefaultTextResource, TextBundleRegistry, TextFormater }
-import org.beangle.webmvc.api.action.EntityActionSupport
+import org.beangle.webmvc.api.action.EntitySupport
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.context.ActionContextHelper
 
@@ -31,9 +31,9 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
     msg = getPackageMessage(actionClass, key, checked)
     if (msg != None) return msg
 
-    if (classOf[EntityActionSupport[_]].isAssignableFrom(actionClass)) {
+    if (classOf[EntitySupport[_]].isAssignableFrom(actionClass)) {
       // search up model's class hierarchy
-      val entityType = mapping.handler.action.asInstanceOf[EntityActionSupport[_]].entityType
+      val entityType = mapping.handler.action.asInstanceOf[EntitySupport[_]].entityType
       if (entityType != null) {
         msg = getPackageMessage(entityType, key, checked)
         if (msg != None) return msg
@@ -59,7 +59,7 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
               prop = newKey.substring(idx + 1, nextIdx)
               newKey = newKey.substring(idx + 1)
               idx = nextIdx
-              if (Strings.isNotEmpty(prop)) aClass = PropertyUtils.getPropertyType(aClass, prop)
+              if (Strings.isNotEmpty(prop)) aClass = Properties.getType(aClass, prop)
               else aClass = null
             }
           }

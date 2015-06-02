@@ -5,7 +5,6 @@ import scala.collection.mutable
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.Strings.isEmpty
-import org.beangle.webmvc.api.action.ActionSupport
 import org.hibernate.SessionFactory
 import org.beangle.commons.lang.annotation.description
 import org.beangle.webmvc.api.annotation.action
