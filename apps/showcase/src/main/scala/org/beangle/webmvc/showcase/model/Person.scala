@@ -2,9 +2,9 @@ package org.beangle.webmvc.showcase.model
 
 import java.io.File
 import java.{ util => ju }
-import org.beangle.data.model.bean.IntIdBean
+import org.beangle.data.model.IntId
 
-class Person(var code: String, var name: String) extends IntIdBean {
+class Person(var code: String, var name: String) extends IntId {
   var address = Address("minzu", "500", "jiading")
   var mobile: String = _
   var addresses = List(Address("minzu", "500", "jiading"), Address("minzu2", "5002", "jiading2"))

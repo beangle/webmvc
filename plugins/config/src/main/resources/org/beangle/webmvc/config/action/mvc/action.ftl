@@ -4,7 +4,7 @@
 <table>
   <tr><td>Action class:</td><td> ${config.clazz.name}</td></tr>
   <tr><td>Namespace:</td><td>${config.namespace}</td></tr>
-  <tr><td>Profile:</td><td>${config.profile.name}(${config.profile.actionPattern})</td></tr>
+  <tr><td>Profile:</td><td>${config.profile.name}(${config.profile.pattern})</td></tr>
 </table>
 
 [@b.tabs]
@@ -50,8 +50,8 @@
         <tbody>
         [#list properties as prop]
          <tr>
-          <td>${prop.method.name}</td>
-          <td>${prop.method.returnType.name}</td>
+          <td>${prop.getter.name}</td>
+          <td>${prop.clazz.name}</td>
          </tr>
         [/#list]
       </tbody>

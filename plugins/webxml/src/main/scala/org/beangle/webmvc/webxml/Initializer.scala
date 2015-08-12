@@ -1,12 +1,12 @@
 package org.beangle.webmvc.webxml
 
-import org.beangle.commons.web.resource.StaticResourceServlet
+import java.util.EnumSet
+
 import org.beangle.commons.web.session.HttpSessionEventPublisher
-import org.beangle.webmvc.dispatch.DispatcherServlet
-import javax.servlet.ServletContext
 import org.beangle.spring.web.ContextListener
-import javax.servlet.MultipartConfigElement
-import org.beangle.commons.lang.SystemInfo
+import org.beangle.webmvc.dispatch.DispatcherFilter
+
+import javax.servlet.{ DispatcherType, ServletContext }
 
 class Initializer extends org.beangle.commons.web.init.Initializer {
 
@@ -17,9 +17,7 @@ class Initializer extends org.beangle.commons.web.init.Initializer {
 
     addListener(new ContextListener)
     sc.addListener(new HttpSessionEventPublisher)
-    val dispatch = sc.addServlet("Action", new DispatcherServlet)
-    dispatch.addMapping("/*")
-    dispatch.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))
-    sc.addServlet("StaticResource", new StaticResourceServlet()).addMapping("/static/*")
+    val action = sc.addFilter("Action", new DispatcherFilter)
+    action.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*")
   }
 }

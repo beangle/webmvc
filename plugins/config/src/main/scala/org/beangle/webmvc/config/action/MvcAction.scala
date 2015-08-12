@@ -57,7 +57,7 @@ class MvcAction extends ActionSupport {
     val config = configurer.getConfig(actionName).get
     try {
       val clazz = config.clazz
-      put("properties", BeanManifest.get(clazz).getters.values.filterNot(m => m.method.getName.contains("$")))
+      put("properties", BeanManifest.get(clazz).properties.values.filterNot(m => m.name.contains("$")))
     } catch {
       case e: Throwable =>
         logger.error("Unable to get properties for action " + actionName, e)

@@ -11,7 +11,7 @@ import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTempla
 import org.beangle.webmvc.view.impl.ViewResolverRegistry
 import org.beangle.webmvc.context.ActionLauncher
 
-class DefaultModule extends AbstractBindModule {
+object DefaultModule extends AbstractBindModule {
 
   protected override def binding() {
     //config

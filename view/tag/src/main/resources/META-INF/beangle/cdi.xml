@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<cdi>
+  <container name="web">
+    <module class="org.beangle.webmvc.view.tag.DefaultModule"/>
+    <module class="org.beangle.webmvc.view.tag.DevModule"/>
+  </container>
+</cdi>

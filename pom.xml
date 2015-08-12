@@ -2,20 +2,20 @@
   <parent>
     <groupId>org.beangle</groupId>
     <artifactId>beangle-scala</artifactId>
-    <version>22.2</version>
+    <version>22.3</version>
   </parent>
   <groupId>org.beangle.webmvc</groupId>
-  <artifactId>beangle-webmvc-parent</artifactId>
+  <artifactId>beangle-webmvc-parent_2.11</artifactId>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Parent</name>
-  <version>0.2.7</version>
+  <version>0.0.8-SNAPSHOT</version>
 
   <properties>
-    <beangle.commons.version>4.2.5</beangle.commons.version>
-    <beangle.data.version>4.2.2</beangle.data.version>
-    <beangle.spring.version>4.0.10</beangle.spring.version>
-    <beangle.template.version>0.0.3</beangle.template.version>
+    <beangle.commons.version>4.3.0</beangle.commons.version>
+    <beangle.data.version>4.2.3-SNAPSHOT</beangle.data.version>
+    <beangle.spring.version>4.0.11-SNAPSHOT</beangle.spring.version>
+    <beangle.template.version>0.0.4-SNAPSHOT</beangle.template.version>
     <hibernate.version>4.3.1.Final</hibernate.version>
   </properties>
 
@@ -31,52 +31,52 @@
     <dependencies>
       <dependency>
         <groupId>org.beangle.commons</groupId>
-        <artifactId>beangle-commons-core</artifactId>
+        <artifactId>beangle-commons-core_2.11</artifactId>
         <version>${beangle.commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.commons</groupId>
-        <artifactId>beangle-commons-web</artifactId>
+        <artifactId>beangle-commons-web_2.11</artifactId>
         <version>${beangle.commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.data</groupId>
-        <artifactId>beangle-data-model</artifactId>
+        <artifactId>beangle-data-model_2.11</artifactId>
         <version>${beangle.data.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.data</groupId>
-        <artifactId>beangle-data-jpa</artifactId>
+        <artifactId>beangle-data-jpa_2.11</artifactId>
         <version>${beangle.data.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.data</groupId>
-        <artifactId>beangle-data-serializer</artifactId>
+        <artifactId>beangle-data-serializer_2.11</artifactId>
         <version>${beangle.data.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.spring</groupId>
-        <artifactId>beangle-spring-context</artifactId>
+        <artifactId>beangle-spring-context_2.11</artifactId>
         <version>${beangle.spring.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.spring</groupId>
-        <artifactId>beangle-spring-hibernate</artifactId>
+        <artifactId>beangle-spring-hibernate_2.11</artifactId>
         <version>${beangle.spring.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.webmvc</groupId>
-        <artifactId>beangle-webmvc-api</artifactId>
+        <artifactId>beangle-webmvc-api_2.11</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.webmvc</groupId>
-        <artifactId>beangle-webmvc-core</artifactId>
+        <artifactId>beangle-webmvc-core_2.11</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.template</groupId>
-        <artifactId>beangle-template-freemarker</artifactId>
+        <artifactId>beangle-template-freemarker_2.11</artifactId>
         <version>${beangle.template.version}</version>
       </dependency>
     </dependencies>
@@ -85,15 +85,15 @@
   <dependencies>
     <dependency>
       <groupId>org.beangle.commons</groupId>
-      <artifactId>beangle-commons-core</artifactId>
+      <artifactId>beangle-commons-core_2.11</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.commons</groupId>
+      <artifactId>beangle-commons-web_2.11</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.beangle.commons</groupId>
-      <artifactId>beangle-commons-web</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

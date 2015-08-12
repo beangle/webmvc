@@ -8,9 +8,7 @@ import javax.servlet.http.HttpServletRequest
 /**
  * Just extract value from default scope and request(omit session/context)
  */
-class SimpleHttpScopesHashModel(wrapper: ObjectWrapper, val request: HttpServletRequest) extends SimpleHash {
-
-  setObjectWrapper(wrapper)
+class SimpleHttpScopesHashModel(wrapper: ObjectWrapper, val request: HttpServletRequest) extends SimpleHash(wrapper) {
 
   override def get(key: String): TemplateModel = {
     // Lookup in page scope

@@ -7,9 +7,9 @@ import org.beangle.webmvc.api.context.ActionMessages
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.commons.lang.Chars
 
-trait MessageSupport{
-  
-    final def getText(aTextName: String): String = ContextHolder.context.textResource(aTextName).get
+trait MessageSupport {
+
+  final def getText(aTextName: String): String = ContextHolder.context.textResource(aTextName).get
 
   final def getText(key: String, defaultValue: String, args: Any*): String = ContextHolder.context.textResource(key, defaultValue, args: _*)
 

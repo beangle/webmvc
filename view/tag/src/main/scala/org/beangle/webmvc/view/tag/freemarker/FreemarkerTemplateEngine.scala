@@ -33,7 +33,7 @@ import org.beangle.webmvc.view.freemarker.FreemarkerManager
 @description("Freemarker 模板引擎")
 class FreemarkerTemplateEngine(freemarkerManager: FreemarkerManager) extends TemplateEngine with Initializing with Logging {
 
-  val config = new Configuration()
+  val config = new Configuration(Configuration.VERSION_2_3_23)
 
   var enableCache: Boolean = true
 
@@ -65,7 +65,7 @@ class FreemarkerTemplateEngine(freemarkerManager: FreemarkerManager) extends Tem
     config.setObjectWrapper(wrapper)
     config.setTemplateLoader(new HierarchicalTemplateLoader(new BeangleClassTemplateLoader()))
 
-    if (!enableCache) config.setTemplateUpdateDelay(0)
+    if (!enableCache) config.setTemplateUpdateDelayMilliseconds(0)
 
     config.setCacheStorage(new StrongCacheStorage())
     // Disable auto imports and includes

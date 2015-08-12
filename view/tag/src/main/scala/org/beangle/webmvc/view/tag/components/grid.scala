@@ -42,7 +42,7 @@ object Grid {
 
     private val iterator: Iterator[Any] = {
       table.items match {
-        case iterbl: Iterable[_] => if (iterbl.iterator.hasNext) iterbl.iterator else List(null).iterator
+        case iterbl: Iterable[_]        => if (iterbl.iterator.hasNext) iterbl.iterator else List(null).iterator
         case javaIter: ju.Collection[_] => collection.JavaConversions.asScalaIterator(javaIter.iterator())
       }
     }
@@ -120,9 +120,9 @@ object Grid {
      */
     def getValue(): String = {
       getValue(row.curObj, property) match {
-        case null => ""
+        case null      => ""
         case s: String => s
-        case any: Any => any.toString
+        case any: Any  => any.toString
       }
     }
 
@@ -252,9 +252,11 @@ class Grid(context: ComponentContext) extends ClosingUIBean(context) {
   }
 
   def notFullPage: Boolean = {
-    if (items.isInstanceOf[Page[_]])
-      items.asInstanceOf[Page[_]].size < items.asInstanceOf[Page[_]].pageSize
-    else (items.asInstanceOf[ju.Collection[_]]).isEmpty
+    items match {
+      case p: Page[_]          => p.size < p.pageSize
+      case c: ju.Collection[_] => c.isEmpty()
+      case s: Seq[_]           => s.isEmpty
+    }
   }
 
   def defaultSort(property: String) = Strings.concat(`var`, ".", property)

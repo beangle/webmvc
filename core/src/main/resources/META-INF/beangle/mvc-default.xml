@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<profiles>
-  <profile name="default" pattern="*">
+<mvc>
+  <profile name="default" package="*">
     <action suffix="Action" defaultMethod="index"/>
     <view path="/" style="full" type="freemarker" suffix=".ftl" />
     <url path="/" suffix=""  style="seo" />
@@ -8,4 +8,4 @@
       <interceptor name="web.Interceptor.flash"/>
     </interceptors>
   </profile>
-</profiles>
+</mvc>

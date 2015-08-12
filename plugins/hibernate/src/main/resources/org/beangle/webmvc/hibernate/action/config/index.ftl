@@ -1,17 +1,22 @@
 [@b.head/]
 [#include "../nav.ftl"/]
+
+[#list factory.configLocations]
 <h4> Hibernate.cfg.xml Locations</h4>
 <ul>
-  [#list factory.configLocations as ml]
+    [#items as  as ml]
     <li>${ml.URL}</li>
+    [/#items]
   [/#list]
 </ul>
-<h4> Beangle Persist Locations</h4>
+
+<h4> Beangle Orm Locations</h4>
 <ul>
-  [#list factory.persistLocations  as ml ]
+  [#list factory.ormLocations  as ml ]
     <li>${ml.URL}</li>
   [/#list]
 </ul>
+
 <h4> Beangle Namings</h4>
 <ul>
   [#list factory.namingStrategy.policy.configLocations  as ml ]
@@ -22,7 +27,7 @@
 </ul>
 
 <h4>Configurations & Settings</h4>
-<table class="table  table-striped">
+<table class="table table-striped">
   <thead>
     <th>Object</th>
     <th>Value</th>

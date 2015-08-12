@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.beangle.webmvc</groupId>
-    <artifactId>beangle-webmvc-parent</artifactId>
-    <version>0.1.2</version>
+    <artifactId>beangle-webmvc-parent_2.11</artifactId>
+    <version>0.0.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>beangle-webmvc-showcase</artifactId>
+  <artifactId>beangle-webmvc-showcase_2.11</artifactId>
   <packaging>war</packaging>
   <name>Beangle WebMVC Show Case</name>
-  
+
   <properties>
     <hibernate.version>4.3.1.Final</hibernate.version>
   </properties>
@@ -16,46 +16,46 @@
   <dependencies>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-webxml-plugin</artifactId>
+      <artifactId>beangle-webmvc-webxml-plugin_2.11</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-entity-plugin</artifactId>
+      <artifactId>beangle-webmvc-entity-plugin_2.11</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-bootstrap-ui</artifactId>
+      <artifactId>beangle-webmvc-bootstrap-ui_2.11</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-tag</artifactId>
+      <artifactId>beangle-webmvc-tag_2.11</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-config-plugin</artifactId>
+      <artifactId>beangle-webmvc-config-plugin_2.11</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-hibernate-plugin</artifactId>
+      <artifactId>beangle-webmvc-hibernate-plugin_2.11</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
-      <artifactId>beangle-webmvc-serializer-plugin</artifactId>
+      <artifactId>beangle-webmvc-serializer-plugin_2.11</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.beangle.spring</groupId>
-      <artifactId>beangle-spring-context</artifactId>
+      <artifactId>beangle-spring-context_2.11</artifactId>
     </dependency>
     <dependency>
       <groupId>org.beangle.spring</groupId>
-      <artifactId>beangle-spring-hibernate</artifactId>
+      <artifactId>beangle-spring-hibernate_2.11</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -83,7 +83,7 @@
         <plugin>
           <groupId>org.beangle.maven</groupId>
           <artifactId>beangle-maven-plugin</artifactId>
-          <version>0.1.2</version>
+          <version>0.1.7.RC1</version>
           <executions>
             <execution>
               <id>generate</id>
