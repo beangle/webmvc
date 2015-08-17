@@ -4,7 +4,7 @@
 
 [#list profiles as profile]
   <!--${profile.source!}-->
-  <profile name="${profile.name}" pattern="${profile.pattern}">
+  <profile name="${profile.name}" package="${profile.pattern}">
     <action suffix="${profile.actionSuffix}" defaultMethod="${profile.defaultMethod}"/>
     <view path="${profile.viewPath}" style="${profile.viewPathStyle}" type="${profile.viewType}" suffix="${profile.viewSuffix}" />
     <url path="${profile.urlPath}" suffix="${profile.urlSuffix}"  style="${profile.urlStyle}" />
