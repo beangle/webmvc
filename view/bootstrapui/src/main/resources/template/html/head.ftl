@@ -25,7 +25,7 @@
 
 [#macro beangle_uijs_head]
   <script type="text/javascript" src="${base}/static/scripts/jquery/jquery.min,jquery-ui.min.js?bg=3.4.3"></script>
-  <script type="text/javascript" src="${base}/static/scripts/common/require,bootstrap.min.js"></script>
+  <script type="text/javascript" src="${base}/static/bootstrap/js/bootstrap.min.js"></script>
 [#if tag.compressed]
   <script type="text/javascript" src="${base}/static/scripts/plugins/jquery-form,jquery-history,jquery-colorbox,jquery-chosen.js?bg=3.4.3"></script>
   <script type="text/javascript" src="${base}/static/scripts/beangle/beangle,beangle-ui.js?bg=3.4.3"></script>
@@ -49,8 +49,8 @@
   <script>
     beangle.contextPath="${base}"
   </script>
-  <link rel="stylesheet" href="${base}/static/themes/default/bootstrap.min.css">
-  <link rel="stylesheet" href="${base}/static/themes/default/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="${base}/static/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="${base}/static/bootstrap/css/bootstrap-theme.min.css">
   <link rel="stylesheet" href="${base}/static/themes/default/beangle-ui.css">
   <script src="${base}/static/scripts/bootstrap/bootstrap.min.js"></script>
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
