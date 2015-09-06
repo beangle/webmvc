@@ -11,12 +11,9 @@
   <name>Beangle WebMVC Plugins</name>
 
   <modules>
-    <module>config</module>
-    <module>webxml</module>
     <module>entity</module>
     <module>serializer</module>
-    <module>hibernate</module>
-    <module>captcha</module>
+    <module>webxml</module>
   </modules>
   <dependencies>
     <dependency>

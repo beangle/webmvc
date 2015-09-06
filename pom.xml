@@ -24,7 +24,6 @@
     <module>core</module>
     <module>view</module>
     <module>plugins</module>
-    <module>archetypes</module>
   </modules>
 
   <dependencyManagement>

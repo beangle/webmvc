@@ -10,7 +10,11 @@ object ActionNameBuilder {
 
   val pluralizer = new EnNounPluralizer
   /**
-   * Return action name start with /
+   * Return namespace and action name.
+   * 
+   *  <li>action name start with /
+   *  <li>namespace start with / and DONOT ends with /
+   *
    */
   def build(clazz: Class[_], profile: Profile): Tuple2[String, String] = {
     val className = clazz.getName
@@ -44,24 +48,29 @@ object ActionNameBuilder {
         case _ =>
           throw new RuntimeException("unsupported uri style " + profile.urlStyle)
       }
-      namespace ++= nameBuilder.substring(0, nameBuilder.lastIndexOf("/"))
+      namespace ++= nameBuilder.substring(0, nameBuilder.lastIndexOf('/'))
     } else {
       val name = ann.value()
       namespace ++= nameBuilder
       if (!name.startsWith("/")) {
         if (Profile.SEO_URI == profile.urlStyle || Profile.PLUR_SEO_URI == profile.urlStyle) {
-          val middleName = unCamel(substringBeforeLast(profile.getMatched(className), "/"))
-          if (middleName.length > 0) {
+          val matched = profile.getMatched(className)
+          val lastSlashIdx = matched.lastIndexOf('/')
+          if (lastSlashIdx > 0) {
+            val middleName = unCamel(matched.substring(0, lastSlashIdx))
             namespace ++= middleName
             nameBuilder ++= middleName
           }
-          if (name.length > 0) nameBuilder.append("/" + name)
+          if (name.length > 0) {
+            if (lastSlashIdx > 0) nameBuilder.append('/').append(name) else nameBuilder.append(name)
+          }
         } else {
           nameBuilder.append(name)
         }
       } else {
         nameBuilder.append(name.substring(1))
       }
+
     }
     if (namespace.length > 0 && namespace.charAt(namespace.length - 1) == '/') namespace.deleteCharAt(namespace.length - 1)
     (nameBuilder.toString, namespace.toString)

@@ -11,7 +11,7 @@ import javax.servlet.{ DispatcherType, ServletContext }
 class Initializer extends org.beangle.commons.web.init.Initializer {
 
   override def onStartup(sc: ServletContext) {
-    sc.setInitParameter("templatePath", "webapp://pages,class://")
+    sc.setInitParameter("templatePath", "class://")
     sc.setInitParameter("contextConfigLocation", "classpath:spring-context.xml")
     sc.setInitParameter("childContextConfigLocation", "WebApplicationContext:Action@classpath:spring-web-context.xml")
 
