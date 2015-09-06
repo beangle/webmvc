@@ -10,7 +10,7 @@ import org.beangle.data.serialize.io.xml.DomDriver
 import org.beangle.data.serialize.mapper.DefaultMapper
 import org.beangle.data.serialize.marshal.DefaultMarshallerRegistry
 
-class DefaultModule extends AbstractBindModule {
+object DefaultModule extends AbstractBindModule {
 
   protected override def binding() {
     bind(classOf[ContentNegotiationManagerFactory]).property("favorPathExtension", "true")

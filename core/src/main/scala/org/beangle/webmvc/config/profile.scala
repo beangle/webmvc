@@ -76,10 +76,10 @@ object Profile extends Logging {
 
 /**
  * name: 配置名
- * actionPattern :action所在的包,匹配action的唯一条件
+ * pattern :action所在的包,匹配action的唯一条件
  */
 final class Profile(val name: String,
-  val actionPattern: String,
+  val pattern: String,
   val actionSuffix: String,
   val defaultMethod: String,
   val viewPath: String,
@@ -93,8 +93,8 @@ final class Profile(val name: String,
   val interceptors: Array[Interceptor],
   val source: URL) extends Comparable[Profile] {
 
-  def this(name: String, actionPattern: String) {
-    this(name, actionPattern, "Action", "index", "/", "full", ".ftl", "freemarker", "/", "seo", "", Array(), Array(), null)
+  def this(name: String, pattern: String) {
+    this(name, pattern, "Action", "index", "/", "full", ".ftl", "freemarker", "/", "seo", "", Array(), Array(), null)
   }
   import Profile._
 
@@ -107,7 +107,7 @@ final class Profile(val name: String,
     var result = matched.get(className)
     if (result.isEmpty) {
       if (className.endsWith(actionSuffix)) {
-        val newMatchInfo = Profile.matches(className, this.actionSuffix, actionPattern)
+        val newMatchInfo = Profile.matches(className, this.actionSuffix, pattern)
         if (!newMatchInfo.isEmpty) {
           matched.put(className, newMatchInfo.get)
           result = newMatchInfo
@@ -125,8 +125,8 @@ final class Profile(val name: String,
    * first com.beangle.aa.bb.web.action then com.beangle.*.web.action
    */
   override def compareTo(other: Profile): Int = {
-    val others = Strings.split(other.actionPattern, ".")
-    val me = Strings.split(this.actionPattern, ".")
+    val others = Strings.split(other.pattern, ".")
+    val me = Strings.split(this.pattern, ".")
     var i = 0
     val length = Math.min(others.length, me.length)
     while (i < length) {
@@ -140,7 +140,7 @@ final class Profile(val name: String,
   }
 
   override def toString: String = {
-    Objects.toStringBuilder(this).add("name", name).add("actionPattern", actionPattern)
+    Objects.toStringBuilder(this).add("name", name).add("pattern", pattern)
       .add("actionSuffix", actionSuffix).add("viewPath", viewPath)
       .add("viewPathStyle", viewPathStyle).add("viewSuffix", viewSuffix)
       .add("viewType", viewType).add("urlPath", urlPath)
@@ -149,7 +149,7 @@ final class Profile(val name: String,
   }
 }
 
-final class ProfileConfig(val name: String, val actionPattern: String) {
+final class ProfileConfig(val name: String, val pattern: String) {
 
   // action类名后缀
   var actionSuffix: String = _
@@ -183,7 +183,7 @@ final class ProfileConfig(val name: String, val actionPattern: String) {
   var source: URL = _
 
   def mkProfile(interceptors: Array[Interceptor]): Profile = {
-    new Profile(name, actionPattern, actionSuffix, defaultMethod, viewPath, viewPathStyle, viewSuffix, viewType, urlPath, urlStyle, urlSuffix, interceptorNames, interceptors, source)
+    new Profile(name, pattern, actionSuffix, defaultMethod, viewPath, viewPathStyle, viewSuffix, viewType, urlPath, urlStyle, urlSuffix, interceptorNames, interceptors, source)
   }
 }
 

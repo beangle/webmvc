@@ -12,7 +12,7 @@ import org.beangle.webmvc.api.view.{ForwardActionView, RedirectActionView, View}
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
-abstract class MimeSupport {
+trait MimeSupport {
 
   var contentNegotiationManager: ContentNegotiationManager = _
 

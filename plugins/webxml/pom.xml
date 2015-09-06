@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.beangle.webmvc</groupId>
-    <artifactId>beangle-webmvc-plugins</artifactId>
-    <version>0.2.7</version>
+    <artifactId>beangle-webmvc-plugins_2.11</artifactId>
+    <version>0.2.8</version>
   </parent>
-  <artifactId>beangle-webmvc-webxml-plugin</artifactId>
+  <artifactId>beangle-webmvc-webxml-plugin_2.11</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Plugin - Web.xml</name>
@@ -16,26 +16,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.beangle.data</groupId>
-      <artifactId>beangle-data-jpa</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.beangle.spring</groupId>
-      <artifactId>beangle-spring-context</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.beangle.spring</groupId>
-      <artifactId>beangle-spring-hibernate</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>${hibernate.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-ehcache</artifactId>
-      <version>${hibernate.version}</version>
+      <artifactId>beangle-spring-context_2.11</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -4,10 +4,9 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <bean id="BeanContainer" class="org.beangle.spring.context.SpringContainer">
-    <property name="moduleLocations" value="classpath*:META-INF/beangle/web-cdi.properties" />
+    <property name="moduleLocations" value="classpath*:META-INF/beangle/cdi.xml" />
     <property name="reconfigLocations" value=";classpath*:spring-web-config.xml" />
+    <property name="name" value="web" />
   </bean>
 
-  <import resource="classpath*:META-INF/spring-web/*.xml" />
-  <import resource="classpath*:spring-web.xml" />
 </beans>

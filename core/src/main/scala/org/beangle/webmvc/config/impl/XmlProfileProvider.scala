@@ -15,11 +15,11 @@ class XmlProfileProvider extends ProfileProvider {
   private val defaultProfile = loadDefaultProfile()
 
   /**
-   * 初始化配置META-INF/beangle/mvc-config.xml
+   * 初始化配置META-INF/beangle/mvc.xml
    */
   def loadProfiles(): List[ProfileConfig] = {
     val profiles = new collection.mutable.ListBuffer[ProfileConfig]
-    ClassLoaders.getResources("META-INF/beangle/mvc-config.xml").foreach { url =>
+    ClassLoaders.getResources("META-INF/beangle/mvc.xml").foreach { url =>
       profiles ++= readXmlToProfiles(url)
     }
     profiles.toList
@@ -36,8 +36,7 @@ class XmlProfileProvider extends ProfileProvider {
     val profiles = new collection.mutable.ListBuffer[ProfileConfig]
     XML.load(url) \ "profile" foreach { profileElem =>
       val name = (profileElem \ "@name").text
-      val pattern = (profileElem \ "@pattern").text
-      val profile = new ProfileConfig(name, pattern)
+      val profile = new ProfileConfig(name, (profileElem \ "@package").text)
       val actionNodes = profileElem \ "action"
       if (actionNodes.isEmpty) {
         copyDefaultProperties(profile, "actionSuffix", "defaultMethod")
