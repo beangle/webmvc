@@ -180,7 +180,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     getModel[T](entityName, id)
   }
 
-  protected def getModel[E](entityName: String, id: jo.Serializable): E = {
+  protected def getModel[E](entityName: String, id: Any): E = {
     val entityType: EntityType = entityMetaData.getType(entityName).get
     Params.converter.convert(id, entityType.idType) match {
       case Some(rid) => entityDao.get(entityType.entityClass.asInstanceOf[Class[Entity[jo.Serializable]]], rid).asInstanceOf[E]
@@ -188,8 +188,8 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     }
   }
 
-  protected def getModels[E](entityName: String, ids: Array[_ <: jo.Serializable]): Seq[E] = {
-    val idlist: Iterable[jo.Serializable] = ids.toList
+  protected def getModels[E](entityName: String, ids: Iterable[_]): Seq[E] = {
+    val idlist = ids.asInstanceOf[List[jo.Serializable]]
     entityDao.find(Class.forName(entityName).asInstanceOf[Class[Entity[jo.Serializable]]], idlist).asInstanceOf[Seq[E]]
   }
 

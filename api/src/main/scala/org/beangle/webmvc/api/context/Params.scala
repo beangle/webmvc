@@ -50,20 +50,22 @@ object Params {
     converter.get(ContextHolder.context.params, name, clazz)
   }
 
-  def getAll(attr: String): Array[Any] = {
+  def getAll(attr: String): Iterable[Any] = {
     ContextHolder.context.params.get(attr) match {
       case Some(value) =>
-        if (null == value) Array()
-        if (value.getClass.isArray()) value.asInstanceOf[Array[Any]]
-        else Array(value)
-      case None => Array()
+        if (null == value) List.empty
+        else {
+          if (value.getClass.isArray) value.asInstanceOf[Array[Any]].toList
+          else List(value)
+        }
+      case None => List.empty
     }
   }
 
-  def getAll[T: ClassTag](attr: String, clazz: Class[T]): Array[T] = {
+  def getAll[T: ClassTag](attr: String, clazz: Class[T]): Iterable[T] = {
     val value = getAll(attr)
-    if (null == value) Array()
-    else converter.convert(value.asInstanceOf[Array[AnyRef]], clazz)
+    if (null == value) List.empty[T]
+    else converter.convert(value.asInstanceOf[Array[AnyRef]], clazz).toList
   }
 
   def getBoolean(name: String): Option[Boolean] = {

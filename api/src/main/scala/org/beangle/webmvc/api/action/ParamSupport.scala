@@ -26,15 +26,15 @@ import java.{ util => ju }
 
 trait ParamSupport {
 
-  protected final def put(key: String, value: Any) {
+  protected final def put(key: String, value: Any): Unit = {
     ContextHolder.context.attribute(key, value)
   }
 
-  protected final def getAll(paramName: String): Array[Any] = {
+  protected final def getAll(paramName: String): Iterable[Any] = {
     Params.getAll(paramName)
   }
 
-  protected final def getAll[T: ClassTag](paramName: String, clazz: Class[T]): Array[T] = {
+  protected final def getAll[T: ClassTag](paramName: String, clazz: Class[T]): Iterable[T] = {
     Params.getAll(paramName, clazz)
   }
 

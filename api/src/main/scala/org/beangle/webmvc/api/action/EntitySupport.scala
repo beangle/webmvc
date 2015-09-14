@@ -44,35 +44,36 @@ trait EntitySupport[T] {
     else Params.converter.convert(entityId, clazz).getOrElse(null.asInstanceOf[E])
   }
 
-  protected final def getIntId(shortName: String): java.lang.Integer = getId(shortName, classOf[java.lang.Integer])
+  protected final def getIntId(shortName: String): Int = getId(shortName, classOf[Int])
 
-  protected final def getLongId(shortName: String): java.lang.Long = getId(shortName, classOf[java.lang.Long])
+  protected final def getLongId(shortName: String): Long = getId(shortName, classOf[Long])
 
   /**
    * Get entity's long id array from parameters shortname.id,shortname.ids,shortnameIds
    */
-  protected final def getLongIds(shortName: String): Array[java.lang.Long] = {
-    getIds(shortName, classOf[java.lang.Long])
+  protected final def getLongIds(shortName: String): List[Long] = {
+    getIds(shortName, classOf[Long])
   }
 
   /**
    * Get entity's long id array from parameters shortname.id,shortname.ids,shortnameIds
    */
-  protected final def getIntIds(shortName: String): Array[java.lang.Integer] = {
-    getIds(shortName, classOf[java.lang.Integer])
+  protected final def getIntIds(shortName: String): List[Int] = {
+    getIds(shortName, classOf[Int])
   }
 
   /**
    * Get entity's id array from parameters shortname.id,shortname.ids,shortnameIds
    */
-  protected final def getIds[T: ClassTag](name: String, clazz: Class[T]): Array[T] = {
+  protected final def getIds[T: ClassTag](name: String, clazz: Class[T]): List[T] = {
     var datas: Any = Params.getAll(name + ".id", clazz.asInstanceOf[Class[Any]])
     if (null == datas) {
       val datastring = Params.get(name + ".ids").getOrElse(Params.get(name + "Ids").getOrElse(null))
-      datas = if (datastring == null) java.lang.reflect.Array.newInstance(clazz, 0)
-      else Params.converter.convert(Strings.split(datastring, ","), clazz)
+      datas =
+        if (datastring == null) List.empty[T]
+        else Params.converter.convert(Strings.split(datastring, ","), clazz).toList
     }
-    datas.asInstanceOf[Array[T]]
+    datas.asInstanceOf[List[T]]
   }
 
 }

@@ -27,7 +27,7 @@ import org.beangle.webmvc.api.context.ContextHolder
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.context.ActionContextHelper
 
-abstract class RestfulAction[T <: Entity[_ <: java.io.Serializable]] extends ActionSupport with EntityAction[T] {
+abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAction[T] {
 
   def index(): String = {
     indexSetting()
