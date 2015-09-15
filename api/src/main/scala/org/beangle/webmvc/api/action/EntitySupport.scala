@@ -40,7 +40,7 @@ trait EntitySupport[T] {
    */
   protected final def getId[E](name: String, clazz: Class[E]): E = {
     val entityId = getId(name)
-    if (entityId == null) null.asInstanceOf[E]
+    if (Strings.isEmpty(entityId)) null.asInstanceOf[E]
     else Params.converter.convert(entityId, clazz).getOrElse(null.asInstanceOf[E])
   }
 

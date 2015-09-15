@@ -41,7 +41,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
 
   @mapping(value = "{id}")
   def info(@param("id") id: String): String = {
-    put(shortName, getModel(entityName, convertId(id)))
+    put(shortName, getModel[T](entityName, convertId(id)))
     forward()
   }
 
@@ -68,8 +68,8 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
     val idclass = entityMetaData.getType(entityName).get.idType
     val entityId = getId(shortName, idclass)
     val entities: Seq[T] =
-      if (null == entityId) getModels(entityName, getIds(shortName, idclass))
-      else List(getModel(entityName, entityId))
+      if (null == entityId) getModels[T](entityName, getIds(shortName, idclass))
+      else List(getModel[T](entityName, entityId))
     removeAndRedirect(entities)
   }
 
@@ -89,14 +89,14 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
     try {
       entity match {
         case updated: Updated => updated.updatedAt = new ju.Date()
-        case _ =>
+        case _                =>
       }
       saveOrUpdate(entity)
       redirect("search", "info.save.success")
     } catch {
       case e: Exception => {
         val redirectTo = ActionContextHelper.getMapping(ContextHolder.context).action.method.getName match {
-          case "save" => "editNew"
+          case "save"   => "editNew"
           case "update" => "edit"
         }
         logger.info("saveAndForwad failure", e)

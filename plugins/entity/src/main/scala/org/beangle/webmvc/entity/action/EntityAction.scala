@@ -105,15 +105,8 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   @ignore
   protected def shortName: String = {
     val name = entityName
-    if (Strings.isNotEmpty(name)) getCommandName(name)
+    if (Strings.isNotEmpty(name)) Strings.uncapitalize(Strings.substringAfterLast(name, "."))
     else null
-  }
-
-  /**
-   * replace EntityUtils.getCommandName(name)
-   */
-  private def getCommandName(entityName: String): String = {
-    Strings.uncapitalize(Strings.substringAfterLast(entityName, "."))
   }
 
   // CURD----------------------------------------
