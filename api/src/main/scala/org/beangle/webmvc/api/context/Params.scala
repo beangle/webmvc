@@ -64,8 +64,8 @@ object Params {
 
   def getAll[T: ClassTag](attr: String, clazz: Class[T]): Iterable[T] = {
     val value = getAll(attr)
-    if (null == value) List.empty[T]
-    else converter.convert(value.asInstanceOf[Array[AnyRef]], clazz).toList
+    if (value.isEmpty) List.empty[T]
+    else converter.convert(value.toArray, clazz).toList
   }
 
   def getBoolean(name: String): Option[Boolean] = {
