@@ -12,10 +12,10 @@
   <version>0.2.10-SNAPSHOT</version>
 
   <properties>
-    <beangle.commons.version>4.3.0</beangle.commons.version>
+    <beangle.commons.version>4.4.0-SNAPSHOT</beangle.commons.version>
     <beangle.data.version>4.2.4-SNAPSHOT</beangle.data.version>
     <beangle.spring.version>4.0.12-SNAPSHOT</beangle.spring.version>
-    <beangle.template.version>0.0.5</beangle.template.version>
+    <beangle.template.version>0.0.6-SNAPSHOT</beangle.template.version>
   </properties>
 
   <modules>
@@ -30,6 +30,16 @@
       <dependency>
         <groupId>org.beangle.commons</groupId>
         <artifactId>beangle-commons-core_2.11</artifactId>
+        <version>${beangle.commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.beangle.commons</groupId>
+        <artifactId>beangle-commons-i18n_2.11</artifactId>
+        <version>${beangle.commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.beangle.commons</groupId>
+        <artifactId>beangle-commons-text_2.11</artifactId>
         <version>${beangle.commons.version}</version>
       </dependency>
       <dependency>
@@ -84,6 +94,10 @@
     <dependency>
       <groupId>org.beangle.commons</groupId>
       <artifactId>beangle-commons-core_2.11</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.commons</groupId>
+      <artifactId>beangle-commons-i18n_2.11</artifactId>
     </dependency>
     <dependency>
       <groupId>org.beangle.commons</groupId>

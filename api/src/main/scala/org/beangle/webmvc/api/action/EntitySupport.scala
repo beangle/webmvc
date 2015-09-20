@@ -19,10 +19,10 @@
 package org.beangle.webmvc.api.action
 
 import scala.reflect.ClassTag
-
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.reflect.Reflections
 import org.beangle.webmvc.api.context.Params
+import org.beangle.webmvc.api.annotation.ignore
 
 trait EntitySupport[T] {
 
@@ -32,42 +32,63 @@ trait EntitySupport[T] {
     else tClass.get.asInstanceOf[Class[T]]
   }
 
-  protected def getId(name: String): String = {
-    Params.get(name + ".id").getOrElse(Params.get(name + "_id").getOrElse(Params.get(name + "Id").getOrElse(null)))
+  protected def getId(name: String): Option[String] = {
+    Params.get(name + ".id").orElse(Params.get(name + "_id").orElse(Params.get(name + "Id")))
   }
+
+  @ignore
+  protected def id(name: String): String = {
+    getId(name) match {
+      case Some(id) => id
+      case None     => throw new RuntimeException(s"Cannot find ${name}.id or ${name}_id or ${name}Id parameter")
+    }
+  }
+
   /**
    * Get entity's id from shortname.id,shortnameId,id
    */
-  protected final def getId[E](name: String, clazz: Class[E]): E = {
-    val entityId = getId(name)
-    if (Strings.isEmpty(entityId)) null.asInstanceOf[E]
-    else Params.converter.convert(entityId, clazz).getOrElse(null.asInstanceOf[E])
+  protected final def getId[E](name: String, clazz: Class[E]): Option[E] = {
+    getId(name) match {
+      case Some(id) => Params.converter.convert(id, clazz)
+      case None     => None
+    }
   }
 
-  protected final def getIntId(shortName: String): Int = getId(shortName, classOf[Int])
+  /**
+   * Get entity's id from shortname.id,shortnameId,id
+   */
+  protected final def id[E](name: String, clazz: Class[E]): E = {
+    getId(name, clazz).get
+  }
 
-  protected final def getLongId(shortName: String): Long = getId(shortName, classOf[Long])
+  protected final def intId(shortName: String): Int = {
+    id(shortName, classOf[Int])
+  }
+
+  protected final def longId(shortName: String): Long = {
+    id(shortName, classOf[Long])
+  }
 
   /**
    * Get entity's long id array from parameters shortname.id,shortname.ids,shortnameIds
    */
-  protected final def getLongIds(shortName: String): List[Long] = {
-    getIds(shortName, classOf[Long])
+  protected final def longIds(shortName: String): List[Long] = {
+    ids(shortName, classOf[Long])
   }
 
   /**
    * Get entity's long id array from parameters shortname.id,shortname.ids,shortnameIds
    */
-  protected final def getIntIds(shortName: String): List[Int] = {
-    getIds(shortName, classOf[Int])
+  protected final def intIds(shortName: String): List[Int] = {
+    ids(shortName, classOf[Int])
   }
 
   /**
    * Get entity's id array from parameters shortname.id,shortname.ids,shortnameIds
    */
-  protected final def getIds[T: ClassTag](name: String, clazz: Class[T]): List[T] = {
-    var datas: Any = Params.getAll(name + ".id", clazz.asInstanceOf[Class[Any]])
-    if (null == datas) {
+  protected final def ids[T: ClassTag](name: String, clazz: Class[T]): List[T] = {
+    var datas: Iterable[T] = Params.getAll(name + ".id", clazz)
+    if (datas.isEmpty) {
       val datastring = Params.get(name + ".ids").getOrElse(Params.get(name + "Ids").getOrElse(null))
       datas =
         if (datastring == null) List.empty[T]

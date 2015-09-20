@@ -32,7 +32,7 @@ object Params {
   val converter: MapConverter = new MapConverter(DefaultConversion.Instance)
 
   def get(attr: String): Option[String] = {
-    ContextHolder.context.params.get(attr) match {
+    ActionContextHolder.context.params.get(attr) match {
       case Some(value) =>
         if (null == value) None
         else {
@@ -47,11 +47,11 @@ object Params {
   }
 
   def get[T](name: String, clazz: Class[T]): Option[T] = {
-    converter.get(ContextHolder.context.params, name, clazz)
+    converter.get(ActionContextHolder.context.params, name, clazz)
   }
 
   def getAll(attr: String): Iterable[Any] = {
-    ContextHolder.context.params.get(attr) match {
+    ActionContextHolder.context.params.get(attr) match {
       case Some(value) =>
         if (null == value) List.empty
         else {
@@ -69,36 +69,36 @@ object Params {
   }
 
   def getBoolean(name: String): Option[Boolean] = {
-    converter.getBoolean(ContextHolder.context.params, name)
+    converter.getBoolean(ActionContextHolder.context.params, name)
   }
 
   def getDate(name: String): Option[sql.Date] = {
-    converter.getDate(ContextHolder.context.params, name)
+    converter.getDate(ActionContextHolder.context.params, name)
   }
 
   def getDateTime(name: String): Option[ju.Date] = {
-    converter.getDateTime(ContextHolder.context.params, name)
+    converter.getDateTime(ActionContextHolder.context.params, name)
   }
 
   def getFloat(name: String): Option[Float] = {
-    converter.getFloat(ContextHolder.context.params, name)
+    converter.getFloat(ActionContextHolder.context.params, name)
   }
 
   def getShort(name: String): Option[Short] = {
-    converter.getShort(ContextHolder.context.params, name)
+    converter.getShort(ActionContextHolder.context.params, name)
   }
 
   def getInt(name: String): Option[Int] = {
-    converter.getInt(ContextHolder.context.params, name)
+    converter.getInt(ActionContextHolder.context.params, name)
   }
 
   def getLong(name: String): Option[Long] = {
-    converter.getLong(ContextHolder.context.params, name)
+    converter.getLong(ActionContextHolder.context.params, name)
   }
 
-  def sub(prefix: String): Map[String, Any] = converter.sub(ContextHolder.context.params, prefix)
+  def sub(prefix: String): Map[String, Any] = converter.sub(ActionContextHolder.context.params, prefix)
 
   def sub(prefix: String, exclusiveAttrNames: String): Map[String, Any] = {
-    converter.sub(ContextHolder.context.params, prefix, exclusiveAttrNames)
+    converter.sub(ActionContextHolder.context.params, prefix, exclusiveAttrNames)
   }
 }

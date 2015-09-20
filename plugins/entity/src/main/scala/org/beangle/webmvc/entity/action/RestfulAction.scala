@@ -19,11 +19,10 @@
 package org.beangle.webmvc.entity.action
 
 import java.{ util => ju }
-
 import org.beangle.data.model.{ Entity, Updated }
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
-import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.api.context.ActionContextHolder
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.context.ActionContextHelper
 
@@ -66,10 +65,10 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
   @mapping(method = "delete")
   def remove(): View = {
     val idclass = entityMetaData.getType(entityName).get.idType
-    val entityId = getId(shortName, idclass)
-    val entities: Seq[T] =
-      if (null == entityId) getModels[T](entityName, getIds(shortName, idclass))
-      else List(getModel[T](entityName, entityId))
+    val entities: Seq[T] = getId(shortName, idclass) match {
+      case Some(entityId) => List(getModel[T](entityName, entityId))
+      case None           => getModels[T](entityName, ids(shortName, idclass))
+    }
     removeAndRedirect(entities)
   }
 
@@ -95,7 +94,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
       redirect("search", "info.save.success")
     } catch {
       case e: Exception => {
-        val redirectTo = ActionContextHelper.getMapping(ContextHolder.context).action.method.getName match {
+        val redirectTo = ActionContextHelper.getMapping(ActionContextHolder.context).action.method.getName match {
           case "save"   => "editNew"
           case "update" => "edit"
         }

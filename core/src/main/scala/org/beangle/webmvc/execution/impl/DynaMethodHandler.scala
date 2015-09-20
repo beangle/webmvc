@@ -24,7 +24,7 @@ import scala.Range
 
 import org.beangle.commons.lang.Primitives
 import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.webmvc.api.context.{ ContextHolder, Params }
+import org.beangle.webmvc.api.context.{ ActionContextHolder, Params }
 import org.beangle.webmvc.config.ActionMapping
 import org.beangle.webmvc.execution.{ Handler, HandlerBuilder }
 
@@ -39,7 +39,7 @@ class DynaMethodHandler(val action: AnyRef, val method: Method) extends Handler 
     } else {
       val values = new Array[Object](paramTypes.length)
       var binded = 0
-      val context = ContextHolder.context
+      val context = ActionContextHolder.context
       val params = context.params
       val arguments = mapping.arguments
       Range(0, paramTypes.length) foreach { i =>

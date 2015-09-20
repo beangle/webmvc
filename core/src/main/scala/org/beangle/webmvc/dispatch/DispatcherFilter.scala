@@ -20,7 +20,7 @@ package org.beangle.webmvc.dispatch
 
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.commons.logging.Logging
-import org.beangle.commons.text.i18n.TextResourceProvider
+import org.beangle.commons.i18n.TextResourceProvider
 import org.beangle.webmvc.context.{ ActionContextHelper, ContainerHelper, LocaleResolver }
 import org.beangle.webmvc.execution.InvocationReactor
 import javax.servlet.ServletConfig

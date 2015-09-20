@@ -27,7 +27,7 @@ import org.beangle.commons.lang.{ ClassLoaders, Throwables }
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.logging.Logging
 import org.beangle.template.freemarker.BeangleClassTemplateLoader
-import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.api.context.ActionContextHolder
 import org.beangle.webmvc.view.TagLibraryProvider
 import org.beangle.webmvc.view.tag.{ Component, TemplateEngine }
 import freemarker.cache.StrongCacheStorage
@@ -57,7 +57,7 @@ class FreemarkerTemplateEngine(freemarkerManager: FreemarkerManager) extends Tem
 
   @throws(classOf[Exception])
   def render(template: String, writer: Writer, component: Component) = {
-    val context = ContextHolder.context
+    val context = ActionContextHolder.context
     val model = freemarkerManager.createModel(config.getObjectWrapper, context.request, context.response, context)
     val prevTag = model.get("tag")
     model.put("tag", component)

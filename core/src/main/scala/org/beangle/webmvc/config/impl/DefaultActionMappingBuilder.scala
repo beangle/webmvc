@@ -137,6 +137,14 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     params.toMap
   }
 
+  /**
+   * whether a action method is entry
+   * <li> Cannot contain $
+   * <li> Cannot starts with get/set/is
+   * <li> Cannot annotated with @ignore
+   * <li> Cannot be a field get accessor
+   * <li> Without @response and return  type is not [String/View]
+   */
   private def isActionMethod(method: Method, classInfo: ClassInfo): Boolean = {
     val methodName = method.getName
 

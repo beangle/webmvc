@@ -22,8 +22,8 @@ import org.beangle.commons.collection.Collections
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.dispatch.RequestMapping
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.commons.text.i18n.TextResourceProvider
-import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.commons.i18n.TextResourceProvider
+import org.beangle.webmvc.api.context.ActionContextHolder
 import org.beangle.commons.web.multipart.StandardMultipartResolver
 
 object ActionContextHelper {
@@ -52,7 +52,7 @@ object ActionContextHelper {
 
     val context = new ActionContext(request, response, localeResolver.resolve(request), params.toMap)
     context.temp(RequestMappingAttribute, mapping)
-    ContextHolder.contexts.set(context)
+    ActionContextHolder.contexts.set(context)
     context.textResource = textResourceProvider.getTextResource(context.locale)
     context
   }
