@@ -25,7 +25,7 @@ import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.web.intercept.Interceptor
-import org.beangle.webmvc.api.context.{ ActionContext, ContextHolder }
+import org.beangle.webmvc.api.context.{ ActionContext, ActionContextHolder }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ ActionMapping, Configurer }
 import org.beangle.webmvc.context.SerializerManager
@@ -63,7 +63,7 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
   override def invoke(handler: Handler, mapping: ActionMapping): Unit = {
     val config = mapping.config
     val interceptors = config.profile.interceptors
-    val context = ContextHolder.context
+    val context = ActionContextHolder.context
     var lastInterceptorIndex = preHandle(interceptors, context)
     var result: Any = null
     var exception: Throwable = null

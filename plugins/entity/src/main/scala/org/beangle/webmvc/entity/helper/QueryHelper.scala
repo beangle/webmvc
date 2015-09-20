@@ -29,7 +29,7 @@ import org.beangle.commons.web.util.CookieUtils
 import org.beangle.data.jpa.dao.OqlBuilder
 import org.beangle.data.model.Entity
 import org.beangle.data.model.dao.Condition
-import org.beangle.webmvc.api.context.{ ContextHolder, Params }
+import org.beangle.webmvc.api.context.{ ActionContextHolder, Params }
 
 object QueryHelper extends Logging {
 
@@ -125,7 +125,7 @@ object QueryHelper extends Logging {
     if (Strings.isNotBlank(pageSize)) {
       pagesize = Numbers.toInt(pageSize.trim())
     } else {
-      pageSize = CookieUtils.getCookieValue(ContextHolder.context.request, PageSizeParam)
+      pageSize = CookieUtils.getCookieValue(ActionContextHolder.context.request, PageSizeParam)
       if (Strings.isNotEmpty(pageSize)) pagesize = Numbers.toInt(pageSize)
     }
     if (pagesize < 1) Page.DefaultPageSize else pagesize

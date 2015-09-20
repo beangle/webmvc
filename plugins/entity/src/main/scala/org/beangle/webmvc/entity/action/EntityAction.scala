@@ -19,7 +19,6 @@
 package org.beangle.webmvc.entity.action
 
 import java.{ io => jo }
-
 import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.PageLimit
 import org.beangle.commons.config.property.PropertyConfig
@@ -65,7 +64,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     PopulateHelper.populate(obj, entityName, shortName)
   }
 
-  protected final def populate[E <: Entity[_]](entity: E, entityName: String, params: Map[String, Object]): E = {
+  protected final def populate[E <: Entity[_]](entity: E, entityName: String, params: collection.Map[String, Any]): E = {
     require(null != entity, "Cannot populate to null.")
     PopulateHelper.populate(entity, entityName, params)
   }
@@ -100,19 +99,12 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   @ignore
-  final def entityName: String = entityType.getName
+  final def entityName: String = {
+    entityType.getName
+  }
 
   @ignore
   protected def shortName: String = {
-    val name = entityName
-    if (Strings.isNotEmpty(name)) getCommandName(name)
-    else null
-  }
-
-  /**
-   * replace EntityUtils.getCommandName(name)
-   */
-  private def getCommandName(entityName: String): String = {
     Strings.uncapitalize(Strings.substringAfterLast(entityName, "."))
   }
 
@@ -144,29 +136,25 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   protected def populateEntity[E <: Entity[_]](entityName: String, shortName: String): E = {
-    val entityId: jo.Serializable = getId(shortName, entityMetaData.getType(entityName).get.idType)
-    if (null == entityId) {
-      populate(entityName, shortName).asInstanceOf[E]
-    } else {
-      populate(getModel[E](entityName, entityId), entityName, Params.sub(shortName).asInstanceOf[Map[String, Object]])
+    getId(shortName, entityMetaData.getType(entityName).get.idType) match {
+      case Some(entityId) => populate(getModel[E](entityName, entityId), entityName, Params.sub(shortName))
+      case None           => populate(entityName, shortName).asInstanceOf[E]
     }
   }
 
   protected def populateEntity[E](entityClass: Class[E], shortName: String): E = {
-    val entityType: EntityType =
-      (if (entityClass.isInterface) {
-        entityMetaData.getType(entityClass.getName)
-      } else {
-        entityMetaData.getType(entityClass)
-      }).get
-    populateEntity(entityType.entityName, shortName)
+    val entityType =
+      if (entityClass.isInterface) entityMetaData.getType(entityClass.getName)
+      else entityMetaData.getType(entityClass)
+    populateEntity(entityType.get.entityName, shortName)
   }
 
   protected def getEntity[E <: Entity[_]](entityName: String, name: String): E = {
     val entityType: EntityType = entityMetaData.getType(entityName).get
-    val entityId: jo.Serializable = getId(name, entityType.idType)
-    if (null == entityId) populate(entityType.newInstance.asInstanceOf[E], entityType.entityName, name)
-    else getModel(entityName, entityId).asInstanceOf[E]
+    getId(name, entityType.idType) match {
+      case Some(entityId) => getModel(entityName, entityId).asInstanceOf[E]
+      case None           => populate(entityType.newInstance.asInstanceOf[E], entityType.entityName, name)
+    }
   }
 
   protected def getEntity[E](entityClass: Class[E], shortName: String): E = {
@@ -180,22 +168,22 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     getModel[T](entityName, id)
   }
 
-  protected def getModel[E](entityName: String, id: jo.Serializable): E = {
+  protected def getModel[E](entityName: String, id: Any): E = {
     val entityType: EntityType = entityMetaData.getType(entityName).get
     Params.converter.convert(id, entityType.idType) match {
       case Some(rid) => entityDao.get(entityType.entityClass.asInstanceOf[Class[Entity[jo.Serializable]]], rid).asInstanceOf[E]
-      case None => null.asInstanceOf[E]
+      case None      => null.asInstanceOf[E]
     }
   }
 
-  protected def getModels[E](entityName: String, ids: Array[_ <: jo.Serializable]): Seq[E] = {
-    val idlist: Iterable[jo.Serializable] = ids.toList
+  protected def getModels[E](entityName: String, ids: Iterable[_]): Seq[E] = {
+    val idlist = ids.asInstanceOf[List[jo.Serializable]]
     entityDao.find(Class.forName(entityName).asInstanceOf[Class[Entity[jo.Serializable]]], idlist).asInstanceOf[Seq[E]]
   }
 
   protected def convertId[ID](id: String): ID = {
     Params.converter.convert(id, entityMetaData.getType(entityName).get.idType) match {
-      case None => null.asInstanceOf[ID]
+      case None      => null.asInstanceOf[ID]
       case Some(nid) => nid.asInstanceOf[ID]
     }
   }

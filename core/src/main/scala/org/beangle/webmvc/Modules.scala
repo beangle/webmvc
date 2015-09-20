@@ -19,7 +19,7 @@
 package org.beangle.webmvc
 
 import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
-import org.beangle.commons.text.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
+import org.beangle.commons.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
 import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider }
 import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, DefaultSerializerManager, ParamLocaleResolver }
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, HierarchicalUrlMapper }

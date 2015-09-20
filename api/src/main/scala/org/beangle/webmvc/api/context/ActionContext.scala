@@ -20,10 +20,10 @@ package org.beangle.webmvc.api.context
 
 import java.{ util => ju }
 import org.beangle.commons.collection.Collections
-import org.beangle.commons.text.i18n.TextResource
+import org.beangle.commons.i18n.TextResource
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
-object ContextHolder {
+object ActionContextHolder {
   val contexts = new ThreadLocal[ActionContext]
   def context: ActionContext = contexts.get()
 }

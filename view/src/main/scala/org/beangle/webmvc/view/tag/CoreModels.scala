@@ -22,7 +22,7 @@ import java.io.StringWriter
 import java.{ util => ju }
 
 import org.beangle.commons.collection.page.Page
-import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.api.context.ActionContextHolder
 import org.beangle.webmvc.context.ActionContextHelper
 import org.beangle.webmvc.view.UITheme
 
@@ -31,10 +31,10 @@ import javax.servlet.http.HttpServletRequest
 
 class CoreModels(context: ComponentContext, request: HttpServletRequest) extends AbstractModels(context, request) {
 
-  val textResource = ContextHolder.context.textResource
+  val textResource = ActionContextHolder.context.textResource
 
   def url(url: String) = {
-    context.uriRender.render(ActionContextHelper.getMapping(ContextHolder.context).action, url)
+    context.uriRender.render(ActionContextHelper.getMapping(ActionContextHolder.context).action, url)
   }
 
   def now = new ju.Date

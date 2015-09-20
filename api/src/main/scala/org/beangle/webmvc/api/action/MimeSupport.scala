@@ -25,7 +25,7 @@ import org.beangle.commons.lang.{Chars, ClassLoaders, Strings}
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.{CookieUtils, RequestUtils}
 import org.beangle.webmvc.api.annotation.ignore
-import org.beangle.webmvc.api.context.{ActionMessages, ContextHolder, Flash}
+import org.beangle.webmvc.api.context.{ActionMessages, ActionContextHolder, Flash}
 import org.beangle.webmvc.api.view.{ForwardActionView, RedirectActionView, View}
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -37,7 +37,7 @@ trait MimeSupport {
   def isRequestCsv: Boolean = {
     if (null == contentNegotiationManager) false
     else {
-      contentNegotiationManager.resolve(ContextHolder.context.request).exists { p => p.getBaseType == "text/csv" }
+      contentNegotiationManager.resolve(ActionContextHolder.context.request).exists { p => p.getBaseType == "text/csv" }
     }
   }
 }

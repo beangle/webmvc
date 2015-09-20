@@ -9,13 +9,13 @@
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Parent</name>
-  <version>0.2.9</version>
+  <version>0.2.10</version>
 
   <properties>
-    <beangle.commons.version>4.3.0</beangle.commons.version>
-    <beangle.data.version>4.2.3</beangle.data.version>
-    <beangle.spring.version>4.0.11</beangle.spring.version>
-    <beangle.template.version>0.0.5</beangle.template.version>
+    <beangle.commons.version>4.4.0</beangle.commons.version>
+    <beangle.data.version>4.2.4</beangle.data.version>
+    <beangle.spring.version>4.0.12</beangle.spring.version>
+    <beangle.template.version>0.0.6</beangle.template.version>
   </properties>
 
   <modules>
@@ -30,6 +30,16 @@
       <dependency>
         <groupId>org.beangle.commons</groupId>
         <artifactId>beangle-commons-core_2.11</artifactId>
+        <version>${beangle.commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.beangle.commons</groupId>
+        <artifactId>beangle-commons-i18n_2.11</artifactId>
+        <version>${beangle.commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.beangle.commons</groupId>
+        <artifactId>beangle-commons-text_2.11</artifactId>
         <version>${beangle.commons.version}</version>
       </dependency>
       <dependency>
@@ -84,6 +94,10 @@
     <dependency>
       <groupId>org.beangle.commons</groupId>
       <artifactId>beangle-commons-core_2.11</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.commons</groupId>
+      <artifactId>beangle-commons-i18n_2.11</artifactId>
     </dependency>
     <dependency>
       <groupId>org.beangle.commons</groupId>

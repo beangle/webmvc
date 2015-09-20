@@ -64,7 +64,7 @@ trait To {
     this
   }
 
-  def param(key: String, obj: Object): this.type = {
+  def param(key: String, obj: Any): this.type = {
     parameters.put(key, String.valueOf(obj))
     this
   }

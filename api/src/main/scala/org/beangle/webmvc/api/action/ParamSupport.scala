@@ -19,22 +19,22 @@
 package org.beangle.webmvc.api.action
 
 import org.beangle.webmvc.api.context.Params
-import org.beangle.webmvc.api.context.ContextHolder
+import org.beangle.webmvc.api.context.ActionContextHolder
 import scala.reflect.ClassTag
 import java.sql
 import java.{ util => ju }
 
 trait ParamSupport {
 
-  protected final def put(key: String, value: Any) {
-    ContextHolder.context.attribute(key, value)
+  protected final def put(key: String, value: Any): Unit = {
+    ActionContextHolder.context.attribute(key, value)
   }
 
-  protected final def getAll(paramName: String): Array[Any] = {
+  protected final def getAll(paramName: String): Iterable[Any] = {
     Params.getAll(paramName)
   }
 
-  protected final def getAll[T: ClassTag](paramName: String, clazz: Class[T]): Array[T] = {
+  protected final def getAll[T: ClassTag](paramName: String, clazz: Class[T]): Iterable[T] = {
     Params.getAll(paramName, clazz)
   }
 
@@ -48,11 +48,11 @@ trait ParamSupport {
   }
 
   protected final def getAttribute(name: String): Any = {
-    ContextHolder.context.attribute(name)
+    ActionContextHolder.context.attribute(name)
   }
 
   protected final def getAttribute[T](name: String, clazz: Class[T]): T = {
-    ContextHolder.context.attribute(name).asInstanceOf[T]
+    ActionContextHolder.context.attribute(name).asInstanceOf[T]
   }
 
   protected final def get[T](name: String, clazz: Class[T]): Option[T] = {
