@@ -27,13 +27,13 @@ import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.lang.reflect.ClassInfo
 import org.beangle.commons.lang.reflect.Reflections.{ getAnnotation, isAnnotationPresent }
+import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.api.annotation.{ DefaultNone, action, cookie, header, ignore, mapping, param, response, view, views }
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Profile }
+import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Profile, Path }
 import org.beangle.webmvc.context.Argument
 import org.beangle.webmvc.context.impl.{ CookieArgument, HeaderArgument, ParamArgument, RequestArgument, ResponseArgument }
 import org.beangle.webmvc.view.{ TemplateResolver, ViewBuilder }
-import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.view.impl.ViewResolverRegistry
 
 @description("缺省的ActionMapping构建器")
@@ -63,7 +63,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
           val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else GET
           val name = if (null != ann) (if (ann.value.startsWith("/")) ann.value.substring(1) else ann.value) else methodName
           val url = if (name == "") actionName else (actionName + "/" + name)
-          val urlParams = parse(url)
+          val urlParams = Path.parse(url)
           val urlPathNames = urlParams.keySet.toList.sorted.map { i => urlParams(i) }
 
           val annotationsList = if (null == annTuple) method.getParameterAnnotations else annTuple._2.getParameterAnnotations
@@ -75,10 +75,10 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
             val annotations = annotationsList(i)
             while (j < annotations.length && null == argument) {
               argument = annotations(j) match {
-                case p: param => new ParamArgument(p.value, p.required || parameterTypes(i).isPrimitive, p.defaultValue)
+                case p: param  => new ParamArgument(p.value, p.required || parameterTypes(i).isPrimitive, p.defaultValue)
                 case c: cookie => new CookieArgument(c.value, c.required || parameterTypes(i).isPrimitive, c.defaultValue)
                 case h: header => new HeaderArgument(h.value, h.required || parameterTypes(i).isPrimitive, h.defaultValue)
-                case _ => null
+                case _         => null
               }
               j += 1
             }
@@ -99,7 +99,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
               if (null != defaultView && defaultView.contains(",") && !views.isEmpty) {
                 defaultView = Strings.split(defaultView, ",") find (v => views.contains(v)) match {
                   case Some(v) => v
-                  case _ => defaultView
+                  case _       => defaultView
                 }
               }
               val mapping = new ActionMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
@@ -119,22 +119,6 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     }
     config.mappings = mappings.toMap
     actions
-  }
-
-  def parse(pattern: String): Map[Integer, String] = {
-    var parts = split(pattern, "/")
-    var params = new collection.mutable.HashMap[Integer, String]
-    var i = 0
-    while (i < parts.length) {
-      val p = parts(i)
-      if (p.charAt(0) == '{' && p.charAt(p.length - 1) == '}') {
-        params.put(Integer.valueOf(i), p.substring(1, p.length - 1))
-      } else if (p == "*") {
-        params.put(Integer.valueOf(i), String.valueOf(i))
-      }
-      i += 1
-    }
-    params.toMap
   }
 
   /**

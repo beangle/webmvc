@@ -22,12 +22,13 @@ import java.{ lang => jl }
 
 import org.beangle.commons.http.HttpMethods.{ GET, POST }
 import org.beangle.commons.inject.Container
+import org.beangle.commons.lang.{ Arrays, Strings }
 import org.beangle.commons.lang.Strings.split
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.RequestUtils
+import org.beangle.webmvc.config.{ Configurer, Path }
 import org.beangle.webmvc.config.ActionMapping.{ DefaultMethod, MethodParam }
-import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.dispatch.{ RequestMapper, RequestMapping }
 import org.beangle.webmvc.execution.HandlerBuilder
 
@@ -61,7 +62,7 @@ class HierarchicalUrlMapper extends RequestMapper with Logging {
   override def resolve(uri: String): Option[RequestMapping] = {
     val directMapping = directMappings.get(uri) match {
       case Some(m) => m.get(POST)
-      case None => None
+      case None    => None
     }
     if (None != directMapping) return directMapping
     else hierarchicalMappings.resolve(GET, uri)
@@ -78,7 +79,7 @@ class HierarchicalUrlMapper extends RequestMapper with Logging {
       var i = lastSlashIdx + 2
       var chars = new Array[Char](uri.length)
       uri.getChars(0, chars.length, chars, 0)
-      while (i < chars.length && dotIdx == -1) {
+      while (i < chars.length) {
         var c = chars(i)
         if ('!' == c) bangIdx = i
         else if ('.' == c) dotIdx = i
@@ -93,7 +94,7 @@ class HierarchicalUrlMapper extends RequestMapper with Logging {
     val finalUrl = sb.toString
     val directMapping = directMappings.get(finalUrl) match {
       case Some(dm) => dm.get(httpMethod)
-      case None => None
+      case None     => None
     }
     if (None != directMapping) return directMapping
     else hierarchicalMappings.resolve(httpMethod, finalUrl)
@@ -122,8 +123,7 @@ class HierarchicalMappings {
 
   def resolve(httpMethod: String, uri: String): Option[RequestMapping] = {
     val parts = split(uri, '/')
-    val result = find(0, parts, this)
-    result match {
+    find(0, parts, this) match {
       case Some(methodMappings) =>
         methodMappings.get(httpMethod) match {
           case Some(m) =>
@@ -131,7 +131,8 @@ class HierarchicalMappings {
             val params = new collection.mutable.HashMap[String, String]
             action.urlParams foreach {
               case (k, v) =>
-                params.put(v, parts(k))
+                if (Path.isTailMatch(v)) params.put(v.substring(0, v.length - 1), Strings.join(Arrays.subarray(parts, k, parts.length), "/"))
+                else params.put(v, parts(k))
             }
             Some(new RequestMapping(action, m.handler, params))
           case None => None
@@ -147,11 +148,15 @@ class HierarchicalMappings {
   private def add(httpMethod: String, pattern: String, mapping: RequestMapping, mappings: HierarchicalMappings): Unit = {
     val slashIndex = pattern.indexOf('/', 1)
     val head = if (-1 == slashIndex) pattern.substring(1) else pattern.substring(1, slashIndex)
-    val headPattern = if (head.charAt(0) == '{' && head.charAt(head.length - 1) == '}') "*" else head
+    val headPattern = if (Path.isPattern(head)) "*" else head
 
     if (-1 == slashIndex) {
       val methodMappings = mappings.mappings.getOrElseUpdate(headPattern, new MethodMappings)
       methodMappings.methods.put(httpMethod, mapping)
+      if (Path.isTailPattern(head)) {
+        assert(mappings.children.isEmpty)
+        mappings.children.put("*", mappings)
+      }
     } else {
       add(httpMethod, pattern.substring(slashIndex), mapping, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
     }

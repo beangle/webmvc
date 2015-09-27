@@ -22,7 +22,7 @@ import java.util.EnumSet
 
 import org.beangle.commons.web.session.HttpSessionEventPublisher
 import org.beangle.spring.web.ContextListener
-import org.beangle.webmvc.dispatch.DispatcherFilter
+import org.beangle.webmvc.dispatch.Dispatcher
 
 import javax.servlet.{ DispatcherType, ServletContext }
 
@@ -35,7 +35,7 @@ class Initializer extends org.beangle.commons.web.init.Initializer {
 
     addListener(new ContextListener)
     sc.addListener(new HttpSessionEventPublisher)
-    val action = sc.addFilter("Action", new DispatcherFilter)
+    val action = sc.addFilter("Action", new Dispatcher)
     action.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*")
   }
 }

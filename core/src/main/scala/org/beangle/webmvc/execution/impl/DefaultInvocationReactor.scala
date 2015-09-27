@@ -90,25 +90,30 @@ class DefaultInvocationReactor extends InvocationReactor with Initializing {
                       case Some(v) => v
                       case None =>
                         val profile = configurer.getProfile(config.clazz.getName)
-                        val candidates = Strings.split(viewName, ",")
-                        var newView: View = null
-                        var i = 0
-                        val resolver = viewResolverRegistry.getResolver(profile.viewType).get
-                        while (i < candidates.length && null == newView) {
-                          newView = resolver.resolve(candidates(i), mapping)
-                          i += 1
+                        viewResolverRegistry.getResolver(profile.viewType) match {
+                          case Some(resolver) =>
+                            var i = 0
+                            val candidates = Strings.split(viewName, ",")
+                            var newView: View = null
+                            while (i < candidates.length && null == newView) {
+                              newView = resolver.resolve(candidates(i), mapping)
+                              i += 1
+                            }
+                            require(null != newView, s"Cannot find view[$viewName] for ${config.clazz.getName}")
+                            newView
+                          case None =>
+                            throw new RuntimeException(s"Cannot find view of type [${profile.viewType}]'s resolver")
                         }
-                        require(null != newView, s"Cannot find view[$viewName] for ${config.clazz.getName}")
-                        newView
+
                     }
                   }
                 case view: View => view
-                case _ => null
+                case _          => null
               }
             if (null != view) {
               renders.get(view.getClass) match {
                 case Some(render) => render.render(view, context)
-                case None => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
+                case None         => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
               }
             } else {
               if (null != contentNegotiationManager) {

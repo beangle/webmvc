@@ -55,7 +55,7 @@ object ActionMapping {
 }
 
 class ActionMapping(val httpMethod: String, val config: ActionConfig, val method: Method, val name: String,
-  val arguments: Array[Argument], val urlParams: Map[Integer, String], val defaultView: String) {
+    val arguments: Array[Argument], val urlParams: Map[Integer, String], val defaultView: String) {
 
   def url = if ("" == name) config.name else (config.name + "/" + name)
 
@@ -85,5 +85,40 @@ class ActionMapping(val httpMethod: String, val config: ActionConfig, val method
       ua.param(ActionMapping.MethodParam, m)
     }
     ua
+  }
+}
+
+object Path {
+
+  def isTailMatch(path: String): Boolean = {
+    path.charAt(path.length - 1) == '*'
+  }
+
+  def isTailPattern(path: String): Boolean = {
+    path.endsWith("*}")
+  }
+
+  def isPattern(pathSegment: String): Boolean = {
+    (pathSegment.charAt(0) == '{' && pathSegment.charAt(pathSegment.length - 1) == '}')
+  }
+  /**
+   * /a/b/c => ()
+   * /{a}/&star/{c} => (0->a,1->1,2->c)
+   * /a/b/{c}/{a*} => (2->c,3->a*)
+   */
+  def parse(pattern: String): Map[Integer, String] = {
+    var parts = split(pattern, "/")
+    var params = new collection.mutable.HashMap[Integer, String]
+    var i = 0
+    while (i < parts.length) {
+      val p = parts(i)
+      if (p.charAt(0) == '{' && p.charAt(p.length - 1) == '}') {
+        params.put(Integer.valueOf(i), p.substring(1, p.length - 1))
+      } else if (p == "*") {
+        params.put(Integer.valueOf(i), String.valueOf(i))
+      }
+      i += 1
+    }
+    params.toMap
   }
 }

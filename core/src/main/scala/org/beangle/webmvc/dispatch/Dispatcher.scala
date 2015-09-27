@@ -36,7 +36,7 @@ import org.beangle.commons.lang.Strings
 import org.beangle.commons.web.resource.ResourceProcessor
 import org.beangle.commons.web.resource.filter.HeaderFilter
 
-class DispatcherFilter extends Filter with Logging {
+class Dispatcher extends Filter with Logging {
 
   var defaultEncoding = "utf-8"
   var mapper: RequestMapper = _
