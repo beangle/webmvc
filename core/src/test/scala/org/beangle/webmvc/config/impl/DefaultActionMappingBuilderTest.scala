@@ -39,24 +39,24 @@ class DefaultActionMappingBuilderTest extends FunSpec with Matchers {
   describe("DefaultActionMappingBuilder") {
     it("build mapping") {
       profile.matches(classOf[ShowcaseAction].getName)
-      val mappings = builder.build(classOf[ShowcaseAction], profile).toMap
+      val mappings = builder.build(new ShowcaseAction(), classOf[ShowcaseAction], profile).mappings
       assert(null != mappings)
       assert(mappings.size == 7)
-      assert(None != mappings.get("/showcase/string"))
-      assert(None != mappings.get("/showcase/request"))
-      assert(None != mappings.get("/showcase/param"))
-      assert(None != mappings.get("/showcase/cookie"))
-      assert(None != mappings.get("/showcase/header"))
-      assert(None != mappings.get("/showcase/path/{id}"))
-      assert(None != mappings.get("/showcase/echofloat/{num}"))
+      assert(None != mappings.get("string"))
+      assert(None != mappings.get("request"))
+      assert(None != mappings.get("param"))
+      assert(None != mappings.get("cookie"))
+      assert(None != mappings.get("header"))
+      assert(mappings.get("path").get.name == "path/{id}")
+      assert(mappings.get("echofloat").get.name == "echofloat/{num}")
     }
 
     it("build plur mapping") {
       val pp = plurProfile.mkProfile(null)
       pp.matches(classOf[ShowcaseAction].getName)
-      val mappings = builder.build(classOf[ShowcaseAction], pp).toMap
+      val mappings = builder.build(new ShowcaseAction(), classOf[ShowcaseAction], pp).mappings
       assert(null != mappings)
-      assert(None != mappings.get("/showcase/string"))
+      assert(None != mappings.get("string"))
     }
   }
 }

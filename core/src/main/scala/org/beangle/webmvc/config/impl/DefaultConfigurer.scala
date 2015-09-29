@@ -23,7 +23,7 @@ import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.intercept.Interceptor
-import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Configurer, Profile, ProfileProvider }
+import org.beangle.webmvc.config.{ ActionMapping, RouteMapping, ActionMappingBuilder, Configurer, Profile, ProfileProvider }
 import org.beangle.webmvc.context.ActionFinder
 
 @description("缺省配置器")
@@ -31,15 +31,15 @@ class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) 
 
   private val class2Profiles = new collection.mutable.HashMap[String, Profile]
 
-  var actionConfigs: Map[String, ActionConfig] = Map.empty
-
+  var actionMappings: Map[String, ActionMapping] = Map.empty
+  var classMappings: Map[Class[_], ActionMapping] = Map.empty
   var profiles: List[Profile] = Nil
 
   var actionMappingBuilder: ActionMappingBuilder = _
 
   var actionFinder: ActionFinder = _
 
-  override def build(): Seq[Tuple3[String, ActionMapping, Object]] = {
+  override def build(): Unit = {
     val watch = new Stopwatch(true)
     profiles = profileProvider.loadProfiles() map { pc =>
       val interceptors = pc.interceptorNames map { interName =>
@@ -50,26 +50,21 @@ class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) 
     profiles = profiles.sorted
 
     var actionCount, mappingCount = 0
-    val results = new collection.mutable.ListBuffer[Tuple3[String, ActionMapping, Object]]
-    val configs = new collection.mutable.HashMap[String, ActionConfig]
+    val mutableActionMappings = new collection.mutable.HashMap[String, ActionMapping]
+    val mutableClassMappings = new collection.mutable.HashMap[Class[_], ActionMapping]
     actionFinder.getActions(new ActionFinder.Test(this)) foreach { bean =>
       val clazz = bean.getClass
-      val mappings = actionMappingBuilder.build(clazz, this.getProfile(clazz.getName))
-      if (!mappings.isEmpty) {
-        mappings.foreach {
-          case (url, action) =>
-            mappingCount += 1
-            results += Tuple3(url, action, bean)
-        }
-        val action = mappings.head._2
-        configs.put(action.config.clazz.getName, action.config)
-        configs.put(action.config.name, action.config)
+      val mapping = actionMappingBuilder.build(bean, clazz, this.getProfile(clazz.getName))
+      if (!mapping.mappings.isEmpty) {
+        mutableClassMappings.put(mapping.clazz, mapping)
+        mutableActionMappings.put(mapping.name, mapping)
         actionCount += 1
+        mappingCount += mapping.mappings.size
       }
     }
-    actionConfigs = configs.toMap
+    actionMappings = mutableActionMappings.toMap
+    classMappings = mutableClassMappings.toMap
     logger.info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in ${watch}.")
-    results
   }
 
   override def getProfile(className: String): Profile = {
@@ -85,14 +80,14 @@ class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) 
     matched
   }
 
-  override def getActionMapping(name: String, method: String): Option[ActionMapping] = {
-    actionConfigs.get(name) match {
-      case Some(config) => config.mappings.get(method)
-      case None => None
+  override def getRouteMapping(clazz: Class[_], method: String): Option[RouteMapping] = {
+    classMappings.get(clazz) match {
+      case Some(am) => am.mappings.get(method)
+      case None     => None
     }
   }
 
-  override def getConfig(name: String): Option[ActionConfig] = {
-    actionConfigs.get(name)
+  override def getActionMapping(name: String): Option[ActionMapping] = {
+    actionMappings.get(name)
   }
 }

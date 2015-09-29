@@ -18,20 +18,24 @@
  */
 package org.beangle.webmvc.context
 
-import org.beangle.commons.collection.Collections
-import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.dispatch.RequestMapping
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.commons.i18n.TextResourceProvider
-import org.beangle.webmvc.api.context.ActionContextHolder
+import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.web.multipart.StandardMultipartResolver
+import org.beangle.webmvc.api.context.{ ActionContext, ActionContextHolder }
+import org.beangle.webmvc.config.RouteMapping
+import org.beangle.webmvc.dispatch.HandlerHolder
+import org.beangle.webmvc.execution.MappingHandler
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.webmvc.dispatch.HandlerHolder
+import org.beangle.webmvc.api.annotation.mapping
+import org.beangle.webmvc.execution.Handler
 
 object ActionContextHelper {
 
-  private final val RequestMappingAttribute = "_request_mapping"
+  private final val HandlerHolderAttribute = "_handler_holder"
 
-  def build(request: HttpServletRequest, response: HttpServletResponse, mapping: RequestMapping,
-    localeResolver: LocaleResolver, textResourceProvider: TextResourceProvider,
+  def build(request: HttpServletRequest, response: HttpServletResponse, holder: HandlerHolder,
+    localeResolver: LocaleResolver, textResourceProvider: Option[TextResourceProvider],
     paramMaps: collection.Map[String, Any]*): ActionContext = {
 
     val params = new collection.mutable.HashMap[String, Any]
@@ -47,21 +51,23 @@ object ActionContextHelper {
       params ++= StandardMultipartResolver.resolve(request)
     }
 
-    params ++= mapping.params
+    params ++= holder.params
     paramMaps foreach (pMap => params ++= pMap)
 
     val context = new ActionContext(request, response, localeResolver.resolve(request), params.toMap)
-    context.temp(RequestMappingAttribute, mapping)
+    context.temp(HandlerHolderAttribute, holder)
     ActionContextHolder.contexts.set(context)
-    context.textResource = textResourceProvider.getTextResource(context.locale)
+    
+    textResourceProvider.foreach { trp =>
+      context.textResource = trp.getTextResource(context.locale)
+    }
     context
   }
 
-  def setMapping(context: ActionContext, mapping: RequestMapping): Unit = {
-    context.temp(RequestMappingAttribute, mapping)
+  def handler: Handler = {
+    ActionContextHolder.context.temp[HandlerHolder](HandlerHolderAttribute).handler
   }
-
-  def getMapping(context: ActionContext): RequestMapping = {
-    context.temp(RequestMappingAttribute)
+  def mapping: RouteMapping = {
+    handler.asInstanceOf[MappingHandler].mapping
   }
 }

@@ -24,7 +24,7 @@ import org.beangle.webmvc.api.action.{ ToClass, ToURL, To }
 import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.context.{ ActionContext, ActionContextHolder }
 import org.beangle.webmvc.api.view.{ ActionView, ForwardActionView, RedirectActionView, View }
-import org.beangle.webmvc.config.{ ActionMapping, Configurer }
+import org.beangle.webmvc.config.{ RouteMapping, Configurer }
 import org.beangle.webmvc.view.{ TypeViewBuilder, ViewRender }
 
 import javax.servlet.http.HttpServletRequest
@@ -67,14 +67,14 @@ class ForwardActionViewRender(val configurer: Configurer) extends ViewRender {
   final def toURL(view: View, request: HttpServletRequest): String = {
     view.asInstanceOf[ActionView].to match {
       case ca: ToClass =>
-        configurer.getActionMapping(ca.clazz.getName, ca.method) match {
+        configurer.getRouteMapping(ca.clazz, ca.method) match {
           case Some(am) =>
             if (am.httpMethod != HttpMethods.GET && am.httpMethod != HttpMethods.POST)
               throw new RuntimeException(s"Cannot forward action mapping using ${am.httpMethod}")
             val ua = am.toURL(ca.parameters, ActionContextHolder.context.params)
-            ca.parameters --= am.urlParams.values
+            ca.parameters --= am.urlParams.keys
             ua.params(ca.parameters)
-            if (am.httpMethod != request.getMethod) ua.param(ActionMapping.MethodParam, am.httpMethod)
+            if (am.httpMethod != request.getMethod) ua.param(RouteMapping.MethodParam, am.httpMethod)
             ua.url
           case None => throw new RuntimeException(s"Cannot find action mapping for ${ca.clazz.getName} ${ca.method}")
         }
@@ -118,11 +118,11 @@ class RedirectActionViewRender(val configurer: Configurer) extends ViewRender {
   final def toURL(view: View): String = {
     view.asInstanceOf[ActionView].to match {
       case ca: ToClass =>
-        configurer.getActionMapping(ca.clazz.getName, ca.method) match {
+        configurer.getRouteMapping(ca.clazz, ca.method) match {
           case Some(am) =>
             if (am.httpMethod != HttpMethods.GET) throw new RuntimeException(s"Cannot redirect action mapping using ${am.httpMethod}")
             val ua = am.toURL(ca.parameters, ActionContextHolder.context.params)
-            ca.parameters --= am.urlParams.values
+            ca.parameters --= am.urlParams.keys
             ua.params(ca.parameters)
             ua.url
           case None => throw new RuntimeException(s"Cannot find action mapping for ${ca.clazz.getName} ${ca.method}")

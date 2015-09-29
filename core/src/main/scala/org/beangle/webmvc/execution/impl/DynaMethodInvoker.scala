@@ -18,22 +18,19 @@
  */
 package org.beangle.webmvc.execution.impl
 
-import java.lang.reflect.Method
-
-import scala.Range
-
 import org.beangle.commons.lang.Primitives
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.webmvc.api.context.{ ActionContextHolder, Params }
-import org.beangle.webmvc.config.ActionMapping
-import org.beangle.webmvc.execution.{ Handler, HandlerBuilder }
+import org.beangle.webmvc.config.RouteMapping
+import org.beangle.webmvc.execution.{ Invoker, InvokerBuilder }
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
-class DynaMethodHandler(val action: AnyRef, val method: Method) extends Handler {
+class DynaMethodInvoker(val action: AnyRef, val mapping: RouteMapping) extends Invoker {
+  val method = mapping.method
   val paramTypes = method.getParameterTypes
 
-  override def handle(mapping: ActionMapping): Any = {
+  override def invoke(): Any = {
     if (0 == paramTypes.length) {
       method.invoke(action)
     } else {
@@ -67,9 +64,9 @@ class DynaMethodHandler(val action: AnyRef, val method: Method) extends Handler 
 }
 
 @description("句柄构建者,使用method反射调用")
-class DynaMethodHandlerBuilder extends HandlerBuilder {
+class DynaMethodInvokerBuilder extends InvokerBuilder {
 
-  override def build(action: AnyRef, mapping: ActionMapping): Handler = {
-    new DynaMethodHandler(action, mapping.method)
+  override def build(action: AnyRef, mapping: RouteMapping): Invoker = {
+    new DynaMethodInvoker(action, mapping)
   }
 }

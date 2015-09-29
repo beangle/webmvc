@@ -94,7 +94,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
       redirect("search", "info.save.success")
     } catch {
       case e: Exception => {
-        val redirectTo = ActionContextHelper.getMapping(ActionContextHolder.context).action.method.getName match {
+        val redirectTo = ActionContextHelper.mapping.method.getName match {
           case "save"   => "editNew"
           case "update" => "edit"
         }

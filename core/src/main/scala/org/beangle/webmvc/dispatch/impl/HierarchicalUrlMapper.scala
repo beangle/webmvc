@@ -19,7 +19,6 @@
 package org.beangle.webmvc.dispatch.impl
 
 import java.{ lang => jl }
-
 import org.beangle.commons.http.HttpMethods.{ GET, POST }
 import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.{ Arrays, Strings }
@@ -27,48 +26,52 @@ import org.beangle.commons.lang.Strings.split
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.RequestUtils
-import org.beangle.webmvc.config.{ Configurer, Path }
-import org.beangle.webmvc.config.ActionMapping.{ DefaultMethod, MethodParam }
-import org.beangle.webmvc.dispatch.{ RequestMapper, RequestMapping }
-import org.beangle.webmvc.execution.HandlerBuilder
-
+import org.beangle.webmvc.config.Path
+import org.beangle.webmvc.config.RouteMapping.{ DefaultMethod, MethodParam }
+import org.beangle.webmvc.dispatch.{ RequestMapper, HandlerHolder }
 import javax.servlet.http.HttpServletRequest
+import org.beangle.webmvc.execution.InvokerBuilder
+import org.beangle.webmvc.view.impl.ViewManager
+import org.beangle.webmvc.execution.MappingHandler
+import org.beangle.webmvc.dispatch.RouteProvider
+import org.beangle.webmvc.api.annotation.mapping
+import org.beangle.webmvc.execution.Handler
 
 @description("支持层级的url映射器")
 class HierarchicalUrlMapper extends RequestMapper with Logging {
 
   private val hierarchicalMappings = new HierarchicalMappings
 
-  private val directMappings = new collection.mutable.HashMap[String, MethodMappings]
-
-  var configurer: Configurer = _
-
-  var handlerBuilder: HandlerBuilder = _
+  private val directMappings = new collection.mutable.HashMap[String, HttpMethodMappings]
 
   override def start(container: Container): Unit = {
-    configurer.build() foreach {
-      case (url, actionmapping, bean) =>
-        add(url, new RequestMapping(actionmapping, handlerBuilder.build(bean, actionmapping), Map.empty))
+    container.getBeans(classOf[RouteProvider]) foreach {
+      case (n, p) =>
+        p.routes foreach { r =>
+          add(r.httpMethod, r.url, r.handler)
+        }
     }
   }
 
-  private def add(url: String, mapping: RequestMapping): Unit = {
-    val action = mapping.action
+  def add(httpMethod: String, url: String, handler: Handler): Unit = {
     if (!url.contains("{")) {
-      directMappings.getOrElseUpdate(url, new MethodMappings).methods.put(action.httpMethod, mapping)
-    } else hierarchicalMappings.add(action.httpMethod, url, mapping)
-  }
-
-  override def resolve(uri: String): Option[RequestMapping] = {
-    val directMapping = directMappings.get(uri) match {
-      case Some(m) => m.get(POST)
-      case None    => None
+      directMappings.getOrElseUpdate(url, new HttpMethodMappings).methods.put(httpMethod, new HandlerHolder(handler, Map.empty))
+    } else {
+      val holder = new HandlerHolder(handler, Path.parse(url))
+      hierarchicalMappings.add(httpMethod, url, holder)
     }
-    if (None != directMapping) return directMapping
-    else hierarchicalMappings.resolve(GET, uri)
   }
 
-  override def resolve(request: HttpServletRequest): Option[RequestMapping] = {
+  override def resolve(uri: String): Option[HandlerHolder] = {
+    directMappings.get(uri) match {
+      case Some(m) =>
+        val hh = m.get(POST)
+        if (hh.isEmpty) hierarchicalMappings.resolve(GET, uri) else hh
+      case None => None
+    }
+  }
+
+  override def resolve(request: HttpServletRequest): Option[HandlerHolder] = {
     val uri = RequestUtils.getServletPath(request)
     var bangIdx, dotIdx = -1
     val lastSlashIdx = uri.lastIndexOf('/')
@@ -102,15 +105,16 @@ class HierarchicalUrlMapper extends RequestMapper with Logging {
 
   private def determineHttpMethod(request: HttpServletRequest): String = {
     var httpMethod = request.getParameter(MethodParam)
-    if (null == httpMethod) httpMethod = request.getMethod
-    else httpMethod = httpMethod.toUpperCase()
-    httpMethod
+    if (null == httpMethod) request.getMethod else httpMethod.toUpperCase()
   }
 }
 
-class MethodMappings {
-  val methods = new collection.mutable.HashMap[String, RequestMapping]
-  def get(method: String): Option[RequestMapping] = {
+/**
+ * HttpMethod Mappings
+ */
+class HttpMethodMappings {
+  val methods = new collection.mutable.HashMap[String, HandlerHolder]
+  def get(method: String): Option[HandlerHolder] = {
     var result = methods.get(method)
     if (result.isEmpty && method == POST) result = methods.get(GET)
     result
@@ -119,50 +123,50 @@ class MethodMappings {
 
 class HierarchicalMappings {
   val children = new collection.mutable.HashMap[String, HierarchicalMappings]
-  val mappings = new collection.mutable.HashMap[String, MethodMappings]
+  val mappings = new collection.mutable.HashMap[String, HttpMethodMappings]
 
-  def resolve(httpMethod: String, uri: String): Option[RequestMapping] = {
+  def resolve(httpMethod: String, uri: String): Option[HandlerHolder] = {
     val parts = split(uri, '/')
     find(0, parts, this) match {
       case Some(methodMappings) =>
         methodMappings.get(httpMethod) match {
           case Some(m) =>
-            val action = m.action
             val params = new collection.mutable.HashMap[String, String]
-            action.urlParams foreach {
-              case (k, v) =>
+            m.params foreach {
+              case (v, i) =>
+                val k = i.asInstanceOf[Int]
                 if (Path.isTailMatch(v)) params.put(v.substring(0, v.length - 1), Strings.join(Arrays.subarray(parts, k, parts.length), "/"))
                 else params.put(v, parts(k))
             }
-            Some(new RequestMapping(action, m.handler, params))
+            Some(new HandlerHolder(m.handler, params))
           case None => None
         }
       case None => None
     }
   }
 
-  def add(httpMethod: String, url: String, mapping: RequestMapping): Unit = {
-    add(httpMethod, url, mapping, this)
+  def add(httpMethod: String, url: String, holder: HandlerHolder): Unit = {
+    add(httpMethod, url, holder, this)
   }
 
-  private def add(httpMethod: String, pattern: String, mapping: RequestMapping, mappings: HierarchicalMappings): Unit = {
+  private def add(httpMethod: String, pattern: String, holder: HandlerHolder, mappings: HierarchicalMappings): Unit = {
     val slashIndex = pattern.indexOf('/', 1)
     val head = if (-1 == slashIndex) pattern.substring(1) else pattern.substring(1, slashIndex)
     val headPattern = if (Path.isPattern(head)) "*" else head
 
     if (-1 == slashIndex) {
-      val methodMappings = mappings.mappings.getOrElseUpdate(headPattern, new MethodMappings)
-      methodMappings.methods.put(httpMethod, mapping)
+      val methodMappings = mappings.mappings.getOrElseUpdate(headPattern, new HttpMethodMappings)
+      methodMappings.methods.put(httpMethod, holder)
       if (Path.isTailPattern(head)) {
         assert(mappings.children.isEmpty)
         mappings.children.put("*", mappings)
       }
     } else {
-      add(httpMethod, pattern.substring(slashIndex), mapping, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
+      add(httpMethod, pattern.substring(slashIndex), holder, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
     }
   }
 
-  private def find(index: Int, parts: Array[String], mappings: HierarchicalMappings): Option[MethodMappings] = {
+  private def find(index: Int, parts: Array[String], mappings: HierarchicalMappings): Option[HttpMethodMappings] = {
     if (index < parts.length && null != mappings) {
       if (index == parts.length - 1) {
         val mapping = mappings.mappings.get(parts(index))

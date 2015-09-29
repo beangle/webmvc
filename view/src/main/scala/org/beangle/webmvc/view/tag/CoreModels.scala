@@ -34,7 +34,7 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
   val textResource = ActionContextHolder.context.textResource
 
   def url(url: String) = {
-    context.uriRender.render(ActionContextHelper.getMapping(ActionContextHolder.context).action, url)
+    context.uriRender.render(ActionContextHelper.mapping, url)
   }
 
   def now = new ju.Date

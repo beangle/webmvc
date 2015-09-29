@@ -18,16 +18,24 @@
  */
 package org.beangle.webmvc.execution.impl
 
+import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.security.{ DefaultRequest, Request }
 import org.beangle.commons.web.security.RequestConvertor
+import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.api.context.ActionContextHolder
 import org.beangle.webmvc.context.ActionContextHelper
+import org.beangle.webmvc.execution.MappingHandler
 
 import javax.servlet.http.HttpServletRequest
 
 class MvcRequestConvertor extends RequestConvertor {
   def convert(request: HttpServletRequest): Request = {
-    val mapping = ActionContextHelper.getMapping(ActionContextHolder.context)
-    new DefaultRequest(mapping.action.config.name, mapping.action.method.getName)
+    val context = ActionContextHolder.context
+    ActionContextHelper.handler match {
+      case amhandler: MappingHandler =>
+        new DefaultRequest(amhandler.mapping.action.name, amhandler.mapping.method.getName)
+      case _ =>
+        new DefaultRequest(RequestUtils.getServletPath(context.request), context.request.getMethod)
+    }
   }
 }

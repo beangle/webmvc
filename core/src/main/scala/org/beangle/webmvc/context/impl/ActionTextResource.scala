@@ -19,18 +19,17 @@
 package org.beangle.webmvc.context.impl
 
 import java.{ util => jl }
-
 import scala.collection.mutable.{ HashSet, Set }
-
 import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.i18n.{ DefaultTextResource, TextBundleRegistry, TextFormater }
 import org.beangle.webmvc.api.action.EntitySupport
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.context.ActionContextHelper
+import org.beangle.webmvc.execution.MappingHandler
 
 class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: TextBundleRegistry, formater: TextFormater)
-  extends DefaultTextResource(locale, registry, formater) {
+    extends DefaultTextResource(locale, registry, formater) {
 
   /**
    * 1 remove index key(user.roles[0].name etc.)
@@ -39,8 +38,13 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
    */
   protected override def get(key: String): Option[String] = {
     if (key == null) ""
-    val mapping = ActionContextHelper.getMapping(context)
-    val actionClass = mapping.action.config.clazz
+     
+    val handler  = ActionContextHelper.handler
+    if(!handler.isInstanceOf[MappingHandler])return None;
+    val amHander=handler.asInstanceOf[MappingHandler]
+    val mapping =amHander.mapping
+    
+    val actionClass = mapping.action.clazz
     var checked = new HashSet[String]
     // search up class hierarchy
     var msg = getMessage(actionClass.getName, locale, key)
@@ -51,7 +55,7 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
 
     if (classOf[EntitySupport[_]].isAssignableFrom(actionClass)) {
       // search up model's class hierarchy
-      val entityType = mapping.handler.action.asInstanceOf[EntitySupport[_]].entityType
+      val entityType = mapping.action.action.asInstanceOf[EntitySupport[_]].entityType
       if (entityType != null) {
         msg = getPackageMessage(entityType, key, checked)
         if (msg != None) return msg

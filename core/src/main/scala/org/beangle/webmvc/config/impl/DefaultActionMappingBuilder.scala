@@ -30,7 +30,7 @@ import org.beangle.commons.lang.reflect.Reflections.{ getAnnotation, isAnnotatio
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.api.annotation.{ DefaultNone, action, cookie, header, ignore, mapping, param, response, view, views }
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.config.{ ActionConfig, ActionMapping, ActionMappingBuilder, Profile, Path }
+import org.beangle.webmvc.config.{ ActionMapping, RouteMapping, ActionMappingBuilder, Profile, Path }
 import org.beangle.webmvc.context.Argument
 import org.beangle.webmvc.context.impl.{ CookieArgument, HeaderArgument, ParamArgument, RequestArgument, ResponseArgument }
 import org.beangle.webmvc.view.{ TemplateResolver, ViewBuilder }
@@ -45,13 +45,12 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
 
   var viewResolverRegistry: ViewResolverRegistry = _
 
-  override def build(clazz: Class[_], profile: Profile): Seq[Tuple2[String, ActionMapping]] = {
+  override def build(bean: AnyRef, clazz: Class[_], profile: Profile): ActionMapping = {
     val nameAndspace = ActionNameBuilder.build(clazz, profile)
     val actionName = nameAndspace._1
-    val actions = new collection.mutable.ListBuffer[Tuple2[String, ActionMapping]]
     val views = buildViews(clazz, profile)
-    val config = new ActionConfig(clazz, actionName, nameAndspace._2, views, profile)
-    val mappings = new collection.mutable.HashMap[String, ActionMapping]
+    val config = new ActionMapping(bean, clazz, actionName, nameAndspace._2, views, profile)
+    val mappings = new collection.mutable.HashMap[String, RouteMapping]
     val classInfo = ClassInfo.get(clazz)
     classInfo.methods foreach {
       case (methodName, minfos) =>
@@ -64,7 +63,8 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
           val name = if (null != ann) (if (ann.value.startsWith("/")) ann.value.substring(1) else ann.value) else methodName
           val url = if (name == "") actionName else (actionName + "/" + name)
           val urlParams = Path.parse(url)
-          val urlPathNames = urlParams.keySet.toList.sorted.map { i => urlParams(i) }
+          val urlParamIdx = urlParams.map(e => (e._2, e._1))
+          val urlPathNames = urlParamIdx.keySet.toList.sorted.map { i => urlParamIdx(i) }
 
           val annotationsList = if (null == annTuple) method.getParameterAnnotations else annTuple._2.getParameterAnnotations
 
@@ -102,10 +102,8 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
                   case _       => defaultView
                 }
               }
-              val mapping = new ActionMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
+              val mapping = new RouteMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
               mappings.put(method.getName, mapping)
-              actions += Tuple2(url, mapping)
-              if (name == "index") actions += Tuple2(actionName, mapping)
             } else {
               logger.warn(s"Only support one method, but $mappingMehtods finded")
             }
@@ -118,7 +116,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
         }
     }
     config.mappings = mappings.toMap
-    actions
+    config
   }
 
   /**

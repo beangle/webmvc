@@ -18,16 +18,15 @@
  */
 package org.beangle.webmvc
 
-import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
 import org.beangle.commons.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
+import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
 import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider }
-import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, DefaultSerializerManager, ParamLocaleResolver }
-import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, HierarchicalUrlMapper }
-import org.beangle.webmvc.execution.impl.{ DefaultInvocationReactor, DynaMethodHandlerBuilder, MvcRequestConvertor, StaticMethodHandlerBuilder }
-import org.beangle.webmvc.execution.interceptors.{ CorsInterceptor, FlashInterceptor }
-import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender }
-import org.beangle.webmvc.view.impl.ViewResolverRegistry
 import org.beangle.webmvc.context.ActionLauncher
+import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, ParamLocaleResolver }
+import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper }
+import org.beangle.webmvc.execution.impl.{ DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder }
+import org.beangle.webmvc.execution.interceptors.{ CorsInterceptor, FlashInterceptor }
+import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender, ViewManager, ViewResolverRegistry }
 
 object DefaultModule extends AbstractBindModule {
 
@@ -51,24 +50,24 @@ object DefaultModule extends AbstractBindModule {
     bind("mvc.TaglibraryProvider.default", classOf[ContainerTaglibraryProvider])
     bind("mvc.ViewRender.stream", classOf[StreamViewRender])
     bind("mvc.ViewRender.status", classOf[StatusViewRender])
+    bind("mvc.ViewManager", classOf[ViewManager])
 
     //dispatch
     bind("mvc.ActionUriRender.default", classOf[DefaultActionUriRender])
     bind("mvc.RequestMapper.default", classOf[HierarchicalUrlMapper])
+    bind("mvc.RouteProvider.default",classOf[DefaultRouteProvider])
 
     //execution
-    bind("mvc.InvocationReactor.default", classOf[DefaultInvocationReactor])
     bind("web.Interceptor.flash", classOf[FlashInterceptor])
     bind("web.Interceptor.cors", classOf[CorsInterceptor])
-    bind("mvc.HandlerBuilder.default", classOf[StaticMethodHandlerBuilder])
-    bind("mvc.HandlerBuilder.method", classOf[DynaMethodHandlerBuilder])
+    bind("mvc.InvokerBuilder.default", classOf[StaticMethodInvokerBuilder])
+    bind("mvc.InvokerBuilder.method", classOf[DynaMethodInvokerBuilder])
 
     //context
     bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
     bind("mvc.TextFormater.default", classOf[DefaultTextFormater])
     bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
     bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
-    bind("mvc.SerializerManager.default", classOf[DefaultSerializerManager])
 
     bind("mvc.ActionLauncher", classOf[ActionLauncher])
   }
@@ -79,7 +78,7 @@ class DevModule extends AbstractBindModule {
   protected override def binding() {
     bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan", "false")
     bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", "true")
-    bind("mvc.HandlerBuilder.method", classOf[DynaMethodHandlerBuilder]).primary
+    bind("mvc.HandlerInvoker.method", classOf[DynaMethodInvokerBuilder]).primary
   }
 }
 

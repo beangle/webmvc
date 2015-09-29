@@ -83,7 +83,7 @@ class UIBean(context: ComponentContext) extends Component(context) {
 
   protected final def render(uri: String): String = {
     if (uri.startsWith("http")) return uri
-    context.uriRender.render(ActionContextHelper.getMapping(ActionContextHolder.context).action, uri)
+    context.uriRender.render(ActionContextHelper.mapping, uri)
   }
 
   protected final def generateIdIfEmpty(): Unit = {

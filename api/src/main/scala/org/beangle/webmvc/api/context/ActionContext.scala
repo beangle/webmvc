@@ -28,7 +28,7 @@ object ActionContextHolder {
   def context: ActionContext = contexts.get()
 }
 
-final class ActionContext(val request: HttpServletRequest, var response: HttpServletResponse, val locale: ju.Locale, val params: Map[String, Any]) {
+final class ActionContext(val request: HttpServletRequest, val response: HttpServletResponse, val locale: ju.Locale, val params: Map[String, Any]) {
 
   var textResource: TextResource = _
 

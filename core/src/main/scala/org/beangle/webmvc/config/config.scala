@@ -31,39 +31,40 @@ trait Configurer {
 
   def profiles: Seq[Profile]
 
-  def build(): Seq[Tuple3[String, ActionMapping, Object]]
+  def build(): Unit
 
-  def actionConfigs: Map[String, ActionConfig]
+  def actionMappings: Map[String, ActionMapping]
 
-  def getActionMapping(name: String, method: String): Option[ActionMapping]
+  def getRouteMapping(clazz: Class[_], method: String): Option[RouteMapping]
 
-  def getConfig(name: String): Option[ActionConfig]
+  def getActionMapping(name: String): Option[ActionMapping]
 }
 
+class ActionConfig(val url: String, val mapping: RouteMapping, val action: Object)
 /**
- * action config (namespace endwith /)
+ * action mapping (namespace endwith /)
  */
-class ActionConfig(val clazz: Class[_], val name: String, val namespace: String, val views: Map[String, View], val profile: Profile) {
-  var mappings: Map[String, ActionMapping] = Map.empty
+class ActionMapping(val action: AnyRef, val clazz: Class[_], val name: String, val namespace: String, val views: Map[String, View], val profile: Profile) {
+  var mappings: Map[String, RouteMapping] = Map.empty
 }
 
-object ActionMapping {
+object RouteMapping {
   final val DefaultMethod = "index"
   final val MethodParam = "_method"
   import org.beangle.commons.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
   final val BrowserUnsupported = Map((PUT, "put"), (DELETE, "delete"), (HEAD, "head"))
 }
 
-class ActionMapping(val httpMethod: String, val config: ActionConfig, val method: Method, val name: String,
-    val arguments: Array[Argument], val urlParams: Map[Integer, String], val defaultView: String) {
+class RouteMapping(val httpMethod: String, val action: ActionMapping, val method: Method, val name: String,
+    val arguments: Array[Argument], val urlParams: Map[String, Integer], val defaultView: String) {
 
-  def url = if ("" == name) config.name else (config.name + "/" + name)
+  def url = if ("" == name) action.name else (action.name + "/" + name)
 
   def fill(paramMaps: collection.Map[String, Any]*): String = {
     if (urlParams.isEmpty) return url
     val parts = split(url, '/')
     urlParams foreach {
-      case (index, name) =>
+      case (name, index) =>
         val iter = paramMaps.iterator
         var value: Option[Any] = None
         while (iter.hasNext && value == None) {
@@ -75,14 +76,14 @@ class ActionMapping(val httpMethod: String, val config: ActionConfig, val method
   }
 
   override def toString: String = {
-    (if (null == httpMethod) "*" else httpMethod) + " " + url + " " + config.clazz.getName + "." +
+    (if (null == httpMethod) "*" else httpMethod) + " " + url + " " + action.clazz.getName + "." +
       method.getName + "(" + join(arguments, ",") + ")"
   }
 
   def toURL(paramMaps: collection.Map[String, Any]*): ToURL = {
     val ua = new ToURL(fill(paramMaps: _*))
-    ActionMapping.BrowserUnsupported.get(this.httpMethod) foreach { m =>
-      ua.param(ActionMapping.MethodParam, m)
+    RouteMapping.BrowserUnsupported.get(this.httpMethod) foreach { m =>
+      ua.param(RouteMapping.MethodParam, m)
     }
     ua
   }
@@ -103,22 +104,23 @@ object Path {
   }
   /**
    * /a/b/c => ()
-   * /{a}/&star/{c} => (0->a,1->1,2->c)
-   * /a/b/{c}/{a*} => (2->c,3->a*)
+   * /{a}/&star/{c} => (a->0,1->1,c->2)
+   * /a/b/{c}/{a*} => (c->2,a*->3)
    */
-  def parse(pattern: String): Map[Integer, String] = {
+  def parse(pattern: String): Map[String, Integer] = {
     var parts = split(pattern, "/")
-    var params = new collection.mutable.HashMap[Integer, String]
+    var params = new collection.mutable.HashMap[String, Integer]
     var i = 0
     while (i < parts.length) {
       val p = parts(i)
       if (p.charAt(0) == '{' && p.charAt(p.length - 1) == '}') {
-        params.put(Integer.valueOf(i), p.substring(1, p.length - 1))
+        params.put(p.substring(1, p.length - 1), Integer.valueOf(i))
       } else if (p == "*") {
-        params.put(Integer.valueOf(i), String.valueOf(i))
+        params.put(String.valueOf(i), Integer.valueOf(i))
       }
       i += 1
     }
     params.toMap
   }
 }
+
