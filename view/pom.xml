@@ -20,6 +20,10 @@
       <artifactId>beangle-template-freemarker_2.11</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.beangle.commons</groupId>
+      <artifactId>beangle-commons-i18n_2.11</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.beangle.webmvc</groupId>
       <artifactId>beangle-webmvc-core_2.11</artifactId>
     </dependency>

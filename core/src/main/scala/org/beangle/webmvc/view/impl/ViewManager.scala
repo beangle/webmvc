@@ -6,13 +6,12 @@ import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.view.{ ViewRender, ViewResolver }
 import org.beangle.commons.lang.annotation.description
-import org.beangle.webmvc.context.LauncherListener
-import javax.activation.MimeType
 import org.beangle.commons.io.Serializer
 import org.beangle.webmvc.view.TagLibraryProvider
+import javax.activation.MimeType
 
 @description("视图管理器")
-class ViewManager extends Initializing with LauncherListener {
+class ViewManager extends Initializing {
 
   private var serializers: Map[String, Serializer] = _
   private var renders: Map[Class[_], ViewRender] = Map.empty
@@ -28,9 +27,6 @@ class ViewManager extends Initializing with LauncherListener {
       renderMaps.put(render.supportViewClass, render)
     }
     renders = renderMaps.toMap
-  }
-
-  override def start(container: Container): Unit = {
     val buf = new collection.mutable.HashMap[String, Serializer]
     container.getBeans(classOf[Serializer]) foreach {
       case (k, serializer) =>
@@ -39,8 +35,6 @@ class ViewManager extends Initializing with LauncherListener {
         }
     }
     serializers = buf.toMap
-    viewResolverRegistry.start(container)
-    if (null != tagLibraryProvider) tagLibraryProvider.start(container)
   }
 
   def getSerializer(mimeType: MimeType): Serializer = {

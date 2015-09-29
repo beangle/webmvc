@@ -18,15 +18,14 @@
  */
 package org.beangle.webmvc
 
-import org.beangle.commons.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
 import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
 import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider }
-import org.beangle.webmvc.context.ActionLauncher
-import org.beangle.webmvc.context.impl.{ ActionTextResourceProvider, ContainerActionFinder, ParamLocaleResolver }
+import org.beangle.webmvc.context.impl.{ ContainerActionFinder, ParamLocaleResolver }
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper }
 import org.beangle.webmvc.execution.impl.{ DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder }
 import org.beangle.webmvc.execution.interceptors.{ CorsInterceptor, FlashInterceptor }
 import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender, ViewManager, ViewResolverRegistry }
+import org.beangle.webmvc.context.impl.DefaultActionContextBuilder
 
 object DefaultModule extends AbstractBindModule {
 
@@ -35,7 +34,6 @@ object DefaultModule extends AbstractBindModule {
     bind("mvc.ProfileProvider.default", classOf[XmlProfileProvider])
     bind("mvc.Configurer.default", classOf[DefaultConfigurer])
     bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder])
-    bind("mvc.ActionFinder.default", classOf[ContainerActionFinder])
 
     //template
     bind("mvc.TemplatePathMapper.default", classOf[DefaultTemplatePathMapper])
@@ -55,7 +53,7 @@ object DefaultModule extends AbstractBindModule {
     //dispatch
     bind("mvc.ActionUriRender.default", classOf[DefaultActionUriRender])
     bind("mvc.RequestMapper.default", classOf[HierarchicalUrlMapper])
-    bind("mvc.RouteProvider.default",classOf[DefaultRouteProvider])
+    bind("mvc.RouteProvider.default", classOf[DefaultRouteProvider])
 
     //execution
     bind("web.Interceptor.flash", classOf[FlashInterceptor])
@@ -64,12 +62,9 @@ object DefaultModule extends AbstractBindModule {
     bind("mvc.InvokerBuilder.method", classOf[DynaMethodInvokerBuilder])
 
     //context
-    bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
-    bind("mvc.TextFormater.default", classOf[DefaultTextFormater])
-    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
+    bind("mvc.ActionContextBuilder.default", classOf[DefaultActionContextBuilder])
+    bind("mvc.ActionFinder.default", classOf[ContainerActionFinder])
     bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
-
-    bind("mvc.ActionLauncher", classOf[ActionLauncher])
   }
 }
 
@@ -77,7 +72,6 @@ object DefaultModule extends AbstractBindModule {
 class DevModule extends AbstractBindModule {
   protected override def binding() {
     bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan", "false")
-    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", "true")
     bind("mvc.HandlerInvoker.method", classOf[DynaMethodInvokerBuilder]).primary
   }
 }

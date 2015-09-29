@@ -23,7 +23,6 @@ class DefaultRouteProvider extends RouteProvider with Logging {
   override def routes: Iterable[Route] = {
     val watch = new Stopwatch(true)
     val results = new collection.mutable.ArrayBuffer[Route]
-    configurer.build()
     configurer.actionMappings foreach {
       case (name, am) =>
         am.mappings foreach {

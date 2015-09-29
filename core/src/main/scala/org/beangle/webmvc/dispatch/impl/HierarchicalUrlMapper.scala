@@ -38,13 +38,13 @@ import org.beangle.webmvc.api.annotation.mapping
 import org.beangle.webmvc.execution.Handler
 
 @description("支持层级的url映射器")
-class HierarchicalUrlMapper extends RequestMapper with Logging {
+class HierarchicalUrlMapper(container: Container) extends RequestMapper with Logging {
 
   private val hierarchicalMappings = new HierarchicalMappings
 
   private val directMappings = new collection.mutable.HashMap[String, HttpMethodMappings]
 
-  override def start(container: Container): Unit = {
+  override def build(): Unit = {
     container.getBeans(classOf[RouteProvider]) foreach {
       case (n, p) =>
         p.routes foreach { r =>

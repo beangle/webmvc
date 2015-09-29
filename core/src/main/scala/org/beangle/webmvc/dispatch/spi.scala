@@ -20,15 +20,16 @@ package org.beangle.webmvc.dispatch
 
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.config.RouteMapping
-import org.beangle.webmvc.context.LauncherListener
 import javax.servlet.http.HttpServletRequest
 
 @spi
-trait RequestMapper extends LauncherListener {
+trait RequestMapper {
 
   def resolve(request: HttpServletRequest): Option[HandlerHolder]
 
   def resolve(uri: String): Option[HandlerHolder]
+
+  def build(): Unit
 }
 
 /**
@@ -39,7 +40,7 @@ trait ActionUriRender {
 }
 
 @spi
-trait RouteProvider{
-  def routes:Iterable[Route]
+trait RouteProvider {
+  def routes: Iterable[Route]
 }
 

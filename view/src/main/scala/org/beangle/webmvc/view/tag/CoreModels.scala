@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest
 
 class CoreModels(context: ComponentContext, request: HttpServletRequest) extends AbstractModels(context, request) {
 
-  val textResource = ActionContextHolder.context.textResource
+  val textProvider = ActionContextHolder.context.textProvider.get
 
   def url(url: String) = {
     context.uriRender.render(ActionContextHelper.mapping, url)
@@ -67,14 +67,16 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
 
   def isPage(data: Object) = data.isInstanceOf[Page[_]]
 
-  def text(name: String) = textResource(name, name)
-
-  def text(name: String, arg0: Object) {
-    textResource(name, name, arg0)
+  def text(name: String): String = {
+    textProvider(name, name)
   }
 
-  def text(name: String, arg0: Object, arg1: Object) {
-    textResource(name, name, arg0, arg1)
+  def text(name: String, arg0: Object): String = {
+    textProvider(name, name, arg0)
+  }
+
+  def text(name: String, arg0: Object, arg1: Object): String = {
+    textProvider(name, name, arg0, arg1)
   }
 
 }

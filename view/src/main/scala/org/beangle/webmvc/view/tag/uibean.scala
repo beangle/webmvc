@@ -60,7 +60,7 @@ class UIBean(context: ComponentContext) extends Component(context) {
     if (!Chars.isAsciiAlpha(text.charAt(0))) return defaultText
     if (-1 == text.indexOf('.') || -1 < text.indexOf(' ')) return defaultText
     else {
-      return ActionContextHolder.context.textResource(text, defaultText)
+       ActionContextHolder.context.textProvider.get(text, defaultText)
     }
   }
 

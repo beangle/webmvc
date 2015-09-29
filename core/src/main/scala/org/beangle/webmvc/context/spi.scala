@@ -24,6 +24,7 @@ import org.beangle.commons.lang.functor.Predicate
 import org.beangle.webmvc.config.Configurer
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.webmvc.api.context.ActionContext
+import org.beangle.webmvc.execution.Handler
 
 @spi
 trait LocaleResolver {
@@ -51,7 +52,7 @@ object ActionFinder {
 @spi
 trait ActionFinder {
 
-  def getActions(test: ActionFinder.Test): Seq[Object]
+  def actions(test: ActionFinder.Test): Seq[Object]
 
 }
 
@@ -65,4 +66,14 @@ trait Argument {
   def required: Boolean
 
   def defaultValue: Any
+}
+
+@spi
+trait ActionContextBuilder {
+  def build(request: HttpServletRequest, response: HttpServletResponse, handler: Handler, params: collection.Map[String, Any]): ActionContext
+}
+
+@spi
+trait ActionContextInitializer {
+  def init(context: ActionContext): Unit
 }

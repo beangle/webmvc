@@ -52,7 +52,7 @@ class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) 
     var actionCount, mappingCount = 0
     val mutableActionMappings = new collection.mutable.HashMap[String, ActionMapping]
     val mutableClassMappings = new collection.mutable.HashMap[Class[_], ActionMapping]
-    actionFinder.getActions(new ActionFinder.Test(this)) foreach { bean =>
+    actionFinder.actions(new ActionFinder.Test(this)) foreach { bean =>
       val clazz = bean.getClass
       val mapping = actionMappingBuilder.build(bean, clazz, this.getProfile(clazz.getName))
       if (!mapping.mappings.isEmpty) {

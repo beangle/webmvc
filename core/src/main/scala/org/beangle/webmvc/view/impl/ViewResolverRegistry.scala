@@ -20,14 +20,14 @@ package org.beangle.webmvc.view.impl
 
 import org.beangle.commons.inject.Container
 import org.beangle.commons.lang.annotation.spi
-import org.beangle.webmvc.context.LauncherListener
 import org.beangle.webmvc.view.ViewResolver
+import org.beangle.commons.bean.Initializing
 
-class ViewResolverRegistry extends LauncherListener {
+class ViewResolverRegistry(container: Container) extends Initializing {
 
   var resolvers: Map[String, ViewResolver] = Map.empty
 
-  override def start(container: Container): Unit = {
+  override def init(): Unit = {
     val resolverMap = new collection.mutable.HashMap[String, ViewResolver]
     container.getBeans(classOf[ViewResolver]).values foreach { resolver =>
       resolverMap.put(resolver.supportViewType, resolver)

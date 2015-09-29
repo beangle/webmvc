@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Beangle.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beangle.webmvc.context.impl
+package org.beangle.webmvc.view.i18n
 
 import java.{ util => jl }
 import scala.collection.mutable.{ HashSet, Set }
@@ -27,9 +27,10 @@ import org.beangle.webmvc.api.action.EntitySupport
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.context.ActionContextHelper
 import org.beangle.webmvc.execution.MappingHandler
+import org.beangle.webmvc.api.i18n.TextProvider
 
 class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: TextBundleRegistry, formater: TextFormater)
-    extends DefaultTextResource(locale, registry, formater) {
+    extends DefaultTextResource(locale, registry, formater) with TextProvider {
 
   /**
    * 1 remove index key(user.roles[0].name etc.)
@@ -38,12 +39,12 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
    */
   protected override def get(key: String): Option[String] = {
     if (key == null) ""
-     
-    val handler  = ActionContextHelper.handler
-    if(!handler.isInstanceOf[MappingHandler])return None;
-    val amHander=handler.asInstanceOf[MappingHandler]
-    val mapping =amHander.mapping
-    
+
+    val handler = ActionContextHelper.handler
+    if (!handler.isInstanceOf[MappingHandler]) return None;
+    val amHander = handler.asInstanceOf[MappingHandler]
+    val mapping = amHander.mapping
+
     val actionClass = mapping.action.clazz
     var checked = new HashSet[String]
     // search up class hierarchy

@@ -24,7 +24,6 @@ import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ RouteMapping, Profile }
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.webmvc.context.LauncherListener
 
 @spi
 trait TagLibrary {
@@ -32,7 +31,7 @@ trait TagLibrary {
 }
 
 @spi
-trait TagLibraryProvider extends LauncherListener {
+trait TagLibraryProvider {
 
   def tagLibraries: Map[String, TagLibrary]
 }

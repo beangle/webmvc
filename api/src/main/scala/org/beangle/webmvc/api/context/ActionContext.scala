@@ -20,8 +20,8 @@ package org.beangle.webmvc.api.context
 
 import java.{ util => ju }
 import org.beangle.commons.collection.Collections
-import org.beangle.commons.i18n.TextResource
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.webmvc.api.i18n.TextProvider
 
 object ActionContextHolder {
   val contexts = new ThreadLocal[ActionContext]
@@ -30,7 +30,7 @@ object ActionContextHolder {
 
 final class ActionContext(val request: HttpServletRequest, val response: HttpServletResponse, val locale: ju.Locale, val params: Map[String, Any]) {
 
-  var textResource: TextResource = _
+  var textProvider: Option[TextProvider] = None
 
   private var flashMap: Flash = _
 
