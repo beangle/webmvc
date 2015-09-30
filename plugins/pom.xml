@@ -13,7 +13,7 @@
   <modules>
     <module>entity</module>
     <module>serializer</module>
-    <module>webxml</module>
+    <module>spring</module>
   </modules>
   <dependencies>
     <dependency>
