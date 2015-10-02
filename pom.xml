@@ -14,7 +14,7 @@
   <properties>
     <beangle.commons.version>4.4.0</beangle.commons.version>
     <beangle.data.version>4.2.4</beangle.data.version>
-    <beangle.spring.version>4.0.12</beangle.spring.version>
+    <beangle.spring.version>4.1.0</beangle.spring.version>
     <beangle.template.version>0.0.6</beangle.template.version>
   </properties>
 
