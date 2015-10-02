@@ -24,7 +24,7 @@ import org.beangle.template.freemarker.{ FreemarkerConfigurer, ParametersHashMod
 import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.config.{ ActionMapping, Configurer }
+import org.beangle.webmvc.config.{ RouteMapping, Configurer }
 import org.beangle.webmvc.view.{ LocatedView, TagLibraryProvider, TemplateResolver, TypeViewBuilder, ViewRender, ViewResolver }
 
 import freemarker.ext.servlet.{ AllHttpScopesHashModel, HttpRequestHashModel, HttpSessionHashModel }
@@ -57,9 +57,9 @@ class FreemarkerViewResolver(configurer: Configurer, freemarkerManager: Freemark
     if (null == path) null else new FreemarkerView(path)
   }
 
-  def resolve(viewName: String, mapping: ActionMapping): View = {
-    val config = mapping.config
-    val path = templateResolver.resolve(config.clazz, viewName, config.profile.viewSuffix)
+  def resolve(viewName: String, mapping: RouteMapping): View = {
+    val action = mapping.action
+    val path = templateResolver.resolve(action.clazz, viewName, action.profile.viewSuffix)
     if (null == path) null else new FreemarkerView(path)
   }
 

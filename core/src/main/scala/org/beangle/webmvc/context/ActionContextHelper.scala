@@ -18,50 +18,20 @@
  */
 package org.beangle.webmvc.context
 
-import org.beangle.commons.collection.Collections
-import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.dispatch.RequestMapping
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.commons.i18n.TextResourceProvider
+import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.webmvc.api.context.ActionContextHolder
-import org.beangle.commons.web.multipart.StandardMultipartResolver
+import org.beangle.webmvc.config.RouteMapping
+import org.beangle.webmvc.execution.{ Handler, MappingHandler }
 
 object ActionContextHelper {
 
-  private final val RequestMappingAttribute = "_request_mapping"
+  val HandlerAttribute = "_handler_"
 
-  def build(request: HttpServletRequest, response: HttpServletResponse, mapping: RequestMapping,
-    localeResolver: LocaleResolver, textResourceProvider: TextResourceProvider,
-    paramMaps: collection.Map[String, Any]*): ActionContext = {
-
-    val params = new collection.mutable.HashMap[String, Any]
-    val paramIter = request.getParameterMap.entrySet.iterator
-    while (paramIter.hasNext) {
-      val paramEntry = paramIter.next
-      val values = paramEntry.getValue
-      if (values.length == 1) params.put(paramEntry.getKey, values(0))
-      else params.put(paramEntry.getKey, values)
-    }
-
-    if (StandardMultipartResolver.isMultipart(request)) {
-      params ++= StandardMultipartResolver.resolve(request)
-    }
-
-    params ++= mapping.params
-    paramMaps foreach (pMap => params ++= pMap)
-
-    val context = new ActionContext(request, response, localeResolver.resolve(request), params.toMap)
-    context.temp(RequestMappingAttribute, mapping)
-    ActionContextHolder.contexts.set(context)
-    context.textResource = textResourceProvider.getTextResource(context.locale)
-    context
+  def handler: Handler = {
+    ActionContextHolder.context.temp[Handler](HandlerAttribute)
   }
 
-  def setMapping(context: ActionContext, mapping: RequestMapping): Unit = {
-    context.temp(RequestMappingAttribute, mapping)
-  }
-
-  def getMapping(context: ActionContext): RequestMapping = {
-    context.temp(RequestMappingAttribute)
+  def mapping: RouteMapping = {
+    handler.asInstanceOf[MappingHandler].mapping
   }
 }

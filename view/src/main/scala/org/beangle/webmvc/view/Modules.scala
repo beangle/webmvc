@@ -16,11 +16,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Beangle.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beangle.webmvc.view.tag
+package org.beangle.webmvc.view
 
 import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
 import org.beangle.webmvc.view.freemarker.{ FreemarkerManager, FreemarkerViewBuilder, FreemarkerViewResolver, HierarchicalTemplateResolver }
 import org.beangle.webmvc.view.tag.freemarker.FreemarkerTemplateEngine
+import org.beangle.webmvc.view.freemarker.FreemarkerManager
+import org.beangle.webmvc.view.freemarker.FreemarkerViewBuilder
+import org.beangle.webmvc.view.freemarker.FreemarkerViewResolver
+import org.beangle.webmvc.view.freemarker.HierarchicalTemplateResolver
+import org.beangle.webmvc.view.tag.CoreTagLibrary
+import org.beangle.webmvc.view.tag.freemarker.FreemarkerTemplateEngine
+import org.beangle.commons.i18n.DefaultTextFormater
+import org.beangle.commons.i18n.DefaultTextBundleRegistry
+import org.beangle.webmvc.view.i18n.ActionTextResourceProvider
+import org.beangle.webmvc.view.i18n.TextResourceInitializer
 
 object DefaultModule extends AbstractBindModule {
 
@@ -36,6 +46,12 @@ object DefaultModule extends AbstractBindModule {
     //view
     bind("mvc.ViewResolver.freemarker", classOf[FreemarkerViewResolver])
     bind("mvc.TypeViewBuilder.freemarker", classOf[FreemarkerViewBuilder])
+
+    //i18n
+    bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
+    bind("mvc.TextFormater.default", classOf[DefaultTextFormater])
+    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
+    bind("mvc.ActionContextInitializer.text", classOf[TextResourceInitializer])
   }
 }
 
@@ -45,5 +61,7 @@ class DevModule extends AbstractBindModule {
     bind("mvc.TemplateEngine.freemarker", classOf[FreemarkerTemplateEngine]).property("enableCache", "false")
 
     bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerManager]).property("enableCache", "false")
+
+    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", "true")
   }
 }

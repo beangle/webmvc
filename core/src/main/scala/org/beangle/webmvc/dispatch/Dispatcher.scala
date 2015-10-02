@@ -18,40 +18,38 @@
  */
 package org.beangle.webmvc.dispatch
 
+import org.beangle.commons.io.ClasspathResourceLoader
+import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.commons.logging.Logging
-import org.beangle.commons.i18n.TextResourceProvider
-import org.beangle.webmvc.context.{ ActionContextHelper, ContainerHelper, LocaleResolver }
-import org.beangle.webmvc.execution.InvocationReactor
-import javax.servlet.ServletConfig
-import javax.servlet.http.{ HttpServlet, HttpServletRequest, HttpServletResponse }
-import javax.servlet.Filter
-import javax.servlet.FilterConfig
-import javax.servlet.FilterChain
-import javax.servlet.ServletRequest
-import javax.servlet.ServletResponse
-import org.beangle.commons.io.ClasspathResourceLoader
-import org.beangle.commons.web.resource.impl.PathResolverImpl
-import org.beangle.commons.lang.Strings
 import org.beangle.commons.web.resource.ResourceProcessor
 import org.beangle.commons.web.resource.filter.HeaderFilter
+import org.beangle.commons.web.resource.impl.PathResolverImpl
+import org.beangle.webmvc.context.{ ActionContextBuilder, ContainerHelper }
+import javax.servlet.{ Filter, FilterChain, FilterConfig, ServletRequest, ServletResponse }
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.webmvc.config.Configurer
 
-class DispatcherFilter extends Filter with Logging {
+class Dispatcher extends Filter with Logging {
 
   var defaultEncoding = "utf-8"
-  var mapper: RequestMapper = _
-  var reactor: InvocationReactor = _
-  var localeResolver: LocaleResolver = _
-  var textResourceProvider: TextResourceProvider = _
   var staticPattern: String = "/static/"
+
+  var mapper: RequestMapper = _
+  var actionContextBuilder: ActionContextBuilder = _
   var processor: ResourceProcessor = _
 
   override def init(config: FilterConfig): Unit = {
     val context = ContainerHelper.get
+
+    //1. build configuration
+    context.getBean(classOf[Configurer]).get.build()
+
     mapper = context.getBean(classOf[RequestMapper]).get
-    reactor = context.getBean(classOf[InvocationReactor]).get
-    localeResolver = context.getBean(classOf[LocaleResolver]).get
-    textResourceProvider = context.getBean(classOf[TextResourceProvider]).get
+    // 2. build mapper
+    mapper.build()
+
+    actionContextBuilder = context.getBean(classOf[ActionContextBuilder]).get
     processor = context.getBean(classOf[ResourceProcessor]) match {
       case Some(p) => p
       case None =>
@@ -75,8 +73,8 @@ class DispatcherFilter extends Filter with Logging {
       request.setCharacterEncoding(defaultEncoding)
       mapper.resolve(request) match {
         case Some(rm) =>
-          ActionContextHelper.build(request, response, rm, localeResolver, textResourceProvider)
-          reactor.invoke(rm.handler, rm.action)
+          actionContextBuilder.build(request, response, rm.handler, rm.params)
+          rm.handler.handle(request, response)
         case None => chain.doFilter(req, res)
       }
     }

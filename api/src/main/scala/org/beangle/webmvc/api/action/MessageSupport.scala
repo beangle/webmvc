@@ -27,9 +27,19 @@ import org.beangle.commons.lang.Chars
 
 trait MessageSupport {
 
-  final def getText(aTextName: String): String = ActionContextHolder.context.textResource(aTextName).get
+  final def getText(aTextName: String): String = {
+    ActionContextHolder.context.textProvider match {
+      case Some(p) => p(aTextName).get
+      case None    => aTextName
+    }
+  }
 
-  final def getText(key: String, defaultValue: String, args: Any*): String = ActionContextHolder.context.textResource(key, defaultValue, args: _*)
+  final def getText(key: String, defaultValue: String, args: Any*): String = {
+    ActionContextHolder.context.textProvider match {
+      case Some(p) => p(key, defaultValue, args: _*)
+      case None    => defaultValue
+    }
+  }
 
   protected final def getTextInternal(msgKey: String, args: Any*): String = {
     if (Strings.isEmpty(msgKey)) null

@@ -2,16 +2,16 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-plugins_2.11</artifactId>
-    <version>0.2.10</version>
+    <version>0.3.0</version>
   </parent>
-  <artifactId>beangle-webmvc-webxml-plugin_2.11</artifactId>
+  <artifactId>beangle-webmvc-spring-plugin_2.11</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMVC Plugin - Web.xml</name>
+  <name>Beangle WebMVC Plugin - Spring</name>
 
   <properties>
-    <bundle.symbolicName>org.beangle.webmvc.webxml.plugin</bundle.symbolicName>
-    <bundle.namespace>org.beangle.webmvc.webxml</bundle.namespace>
+    <bundle.symbolicName>org.beangle.webmvc.spring.plugin</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc.spring</bundle.namespace>
   </properties>
 
   <dependencies>

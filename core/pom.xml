@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-parent_2.11</artifactId>
-    <version>0.2.10</version>
+    <version>0.3.0</version>
   </parent>
   <artifactId>beangle-webmvc-core_2.11</artifactId>
   <packaging>jar</packaging>
@@ -22,6 +22,7 @@
     <dependency>
       <groupId>org.beangle.commons</groupId>
       <artifactId>beangle-commons-text_2.11</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.javassist</groupId>

@@ -60,7 +60,7 @@ class UIBean(context: ComponentContext) extends Component(context) {
     if (!Chars.isAsciiAlpha(text.charAt(0))) return defaultText
     if (-1 == text.indexOf('.') || -1 < text.indexOf(' ')) return defaultText
     else {
-      return ActionContextHolder.context.textResource(text, defaultText)
+       ActionContextHolder.context.textProvider.get(text, defaultText)
     }
   }
 
@@ -83,7 +83,7 @@ class UIBean(context: ComponentContext) extends Component(context) {
 
   protected final def render(uri: String): String = {
     if (uri.startsWith("http")) return uri
-    context.uriRender.render(ActionContextHelper.getMapping(ActionContextHolder.context).action, uri)
+    context.uriRender.render(ActionContextHelper.mapping, uri)
   }
 
   protected final def generateIdIfEmpty(): Unit = {

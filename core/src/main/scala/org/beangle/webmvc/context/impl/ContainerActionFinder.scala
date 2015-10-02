@@ -28,7 +28,7 @@ import org.beangle.webmvc.context.ActionFinder
 @description("基于Container的Action自动发现者")
 class ContainerActionFinder(val container: Container) extends ActionFinder {
 
-  def getActions(actionTest: ActionFinder.Test): Seq[Object] = {
+  override def actions(actionTest: ActionFinder.Test): Seq[Object] = {
     val actions = new collection.mutable.ListBuffer[Object]
     container.keys() foreach { name =>
       val bean: Object = container.getBean(name).get

@@ -19,22 +19,28 @@
 package org.beangle.webmvc.dispatch
 
 import org.beangle.commons.lang.annotation.spi
-import org.beangle.webmvc.config.ActionMapping
-import org.beangle.webmvc.context.LauncherListener
-
+import org.beangle.webmvc.config.RouteMapping
 import javax.servlet.http.HttpServletRequest
 
 @spi
-trait RequestMapper extends LauncherListener {
+trait RequestMapper {
 
-  def resolve(request: HttpServletRequest): Option[RequestMapping]
+  def resolve(request: HttpServletRequest): Option[HandlerHolder]
 
-  def resolve(uri: String): Option[RequestMapping]
+  def resolve(uri: String): Option[HandlerHolder]
+
+  def build(): Unit
 }
 
 /**
  * Url render
  */
 trait ActionUriRender {
-  def render(action: ActionMapping, uri: String): String
+  def render(action: RouteMapping, uri: String): String
 }
+
+@spi
+trait RouteProvider {
+  def routes: Iterable[Route]
+}
+

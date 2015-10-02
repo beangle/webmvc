@@ -24,11 +24,10 @@ import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.{ StreamView, View }
-import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.view.ViewRender
 
 @description("流视图渲染者")
-class StreamViewRender(configurer: Configurer) extends ViewRender with Logging {
+class StreamViewRender extends ViewRender with Logging {
 
   override def supportViewClass: Class[_] = {
     classOf[StreamView]

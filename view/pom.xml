@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-parent_2.11</artifactId>
-    <version>0.2.10</version>
+    <version>0.3.0</version>
   </parent>
   <artifactId>beangle-webmvc-view_2.11</artifactId>
   <packaging>jar</packaging>
@@ -18,6 +18,10 @@
     <dependency>
       <groupId>org.beangle.template</groupId>
       <artifactId>beangle-template-freemarker_2.11</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.beangle.commons</groupId>
+      <artifactId>beangle-commons-i18n_2.11</artifactId>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>

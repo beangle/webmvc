@@ -18,8 +18,15 @@
  */
 package org.beangle.webmvc.dispatch
 
-import org.beangle.webmvc.config.ActionMapping
 import org.beangle.webmvc.execution.Handler
+import org.beangle.commons.http.HttpMethods
 
-class RequestMapping(val action: ActionMapping, val handler: Handler, val params: collection.Map[String, Any])
+class HandlerHolder(val handler: Handler, val params: collection.Map[String, Any])
+
+class Route(val httpMethod: String, val url: String, val handler: Handler) {
+
+  def this(url: String, handler: Handler) {
+    this(HttpMethods.GET, url, handler)
+  }
+}
 

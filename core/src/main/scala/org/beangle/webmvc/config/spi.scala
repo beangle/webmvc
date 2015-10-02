@@ -19,7 +19,6 @@
 package org.beangle.webmvc.config
 
 import org.beangle.commons.lang.annotation.spi
-import java.lang.reflect.Method
 
 @spi
 trait ProfileProvider {
@@ -33,5 +32,6 @@ trait ActionMappingBuilder {
   /**
    * build mapping url  mapping(with httpmethod)
    */
-  def build(clazz: Class[_], profile: Profile): Seq[Tuple2[String, ActionMapping]]
+  def build(bean: AnyRef, clazz: Class[_], profile: Profile): ActionMapping
 }
+

@@ -22,9 +22,8 @@ import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.config.{ ActionMapping, Profile }
+import org.beangle.webmvc.config.{ RouteMapping, Profile }
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.webmvc.context.LauncherListener
 
 @spi
 trait TagLibrary {
@@ -32,7 +31,7 @@ trait TagLibrary {
 }
 
 @spi
-trait TagLibraryProvider extends LauncherListener {
+trait TagLibraryProvider {
 
   def tagLibraries: Map[String, TagLibrary]
 }
@@ -62,7 +61,7 @@ trait ViewRender {
 @spi
 trait ViewResolver {
   def resolve(actionClass: Class[_], viewName: String, suffix: String): View
-  def resolve(viewName: String, mapping: ActionMapping): View
+  def resolve(viewName: String, mapping: RouteMapping): View
   def supportViewType: String
 }
 

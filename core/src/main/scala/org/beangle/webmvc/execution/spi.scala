@@ -19,15 +19,21 @@
 package org.beangle.webmvc.execution
 
 import org.beangle.commons.lang.annotation.spi
-import org.beangle.webmvc.config.ActionMapping
-import java.lang.reflect.Method
+import org.beangle.webmvc.config.RouteMapping
+import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.HttpServletRequest
 
 @spi
-trait InvocationReactor {
-  def invoke(handler: Handler, mapping: ActionMapping): Unit
+trait InvokerBuilder {
+  def build(action: AnyRef, mapping: RouteMapping): Invoker
 }
 
 @spi
-trait HandlerBuilder {
-  def build(action: AnyRef, mapping: ActionMapping): Handler
+trait Invoker {
+  def invoke(): Any
+}
+
+@spi
+trait Handler {
+  def handle(request: HttpServletRequest, response: HttpServletResponse): Any
 }

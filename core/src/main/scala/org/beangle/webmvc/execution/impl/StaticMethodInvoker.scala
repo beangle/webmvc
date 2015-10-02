@@ -18,59 +18,58 @@
  */
 package org.beangle.webmvc.execution.impl
 
-import java.io.StringWriter
-import java.{ util => ju }
+import java.lang.reflect.Method
+
 import org.beangle.commons.lang.{ ClassLoaders, Primitives }
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.api.annotation.DefaultNone
-import org.beangle.webmvc.config.ActionMapping
-import org.beangle.webmvc.execution.{ Handler, HandlerBuilder }
+import org.beangle.webmvc.config.RouteMapping
+import org.beangle.webmvc.context.Argument
+import org.beangle.webmvc.execution.{ Invoker, InvokerBuilder }
+
 import javassist.{ ClassPool, CtConstructor, CtField, CtMethod, LoaderClassPath }
 import javassist.compiler.Javac
-import java.lang.reflect.Method
-import org.beangle.webmvc.context.Argument
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 @description("句柄构建者，生成静态调用类")
-class StaticMethodHandlerBuilder extends HandlerBuilder with Logging {
+class StaticMethodInvokerBuilder extends InvokerBuilder with Logging {
 
   var handlerCount = 0
 
-  def build(action: AnyRef, mapping: ActionMapping): Handler = {
+  def build(action: AnyRef, mapping: RouteMapping): Invoker = {
     val method = mapping.method
     val actionClassName = action.getClass().getName()
-    val hanlderName = action.getClass().getSimpleName() + "_" + method.getName() + "_" + handlerCount
-    val hanlderClassName = "org.beangle.webmvc.execution.handlers." + hanlderName
+    val invokerName = action.getClass().getSimpleName() + "_" + method.getName() + "_" + handlerCount
+    val invokerClassName = "org.beangle.webmvc.execution.invoker." + invokerName
 
     val body = new CodeGenerator().gen(method, mapping, action)
     val pool = new ClassPool(true)
     pool.appendClassPath(new LoaderClassPath(ClassLoaders.defaultClassLoader))
-    val cct = pool.makeClass(hanlderClassName)
-    cct.addInterface(pool.get(classOf[Handler].getName))
+    val cct = pool.makeClass(invokerClassName)
+    cct.addInterface(pool.get(classOf[Invoker].getName))
     val javac = new Javac(cct)
 
     cct.addField(javac.compile("private final " + actionClassName + " action;").asInstanceOf[CtField])
     cct.addMethod(javac.compile("public Object action() {return action;}").asInstanceOf[CtMethod])
 
-    val ctor = javac.compile("public " + hanlderName + "(" + actionClassName + " action){}").asInstanceOf[CtConstructor]
+    val ctor = javac.compile("public " + invokerName + "(" + actionClassName + " action){}").asInstanceOf[CtConstructor]
     ctor.setBody("this.action=$1;")
     cct.addConstructor(ctor)
-    val handleMethod = javac.compile("public Object handle(org.beangle.webmvc.config.ActionMapping mapping) {return null;}").asInstanceOf[CtMethod]
+    val handleMethod = javac.compile("public Object invoke() {return null;}").asInstanceOf[CtMethod]
     handleMethod.setBody(body)
     cct.addMethod(handleMethod)
 
-    //cct.debugWriteFile("/tmp/handlers")
+    cct.debugWriteFile("/tmp/invokers")
     val maked = cct.toClass()
     cct.detach()
     handlerCount += 1
-    maked.getConstructor(action.getClass).newInstance(action).asInstanceOf[Handler]
+    maked.getConstructor(action.getClass).newInstance(action).asInstanceOf[Invoker]
   }
 }
 
 class CodeGenerator {
-  def gen(method: Method, mapping: ActionMapping, action: AnyRef): String = {
+  def gen(method: Method, mapping: RouteMapping, action: AnyRef): String = {
     val nonevoid = method.getReturnType != classOf[Unit]
     if (method.getParameterTypes.length == 0) {
       if (nonevoid) s"{return action.${method.getName}();}\n"
@@ -172,11 +171,7 @@ class CodeGenerator {
         s"v$idx=$q${argument.defaultValue}$q;"
       }
     } else {
-      if (argument.defaultValue != DefaultNone.value) {
-        s"v$idx=$q${argument.defaultValue}$q;"
-      } else {
-        ""
-      }
+      if (argument.defaultValue != DefaultNone.value) s"v$idx=$q${argument.defaultValue}$q;" else ""
     }
   }
 }
