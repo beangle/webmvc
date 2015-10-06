@@ -16,26 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Beangle.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beangle.webmvc.view.impl
+package org.beangle.webmvc.html2pdf
 
-import org.beangle.commons.inject.Container
-import org.beangle.commons.lang.annotation.spi
-import org.beangle.webmvc.view.ViewResolver
-import org.beangle.commons.bean.Initializing
+import org.beangle.commons.collection.Collections
 
-class ViewResolverRegistry(container: Container) extends Initializing {
-
-  var resolvers: Map[String, ViewResolver] = Map.empty
-
-  override def init(): Unit = {
-    val resolverMap = new collection.mutable.HashMap[String, ViewResolver]
-    container.getBeans(classOf[ViewResolver]).values foreach { resolver =>
-      resolverMap.put(resolver.supportViewType, resolver)
-    }
-    resolvers = resolverMap.toMap
-  }
-
-  def getResolver(viewType: String): Option[ViewResolver] = {
-    resolvers.get(viewType)
-  }
+/**
+ * @author chaostone
+ */
+class ReportContext {
+  val datas = Collections.newMap[String, Any]
 }

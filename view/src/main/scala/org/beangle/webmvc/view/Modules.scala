@@ -18,19 +18,17 @@
  */
 package org.beangle.webmvc.view
 
+import org.beangle.commons.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
 import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
-import org.beangle.webmvc.view.freemarker.{ FreemarkerManager, FreemarkerViewBuilder, FreemarkerViewResolver, HierarchicalTemplateResolver }
-import org.beangle.webmvc.view.tag.freemarker.FreemarkerTemplateEngine
-import org.beangle.webmvc.view.freemarker.FreemarkerManager
-import org.beangle.webmvc.view.freemarker.FreemarkerViewBuilder
-import org.beangle.webmvc.view.freemarker.FreemarkerViewResolver
-import org.beangle.webmvc.view.freemarker.HierarchicalTemplateResolver
+import org.beangle.webmvc.view.i18n.{ ActionTextResourceProvider, TextResourceInitializer }
 import org.beangle.webmvc.view.tag.CoreTagLibrary
 import org.beangle.webmvc.view.tag.freemarker.FreemarkerTemplateEngine
-import org.beangle.commons.i18n.DefaultTextFormater
-import org.beangle.commons.i18n.DefaultTextBundleRegistry
-import org.beangle.webmvc.view.i18n.ActionTextResourceProvider
-import org.beangle.webmvc.view.i18n.TextResourceInitializer
+import org.beangle.webmvc.view.freemarker.FreemarkerViewBuilder
+import org.beangle.webmvc.view.freemarker.WebFreemarkerConfigurer
+import org.beangle.webmvc.view.freemarker.HierarchicalTemplateResolver
+import org.beangle.webmvc.view.freemarker.FreemarkerViewResolver
+import org.beangle.webmvc.view.freemarker.FreemarkerViewRender
+import org.beangle.webmvc.view.freemarker.FreemarkerModelBuilder
 
 object DefaultModule extends AbstractBindModule {
 
@@ -40,12 +38,14 @@ object DefaultModule extends AbstractBindModule {
     bind("mvc.Taglibrary.c", classOf[CoreTagLibrary])
 
     //template
-    bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerManager])
+    bind("mvc.FreemarkerConfigurer.default", classOf[WebFreemarkerConfigurer])
     bind("mvc.TemplateResolver.freemarker", classOf[HierarchicalTemplateResolver])
 
     //view
     bind("mvc.ViewResolver.freemarker", classOf[FreemarkerViewResolver])
+    bind("mvc.ViewRender.freemarker", classOf[FreemarkerViewRender])
     bind("mvc.TypeViewBuilder.freemarker", classOf[FreemarkerViewBuilder])
+    bind("mvc.FreemarkerModelBuilder", classOf[FreemarkerModelBuilder])
 
     //i18n
     bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
@@ -60,7 +60,7 @@ class DevModule extends AbstractBindModule {
   protected override def binding() {
     bind("mvc.TemplateEngine.freemarker", classOf[FreemarkerTemplateEngine]).property("enableCache", "false")
 
-    bind("mvc.FreemarkerConfigurer.default", classOf[FreemarkerManager]).property("enableCache", "false")
+    bind("mvc.FreemarkerConfigurer.default", classOf[WebFreemarkerConfigurer]).property("enableCache", "false")
 
     bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", "true")
   }

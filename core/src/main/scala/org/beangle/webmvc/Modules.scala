@@ -24,7 +24,7 @@ import org.beangle.webmvc.context.impl.{ ContainerActionFinder, ParamLocaleResol
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper }
 import org.beangle.webmvc.execution.impl.{ DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder }
 import org.beangle.webmvc.execution.interceptors.{ CorsInterceptor, FlashInterceptor }
-import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender, ViewManager, ViewResolverRegistry }
+import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender, ViewManager }
 import org.beangle.webmvc.context.impl.DefaultActionContextBuilder
 
 object DefaultModule extends AbstractBindModule {
@@ -40,7 +40,6 @@ object DefaultModule extends AbstractBindModule {
 
     //view
     bind("mvc.ViewBuilder.default", classOf[DefaultViewBuilder])
-    bind("mvc.ViewResolverRegistry", classOf[ViewResolverRegistry])
     bind("mvc.TypeViewBuilder.chain", classOf[ForwardActionViewBuilder])
     bind("mvc.TypeViewBuilder.redirect", classOf[RedirectActionViewBuilder])
     bind("mvc.ViewRender.chain", classOf[ForwardActionViewRender])

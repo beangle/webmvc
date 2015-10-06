@@ -18,18 +18,17 @@
  */
 package org.beangle.webmvc.view.impl
 
-import org.beangle.commons.inject.Container
+import org.beangle.commons.inject.{ Container, ContainerListener }
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.webmvc.view.{ TagLibrary, TagLibraryProvider }
-import org.beangle.commons.bean.Initializing
 
 @description("所有标签库提供者")
-class ContainerTaglibraryProvider(container: Container) extends TagLibraryProvider with Initializing {
+class ContainerTaglibraryProvider extends TagLibraryProvider with ContainerListener {
 
   var tagLibraries: Map[String, TagLibrary] = Map.empty
 
-  override def init(): Unit = {
+  override def onStarted(container: Container): Unit = {
     tagLibraries = container.getBeans(classOf[TagLibrary]).map {
       case (key, library) =>
         val name = key.toString

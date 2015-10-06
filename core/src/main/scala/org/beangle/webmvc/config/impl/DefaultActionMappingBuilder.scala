@@ -34,7 +34,7 @@ import org.beangle.webmvc.config.{ ActionMapping, RouteMapping, ActionMappingBui
 import org.beangle.webmvc.context.Argument
 import org.beangle.webmvc.context.impl.{ CookieArgument, HeaderArgument, ParamArgument, RequestArgument, ResponseArgument }
 import org.beangle.webmvc.view.{ TemplateResolver, ViewBuilder }
-import org.beangle.webmvc.view.impl.ViewResolverRegistry
+import org.beangle.webmvc.view.impl.ViewManager
 
 @description("缺省的ActionMapping构建器")
 class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
@@ -43,7 +43,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
 
   var viewScan = true
 
-  var viewResolverRegistry: ViewResolverRegistry = _
+  var viewManager: ViewManager = _
 
   override def build(bean: AnyRef, clazz: Class[_], profile: Profile): ActionMapping = {
     val nameAndspace = ActionNameBuilder.build(clazz, profile)
@@ -153,7 +153,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
 
   protected def buildViews(clazz: Class[_], profile: Profile): Map[String, View] = {
     if (!viewScan) return Map.empty
-    val resolver = viewResolverRegistry.getResolver(profile.viewType).orNull
+    val resolver = viewManager.getResolver(profile.viewType).orNull
     if (null == resolver) return Map.empty
 
     val viewMap = new collection.mutable.HashMap[String, View]
