@@ -9,13 +9,13 @@
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Parent</name>
-  <version>0.3.0</version>
+  <version>0.3.1</version>
 
   <properties>
-    <beangle.commons.version>4.4.0</beangle.commons.version>
-    <beangle.data.version>4.2.4</beangle.data.version>
-    <beangle.spring.version>4.1.0</beangle.spring.version>
-    <beangle.template.version>0.0.6</beangle.template.version>
+    <beangle.commons.version>4.4.2</beangle.commons.version>
+    <beangle.data.version>4.3.0</beangle.data.version>
+    <beangle.cdi.version>0.0.1</beangle.cdi.version>
+    <beangle.template.version>0.0.7</beangle.template.version>
   </properties>
 
   <modules>
@@ -54,7 +54,7 @@
       </dependency>
       <dependency>
         <groupId>org.beangle.data</groupId>
-        <artifactId>beangle-data-jpa_2.11</artifactId>
+        <artifactId>beangle-data-hibernate_2.11</artifactId>
         <version>${beangle.data.version}</version>
       </dependency>
       <dependency>
@@ -63,14 +63,9 @@
         <version>${beangle.data.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.beangle.spring</groupId>
-        <artifactId>beangle-spring-context_2.11</artifactId>
-        <version>${beangle.spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.beangle.spring</groupId>
-        <artifactId>beangle-spring-hibernate_2.11</artifactId>
-        <version>${beangle.spring.version}</version>
+        <groupId>org.beangle.cdi</groupId>
+        <artifactId>beangle-cdi-spring_2.11</artifactId>
+        <version>${beangle.cdi.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.webmvc</groupId>

@@ -19,14 +19,14 @@
 package org.beangle.webmvc.entity.action
 
 import java.{ io => jo }
+
 import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.PageLimit
 import org.beangle.commons.config.property.PropertyConfig
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.logging.Logging
-import org.beangle.data.jpa.dao.OqlBuilder
+import org.beangle.data.dao.{ EntityDao, OqlBuilder }
 import org.beangle.data.model.Entity
-import org.beangle.data.model.dao.EntityDao
 import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
 import org.beangle.webmvc.api.action.{ EntitySupport, ParamSupport, RouteSupport }
 import org.beangle.webmvc.api.annotation.ignore

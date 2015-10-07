@@ -33,7 +33,7 @@ abstract class AbstractTagLibrary extends TagLibrary {
 
   protected def buildComponentContext(req: HttpServletRequest): ComponentContext = {
     val queryString = req.getQueryString
-    val fullpath = if (null == queryString) req.getRequestURI() else req.getRequestURI() + queryString
+    val fullpath = if (null == queryString) req.getRequestURI else req.getRequestURI + queryString
     val idGenerator = new IndexableIdGenerator(String.valueOf(Math.abs(fullpath.hashCode)))
     new ComponentContext(uriRender, idGenerator, templateEngine)
   }

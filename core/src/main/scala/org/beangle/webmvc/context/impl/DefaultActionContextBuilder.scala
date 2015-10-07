@@ -8,21 +8,12 @@ import org.beangle.webmvc.execution.Handler
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.webmvc.context.ActionContextInitializer
 import org.beangle.commons.inject.Container
-import org.beangle.commons.bean.Initializing
 
 /**
  * @author chaostone
  */
 @description("缺省的ActionContext构建器")
-class DefaultActionContextBuilder(container: Container) extends ActionContextBuilder with Initializing {
-
-  var localeResolver: LocaleResolver = _
-
-  var initializers: Iterable[ActionContextInitializer] = _
-
-  override def init(): Unit = {
-    initializers = container.getBeans(classOf[ActionContextInitializer]).values.toList
-  }
+class DefaultActionContextBuilder(localeResolver: LocaleResolver, initializers: List[ActionContextInitializer]) extends ActionContextBuilder {
 
   override def build(request: HttpServletRequest, response: HttpServletResponse,
     handler: Handler, params2: collection.Map[String, Any]): ActionContext = {
