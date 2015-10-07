@@ -16,8 +16,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.beangle.spring</groupId>
-      <artifactId>beangle-spring-context_2.11</artifactId>
+      <groupId>org.beangle.cdi</groupId>
+      <artifactId>beangle-cdi-spring_2.11</artifactId>
     </dependency>
   </dependencies>
 </project>

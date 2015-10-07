@@ -26,9 +26,8 @@ import org.beangle.commons.collection.page.{ Page, PageLimit }
 import org.beangle.commons.lang.{ Numbers, Strings }
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.CookieUtils
-import org.beangle.data.jpa.dao.OqlBuilder
+import org.beangle.data.dao.{ Condition, OqlBuilder }
 import org.beangle.data.model.Entity
-import org.beangle.data.model.dao.Condition
 import org.beangle.webmvc.api.context.{ ActionContextHolder, Params }
 
 object QueryHelper extends Logging {
@@ -87,9 +86,9 @@ object QueryHelper extends Logging {
           } else {
             PopulateHelper.populator.populate(entity, entityType, attr, strValue)
             Properties.get[Object](entity, attr) match {
-              case null => logger.error("Error populate entity " + prefix + "'s attribute " + attr)
+              case null       => logger.error("Error populate entity " + prefix + "'s attribute " + attr)
               case sv: String => conditions += new Condition(s"$prefix.$attr like :${attr.replace('.', '_')}", s"%$sv%")
-              case sv => conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", sv)
+              case sv         => conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", sv)
             }
           }
         } catch {
@@ -111,7 +110,7 @@ object QueryHelper extends Logging {
   def pageIndex(): Int = {
     var pageIndex = Params.getInt(PageParam) match {
       case Some(p) => p
-      case None => Params.getInt("pageIndex").getOrElse(Page.DefaultPageNo)
+      case None    => Params.getInt("pageIndex").getOrElse(Page.DefaultPageNo)
     }
     if (pageIndex < 1) Page.DefaultPageNo else pageIndex
   }

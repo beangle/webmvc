@@ -25,7 +25,6 @@ class ViewManager extends ContainerListener {
     renders = renderMaps.toMap
 
     val resolverMap = new collection.mutable.HashMap[String, ViewResolver]
-    println(container.getBeans(classOf[ViewResolver]))
     container.getBeans(classOf[ViewResolver]).values foreach { resolver =>
       resolverMap.put(resolver.supportViewType, resolver)
     }
