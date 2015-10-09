@@ -29,10 +29,9 @@ object ActionNameBuilder {
   val pluralizer = new EnNounPluralizer
   /**
    * Return namespace and action name.
-   * 
-   *  <li>action name start with /
-   *  <li>namespace start with / and DONOT ends with /
    *
+   *  <li>namespace start with / and DONOT ends with /(except only /)
+   *  <li>action name contains namespace and DONOT ends with /(except only /)
    */
   def build(clazz: Class[_], profile: Profile): Tuple2[String, String] = {
     val className = clazz.getName
@@ -88,9 +87,13 @@ object ActionNameBuilder {
       } else {
         nameBuilder.append(name.substring(1))
       }
-
     }
-    if (namespace.length > 0 && namespace.charAt(namespace.length - 1) == '/') namespace.deleteCharAt(namespace.length - 1)
-    (nameBuilder.toString, namespace.toString)
+    (deleteTailSlash(nameBuilder), deleteTailSlash(namespace))
+  }
+
+  def deleteTailSlash(name: StringBuilder): String = {
+    val length = name.length
+    if (length > 1 && name.charAt(length - 1) == '/') name.deleteCharAt(length - 1)
+    name.toString
   }
 }
