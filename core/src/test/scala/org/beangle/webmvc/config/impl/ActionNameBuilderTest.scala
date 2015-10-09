@@ -16,19 +16,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Beangle.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beangle.webmvc.view.i18n
+package org.beangle.webmvc.config.impl
 
-import org.beangle.webmvc.context.ActionContextInitializer
-import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.api.i18n.TextProvider
+import org.junit.runner.RunWith
+import org.scalatest.Matchers
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.FunSpec
+import org.beangle.webmvc.execution.testaction.IndexAction
+import org.beangle.webmvc.config.Profile
 
 /**
  * @author chaostone
  */
-class TextResourceInitializer extends ActionContextInitializer {
-  var textResourceProvider: ActionTextResourceProvider = _
+@RunWith(classOf[JUnitRunner])
+class ActionNameBuilderTest extends FunSpec with Matchers {
 
-  def init(context: ActionContext): Unit = {
-    context.textProvider = Some(textResourceProvider.getTextResource(context.locale).asInstanceOf[TextProvider])
+  describe("ActionNameBuilder") {
+    it("build indexmapping") {
+      val profile = new Profile("test", "org.beangle.webmvc.execution.testaction")
+      profile.matches(classOf[IndexAction].getName)
+      val result = ActionNameBuilder.build(classOf[IndexAction], profile)
+      assert(result._1 =="/")
+      assert(result._2 =="/")
+    }
   }
 }

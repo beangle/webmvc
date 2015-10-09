@@ -16,19 +16,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Beangle.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beangle.webmvc.view.i18n
+package org.beangle.webmvc.execution.testaction
 
-import org.beangle.webmvc.context.ActionContextInitializer
-import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.api.i18n.TextProvider
+import org.beangle.webmvc.api.annotation.action
 
 /**
  * @author chaostone
  */
-class TextResourceInitializer extends ActionContextInitializer {
-  var textResourceProvider: ActionTextResourceProvider = _
-
-  def init(context: ActionContext): Unit = {
-    context.textProvider = Some(textResourceProvider.getTextResource(context.locale).asInstanceOf[TextProvider])
+@action("")
+class IndexAction {
+  def index: String = {
+    "index"
   }
 }

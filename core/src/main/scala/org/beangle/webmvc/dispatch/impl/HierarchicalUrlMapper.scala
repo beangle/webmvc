@@ -158,7 +158,7 @@ class HierarchicalMappings {
       val methodMappings = mappings.mappings.getOrElseUpdate(headPattern, new HttpMethodMappings)
       methodMappings.methods.put(httpMethod, holder)
       if (Path.isTailPattern(head)) {
-        assert(mappings.children.isEmpty)
+        assert(mappings.children.isEmpty || mappings.children("*") == mappings)
         mappings.children.put("*", mappings)
       }
     } else {
