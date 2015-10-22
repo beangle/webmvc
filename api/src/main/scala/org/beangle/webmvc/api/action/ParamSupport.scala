@@ -47,11 +47,11 @@ trait ParamSupport {
     if (value.isEmpty) defaultValue else Params.converter.convert(value.get, defaultValue.getClass).getOrElse(defaultValue)
   }
 
-  protected final def getAttribute(name: String): Any = {
+  protected final def attribute(name: String): Any = {
     ActionContextHolder.context.attribute(name)
   }
 
-  protected final def getAttribute[T](name: String, clazz: Class[T]): T = {
+  protected final def attribute[T](name: String, clazz: Class[T]): T = {
     ActionContextHolder.context.attribute(name).asInstanceOf[T]
   }
 
