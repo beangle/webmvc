@@ -45,14 +45,12 @@ class DefaultActionContextBuilder(localeResolver: LocaleResolver, initializers: 
       else params.put(paramEntry.getKey, values)
     }
 
-    if (StandardMultipartResolver.isMultipart(request)) {
-      params ++= StandardMultipartResolver.resolve(request)
-    }
+    if (StandardMultipartResolver.isMultipart(request)) params ++= StandardMultipartResolver.resolve(request)
 
     params ++= params2
 
     val context = new ActionContext(request, response, localeResolver.resolve(request), params.toMap)
-    context.temp(ActionContextHelper.HandlerAttribute, handler)
+    context.stash(ActionContextHelper.HandlerAttribute, handler)
     ActionContextHolder.contexts.set(context)
     initializers foreach { i => i.init(context) }
     context

@@ -81,7 +81,6 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
                           case None =>
                             throw new RuntimeException(s"Cannot find view of type [${profile.viewType}]'s resolver")
                         }
-
                     }
                   }
                 case view: View => view

@@ -30,10 +30,10 @@ class CachedObjectWrapper(altMapWrapper: Boolean) extends BeangleObjectWrapper(a
     if (null == obj) return null
     //FIXME need ab test
     val context = ActionContextHolder.context
-    var models = context.temp[IdentityCache[AnyRef, TemplateModel]]("_TemplateModels")
+    var models = context.stash[IdentityCache[AnyRef, TemplateModel]]("_TemplateModels")
     if (models == null) {
       models = new IdentityCache[AnyRef, TemplateModel]
-      context.temp("_TemplateModels", models)
+      context.stash("_TemplateModels", models)
     }
     var model = models.get(obj)
     if (null != model) return model

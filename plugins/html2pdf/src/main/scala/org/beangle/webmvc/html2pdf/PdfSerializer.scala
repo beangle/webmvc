@@ -30,13 +30,11 @@ import javax.activation.MimeType
  */
 class PdfSerializer extends Serializer {
 
-  val pdfMimeType = new javax.activation.MimeType("application/pdf")
-
   override def serialize(data: AnyRef, os: OutputStream, params: Map[String, Any]): Unit = {
 
   }
 
   override def supportMediaTypes: Seq[MimeType] = {
-    List(pdfMimeType)
+    List(MimeTypes.ApplicationPdf)
   }
 }

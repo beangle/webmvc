@@ -44,12 +44,12 @@ object ITextPdfReporter {
     Rectangles.put(f.getName, f.get(f).asInstanceOf[Rectangle])
   }
   def main(args: Array[String]) {
-    val reporter = new ITextPdfReporter()
+    val reporter = new ITextPdfReporter
     val context = new ReportContext
     context.datas.put("html", IOs.readString(new FileInputStream("/home/chaostone/openurp/site/_site/model/partition.html")))
     val os = new FileOutputStream("/home/chaostone/openurp/site/_site/model.pdf")
     reporter.generate(context, os)
-    os.close();
+    os.close()
   }
 }
 

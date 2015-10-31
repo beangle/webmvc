@@ -28,7 +28,7 @@ object ActionContextHelper {
   val HandlerAttribute = "_handler_"
 
   def handler: Handler = {
-    ActionContextHolder.context.temp[Handler](HandlerAttribute)
+    ActionContextHolder.context.stash[Handler](HandlerAttribute)
   }
 
   def mapping: RouteMapping = {
