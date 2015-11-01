@@ -18,19 +18,23 @@
  */
 package org.beangle.webmvc.dispatch
 
-import org.beangle.commons.io.ClasspathResourceLoader
-import org.beangle.commons.lang.Strings
+import java.io.{ File, FileInputStream }
+import org.beangle.commons.activation.MimeTypeProvider
+import org.beangle.commons.io.{ ClasspathResourceLoader, IOs }
+import org.beangle.commons.lang.Strings.{ isNotEmpty, substringAfter, substringAfterLast }
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.resource.ResourceProcessor
 import org.beangle.commons.web.resource.filter.HeaderFilter
 import org.beangle.commons.web.resource.impl.PathResolverImpl
-import org.beangle.webmvc.context.{ ActionContextBuilder, ContainerHelper }
-import javax.servlet.{ Filter, FilterChain, FilterConfig, ServletRequest, ServletResponse }
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.context.{ ActionContextBuilder, ContainerHelper }
+import javax.servlet.{ GenericServlet, ServletConfig, ServletRequest, ServletResponse }
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.commons.web.multipart.StandardMultipartResolver
 
-class Dispatcher extends Filter with Logging {
+class Dispatcher extends GenericServlet with Logging {
 
   var defaultEncoding = "utf-8"
   var staticPattern: String = "/static/"
@@ -39,7 +43,7 @@ class Dispatcher extends Filter with Logging {
   var actionContextBuilder: ActionContextBuilder = _
   var processor: ResourceProcessor = _
 
-  override def init(config: FilterConfig): Unit = {
+  override def init(config: ServletConfig): Unit = {
     val context = ContainerHelper.get
 
     //1. build configuration
@@ -59,24 +63,39 @@ class Dispatcher extends Filter with Logging {
     }
   }
 
-  def doFilter(req: ServletRequest, res: ServletResponse, chain: FilterChain) {
+  override def service(req: ServletRequest, res: ServletResponse): Unit = {
     val request = req.asInstanceOf[HttpServletRequest]
     val response = res.asInstanceOf[HttpServletResponse]
-    if (request.getServletPath.startsWith(staticPattern)) {
+    val servletPath = RequestUtils.getServletPath(request)
+    if (servletPath.startsWith(staticPattern)) {
       val contextPath = request.getContextPath
       val uri =
-        if (!(contextPath.equals("") || contextPath.equals("/"))) {
-          Strings.substringAfter(request.getRequestURI, contextPath)
-        } else request.getRequestURI
+        if (!(contextPath.equals("") || contextPath.equals("/"))) substringAfter(request.getRequestURI, contextPath) else request.getRequestURI
       processor.process(uri, request, response)
     } else {
       request.setCharacterEncoding(defaultEncoding)
       mapper.resolve(request) match {
         case Some(rm) =>
           actionContextBuilder.build(request, response, rm.handler, rm.params)
-          rm.handler.handle(request, response)
-        case None => chain.doFilter(req, res)
+          try {
+            rm.handler.handle(request, response)
+          } finally {
+            StandardMultipartResolver.cleanup(request)
+          }
+        case None => handleUnknown(servletPath, request, response)
       }
+    }
+  }
+
+  protected def handleUnknown(servletPath: String, request: HttpServletRequest, response: HttpServletResponse): Unit = {
+    val filePath = request.getServletContext.getRealPath(servletPath)
+    val p = new File(filePath)
+    if (p.exists) {
+      val ext = substringAfterLast(filePath, ".")
+      if (isNotEmpty(ext)) MimeTypeProvider.getMimeType(ext) foreach (m => response.setContentType(m.toString))
+      IOs.copy(new FileInputStream(p), response.getOutputStream)
+    } else {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND)
     }
   }
 

@@ -19,12 +19,12 @@
 package org.beangle.webmvc.spring
 
 import java.util.EnumSet
-
 import org.beangle.commons.web.session.HttpSessionEventPublisher
 import org.beangle.cdi.spring.web.ContextListener
 import org.beangle.webmvc.dispatch.Dispatcher
-
 import javax.servlet.{ DispatcherType, ServletContext }
+import javax.servlet.MultipartConfigElement
+import org.beangle.commons.lang.SystemInfo
 
 class Initializer extends org.beangle.commons.web.init.Initializer {
 
@@ -35,7 +35,8 @@ class Initializer extends org.beangle.commons.web.init.Initializer {
 
     addListener(new ContextListener)
     sc.addListener(new HttpSessionEventPublisher)
-    val action = sc.addFilter("Action", new Dispatcher)
-    action.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*")
+    val action = sc.addServlet("Action", new Dispatcher)
+    action.addMapping("/*")
+    action.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))
   }
 }

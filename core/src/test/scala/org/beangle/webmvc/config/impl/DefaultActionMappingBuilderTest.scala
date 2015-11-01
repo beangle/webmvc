@@ -52,7 +52,7 @@ class DefaultActionMappingBuilderTest extends FunSpec with Matchers {
     }
 
     it("build plur mapping") {
-      val pp = plurProfile.mkProfile(null)
+      val pp = plurProfile.mkProfile(null,null)
       pp.matches(classOf[ShowcaseAction].getName)
       val mappings = builder.build(new ShowcaseAction(), classOf[ShowcaseAction], pp).mappings
       assert(null != mappings)

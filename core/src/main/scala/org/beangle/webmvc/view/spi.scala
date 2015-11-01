@@ -24,6 +24,7 @@ import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{ RouteMapping, Profile }
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import javax.activation.MimeType
 
 @spi
 trait TagLibrary {
@@ -54,7 +55,12 @@ trait ViewRender {
   def supportViewClass: Class[_]
   def render(view: View, context: ActionContext)
 }
+case class ViewResult(data: AnyRef, contentType: String)
 
+@spi
+trait ViewDecorator {
+  def decorate(data: ViewResult, uri: String, context: ActionContext): ViewResult
+}
 /**
  * find view by mapping and viewName
  */

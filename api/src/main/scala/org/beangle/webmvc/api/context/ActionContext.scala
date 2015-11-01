@@ -34,7 +34,7 @@ final class ActionContext(val request: HttpServletRequest, val response: HttpSer
 
   private var flashMap: Flash = _
 
-  private val temp = new collection.mutable.HashMap[String, Any]
+  private val stash = new collection.mutable.HashMap[String, Any]
 
   def attribute(name: String, value: Any): Unit = {
     request.setAttribute(name, value)
@@ -50,12 +50,12 @@ final class ActionContext(val request: HttpServletRequest, val response: HttpSer
     request.getAttribute(name).asInstanceOf[T]
   }
 
-  def temp(name: String, value: Any): Unit = {
-    temp.put(name, value)
+  def stash(name: String, value: Any): Unit = {
+    stash.put(name, value)
   }
 
-  def temp[T](name: String): T = {
-    temp.get(name).orNull.asInstanceOf[T]
+  def stash[T](name: String): T = {
+    stash.get(name).orNull.asInstanceOf[T]
   }
 
   def flash: Flash = {

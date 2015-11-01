@@ -26,6 +26,6 @@ import org.beangle.commons.inject.bind.AbstractBindModule
 class DefaultModule extends AbstractBindModule {
 
   override def binding(): Unit = {
-    bind("web.Serializer.pdf", classOf[PdfSerializer])
+    bind("web.Decorator.pdf", classOf[PdfDecorator])
   }
 }

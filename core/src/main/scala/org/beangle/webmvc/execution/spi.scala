@@ -22,6 +22,7 @@ import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.config.RouteMapping
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpServletRequest
+import org.beangle.webmvc.api.context.ActionContextHolder
 
 @spi
 trait InvokerBuilder {
@@ -37,3 +38,4 @@ trait Invoker {
 trait Handler {
   def handle(request: HttpServletRequest, response: HttpServletResponse): Any
 }
+

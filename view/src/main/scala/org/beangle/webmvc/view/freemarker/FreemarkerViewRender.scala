@@ -23,9 +23,14 @@ import org.beangle.template.freemarker.FreemarkerConfigurer
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.view.ViewRender
-
 import freemarker.template.{ SimpleHash, Template }
 import javax.servlet.http.HttpServletResponse
+import org.beangle.webmvc.api.context.ActionContextHolder
+import org.beangle.webmvc.execution.ActionHandler
+import java.io.StringWriter
+import org.beangle.commons.web.util.RequestUtils
+import javax.activation.MimeType
+import org.beangle.webmvc.view.ViewResult
 
 /**
  * @author chaostone
@@ -43,13 +48,29 @@ class FreemarkerViewRender(configurer: FreemarkerConfigurer, modelBuilder: Freem
   }
 
   protected def processTemplate(template: Template, model: SimpleHash, response: HttpServletResponse): Unit = {
-    val attrContentType = template.getCustomAttribute("content_type").asInstanceOf[String]
-    if (attrContentType == null) response.setContentType(configurer.contentType)
-    else {
-      if (!attrContentType.contains("charset")) response.setCharacterEncoding(config.getDefaultEncoding())
-      response.setContentType(attrContentType.toString)
+    var contentType = template.getCustomAttribute("content_type").asInstanceOf[String]
+    if (contentType == null) contentType = configurer.contentType
+    val decorators = ActionHandler.mapping.action.profile.decorators
+    if (decorators.isEmpty) {
+      if (!contentType.contains("charset")) response.setCharacterEncoding(config.getDefaultEncoding)
+      response.setContentType(contentType)
+      template.process(model, response.getWriter)
+    } else {
+      val strWriter = new StringWriter(512)
+      template.process(model, strWriter)
+      val context = ActionContextHolder.context
+      val uri = RequestUtils.getServletPath(context.request)
+      var lastResult = ViewResult(strWriter.getBuffer, contentType)
+      decorators foreach { decorator =>
+        lastResult = decorator.decorate(lastResult, uri, context)
+      }
+      response.setContentType(lastResult.contentType)
+      lastResult.data match {
+        case s: StringBuffer => response.getOutputStream.write(s.toString.getBytes)
+        case b: Array[Byte]  => response.getOutputStream.write(b)
+        case _               =>
+      }
     }
-    template.process(model, response.getWriter)
   }
 
   def supportViewClass: Class[_] = {

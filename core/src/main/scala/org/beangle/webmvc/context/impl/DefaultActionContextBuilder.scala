@@ -21,8 +21,8 @@ package org.beangle.webmvc.context.impl
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.web.multipart.StandardMultipartResolver
 import org.beangle.webmvc.api.context.{ ActionContext, ActionContextHolder }
-import org.beangle.webmvc.context.{ ActionContextBuilder, ActionContextHelper, LocaleResolver }
-import org.beangle.webmvc.execution.Handler
+import org.beangle.webmvc.context.{ ActionContextBuilder, LocaleResolver }
+import org.beangle.webmvc.execution.{ ActionHandler, Handler }
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.webmvc.context.ActionContextInitializer
 import org.beangle.commons.inject.Container
@@ -45,14 +45,12 @@ class DefaultActionContextBuilder(localeResolver: LocaleResolver, initializers: 
       else params.put(paramEntry.getKey, values)
     }
 
-    if (StandardMultipartResolver.isMultipart(request)) {
-      params ++= StandardMultipartResolver.resolve(request)
-    }
+    if (StandardMultipartResolver.isMultipart(request)) params ++= StandardMultipartResolver.resolve(request)
 
     params ++= params2
 
     val context = new ActionContext(request, response, localeResolver.resolve(request), params.toMap)
-    context.temp(ActionContextHelper.HandlerAttribute, handler)
+    context.stash(ActionHandler.HandlerAttribute, handler)
     ActionContextHolder.contexts.set(context)
     initializers foreach { i => i.init(context) }
     context

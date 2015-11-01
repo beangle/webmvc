@@ -25,6 +25,7 @@ import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.intercept.Interceptor
 import org.beangle.webmvc.config.{ ActionMapping, RouteMapping, ActionMappingBuilder, Configurer, Profile, ProfileProvider }
 import org.beangle.webmvc.context.ActionFinder
+import org.beangle.webmvc.view.ViewDecorator
 
 @description("缺省配置器")
 class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) extends Configurer with Logging {
@@ -42,10 +43,7 @@ class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) 
   override def build(): Unit = {
     val watch = new Stopwatch(true)
     profiles = profileProvider.loadProfiles() map { pc =>
-      val interceptors = pc.interceptorNames map { interName =>
-        container.getBean[Interceptor](interName).get
-      }
-      pc.mkProfile(interceptors)
+      pc.mkProfile(pc.interceptorNames map (name => container.getBean[Interceptor](name).get), pc.decoratorNames map (name => container.getBean[ViewDecorator](name).get))
     }
     profiles = profiles.sorted
 
