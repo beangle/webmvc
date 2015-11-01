@@ -35,6 +35,8 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import com.itextpdf.tool.xml.css.CssFilesImpl
 import com.itextpdf.tool.xml.XMLWorkerHelper
+import java.io.Reader
+import org.beangle.commons.lang.ClassLoaders
 /**
  * @author chaostone
  */
@@ -46,33 +48,33 @@ object ITextPdfReporter {
   def main(args: Array[String]) {
     val reporter = new ITextPdfReporter
     val context = new ReportContext
-    context.datas.put("html", IOs.readString(new FileInputStream("/home/chaostone/openurp/site/_site/model/partition.html")))
+    val html = IOs.readString(new FileInputStream("/home/chaostone/openurp/site/_site/model/partition.html"))
     val os = new FileOutputStream("/home/chaostone/openurp/site/_site/model.pdf")
-    reporter.generate(context, os)
+    reporter.generate(new StringReader(html), context, os)
     os.close()
   }
 }
 
 class ITextPdfReporter {
 
-  def generate(context: ReportContext, os: OutputStream): Unit = {
-    val html: String = context.datas.get("html").getOrElse("").toString
+  def generate(reader: Reader, context: ReportContext, os: OutputStream): Unit = {
     val rectangle = context.datas.get("page-size") match {
       case Some(pageSize) => Rectangles.get(pageSize.toString).getOrElse(PageSize.A4)
       case None           => PageSize.A4
     }
-    val document = new Document(rectangle);
+    val document = new Document(rectangle)
     val writer = PdfWriter.getInstance(document, os)
     document.open()
-    parseXHtml(writer, document, html)
+    parseXHtml(writer, document, reader)
     document.close()
   }
 
-  private def parseXHtml(writer: PdfWriter, doc: Document, html: String): Unit = {
+  private def parseXHtml(writer: PdfWriter, doc: Document, reader: Reader): Unit = {
     val fontProvider = new XMLWorkerFontProvider()
 
     val cssFiles = new CssFilesImpl()
-    cssFiles.add(XMLWorkerHelper.getCSS(classOf[XMLWorkerHelper].getResourceAsStream("/default.css")));
+    cssFiles.add(XMLWorkerHelper.getCSS(classOf[XMLWorkerHelper].getResourceAsStream("/default.css")))
+    
     val cssResolver = new StyleAttrCSSResolver(cssFiles)
 
     val cssAppliers = new CssAppliersImpl(fontProvider)
@@ -86,7 +88,7 @@ class ITextPdfReporter {
     val worker = new XMLWorker(pipeline, true)
     val p = new XMLParser()
     p.addListener(worker)
-    p.parse(new StringReader(html))
+    p.parse(reader)
   }
 
 }

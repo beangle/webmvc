@@ -94,10 +94,15 @@ class XmlProfileProvider extends ProfileProvider {
         copyDefaultProperties(profile, "interceptorNames")
       } else {
         val interceptors = new collection.mutable.ListBuffer[String]
-        interceptorNodes foreach { elem =>
-          interceptors += (elem \ "@name").text
-        }
+        interceptorNodes foreach (elem => interceptors += (elem \ "@name").text)
         profile.interceptorNames = interceptors.toArray
+      }
+
+      val decoratorNodes = profileElem \\ "decorator"
+      if (!decoratorNodes.isEmpty) {
+        val decorators = new collection.mutable.ListBuffer[String]
+        decoratorNodes foreach (elem => decorators += (elem \ "@name").text)
+        profile.decoratorNames = decorators.toArray
       }
       profile.source = url
       profiles += profile

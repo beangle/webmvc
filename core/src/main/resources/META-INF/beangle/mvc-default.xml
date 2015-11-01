@@ -7,5 +7,7 @@
     <interceptors>
       <interceptor name="web.Interceptor.flash"/>
     </interceptors>
+    <decoractors>
+    </decoractors>
   </profile>
 </mvc>

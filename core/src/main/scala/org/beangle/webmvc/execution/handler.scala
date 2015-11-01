@@ -42,82 +42,72 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
     val interceptors = action.profile.interceptors
     val context = ActionContextHolder.context
     var lastInterceptorIndex = preHandle(interceptors, context, request, response)
-    var result: Any = null
-    var exception: Throwable = null
+
     if (lastInterceptorIndex == interceptors.length - 1) {
       try {
-        result = invoker.invoke()
-      } catch {
-        case ex: Throwable => exception = ex
-      }
-      if (null != exception) {
-        //FIXME process exception
-        postHandle(interceptors, context, lastInterceptorIndex, request, response)
-        throw exception
-      } else {
+        var result = invoker.invoke()
         if (null == result && null != mapping.defaultView) result = mapping.defaultView
         if (null != result) {
-          try {
-            val view =
-              result match {
-                case viewName: String =>
-                  if (null == mapping.defaultView) null
-                  else {
-                    action.views.get(viewName) match {
-                      case Some(v) => v
-                      case None =>
-                        val profile = action.profile
-                        viewManager.getResolver(profile.viewType) match {
-                          case Some(resolver) =>
-                            var i = 0
-                            val candidates = Strings.split(viewName, ",")
-                            var newView: View = null
-                            while (i < candidates.length && null == newView) {
-                              newView = resolver.resolve(candidates(i), mapping)
-                              i += 1
-                            }
-                            require(null != newView, s"Cannot find view[$viewName] for ${action.clazz.getName}")
-                            newView
-                          case None =>
-                            throw new RuntimeException(s"Cannot find view of type [${profile.viewType}]'s resolver")
-                        }
-                    }
+          val view =
+            result match {
+              case viewName: String =>
+                if (null == mapping.defaultView) null
+                else {
+                  action.views.get(viewName) match {
+                    case Some(v) => v
+                    case None =>
+                      val profile = action.profile
+                      viewManager.getResolver(profile.viewType) match {
+                        case Some(resolver) =>
+                          var i = 0
+                          val candidates = Strings.split(viewName, ",")
+                          var newView: View = null
+                          while (i < candidates.length && null == newView) {
+                            newView = resolver.resolve(candidates(i), mapping)
+                            i += 1
+                          }
+                          require(null != newView, s"Cannot find view[$viewName] for ${action.clazz.getName}")
+                          newView
+                        case None =>
+                          throw new RuntimeException(s"Cannot find view of type [${profile.viewType}]'s resolver")
+                      }
                   }
-                case view: View => view
-                case _          => null
-              }
-            if (null != view) {
-              viewManager.getRender(view.getClass) match {
-                case Some(render) => render.render(view, context)
-                case None         => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
-              }
-            } else {
-              if (null != viewManager.contentNegotiationManager) {
-                val mimeTypes = viewManager.contentNegotiationManager.resolve(request).iterator
-                var serializer: Serializer = null
-                var mimeType: MimeType = null
-                while (mimeTypes.hasNext && serializer == null) {
-                  mimeType = mimeTypes.next()
-                  serializer = viewManager.getSerializer(mimeType)
                 }
-                if (null != serializer) {
-                  response.setCharacterEncoding("UTF-8")
-                  response.setContentType(mimeType.toString + "; charset=UTF-8")
-                  val params = new collection.mutable.HashMap[String, Any]
-                  val enum = request.getAttributeNames
-                  while (enum.hasMoreElements()) {
-                    val attr = enum.nextElement()
-                    params.put(attr, request.getAttribute(attr))
-                  }
-                  params ++= context.params
-                  serializer.serialize(result.asInstanceOf[AnyRef], response.getOutputStream, params.toMap)
+              case view: View => view
+              case _          => null
+            }
+          if (null != view) {
+            viewManager.getRender(view.getClass) match {
+              case Some(render) => render.render(view, context)
+              case None         => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
+            }
+          } else {
+            if (null != viewManager.contentNegotiationManager) {
+              val mimeTypes = viewManager.contentNegotiationManager.resolve(request).iterator
+              var serializer: Serializer = null
+              var mimeType: MimeType = null
+              while (mimeTypes.hasNext && serializer == null) {
+                mimeType = mimeTypes.next()
+                serializer = viewManager.getSerializer(mimeType)
+              }
+              if (null != serializer) {
+                response.setCharacterEncoding("UTF-8")
+                response.setContentType(mimeType.toString + "; charset=UTF-8")
+                val params = new collection.mutable.HashMap[String, Any]
+                val enum = request.getAttributeNames
+                while (enum.hasMoreElements()) {
+                  val attr = enum.nextElement()
+                  params.put(attr, request.getAttribute(attr))
                 }
+                params ++= context.params
+                serializer.serialize(result.asInstanceOf[AnyRef], response.getOutputStream, params.toMap)
               }
             }
-          } finally {
-            postHandle(interceptors, context, lastInterceptorIndex, request, response)
           }
         }
+      } finally {
+        //FIXME process exception
+        postHandle(interceptors, context, lastInterceptorIndex, request, response)
       }
     } else {
       postHandle(interceptors, context, lastInterceptorIndex, request, response)

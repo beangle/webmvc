@@ -19,12 +19,12 @@
 package org.beangle.webmvc.entity.action
 
 import java.{ util => ju }
+
 import org.beangle.data.model.{ Entity, Updated }
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
-import org.beangle.webmvc.api.context.ActionContextHolder
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.context.ActionContextHelper
+import org.beangle.webmvc.execution.ActionHandler
 
 abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAction[T] {
 
@@ -94,7 +94,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
       redirect("search", "info.save.success")
     } catch {
       case e: Exception => {
-        val redirectTo = ActionContextHelper.mapping.method.getName match {
+        val redirectTo = ActionHandler.mapping.method.getName match {
           case "save"   => "editNew"
           case "update" => "edit"
         }

@@ -16,25 +16,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Beangle.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beangle.webmvc.html2pdf
+package org.beangle.webmvc.execution
 
-import java.io.OutputStream
+import org.beangle.webmvc.api.context.ActionContextHolder
+import org.beangle.webmvc.config.RouteMapping
 
-import org.beangle.commons.activation.MimeTypes
-import org.beangle.commons.io.Serializer
+object ActionHandler {
 
-import javax.activation.MimeType
+  val HandlerAttribute = "_handler_"
 
-/**
- * @author chaostone
- */
-class PdfSerializer extends Serializer {
-
-  override def serialize(data: AnyRef, os: OutputStream, params: Map[String, Any]): Unit = {
-
+  def handler: Handler = {
+    ActionContextHolder.context.stash[Handler](HandlerAttribute)
   }
 
-  override def supportMediaTypes: Seq[MimeType] = {
-    List(MimeTypes.ApplicationPdf)
+  def mapping: RouteMapping = {
+    handler.asInstanceOf[MappingHandler].mapping
   }
 }

@@ -19,12 +19,15 @@
 package org.beangle.webmvc.config
 
 import java.net.URL
+
 import scala.Range
+
 import org.beangle.commons.lang.Objects
 import org.beangle.commons.lang.Strings.{ isEmpty, split, uncapitalize }
+import org.beangle.commons.lang.Strings
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.intercept.Interceptor
-import org.beangle.commons.lang.Strings
+import org.beangle.webmvc.view.ViewDecorator
 
 object Profile extends Logging {
 
@@ -97,19 +100,19 @@ object Profile extends Logging {
  * pattern :action所在的包,匹配action的唯一条件
  */
 final class Profile(val name: String,
-  val pattern: String,
-  val actionSuffix: String,
-  val defaultMethod: String,
-  val viewPath: String,
-  val viewPathStyle: String,
-  val viewSuffix: String,
-  val viewType: String,
-  val urlPath: String,
-  val urlStyle: String,
-  val urlSuffix: String,
-  val interceptorNames: Array[String],
-  val interceptors: Array[Interceptor],
-  val source: URL) extends Comparable[Profile] {
+    val pattern: String,
+    val actionSuffix: String,
+    val defaultMethod: String,
+    val viewPath: String,
+    val viewPathStyle: String,
+    val viewSuffix: String,
+    val viewType: String,
+    val urlPath: String,
+    val urlStyle: String,
+    val urlSuffix: String,
+    val interceptors: Array[Interceptor],
+    val decorators: Array[ViewDecorator],
+    val source: URL) extends Comparable[Profile] {
 
   def this(name: String, pattern: String) {
     this(name, pattern, "Action", "index", "/", "full", ".ftl", "freemarker", "/", "seo", "", Array(), Array(), null)
@@ -198,10 +201,12 @@ final class ProfileConfig(val name: String, val pattern: String) {
 
   var interceptorNames: Array[String] = Array()
 
+  var decoratorNames: Array[String] = Array()
+
   var source: URL = _
 
-  def mkProfile(interceptors: Array[Interceptor]): Profile = {
-    new Profile(name, pattern, actionSuffix, defaultMethod, viewPath, viewPathStyle, viewSuffix, viewType, urlPath, urlStyle, urlSuffix, interceptorNames, interceptors, source)
+  def mkProfile(interceptors: Array[Interceptor], decorators: Array[ViewDecorator]): Profile = {
+    new Profile(name, pattern, actionSuffix, defaultMethod, viewPath, viewPathStyle, viewSuffix, viewType, urlPath, urlStyle, urlSuffix, interceptors, decorators, source)
   }
 }
 

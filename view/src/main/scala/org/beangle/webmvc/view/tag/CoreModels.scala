@@ -23,7 +23,7 @@ import java.{ util => ju }
 
 import org.beangle.commons.collection.page.Page
 import org.beangle.webmvc.api.context.ActionContextHolder
-import org.beangle.webmvc.context.ActionContextHelper
+import org.beangle.webmvc.execution.ActionHandler
 import org.beangle.webmvc.view.UITheme
 
 import _root_.freemarker.template.utility.StringUtil
@@ -34,7 +34,7 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
   val textProvider = ActionContextHolder.context.textProvider.get
 
   def url(url: String) = {
-    context.uriRender.render(ActionContextHelper.mapping, url)
+    context.uriRender.render(ActionHandler.mapping, url)
   }
 
   def now = new ju.Date
