@@ -24,7 +24,6 @@ import java.{ util => ju }
 import org.beangle.commons.collection.page.Page
 import org.beangle.webmvc.api.context.ActionContextHolder
 import org.beangle.webmvc.execution.ActionHandler
-import org.beangle.webmvc.view.UITheme
 
 import _root_.freemarker.template.utility.StringUtil
 import javax.servlet.http.HttpServletRequest
@@ -38,13 +37,6 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
   }
 
   def now = new ju.Date
-
-  val uitheme = {
-    val base = request.getContextPath
-    val location = if (base.length() < 2) "/static/themes/"
-    else base + "/static/themes/"
-    new UITheme(location)
-  }
 
   /**
    * query string and form control
