@@ -50,17 +50,13 @@ object ActionNameBuilder {
         case Profile.SEO_URI =>
           nameBuilder.append(unCamel(profile.getMatched(className)))
         case Profile.PLUR_SEO_URI =>
-          if (classOf[EntitySupport[_]].isAssignableFrom(clazz)) {
-            val matchedName = profile.getMatched(className)
-            val lastSlash = matchedName.lastIndexOf('/')
-            if (-1 == lastSlash) {
-              nameBuilder.append(unCamel(pluralizer.pluralize(matchedName)))
-            } else {
-              nameBuilder.append(unCamel(matchedName.substring(0, lastSlash + 1)))
-              nameBuilder.append(unCamel(pluralizer.pluralize(matchedName.substring(lastSlash + 1))))
-            }
+          val matchedName = profile.getMatched(className)
+          val lastSlash = matchedName.lastIndexOf('/')
+          if (-1 == lastSlash) {
+            nameBuilder.append(unCamel(pluralizer.pluralize(matchedName)))
           } else {
-            nameBuilder.append(unCamel(profile.getMatched(className)))
+            nameBuilder.append(unCamel(matchedName.substring(0, lastSlash + 1)))
+            nameBuilder.append(unCamel(pluralizer.pluralize(matchedName.substring(lastSlash + 1))))
           }
         case _ =>
           throw new RuntimeException("unsupported uri style " + profile.urlStyle)
