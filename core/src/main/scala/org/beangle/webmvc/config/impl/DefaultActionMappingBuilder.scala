@@ -125,7 +125,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
    * <li> Cannot starts with get/set/is
    * <li> Cannot annotated with @ignore
    * <li> Cannot be a field get accessor
-   * <li> Without @response and return  type is not [String/View]
+   * <li> Without @response/@mapping and return  type is not [String/View]
    */
   private def isActionMethod(method: Method, classInfo: ClassInfo): Boolean = {
     val methodName = method.getName
@@ -140,7 +140,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     if (null != getAnnotation(method, classOf[ignore])) return false
 
     val returnType = method.getReturnType()
-    if (null == getAnnotation(method, classOf[response])) {
+    if (null == getAnnotation(method, classOf[response]) || null == getAnnotation(method, classOf[mapping])) {
       //filter method don't return string or view
       if (returnType != classOf[String] && returnType != classOf[View]) return false
     } else {
