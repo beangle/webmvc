@@ -18,19 +18,18 @@
  */
 package org.beangle.webmvc.view.freemarker
 
+import java.io.StringWriter
+
 import org.beangle.commons.lang.annotation.description
+import org.beangle.commons.web.util.RequestUtils
 import org.beangle.template.freemarker.FreemarkerConfigurer
-import org.beangle.webmvc.api.context.ActionContext
+import org.beangle.webmvc.api.context.{ ActionContext, ActionContextHolder }
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.view.ViewRender
+import org.beangle.webmvc.execution.Handler
+import org.beangle.webmvc.view.{ ViewRender, ViewResult }
+
 import freemarker.template.{ SimpleHash, Template }
 import javax.servlet.http.HttpServletResponse
-import org.beangle.webmvc.api.context.ActionContextHolder
-import org.beangle.webmvc.execution.ActionHandler
-import java.io.StringWriter
-import org.beangle.commons.web.util.RequestUtils
-import javax.activation.MimeType
-import org.beangle.webmvc.view.ViewResult
 
 /**
  * @author chaostone
@@ -50,7 +49,7 @@ class FreemarkerViewRender(configurer: FreemarkerConfigurer, modelBuilder: Freem
   protected def processTemplate(template: Template, model: SimpleHash, response: HttpServletResponse): Unit = {
     var contentType = template.getCustomAttribute("content_type").asInstanceOf[String]
     if (contentType == null) contentType = configurer.contentType
-    val decorators = ActionHandler.mapping.action.profile.decorators
+    val decorators = Handler.mapping.action.profile.decorators
     if (decorators.isEmpty) {
       if (!contentType.contains("charset")) response.setCharacterEncoding(config.getDefaultEncoding)
       response.setContentType(contentType)

@@ -24,7 +24,7 @@ import org.beangle.data.model.{ Entity, Updated }
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.execution.ActionHandler
+import org.beangle.webmvc.execution.Handler
 
 abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAction[T] {
 
@@ -94,7 +94,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
       redirect("search", "info.save.success")
     } catch {
       case e: Exception => {
-        val redirectTo = ActionHandler.mapping.method.getName match {
+        val redirectTo = Handler.mapping.method.getName match {
           case "save"   => "editNew"
           case "update" => "edit"
         }

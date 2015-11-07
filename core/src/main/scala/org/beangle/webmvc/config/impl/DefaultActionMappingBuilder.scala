@@ -125,7 +125,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
    * <li> Cannot starts with get/set/is
    * <li> Cannot annotated with @ignore
    * <li> Cannot be a field get accessor
-   * <li> Without @response/@mapping and return  type is not [String/View]
+   * <li> Without @response/@mapping/@params and return  type is not [String/View]
    */
   private def isActionMethod(method: Method, classInfo: ClassInfo): Boolean = {
     val methodName = method.getName
@@ -140,7 +140,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     if (null != getAnnotation(method, classOf[ignore])) return false
 
     val returnType = method.getReturnType()
-    if (null == getAnnotation(method, classOf[response]) || null == getAnnotation(method, classOf[mapping])) {
+    if (null == getAnnotation(method, classOf[response]) && null == getAnnotation(method, classOf[mapping]) && !containsParamAnnotation(method.getParameterAnnotations)) {
       //filter method don't return string or view
       if (returnType != classOf[String] && returnType != classOf[View]) return false
     } else {
@@ -190,23 +190,16 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
   }
 
   protected def defaultViewName(m: Method): String = {
-    if (classOf[String].equals(m.getReturnType) && !isAnnotationPresent(m, classOf[ignore]) && !isAnnotationPresent(m, classOf[response])) {
+    if (!isAnnotationPresent(m, classOf[response])) {
       val mappingAnn = getAnnotation(m, classOf[mapping])
-      if (m.getParameterTypes.length == 0 || null != mappingAnn || containParamAnnotation(m.getParameterAnnotations)) {
-        val name = m.getName.toLowerCase
-        if (name.startsWith("get") || Strings.contains(name, "$")) {
-          null
-        } else {
-          if (null != mappingAnn && Strings.isNotEmpty(mappingAnn._1.view)) mappingAnn._1.view
-          else DefaultActionMappingBuilder.defaultView(m.getName, m.getName)
-        }
-      } else null
+      if (null != mappingAnn && Strings.isNotEmpty(mappingAnn._1.view)) mappingAnn._1.view
+      else DefaultActionMappingBuilder.defaultView(m.getName, m.getName)
     } else {
       null
     }
   }
 
-  private def containParamAnnotation(annotations: Array[Array[Annotation]]): Boolean = {
+  private def containsParamAnnotation(annotations: Array[Array[Annotation]]): Boolean = {
     var i = 0
     while (i < annotations.length) {
       var j = 0

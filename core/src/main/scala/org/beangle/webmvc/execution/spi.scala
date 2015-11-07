@@ -39,3 +39,15 @@ trait Handler {
   def handle(request: HttpServletRequest, response: HttpServletResponse): Any
 }
 
+object Handler {
+
+  val HandlerAttribute = "_handler_"
+
+  def current: Handler = {
+    ActionContextHolder.context.stash[Handler](HandlerAttribute)
+  }
+
+  def mapping: RouteMapping = {
+    current.asInstanceOf[MappingHandler].mapping
+  }
+}

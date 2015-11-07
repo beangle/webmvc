@@ -25,7 +25,7 @@ import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.{ Chars, Strings }
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.api.context.ActionContextHolder
-import org.beangle.webmvc.execution.ActionHandler
+import org.beangle.webmvc.execution.Handler
 
 import javax.servlet.http.HttpServletRequest
 
@@ -83,7 +83,7 @@ class UIBean(context: ComponentContext) extends Component(context) {
 
   protected final def render(uri: String): String = {
     if (uri.startsWith("http")) return uri
-    context.uriRender.render(ActionHandler.mapping, uri)
+    context.uriRender.render(Handler.mapping, uri)
   }
 
   protected final def generateIdIfEmpty(): Unit = {

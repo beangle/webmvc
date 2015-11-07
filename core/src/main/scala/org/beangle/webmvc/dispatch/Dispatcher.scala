@@ -88,14 +88,28 @@ class Dispatcher extends GenericServlet with Logging {
   }
 
   protected def handleUnknown(servletPath: String, request: HttpServletRequest, response: HttpServletResponse): Unit = {
+    findFile(request, servletPath) match {
+      case Some(f) =>
+        val ext = substringAfterLast(f.getName, ".")
+        if (isNotEmpty(ext)) MimeTypeProvider.getMimeType(ext) foreach (m => response.setContentType(m.toString))
+        IOs.copy(new FileInputStream(f), response.getOutputStream)
+      case None =>
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND)
+    }
+  }
+
+  private def findFile(request: HttpServletRequest, servletPath: String): Option[File] = {
     val filePath = request.getServletContext.getRealPath(servletPath)
-    val p = new File(filePath)
+    var p = new File(filePath)
     if (p.exists) {
-      val ext = substringAfterLast(filePath, ".")
-      if (isNotEmpty(ext)) MimeTypeProvider.getMimeType(ext) foreach (m => response.setContentType(m.toString))
-      IOs.copy(new FileInputStream(p), response.getOutputStream)
+      if (p.isDirectory) {
+        val index = new File(p.getAbsolutePath + File.pathSeparator + "index.html")
+        if (index.exists) Some(index) else None
+      } else {
+        Some(p)
+      }
     } else {
-      response.setStatus(HttpServletResponse.SC_NOT_FOUND)
+      None
     }
   }
 
