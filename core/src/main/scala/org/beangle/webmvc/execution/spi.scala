@@ -22,7 +22,7 @@ import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.config.RouteMapping
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpServletRequest
-import org.beangle.webmvc.api.context.ActionContextHolder
+import org.beangle.webmvc.api.context.ActionContext
 
 @spi
 trait InvokerBuilder {
@@ -44,7 +44,7 @@ object Handler {
   val HandlerAttribute = "_handler_"
 
   def current: Handler = {
-    ActionContextHolder.context.stash[Handler](HandlerAttribute)
+    ActionContext.current.stash[Handler](HandlerAttribute)
   }
 
   def mapping: RouteMapping = {

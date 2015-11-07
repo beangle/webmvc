@@ -30,7 +30,7 @@ class ParamsTest extends FunSpec with Matchers {
       val params = Map[String, Any]("y" -> "", "z" -> 1)
 
       val context = new ActionContext(null, null, null, params)
-      ActionContextHolder.contexts.set(context)
+      ActionContext.set(context)
 
       assert(None == Params.getInt("x"))
       assert(None == Params.getInt("y"))

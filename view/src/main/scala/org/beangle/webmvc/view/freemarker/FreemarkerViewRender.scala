@@ -23,7 +23,7 @@ import java.io.StringWriter
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.template.freemarker.FreemarkerConfigurer
-import org.beangle.webmvc.api.context.{ ActionContext, ActionContextHolder }
+import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.execution.Handler
 import org.beangle.webmvc.view.{ ViewRender, ViewResult }
@@ -57,7 +57,7 @@ class FreemarkerViewRender(configurer: FreemarkerConfigurer, modelBuilder: Freem
     } else {
       val strWriter = new StringWriter(512)
       template.process(model, strWriter)
-      val context = ActionContextHolder.context
+      val context = ActionContext.current
       val uri = RequestUtils.getServletPath(context.request)
       var lastResult = ViewResult(strWriter.getBuffer, contentType)
       decorators foreach { decorator =>

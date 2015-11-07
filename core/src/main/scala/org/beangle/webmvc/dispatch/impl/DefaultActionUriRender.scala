@@ -21,7 +21,7 @@ package org.beangle.webmvc.dispatch.impl
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.web.url.UrlRender
 import org.beangle.webmvc.api.action.To
-import org.beangle.webmvc.api.context.ActionContextHolder
+import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.dispatch.{ ActionUriRender, RequestMapper }
 import org.beangle.webmvc.config.Configurer
@@ -34,7 +34,7 @@ class DefaultActionUriRender extends ActionUriRender {
   var configurer: Configurer = _
 
   override def render(initmapping: RouteMapping, uri: String): String = {
-    val context = ActionContextHolder.context
+    val context = ActionContext.current
     val contextPath = context.request.getServletContext().getContextPath
     if (uri.charAt(0) == '/') return contextPath + uri
 

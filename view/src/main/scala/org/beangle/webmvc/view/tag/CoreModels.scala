@@ -22,7 +22,7 @@ import java.io.StringWriter
 import java.{ util => ju }
 
 import org.beangle.commons.collection.page.Page
-import org.beangle.webmvc.api.context.ActionContextHolder
+import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.execution.Handler
 
 import _root_.freemarker.template.utility.StringUtil
@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest
 
 class CoreModels(context: ComponentContext, request: HttpServletRequest) extends AbstractModels(context, request) {
 
-  val textProvider = ActionContextHolder.context.textProvider.get
+  val textProvider = ActionContext.current.textProvider.get
 
   def url(url: String) = {
     context.uriRender.render(Handler.mapping, url)

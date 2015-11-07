@@ -22,7 +22,7 @@ import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.web.intercept.Interceptor
-import org.beangle.webmvc.api.context.{ ActionContext, ActionContextHolder }
+import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.view.impl.ViewManager
@@ -40,7 +40,7 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
   override def handle(request: HttpServletRequest, response: HttpServletResponse): Any = {
     val action = mapping.action
     val interceptors = action.profile.interceptors
-    val context = ActionContextHolder.context
+    val context = ActionContext.current
     var lastInterceptorIndex = preHandle(interceptors, context, request, response)
 
     if (lastInterceptorIndex == interceptors.length - 1) {

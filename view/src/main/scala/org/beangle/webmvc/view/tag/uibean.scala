@@ -24,7 +24,7 @@ import java.{ util => ju }
 import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.{ Chars, Strings }
 import org.beangle.commons.lang.annotation.spi
-import org.beangle.webmvc.api.context.ActionContextHolder
+import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.execution.Handler
 
 import javax.servlet.http.HttpServletRequest
@@ -60,12 +60,12 @@ class UIBean(context: ComponentContext) extends Component(context) {
     if (!Chars.isAsciiAlpha(text.charAt(0))) return defaultText
     if (-1 == text.indexOf('.') || -1 < text.indexOf(' ')) return defaultText
     else {
-       ActionContextHolder.context.textProvider.get(text, defaultText)
+       ActionContext.current.textProvider.get(text, defaultText)
     }
   }
 
   protected final def request: HttpServletRequest = {
-    ActionContextHolder.context.request
+    ActionContext.current.request
   }
 
   protected final def requestURI: String = request.getRequestURI()

@@ -94,7 +94,7 @@ class CodeGenerator {
         argu_index += 1
       }
       val sb = new StringBuilder("{\n")
-      sb ++= "org.beangle.webmvc.api.context.ActionContext context = org.beangle.webmvc.api.context.ActionContextHolder$.MODULE$.context();\n"
+      sb ++= "org.beangle.webmvc.api.context.ActionContext context = org.beangle.webmvc.api.context.ActionContext$.MODULE$.context();\n"
       if (needConverter)
         sb ++= "org.beangle.commons.collection.MapConverter converter = org.beangle.webmvc.api.context.Params$.MODULE$.converter();\n"
       if (needRequest)
