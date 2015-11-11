@@ -60,7 +60,7 @@ class StaticMethodInvokerBuilder extends InvokerBuilder with Logging {
     handleMethod.setBody(body)
     cct.addMethod(handleMethod)
 
-    cct.debugWriteFile("/tmp/invokers")
+//    cct.debugWriteFile("/tmp/invokers")
     val maked = cct.toClass()
     cct.detach()
     handlerCount += 1
@@ -94,7 +94,7 @@ class CodeGenerator {
         argu_index += 1
       }
       val sb = new StringBuilder("{\n")
-      sb ++= "org.beangle.webmvc.api.context.ActionContext context = org.beangle.webmvc.api.context.ActionContext$.MODULE$.context();\n"
+      sb ++= "org.beangle.webmvc.api.context.ActionContext context = org.beangle.webmvc.api.context.ActionContext$.MODULE$.current();\n"
       if (needConverter)
         sb ++= "org.beangle.commons.collection.MapConverter converter = org.beangle.webmvc.api.context.Params$.MODULE$.converter();\n"
       if (needRequest)
