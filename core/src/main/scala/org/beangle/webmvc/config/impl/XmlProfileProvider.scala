@@ -43,11 +43,17 @@ class XmlProfileProvider extends ProfileProvider {
     profiles.toList
   }
 
-  /**加载META-INF/beangle/mvc-default.xml*/
   private def loadDefaultProfile(): ProfileConfig = {
-    val convention_default = ClassLoaders.getResource("META-INF/beangle/mvc-default.xml")
-    if (null == convention_default) throw new RuntimeException("cannot find mvc-default.xml!")
-    readXmlToProfiles(convention_default)(0)
+    val pc = new ProfileConfig("default", "*")
+    pc.actionSuffix = "Action"
+    pc.defaultMethod = "index"
+    pc.viewPath = "/"
+    pc.viewPathStyle = "full"
+    pc.viewType = "freemarker"
+    pc.viewSuffix = ".ftl"
+    pc.urlPath = "/"
+    pc.urlStyle = "seo"
+    pc
   }
 
   private def readXmlToProfiles(url: URL): Seq[ProfileConfig] = {
