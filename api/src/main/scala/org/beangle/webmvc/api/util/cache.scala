@@ -23,10 +23,10 @@ import java.{ util => ju }
 
 object CacheControl {
 
-  def expiresAfter(days: Int): this.type = {
+  def expiresAfter(minutes: Int): this.type = {
     val response = ActionContext.current.response
     val cal = ju.Calendar.getInstance()
-    cal.add(ju.Calendar.DAY_OF_MONTH, days)
+    cal.add(ju.Calendar.MINUTE, minutes)
     val expires = cal.getTimeInMillis()
     response.setDateHeader("Date", System.currentTimeMillis())
     response.setDateHeader("Expires", expires)

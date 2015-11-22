@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest
 @spi
 trait RequestMapper {
 
-  def resolve(request: HttpServletRequest): Option[HandlerHolder]
+  def resolve(uri: String, request: HttpServletRequest): Option[HandlerHolder]
 
   def resolve(uri: String): Option[HandlerHolder]
 

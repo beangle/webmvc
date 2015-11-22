@@ -57,8 +57,7 @@ class HierarchicalUrlMapper(container: Container) extends RequestMapper with Log
     if (!url.contains("{")) {
       directMappings.getOrElseUpdate(url, new HttpMethodMappings).methods.put(httpMethod, new HandlerHolder(handler, Map.empty))
     } else {
-      val holder = new HandlerHolder(handler, Path.parse(url))
-      hierarchicalMappings.add(httpMethod, url, holder)
+      hierarchicalMappings.add(httpMethod, url, new HandlerHolder(handler, Path.parse(url)))
     }
   }
 
@@ -71,8 +70,7 @@ class HierarchicalUrlMapper(container: Container) extends RequestMapper with Log
     }
   }
 
-  override def resolve(request: HttpServletRequest): Option[HandlerHolder] = {
-    val uri = RequestUtils.getServletPath(request)
+  override def resolve(uri: String, request: HttpServletRequest): Option[HandlerHolder] = {
     var bangIdx, dotIdx = -1
     val lastSlashIdx = uri.lastIndexOf('/')
     val sb = new jl.StringBuilder(uri.length + 10)
@@ -114,6 +112,12 @@ class HierarchicalUrlMapper(container: Container) extends RequestMapper with Log
  */
 class HttpMethodMappings {
   val methods = new collection.mutable.HashMap[String, HandlerHolder]
+  var depth: Int = 0
+
+  def matchesDepth(given: Int): Boolean = {
+    this.depth == given || this.depth == -1
+  }
+
   def get(method: String): Option[HandlerHolder] = {
     var result = methods.get(method)
     if (result.isEmpty && method == POST) result = methods.get(GET)
@@ -124,7 +128,7 @@ class HttpMethodMappings {
 class HierarchicalMappings {
   val children = new collection.mutable.HashMap[String, HierarchicalMappings]
   val mappings = new collection.mutable.HashMap[String, HttpMethodMappings]
-
+  var tailRecursion = false
   def resolve(httpMethod: String, uri: String): Option[HandlerHolder] = {
     val parts = split(uri, '/')
     find(0, parts, this) match {
@@ -146,13 +150,14 @@ class HierarchicalMappings {
   }
 
   def add(httpMethod: String, url: String, holder: HandlerHolder): Unit = {
-    add(httpMethod, url, holder, this)
+    add(httpMethod, 1, url, holder, this)
   }
 
-  private def add(httpMethod: String, pattern: String, holder: HandlerHolder, mappings: HierarchicalMappings): Unit = {
+  private def add(httpMethod: String, depth: Int, pattern: String, holder: HandlerHolder, mappings: HierarchicalMappings): Unit = {
     val slashIndex = pattern.indexOf('/', 1)
     val head = if (-1 == slashIndex) pattern.substring(1) else pattern.substring(1, slashIndex)
     val headPattern = if (Path.isPattern(head)) "*" else head
+    val mydepth = if (depth > 0 && Path.isTailPattern(head)) -1 else depth
 
     if (-1 == slashIndex) {
       val methodMappings = mappings.mappings.getOrElseUpdate(headPattern, new HttpMethodMappings)
@@ -161,16 +166,29 @@ class HierarchicalMappings {
         assert(mappings.children.isEmpty || mappings.children("*") == mappings)
         mappings.children.put("*", mappings)
       }
+      methodMappings.depth = mydepth
     } else {
-      add(httpMethod, pattern.substring(slashIndex), holder, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
+      val nextdepth = if (mydepth > 0) mydepth + 1 else mydepth
+      add(httpMethod, nextdepth, pattern.substring(slashIndex), holder, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
+    }
+    mappings.tailRecursion = (mappings.children.size == 1 && mappings.children("*") == mappings && mappings.mappings.size == 1)
+  }
+
+  private def filterDepth(hm: Option[HttpMethodMappings], depth: Int): Option[HttpMethodMappings] = {
+    hm match {
+      case mm @ Some(m) => if (m.matchesDepth(depth)) mm else None
+      case None         => None
     }
   }
 
   private def find(index: Int, parts: Array[String], mappings: HierarchicalMappings): Option[HttpMethodMappings] = {
     if (index < parts.length && null != mappings) {
-      if (index == parts.length - 1) {
-        val mapping = mappings.mappings.get(parts(index))
-        if (mapping == None) mappings.mappings.get("*") else mapping
+      if (mappings.tailRecursion) {
+        filterDepth(mappings.mappings.get("*"), parts.length)
+      } else if (index == parts.length - 1) {
+        val depth = parts.length
+        val mapping = filterDepth(mappings.mappings.get(parts(index)), depth)
+        if (mapping == None) filterDepth(mappings.mappings.get("*"), depth) else mapping
       } else {
         val mapping = find(index + 1, parts, mappings.children.get(parts(index)).orNull)
         if (mapping == None) find(index + 1, parts, mappings.children.get("*").orNull)

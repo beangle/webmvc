@@ -12,9 +12,9 @@
   <version>0.3.5-SNAPSHOT</version>
 
   <properties>
-    <beangle.commons.version>4.4.4</beangle.commons.version>
-    <beangle.data.version>4.3.2</beangle.data.version>
-    <beangle.cdi.version>0.0.2</beangle.cdi.version>
+    <beangle.commons.version>4.4.5</beangle.commons.version>
+    <beangle.cdi.version>0.0.3</beangle.cdi.version>
+    <beangle.data.version>4.3.3-SNAPSHOT</beangle.data.version>
     <beangle.template.version>0.0.8</beangle.template.version>
   </properties>
 

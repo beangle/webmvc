@@ -39,6 +39,8 @@ trait Handler {
   def handle(request: HttpServletRequest, response: HttpServletResponse): Any
 }
 
+trait ContextAwareHandler extends Handler
+
 object Handler {
 
   val HandlerAttribute = "_handler_"

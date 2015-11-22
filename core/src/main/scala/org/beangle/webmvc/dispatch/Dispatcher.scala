@@ -33,15 +33,13 @@ import org.beangle.webmvc.context.{ ActionContextBuilder, ContainerHelper }
 import javax.servlet.{ GenericServlet, ServletConfig, ServletRequest, ServletResponse }
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.commons.web.multipart.StandardMultipartResolver
+import org.beangle.webmvc.execution.ContextAwareHandler
 
 class Dispatcher extends GenericServlet with Logging {
 
   var defaultEncoding = "utf-8"
-  var staticPattern: String = "/static/"
-
   var mapper: RequestMapper = _
   var actionContextBuilder: ActionContextBuilder = _
-  var processor: ResourceProcessor = _
 
   override def init(config: ServletConfig): Unit = {
     val context = ContainerHelper.get
@@ -54,47 +52,42 @@ class Dispatcher extends GenericServlet with Logging {
     mapper.build()
 
     actionContextBuilder = context.getBean(classOf[ActionContextBuilder]).get
-    processor = context.getBean(classOf[ResourceProcessor]) match {
-      case Some(p) => p
-      case None =>
-        val p = new ResourceProcessor(new ClasspathResourceLoader, new PathResolverImpl())
-        p.filters = List(new HeaderFilter)
-        p
-    }
   }
 
   override def service(req: ServletRequest, res: ServletResponse): Unit = {
     val request = req.asInstanceOf[HttpServletRequest]
     val response = res.asInstanceOf[HttpServletResponse]
     val servletPath = RequestUtils.getServletPath(request)
-    if (servletPath.startsWith(staticPattern)) {
-      val contextPath = request.getContextPath
-      val uri =
-        if (!(contextPath.equals("") || contextPath.equals("/"))) substringAfter(request.getRequestURI, contextPath) else request.getRequestURI
-      processor.process(uri, request, response)
-    } else {
-      request.setCharacterEncoding(defaultEncoding)
-      mapper.resolve(request) match {
-        case Some(rm) =>
-          actionContextBuilder.build(request, response, rm.handler, rm.params)
+    request.setCharacterEncoding(defaultEncoding)
+    mapper.resolve(servletPath, request) match {
+      case Some(hh) =>
+        val handler = hh.handler
+        if (handler.isInstanceOf[ContextAwareHandler]) {
+          actionContextBuilder.build(request, response, handler, hh.params)
           try {
-            rm.handler.handle(request, response)
+            handler.handle(request, response)
           } finally {
             StandardMultipartResolver.cleanup(request)
           }
-        case None => handleUnknown(servletPath, request, response)
-      }
+        } else {
+          handler.handle(request, response)
+        }
+      case None => handleUnknown(servletPath, request, response)
     }
   }
 
   protected def handleUnknown(servletPath: String, request: HttpServletRequest, response: HttpServletResponse): Unit = {
-    findFile(request, servletPath) match {
-      case Some(f) =>
-        val ext = substringAfterLast(f.getName, ".")
-        if (isNotEmpty(ext)) MimeTypeProvider.getMimeType(ext) foreach (m => response.setContentType(m.toString))
-        IOs.copy(new FileInputStream(f), response.getOutputStream)
-      case None =>
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND)
+    if (servletPath.isEmpty) {
+      response.sendRedirect(request.getContextPath + "/")
+    } else {
+      findFile(request, servletPath) match {
+        case Some(f) =>
+          val ext = substringAfterLast(f.getName, ".")
+          if (isNotEmpty(ext)) MimeTypeProvider.getMimeType(ext) foreach (m => response.setContentType(m.toString))
+          IOs.copy(new FileInputStream(f), response.getOutputStream)
+        case None =>
+          response.setStatus(HttpServletResponse.SC_NOT_FOUND)
+      }
     }
   }
 
@@ -103,7 +96,7 @@ class Dispatcher extends GenericServlet with Logging {
     var p = new File(filePath)
     if (p.exists) {
       if (p.isDirectory) {
-        val index = new File(p.getAbsolutePath + File.pathSeparator + "index.html")
+        val index = new File(p.getAbsolutePath + File.separator + "index.html")
         if (index.exists) Some(index) else None
       } else {
         Some(p)

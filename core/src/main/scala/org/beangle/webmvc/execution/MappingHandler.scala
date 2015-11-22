@@ -35,7 +35,7 @@ import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
  * 负责调用Action,渲染结果
  */
 @description("缺省的调用反应堆")
-class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManager: ViewManager) extends Handler {
+class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManager: ViewManager) extends ContextAwareHandler {
 
   override def handle(request: HttpServletRequest, response: HttpServletResponse): Any = {
     val action = mapping.action

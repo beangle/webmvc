@@ -37,9 +37,8 @@ class StreamViewRender extends ViewRender with Logging {
     val stream = view.asInstanceOf[StreamView]
     try {
       val response = context.response
-      response.reset()
       response.setContentType(stream.contentType)
-      RequestUtils.setFileDownloadHeader(response, stream.displayName)
+      RequestUtils.setContentDisposition(response, stream.displayName)
       IOs.copy(stream.inputStream, response.getOutputStream)
     } catch {
       case e: Exception => logger.warn(s"download file error ${stream.displayName}", e)
