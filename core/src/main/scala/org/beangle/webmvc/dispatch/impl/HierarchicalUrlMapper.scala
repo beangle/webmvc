@@ -171,7 +171,7 @@ class HierarchicalMappings {
       val nextdepth = if (mydepth > 0) mydepth + 1 else mydepth
       add(httpMethod, nextdepth, pattern.substring(slashIndex), holder, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
     }
-    mappings.tailRecursion = (mappings.children.size == 1 && mappings.children("*") == mappings && mappings.mappings.size == 1)
+    mappings.tailRecursion = (mappings.children.size == 1 && mappings.mappings.size == 1 && mappings.children.get("*") == Some(mappings))
   }
 
   private def filterDepth(hm: Option[HttpMethodMappings], depth: Int): Option[HttpMethodMappings] = {
