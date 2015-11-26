@@ -19,5 +19,9 @@
       <groupId>org.beangle.data</groupId>
       <artifactId>beangle-data-hibernate_2.11</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.beangle.commons</groupId>
+      <artifactId>beangle-commons-text_2.11</artifactId>
+    </dependency>
   </dependencies>
 </project>
