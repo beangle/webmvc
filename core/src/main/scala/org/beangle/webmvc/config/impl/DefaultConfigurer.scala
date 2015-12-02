@@ -43,7 +43,19 @@ class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) 
   override def build(): Unit = {
     val watch = new Stopwatch(true)
     profiles = profileProvider.loadProfiles() map { pc =>
-      pc.mkProfile(pc.interceptorNames map (name => container.getBean[Interceptor](name).get), pc.decoratorNames map (name => container.getBean[ViewDecorator](name).get))
+      val interceptors = pc.interceptorNames map { name =>
+        container.getBean[Interceptor](name) match {
+          case Some(i) => i
+          case None    => throw new RuntimeException(s"Cannot find interceptor [$name] in container")
+        }
+      }
+      val decorators = pc.decoratorNames map { name =>
+        container.getBean[ViewDecorator](name) match {
+          case Some(d) => d
+          case None    => throw new RuntimeException(s"Cannot find decorator [$name] in container")
+        }
+      }
+      pc.mkProfile(interceptors, decorators)
     }
     profiles = profiles.sorted
 

@@ -19,7 +19,7 @@
 package org.beangle.webmvc.api.util
 
 import javax.servlet.http.HttpServletResponse
-import org.beangle.webmvc.api.context.ActionContextHolder
+import org.beangle.webmvc.api.context.ActionContext
 
 /**
  * Cross Origin Resource Sharing
@@ -32,7 +32,7 @@ object CORS {
   }
 
   def allow(origins: String, methods: String, headers: String): this.type = {
-    val response = ActionContextHolder.context.response
+    val response = ActionContext.current.response
     response.addHeader("Access-Control-Allow-Origin", origins)
     if (null != methods) response.addHeader("Access-Control-Allow-Methods", methods)
     if (null != headers) response.addHeader("Access-Control-Allow-Headers", headers)
@@ -40,13 +40,13 @@ object CORS {
   }
 
   def expose(header: String): this.type = {
-    val response = ActionContextHolder.context.response
+    val response = ActionContext.current.response
     response.addHeader("Access-Control-Expose-Headers", header)
     this
   }
 
   def maxage(age: Int): this.type = {
-    val response = ActionContextHolder.context.response
+    val response = ActionContext.current.response
     response.addIntHeader("Access-Control-Max-Age", age)
     this
   }

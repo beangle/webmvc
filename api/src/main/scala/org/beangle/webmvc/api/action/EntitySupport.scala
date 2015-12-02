@@ -32,8 +32,21 @@ trait EntitySupport[T] {
     else tClass.get.asInstanceOf[Class[T]]
   }
 
+  @ignore
+  final def entityName: String = {
+    entityType.getName
+  }
+
+  @ignore
+  protected def simpleEntityName: String = {
+    Strings.uncapitalize(Strings.substringAfterLast(entityName, "."))
+  }
+
   protected def getId(name: String): Option[String] = {
-    Params.get(name + ".id").orElse(Params.get(name + "_id").orElse(Params.get(name + "Id")))
+    Params.get(name + ".id").orElse(Params.get(name + "Id")) match {
+      case Some(id) => Some(id)
+      case None     => if (name == simpleEntityName) Params.get("id") else None
+    }
   }
 
   @ignore
@@ -89,10 +102,12 @@ trait EntitySupport[T] {
   protected final def ids[T: ClassTag](name: String, clazz: Class[T]): List[T] = {
     var datas: Iterable[T] = Params.getAll(name + ".id", clazz)
     if (datas.isEmpty) {
-      val datastring = Params.get(name + ".ids").getOrElse(Params.get(name + "Ids").getOrElse(null))
       datas =
-        if (datastring == null) List.empty[T]
-        else Params.converter.convert(Strings.split(datastring, ","), clazz).toList
+        Params.get(name + ".ids").orElse(Params.get(name + "Ids")) match {
+          case None => List.empty[T]
+          case Some(datastring) =>
+            Params.converter.convert(Strings.split(datastring, ","), clazz).toList
+        }
     }
     datas.asInstanceOf[List[T]]
   }

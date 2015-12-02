@@ -20,17 +20,17 @@ package org.beangle.webmvc.api.action
 
 import org.beangle.commons.web.util.{CookieUtils, RequestUtils}
 import org.beangle.webmvc.api.annotation.ignore
-import org.beangle.webmvc.api.context.ActionContextHolder
+import org.beangle.webmvc.api.context.ActionContext
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 trait ServletSupport {
 
   @ignore
-  protected final def request: HttpServletRequest = ActionContextHolder.context.request
+  protected final def request: HttpServletRequest = ActionContext.current.request
 
   @ignore
-  protected final def response: HttpServletResponse = ActionContextHolder.context.response
+  protected final def response: HttpServletResponse = ActionContext.current.response
 
   protected final def getCookieValue(cookieName: String): String = {
     CookieUtils.getCookieValue(request, cookieName)

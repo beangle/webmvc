@@ -19,12 +19,12 @@
 package org.beangle.webmvc.entity.action
 
 import java.{ util => ju }
-
 import org.beangle.data.model.{ Entity, Updated }
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.execution.ActionHandler
+import org.beangle.webmvc.execution.Handler
+import org.beangle.commons.text.inflector.en.EnNounPluralizer
 
 abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAction[T] {
 
@@ -34,13 +34,13 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
   }
 
   def search(): String = {
-    put(shortName + "s", entityDao.search(getQueryBuilder()))
+    put(EnNounPluralizer.pluralize(simpleEntityName), entityDao.search(getQueryBuilder()))
     forward()
   }
 
   @mapping(value = "{id}")
   def info(@param("id") id: String): String = {
-    put(shortName, getModel[T](entityName, convertId(id)))
+    put(simpleEntityName, getModel[T](entityName, convertId(id)))
     forward()
   }
 
@@ -50,31 +50,31 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
   def edit(@param("id") id: String): String = {
     var entity = getModel(id)
     editSetting(entity)
-    put(shortName, entity)
+    put(simpleEntityName, entity)
     forward()
   }
 
   @mapping(value = "new", view = "new,form")
   def editNew(): String = {
-    var entity = getEntity(entityType, shortName)
+    var entity = getEntity(entityType, simpleEntityName)
     editSetting(entity)
-    put(shortName, entity)
+    put(simpleEntityName, entity)
     forward()
   }
 
   @mapping(method = "delete")
   def remove(): View = {
     val idclass = entityMetaData.getType(entityName).get.idType
-    val entities: Seq[T] = getId(shortName, idclass) match {
+    val entities: Seq[T] = getId(simpleEntityName, idclass) match {
       case Some(entityId) => List(getModel[T](entityName, entityId))
-      case None           => getModels[T](entityName, ids(shortName, idclass))
+      case None           => getModels[T](entityName, ids(simpleEntityName, idclass))
     }
     removeAndRedirect(entities)
   }
 
   @mapping(value = "{id}", method = "put")
   def update(@param("id") id: String): View = {
-    val entity = populate(getModel(id), entityName, shortName)
+    val entity = populate(getModel(id), entityName, simpleEntityName)
     saveAndRedirect(entity)
   }
 
@@ -94,7 +94,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
       redirect("search", "info.save.success")
     } catch {
       case e: Exception => {
-        val redirectTo = ActionHandler.mapping.method.getName match {
+        val redirectTo = Handler.mapping.method.getName match {
           case "save"   => "editNew"
           case "update" => "edit"
         }

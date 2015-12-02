@@ -42,12 +42,12 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   /**
    * 将request中的参数设置到clazz对应的bean。
    */
-  protected final def populate[E <: Entity[_]](clazz: Class[E], shortName: String): E = {
-    PopulateHelper.populate(clazz, shortName);
+  protected final def populate[E <: Entity[_]](clazz: Class[E], simpleEntityName: String): E = {
+    PopulateHelper.populate(clazz, simpleEntityName);
   }
 
-  protected final def populate[E <: Entity[_]](obj: E, shortName: String): E = {
-    PopulateHelper.populate(obj, Params.sub(shortName))
+  protected final def populate[E <: Entity[_]](obj: E, simpleEntityName: String): E = {
+    PopulateHelper.populate(obj, Params.sub(simpleEntityName))
   }
 
   protected final def populate[E <: Entity[_]](clazz: Class[E]): E = {
@@ -56,12 +56,12 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
 
   protected final def populate(entityName: String) = PopulateHelper.populate(entityName);
 
-  protected final def populate(entityName: String, shortName: String): Object = {
-    PopulateHelper.populate(entityName, shortName);
+  protected final def populate(entityName: String, simpleEntityName: String): Object = {
+    PopulateHelper.populate(entityName, simpleEntityName);
   }
 
-  protected final def populate[E <: Entity[_]](obj: E, entityName: String, shortName: String): E = {
-    PopulateHelper.populate(obj, entityName, shortName)
+  protected final def populate[E <: Entity[_]](obj: E, entityName: String, simpleEntityName: String): E = {
+    PopulateHelper.populate(obj, entityName, simpleEntityName)
   }
 
   protected final def populate[E <: Entity[_]](entity: E, entityName: String, params: collection.Map[String, Any]): E = {
@@ -98,16 +98,6 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     QueryHelper.populateConditions(builder, exclusiveAttrNames);
   }
 
-  @ignore
-  final def entityName: String = {
-    entityType.getName
-  }
-
-  @ignore
-  protected def shortName: String = {
-    Strings.uncapitalize(Strings.substringAfterLast(entityName, "."))
-  }
-
   // CURD----------------------------------------
   protected def remove[E](list: Seq[E]): Unit = {
     entityDao.remove(list)
@@ -126,27 +116,27 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   protected def getQueryBuilder(): OqlBuilder[T] = {
-    val builder: OqlBuilder[T] = OqlBuilder.from(entityName, shortName)
+    val builder: OqlBuilder[T] = OqlBuilder.from(entityName, simpleEntityName)
     populateConditions(builder)
     builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit)
   }
 
   protected def populateEntity(): T = {
-    populateEntity(entityName, shortName).asInstanceOf[T]
+    populateEntity(entityName, simpleEntityName).asInstanceOf[T]
   }
 
-  protected def populateEntity[E <: Entity[_]](entityName: String, shortName: String): E = {
-    getId(shortName, entityMetaData.getType(entityName).get.idType) match {
-      case Some(entityId) => populate(getModel[E](entityName, entityId), entityName, Params.sub(shortName))
-      case None           => populate(entityName, shortName).asInstanceOf[E]
+  protected def populateEntity[E <: Entity[_]](entityName: String, simpleEntityName: String): E = {
+    getId(simpleEntityName, entityMetaData.getType(entityName).get.idType) match {
+      case Some(entityId) => populate(getModel[E](entityName, entityId), entityName, Params.sub(simpleEntityName))
+      case None           => populate(entityName, simpleEntityName).asInstanceOf[E]
     }
   }
 
-  protected def populateEntity[E](entityClass: Class[E], shortName: String): E = {
+  protected def populateEntity[E](entityClass: Class[E], simpleEntityName: String): E = {
     val entityType =
       if (entityClass.isInterface) entityMetaData.getType(entityClass.getName)
       else entityMetaData.getType(entityClass)
-    populateEntity(entityType.get.entityName, shortName)
+    populateEntity(entityType.get.entityName, simpleEntityName)
   }
 
   protected def getEntity[E <: Entity[_]](entityName: String, name: String): E = {
@@ -157,11 +147,11 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     }
   }
 
-  protected def getEntity[E](entityClass: Class[E], shortName: String): E = {
+  protected def getEntity[E](entityClass: Class[E], simpleEntityName: String): E = {
     val entityType: EntityType =
       (if (entityClass.isInterface) entityMetaData.getType(entityClass.getName)
       else entityMetaData.getType(entityClass)).get
-    getEntity(entityType.entityName, shortName).asInstanceOf[E]
+    getEntity(entityType.entityName, simpleEntityName).asInstanceOf[E]
   }
 
   protected def getModel(id: jo.Serializable): T = {

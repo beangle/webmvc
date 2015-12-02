@@ -19,7 +19,7 @@
 package org.beangle.webmvc.api.action
 
 import org.beangle.webmvc.api.context.Params
-import org.beangle.webmvc.api.context.ActionContextHolder
+import org.beangle.webmvc.api.context.ActionContext
 import scala.reflect.ClassTag
 import java.sql
 import java.{ util => ju }
@@ -27,7 +27,7 @@ import java.{ util => ju }
 trait ParamSupport {
 
   protected final def put(key: String, value: Any): Unit = {
-    ActionContextHolder.context.attribute(key, value)
+    ActionContext.current.attribute(key, value)
   }
 
   protected final def getAll(paramName: String): Iterable[Any] = {
@@ -48,11 +48,11 @@ trait ParamSupport {
   }
 
   protected final def attribute(name: String): Any = {
-    ActionContextHolder.context.attribute(name)
+    ActionContext.current.attribute(name)
   }
 
   protected final def attribute[T](name: String, clazz: Class[T]): T = {
-    ActionContextHolder.context.attribute(name).asInstanceOf[T]
+    ActionContext.current.attribute(name).asInstanceOf[T]
   }
 
   protected final def get[T](name: String, clazz: Class[T]): Option[T] = {

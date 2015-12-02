@@ -28,7 +28,7 @@ import org.beangle.commons.lang.Strings
 import org.beangle.webmvc.api.action.EntitySupport
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.i18n.TextProvider
-import org.beangle.webmvc.execution.{ ActionHandler, MappingHandler }
+import org.beangle.webmvc.execution.{ Handler, MappingHandler }
 
 class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: TextBundleRegistry, formater: TextFormater)
     extends DefaultTextResource(locale, registry, formater) with TextProvider {
@@ -41,7 +41,7 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
   protected override def get(key: String): Option[String] = {
     if (key == null) ""
 
-    val handler = ActionHandler.handler
+    val handler = Handler.current
     if (!handler.isInstanceOf[MappingHandler]) return None;
     val amHander = handler.asInstanceOf[MappingHandler]
     val mapping = amHander.mapping

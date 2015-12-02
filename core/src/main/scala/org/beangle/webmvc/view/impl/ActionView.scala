@@ -22,7 +22,7 @@ import org.beangle.commons.http.HttpMethods
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.webmvc.api.action.{ ToClass, ToURL, To }
 import org.beangle.webmvc.api.annotation.view
-import org.beangle.webmvc.api.context.{ ActionContext, ActionContextHolder }
+import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.{ ActionView, ForwardActionView, RedirectActionView, View }
 import org.beangle.webmvc.config.{ RouteMapping, Configurer }
 import org.beangle.webmvc.view.{ TypeViewBuilder, ViewRender }
@@ -71,7 +71,7 @@ class ForwardActionViewRender(val configurer: Configurer) extends ViewRender {
           case Some(am) =>
             if (am.httpMethod != HttpMethods.GET && am.httpMethod != HttpMethods.POST)
               throw new RuntimeException(s"Cannot forward action mapping using ${am.httpMethod}")
-            val ua = am.toURL(ca.parameters, ActionContextHolder.context.params)
+            val ua = am.toURL(ca.parameters, ActionContext.current.params)
             ca.parameters --= am.urlParams.keys
             ua.params(ca.parameters)
             if (am.httpMethod != request.getMethod) ua.param(RouteMapping.MethodParam, am.httpMethod)
@@ -121,7 +121,7 @@ class RedirectActionViewRender(val configurer: Configurer) extends ViewRender {
         configurer.getRouteMapping(ca.clazz, ca.method) match {
           case Some(am) =>
             if (am.httpMethod != HttpMethods.GET) throw new RuntimeException(s"Cannot redirect action mapping using ${am.httpMethod}")
-            val ua = am.toURL(ca.parameters, ActionContextHolder.context.params)
+            val ua = am.toURL(ca.parameters, ActionContext.current.params)
             ca.parameters --= am.urlParams.keys
             ua.params(ca.parameters)
             ua.url

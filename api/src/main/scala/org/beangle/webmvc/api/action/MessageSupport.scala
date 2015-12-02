@@ -18,24 +18,21 @@
  */
 package org.beangle.webmvc.api.action
 
-import org.beangle.webmvc.api.context.Flash
-import org.beangle.webmvc.api.context.ActionContextHolder
-import org.beangle.commons.lang.Strings
-import org.beangle.webmvc.api.context.ActionMessages
+import org.beangle.commons.lang.{ Chars, Strings }
 import org.beangle.webmvc.api.annotation.ignore
-import org.beangle.commons.lang.Chars
+import org.beangle.webmvc.api.context.{ ActionContext, ActionMessages, Flash }
 
 trait MessageSupport {
 
   final def getText(aTextName: String): String = {
-    ActionContextHolder.context.textProvider match {
+    ActionContext.current.textProvider match {
       case Some(p) => p(aTextName).get
       case None    => aTextName
     }
   }
 
   final def getText(key: String, defaultValue: String, args: Any*): String = {
-    ActionContextHolder.context.textProvider match {
+    ActionContext.current.textProvider match {
       case Some(p) => p(key, defaultValue, args: _*)
       case None    => defaultValue
     }
@@ -51,19 +48,19 @@ trait MessageSupport {
   }
 
   protected final def addMessage(msgKey: String, args: Any*): Unit = {
-    ActionContextHolder.context.flash.addMessageNow(getTextInternal(msgKey, args: _*))
+    ActionContext.current.flash.addMessageNow(getTextInternal(msgKey, args: _*))
   }
 
   protected final def addError(msgKey: String, args: Any*): Unit = {
-    ActionContextHolder.context.flash.addErrorNow(getTextInternal(msgKey, args: _*))
+    ActionContext.current.flash.addErrorNow(getTextInternal(msgKey, args: _*))
   }
 
   protected final def addFlashError(msgKey: String, args: Any*): Unit = {
-    ActionContextHolder.context.flash.addError(getTextInternal(msgKey, args: _*))
+    ActionContext.current.flash.addError(getTextInternal(msgKey, args: _*))
   }
 
   protected final def addFlashMessage(msgKey: String, args: Any*): Unit = {
-    ActionContextHolder.context.flash.addMessage(getTextInternal(msgKey, args: _*))
+    ActionContext.current.flash.addMessage(getTextInternal(msgKey, args: _*))
   }
 
   /**
@@ -71,7 +68,7 @@ trait MessageSupport {
    */
   @ignore
   protected final def actionMessages: List[String] = {
-    val messages = ActionContextHolder.context.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
+    val messages = ActionContext.current.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
     if (null == messages) List()
     else messages.messages.toList
   }
@@ -81,7 +78,7 @@ trait MessageSupport {
    */
   @ignore
   protected final def actionErrors: List[String] = {
-    val messages = ActionContextHolder.context.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
+    val messages = ActionContext.current.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
     if (null == messages) List()
     else messages.errors.toList
   }

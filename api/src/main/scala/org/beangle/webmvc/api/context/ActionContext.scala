@@ -23,9 +23,13 @@ import org.beangle.commons.collection.Collections
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.webmvc.api.i18n.TextProvider
 
-object ActionContextHolder {
-  val contexts = new ThreadLocal[ActionContext]
-  def context: ActionContext = contexts.get()
+object ActionContext {
+  private val contexts = new ThreadLocal[ActionContext]
+  
+  def set(newer: ActionContext): Unit = {
+    contexts.set(newer)
+  }
+  def current: ActionContext = contexts.get()
 }
 
 final class ActionContext(val request: HttpServletRequest, val response: HttpServletResponse, val locale: ju.Locale, val params: Map[String, Any]) {
