@@ -26,7 +26,6 @@ import org.beangle.webmvc.api.action.EntitySupport
 
 object ActionNameBuilder {
 
-  val pluralizer = new EnNounPluralizer
   /**
    * Return namespace and action name.
    *
@@ -53,10 +52,10 @@ object ActionNameBuilder {
           val matchedName = profile.getMatched(className)
           val lastSlash = matchedName.lastIndexOf('/')
           if (-1 == lastSlash) {
-            nameBuilder.append(unCamel(pluralizer.pluralize(matchedName)))
+            nameBuilder.append(unCamel(EnNounPluralizer.pluralize(matchedName)))
           } else {
             nameBuilder.append(unCamel(matchedName.substring(0, lastSlash + 1)))
-            nameBuilder.append(unCamel(pluralizer.pluralize(matchedName.substring(lastSlash + 1))))
+            nameBuilder.append(unCamel(EnNounPluralizer.pluralize(matchedName.substring(lastSlash + 1))))
           }
         case _ =>
           throw new RuntimeException("unsupported uri style " + profile.urlStyle)

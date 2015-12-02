@@ -20,11 +20,11 @@ package org.beangle.webmvc.api.util
 
 import org.beangle.webmvc.api.context.ActionContext
 import java.{ util => ju }
+import javax.servlet.http.HttpServletResponse
 
 object CacheControl {
 
-  def expiresAfter(minutes: Int): this.type = {
-    val response = ActionContext.current.response
+  def expiresAfter(minutes: Int, response: HttpServletResponse = ActionContext.current.response): this.type = {
     val cal = ju.Calendar.getInstance()
     cal.add(ju.Calendar.MINUTE, minutes)
     val expires = cal.getTimeInMillis()
