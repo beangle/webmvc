@@ -58,7 +58,13 @@ object RouteMapping {
 class RouteMapping(val httpMethod: String, val action: ActionMapping, val method: Method, val name: String,
     val arguments: Array[Argument], val urlParams: Map[String, Integer], val defaultView: String) {
 
-  def url = if ("" == name) action.name else (action.name + "/" + name)
+  def url: String = {
+    if ("" == name) {
+      action.name
+    } else {
+      if (action.name.endsWith("/")) action.name + name else (action.name + "/" + name)
+    }
+  }
 
   def fill(paramMaps: collection.Map[String, Any]*): String = {
     if (urlParams.isEmpty) return url

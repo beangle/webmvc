@@ -25,6 +25,7 @@ import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.execution.Handler
 import org.beangle.commons.text.inflector.en.EnNounPluralizer
+import java.time.ZonedDateTime
 
 abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAction[T] {
 
@@ -87,7 +88,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
   protected def saveAndRedirect(entity: T): View = {
     try {
       entity match {
-        case updated: Updated => updated.updatedAt = new ju.Date()
+        case updated: Updated => updated.updatedAt = new java.util.Date()
         case _                =>
       }
       saveOrUpdate(entity)

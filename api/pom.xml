@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.beangle.webmvc</groupId>
-    <artifactId>beangle-webmvc-parent_2.11</artifactId>
+    <artifactId>beangle-webmvc-parent_2.12</artifactId>
     <version>0.3.6-SNAPSHOT</version>
   </parent>
-  <artifactId>beangle-webmvc-api_2.11</artifactId>
+  <artifactId>beangle-webmvc-api_2.12</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC API</name>

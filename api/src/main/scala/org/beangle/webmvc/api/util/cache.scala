@@ -21,6 +21,7 @@ package org.beangle.webmvc.api.util
 import org.beangle.webmvc.api.context.ActionContext
 import java.{ util => ju }
 import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.HttpServletRequest
 
 object CacheControl {
 
@@ -31,7 +32,22 @@ object CacheControl {
     response.setDateHeader("Date", System.currentTimeMillis())
     response.setDateHeader("Expires", expires)
     response.setDateHeader("Retry-After", expires)
-    response.setHeader("Cache-Control", "public")
+    response.setHeader("Cache-Control", "max-age=3600, public")
     this
+  }
+
+  /**
+   * return true if already has it's etag
+   */
+  def withEtag(etag: String, request: HttpServletRequest = ActionContext.current.request,
+    response: HttpServletResponse = ActionContext.current.response): Boolean = {
+    val requestETag = request.getHeader("If-None-Match")
+    response.setHeader("ETag", etag)
+
+    // not modified, content is not sent - only basic headers and status SC_NOT_MODIFIED
+    if (etag.equals(requestETag)) {
+      response.setStatus(HttpServletResponse.SC_NOT_MODIFIED)
+      true
+    } else false
   }
 }
