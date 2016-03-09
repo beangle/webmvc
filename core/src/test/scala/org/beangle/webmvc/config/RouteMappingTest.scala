@@ -16,25 +16,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Beangle.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beangle.webmvc.api.context
+package org.beangle.webmvc.config
 
 import org.junit.runner.RunWith
 import org.scalatest.{ FunSpec, Matchers }
 import org.scalatest.junit.JUnitRunner
+import org.beangle.commons.http.HttpMethods
+import org.beangle.webmvc.context.Argument
+import org.beangle.webmvc.api.view.View
 
 @RunWith(classOf[JUnitRunner])
-class ParamsTest extends FunSpec with Matchers {
+class RouteMappingTest extends FunSpec with Matchers {
 
-  describe("Params") {
-    it("getInt will ignore empty string") {
-      val params = Map[String, Any]("y" -> "", "z" -> 1)
+  describe("RouteMapping") {
+    it("url") {
+      val action = new ActionMapping(null, null, "/", "/", Map.empty[String, View], null)
+      val rm = new RouteMapping(HttpMethods.GET, action, null, "{path*}", Array.empty[Argument], Map.empty[String, Integer], null)
+      assert("/{path*}" == rm.url)
 
-      val context = new ActionContext(null, null, null, params)
-      ActionContext.set(context)
-
-      assert(None == Params.getInt("x"))
-      assert(None == Params.getInt("y"))
-      assert(Some(1) == Params.getInt("z"))
     }
   }
 }

@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2015, Beangle Software.
+ * Copyright (c) 2005-2016, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -25,6 +25,7 @@ import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.execution.Handler
 import org.beangle.commons.text.inflector.en.EnNounPluralizer
+import java.time.ZonedDateTime
 
 abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAction[T] {
 
@@ -87,7 +88,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
   protected def saveAndRedirect(entity: T): View = {
     try {
       entity match {
-        case updated: Updated => updated.updatedAt = new ju.Date()
+        case updated: Updated => updated.updatedAt = new java.util.Date()
         case _                =>
       }
       saveOrUpdate(entity)
