@@ -33,20 +33,19 @@ class DefaultActionUriRender extends ActionUriRender {
 
   var configurer: Configurer = _
 
-  override def render(initmapping: RouteMapping, uri: String): String = {
+  override def render(router: RouteMapping, uri: String): String = {
     val context = ActionContext.current
     val contextPath = context.request.getServletContext().getContextPath
     if (uri.charAt(0) == '/') return contextPath + uri
 
     var params: collection.mutable.Map[String, String] = null
-    val action = initmapping.action
     val mapping =
       if (uri.charAt(0) == '!') {
         var dotIdx = uriEndIndexOf(uri)
         params = To(uri).parameters
-        action.mappings(uri.substring(1, dotIdx))
+        router.action.mappings(uri.substring(1, dotIdx))
       } else {
-        val namespace = action.namespace
+        val namespace = router.action.namespace
         var backStep = 0
         var index = 0
         while (uri.startsWith("../", index)) {
@@ -62,9 +61,11 @@ class DefaultActionUriRender extends ActionUriRender {
               if (chars(findedSlash) == '/') backStep -= 1
               findedSlash -= 1
             }
+            //因为循环终止时多减了1,这一次+2中补上,截取/
             namespace.substring(0, findedSlash + 2)
           } else {
-            namespace + "/"
+            // 保持最后一个字符是/
+            if (namespace.endsWith("/")) namespace else namespace + "/"
           }
         val finalURL = goNamespace + (if (index == 0) uri else uri.substring(index))
         val struts = To(finalURL).toStruts
@@ -74,7 +75,7 @@ class DefaultActionUriRender extends ActionUriRender {
         actionName.append(struts.namespace).append('/').append(struts.name)
         configurer.getActionMapping(actionName.toString) match {
           case Some(cfg) => cfg.mappings(if (null == struts.method) cfg.profile.defaultMethod else struts.method)
-          case None => throw new RuntimeException(s"Cannot find $actionName mapping")
+          case None      => throw new RuntimeException(s"Cannot find $actionName mapping")
         }
       }
     val tourl = mapping.toURL(params, context.params)

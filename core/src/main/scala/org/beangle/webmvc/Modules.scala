@@ -20,12 +20,11 @@ package org.beangle.webmvc
 
 import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
 import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider }
-import org.beangle.webmvc.context.impl.{ ContainerActionFinder, ParamLocaleResolver }
+import org.beangle.webmvc.context.impl.{ ContainerActionFinder, DefaultActionContextBuilder, ParamLocaleResolver }
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper }
 import org.beangle.webmvc.execution.impl.{ DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder }
-import org.beangle.webmvc.execution.interceptors.{ CorsInterceptor, FlashInterceptor }
+import org.beangle.webmvc.execution.interceptors.CorsInterceptor
 import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender, ViewManager }
-import org.beangle.webmvc.context.impl.DefaultActionContextBuilder
 
 object DefaultModule extends AbstractBindModule {
 
@@ -55,7 +54,6 @@ object DefaultModule extends AbstractBindModule {
     bind("mvc.RouteProvider.default", classOf[DefaultRouteProvider])
 
     //execution
-    bind("web.Interceptor.flash", classOf[FlashInterceptor])
     bind("web.Interceptor.cors", classOf[CorsInterceptor])
     bind("mvc.InvokerBuilder.default", classOf[StaticMethodInvokerBuilder])
     bind("mvc.InvokerBuilder.method", classOf[DynaMethodInvokerBuilder])

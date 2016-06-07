@@ -25,7 +25,7 @@ import org.beangle.webmvc.api.i18n.TextProvider
 
 object ActionContext {
   private val contexts = new ThreadLocal[ActionContext]
-  
+
   def set(newer: ActionContext): Unit = {
     contexts.set(newer)
   }
@@ -36,7 +36,7 @@ final class ActionContext(val request: HttpServletRequest, val response: HttpSer
 
   var textProvider: Option[TextProvider] = None
 
-  private var flashMap: Flash = _
+  val flash = new Flash(request, response)
 
   private val stash = new collection.mutable.HashMap[String, Any]
 
@@ -62,16 +62,4 @@ final class ActionContext(val request: HttpServletRequest, val response: HttpSer
     stash.get(name).orNull.asInstanceOf[T]
   }
 
-  def flash: Flash = {
-    if (null == flashMap) {
-      val session = request.getSession()
-      val flashObj = session.getAttribute("flash")
-      if (null != flashObj) flashMap = flashObj.asInstanceOf[Flash]
-      else {
-        flashMap = new Flash
-        session.setAttribute("flash", flashMap)
-      }
-    }
-    flashMap
-  }
 }

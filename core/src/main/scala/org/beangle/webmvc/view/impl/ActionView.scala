@@ -28,6 +28,8 @@ import org.beangle.webmvc.config.{ RouteMapping, Configurer }
 import org.beangle.webmvc.view.{ TypeViewBuilder, ViewRender }
 
 import javax.servlet.http.HttpServletRequest
+import org.beangle.commons.lang.Strings
+import java.net.URLEncoder
 
 @description("前向调转视图构建者")
 class ForwardActionViewBuilder extends TypeViewBuilder {
@@ -103,8 +105,21 @@ class RedirectActionViewRender(val configurer: Configurer) extends ViewRender {
     } else if (null != request.getHeader(ajaxHead)) redirectParams = "x-requested-with=1"
 
     if (null != redirectParams) {
-      if (url.contains('?')) url.append("&").append(redirectParams)
-      else url.append("?").append(redirectParams)
+      val rpsb = new StringBuilder
+      Strings.split(redirectParams, "&") foreach { pair =>
+        val v = Strings.substringAfter(pair, "=")
+        if (Strings.isNotBlank(v)) {
+          rpsb.append(Strings.substringBefore(pair, "=")).append('=')
+          rpsb.append(URLEncoder.encode(v, "utf-8"))
+          rpsb.append('&')
+        }
+      }
+      if (rpsb.length > 0) {
+        rpsb.deleteCharAt(rpsb.length - 1)
+        redirectParams = rpsb.toString
+        if (url.contains('?')) url.append("&").append(redirectParams)
+        else url.append("?").append(redirectParams)
+      }
     }
     if (url.startsWith("http://") || url.startsWith("https://")) {
       response.sendRedirect(url.toString)
