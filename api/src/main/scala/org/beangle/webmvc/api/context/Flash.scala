@@ -46,31 +46,32 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
    */
   private val next: Map[String, String] = new HashMap()
 
-  readCookieToNow()
+  moveCookieToNow()
 
-  private def readCookieToNow(): Unit = {
-    val cookie = CookieUtils.getCookie(request, Flash.CookieName)
-    if (null != cookie) {
-      val cv = cookie.getValue
+  private def moveCookieToNow(): Unit = {
+    val cv = CookieUtils.getCookieValue(request, Flash.CookieName)
+    if (null != cv) {
       Strings.split(cv, ",") foreach { pair =>
         val key = Strings.substringBefore(pair, "=")
         val v = Strings.substringAfter(pair, "=")
-        now.put(key, URLDecoder.decode(v, "utf-8"))
+        now.put(key, v)
       }
       CookieUtils.deleteCookieByName(request, response, Flash.CookieName)
     }
   }
 
-  private def writeNextToCookie(): Unit = {
+  def writeNextToCookie(): Unit = {
+    if (next.isEmpty()) return ;
     val sb = new StringBuilder
     val i = next.entrySet().iterator()
     while (i.hasNext()) {
       val e = i.next()
-      sb.append(e.getKey).append('=').append(URLEncoder.encode(e.getValue, "utf-8")).append(",")
+      val kv = e.getKey + "=" + e.getValue
+      sb.append(kv).append(",")
     }
     if (sb.length > 0) {
       sb.deleteCharAt(sb.length - 1)
-      CookieUtils.addCookie(request, response, Flash.CookieName, sb.toString(), -1)
+      CookieUtils.addCookie(request, response, Flash.CookieName, sb.toString(), 1)
     } else {
       CookieUtils.deleteCookieByName(request, response, Flash.CookieName)
     }
@@ -80,23 +81,19 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
 
   def put(key: String, value: String): String = {
     next.put(key, value)
-    writeNextToCookie()
     value
   }
 
   def putAll(values: Map[_ <: String, _ <: String]): Unit = {
     next.putAll(values)
-    writeNextToCookie()
   }
 
   def keep(key: String): Unit = {
     next.put(key, now.get(key))
-    writeNextToCookie()
   }
 
   def keep() {
     next.putAll(now)
-    writeNextToCookie()
   }
 
   def clear() {
