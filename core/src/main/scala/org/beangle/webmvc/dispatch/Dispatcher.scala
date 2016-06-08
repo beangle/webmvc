@@ -63,11 +63,10 @@ class Dispatcher extends GenericServlet with Logging {
       case Some(hh) =>
         val handler = hh.handler
         if (handler.isInstanceOf[ContextAwareHandler]) {
-          val context = actionContextBuilder.build(request, response, handler, hh.params)
+          actionContextBuilder.build(request, response, handler, hh.params)
           try {
             handler.handle(request, response)
           } finally {
-            context.flash.writeNextToCookie()
             StandardMultipartResolver.cleanup(request)
           }
         } else {

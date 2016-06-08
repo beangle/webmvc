@@ -45,6 +45,7 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
     try {
       if (lastInterceptorIndex == interceptors.length - 1) {
         var result = invoker.invoke()
+        context.flash.writeNextToCookie()
         if (null == result) result = mapping.defaultView
         val view = result match {
           case null => null
@@ -126,4 +127,3 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
     }
   }
 }
-  
