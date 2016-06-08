@@ -34,7 +34,7 @@ object Flash {
 }
 
 @SerialVersionUID(-5292283953338410228L)
-class Flash(request: HttpServletRequest, response: HttpServletResponse) extends Map[String, String] with Serializable {
+class Flash(request: HttpServletRequest, response: HttpServletResponse) extends Serializable {
 
   /**
    * current request
@@ -44,7 +44,7 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
   /**
    * next request
    */
-  val next: Map[String, String] = new HashMap()
+  private val next: Map[String, String] = new HashMap()
 
   readCookieToNow()
 
@@ -57,6 +57,7 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
         val v = Strings.substringAfter(pair, "=")
         now.put(key, URLDecoder.decode(v, "utf-8"))
       }
+      CookieUtils.deleteCookieByName(request, response, Flash.CookieName)
     }
   }
 
@@ -74,8 +75,6 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
       CookieUtils.deleteCookieByName(request, response, Flash.CookieName)
     }
   }
-
-  def keySet(): Set[String] = now.keySet()
 
   def get(key: Object): String = now.get(key)
 
@@ -102,22 +101,7 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
 
   def clear() {
     now.clear()
-    CookieUtils.deleteCookieByName(request, response, Flash.CookieName)
   }
-
-  def containsKey(key: Object): Boolean = now.containsKey(key)
-
-  def containsValue(value: Object): Boolean = now.containsValue(value)
-
-  def entrySet(): Set[Map.Entry[String, String]] = now.entrySet()
-
-  def isEmpty(): Boolean = now.isEmpty()
-
-  def remove(key: Object): String = now.remove(key)
-
-  def size(): Int = now.size()
-
-  def values(): Collection[String] = now.values()
 
   import Flash._
   /**
@@ -146,6 +130,22 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
    */
   def addErrorNow(message: String): Unit = {
     updateMessages(now, ErrorsKey, message)
+  }
+
+  def messages: List[String] = {
+    val m = now.get(MessagesKey)
+    if (null == m) List.empty
+    else {
+      Strings.split(m, ';').toList
+    }
+  }
+
+  def errors: List[String] = {
+    val m = now.get(ErrorsKey)
+    if (null == m) List.empty
+    else {
+      Strings.split(m, ';').toList
+    }
   }
 
   private def updateMessages(map: Map[String, String], key: String, content: String): Unit = {
