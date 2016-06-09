@@ -61,7 +61,7 @@ class DefaultActionUriRender extends ActionUriRender {
               if (chars(findedSlash) == '/') backStep -= 1
               findedSlash -= 1
             }
-            //因为循环终止时多减了1,这一次+2中补上,截取/
+            //因为循环终止时多减了1,这一次+2补上,截取/
             namespace.substring(0, findedSlash + 2)
           } else {
             // 保持最后一个字符是/
