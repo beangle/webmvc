@@ -36,6 +36,14 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
     context.uriRender.render(Handler.mapping, url)
   }
 
+  def base: String = {
+    request.getContextPath
+  }
+
+  def staticBase: String = {
+    System.getProperty("static_base")
+  }
+  
   def now = new ju.Date
 
   /**

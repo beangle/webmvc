@@ -34,11 +34,12 @@ object DefaultModule extends AbstractBindModule {
 
   protected override def binding() {
     //config
-    bind("mvc.TemplateEngine.freemarker", classOf[FreemarkerTemplateEngine]).property("enableCache", $("mvc.template_engine.cache", "true"))
+    bind("mvc.TemplateEngine.freemarker", classOf[FreemarkerTemplateEngine])
+      .property("enableCache", !devEnabled)
     bind("mvc.Taglibrary.c", classOf[CoreTagLibrary])
 
     //template
-    bind("mvc.FreemarkerConfigurer.default", classOf[WebFreemarkerConfigurer])
+    bind("mvc.FreemarkerConfigurer.default", classOf[WebFreemarkerConfigurer]).property("enableCache", !devEnabled)
     bind("mvc.TemplateResolver.freemarker", classOf[HierarchicalTemplateResolver])
 
     //view
@@ -50,18 +51,7 @@ object DefaultModule extends AbstractBindModule {
     //i18n
     bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
     bind("mvc.TextFormater.default", classOf[DefaultTextFormater])
-    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
+    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", devEnabled)
     bind("mvc.ActionContextInitializer.text", classOf[TextResourceInitializer])
-  }
-}
-
-@profile("dev")
-class DevModule extends AbstractBindModule {
-  protected override def binding() {
-    bind("mvc.TemplateEngine.freemarker", classOf[FreemarkerTemplateEngine]).property("enableCache", "false")
-
-    bind("mvc.FreemarkerConfigurer.default", classOf[WebFreemarkerConfigurer]).property("enableCache", "false")
-
-    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", "true")
   }
 }

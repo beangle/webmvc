@@ -33,7 +33,6 @@ class RouteMappingTest extends FunSpec with Matchers {
       val action = new ActionMapping(null, null, "/", "/", Map.empty[String, View], null)
       val rm = new RouteMapping(HttpMethods.GET, action, null, "{path*}", Array.empty[Argument], Map.empty[String, Integer], null)
       assert("/{path*}" == rm.url)
-
     }
   }
 }

@@ -20,7 +20,7 @@ package org.beangle.webmvc.api.action
 
 import org.beangle.commons.lang.{ Chars, Strings }
 import org.beangle.webmvc.api.annotation.ignore
-import org.beangle.webmvc.api.context.{ ActionContext, ActionMessages, Flash }
+import org.beangle.webmvc.api.context.{ ActionContext, Flash }
 
 trait MessageSupport {
 
@@ -68,9 +68,9 @@ trait MessageSupport {
    */
   @ignore
   protected final def actionMessages: List[String] = {
-    val messages = ActionContext.current.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
+    val messages = ActionContext.current.flash.get(Flash.MessagesKey)
     if (null == messages) List()
-    else messages.messages.toList
+    else Strings.split(messages, ';').toList
   }
 
   /**
@@ -78,9 +78,9 @@ trait MessageSupport {
    */
   @ignore
   protected final def actionErrors: List[String] = {
-    val messages = ActionContext.current.flash.get(Flash.MESSAGES).asInstanceOf[ActionMessages]
+    val messages = ActionContext.current.flash.get(Flash.ErrorsKey)
     if (null == messages) List()
-    else messages.errors.toList
+    else Strings.split(messages, ';').toList
   }
 
 }

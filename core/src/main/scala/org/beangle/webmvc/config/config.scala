@@ -43,6 +43,7 @@ trait Configurer {
 class ActionConfig(val url: String, val mapping: RouteMapping, val action: Object)
 /**
  * action mapping (namespace endwith /)
+ * name is action fullname ,so it starts with /,and contains namespace
  */
 class ActionMapping(val action: AnyRef, val clazz: Class[_], val name: String, val namespace: String, val views: Map[String, View], val profile: Profile) {
   var mappings: Map[String, RouteMapping] = Map.empty
@@ -129,4 +130,3 @@ object Path {
     params.toMap
   }
 }
-

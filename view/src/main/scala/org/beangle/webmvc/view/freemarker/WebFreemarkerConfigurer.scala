@@ -22,7 +22,7 @@ import java.io.{ File, IOException }
 
 import org.beangle.commons.lang.Strings.{ split, substringAfter }
 import org.beangle.commons.web.context.ServletContextHolder
-import org.beangle.template.freemarker.{ BeangleClassTemplateLoader, FreemarkerConfigurer }
+import org.beangle.template.freemarker.{ BeangleClassTemplateLoader, Configurer }
 
 import freemarker.cache.{ FileTemplateLoader, MultiTemplateLoader, TemplateLoader, WebappTemplateLoader }
 import freemarker.template.ObjectWrapper
@@ -30,7 +30,7 @@ import freemarker.template.ObjectWrapper
 /**
  * @author chaostone
  */
-class WebFreemarkerConfigurer extends FreemarkerConfigurer {
+class WebFreemarkerConfigurer extends Configurer {
   override def createTemplateLoader(props: Map[String, String]): TemplateLoader = {
     templatePath = ServletContextHolder.context.getInitParameter("templatePath")
     val paths: Array[String] = split(templatePath, ",")

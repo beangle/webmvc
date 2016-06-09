@@ -48,7 +48,7 @@ import freemarker.template.{ Configuration, Template }
 @description("Freemarker 模板引擎")
 class FreemarkerTemplateEngine(modelBuilder: FreemarkerModelBuilder) extends TemplateEngine with Initializing with Logging {
 
-  val config = new Configuration(Configuration.VERSION_2_3_23)
+  val config = new Configuration(Configuration.VERSION_2_3_24)
 
   var enableCache: Boolean = true
 
