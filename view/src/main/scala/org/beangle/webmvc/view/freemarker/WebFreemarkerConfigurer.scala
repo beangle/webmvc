@@ -56,7 +56,7 @@ class WebFreemarkerConfigurer extends Configurer {
   }
 
   override def createObjectWrapper(props: Map[String, String]): ObjectWrapper = {
-    val wrapper = new CachedObjectWrapper(true)
+    val wrapper = new CachedObjectWrapper()
     wrapper.setUseCache(false)
     wrapper
   }

@@ -27,6 +27,7 @@ import org.beangle.webmvc.execution.{ Handler, MappingHandler }
 
 import javax.servlet.http.HttpServletRequest
 
+@description("基于Mvc的请求转换器")
 class MvcRequestConvertor extends RequestConvertor {
   def convert(request: HttpServletRequest): Request = {
     val context = ActionContext.current

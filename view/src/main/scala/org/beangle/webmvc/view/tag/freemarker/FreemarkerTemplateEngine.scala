@@ -75,7 +75,7 @@ class FreemarkerTemplateEngine(modelBuilder: FreemarkerModelBuilder) extends Tem
     IOs.readJavaProperties(ClassLoaders.getResource("org/beangle/webmvc/view/tag/freemarker/tag.properties")) foreach {
       case (k, v) => config.setSetting(k, v)
     }
-    val wrapper = new CachedObjectWrapper(true)
+    val wrapper = new CachedObjectWrapper()
     wrapper.setUseCache(false)
     config.setObjectWrapper(wrapper)
     config.setTemplateLoader(new HierarchicalTemplateLoader(new BeangleClassTemplateLoader()))
