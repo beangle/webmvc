@@ -24,7 +24,7 @@ import org.beangle.webmvc.api.context.ActionContext
 
 import freemarker.template.TemplateModel
 
-class CachedObjectWrapper(altMapWrapper: Boolean) extends BeangleObjectWrapper(altMapWrapper) {
+class CachedObjectWrapper extends BeangleObjectWrapper {
 
   override def wrap(obj: AnyRef): TemplateModel = {
     if (null == obj) return null

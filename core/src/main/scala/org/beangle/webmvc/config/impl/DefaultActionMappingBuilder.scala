@@ -25,7 +25,7 @@ import org.beangle.commons.http.HttpMethods.GET
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.commons.lang.reflect.ClassInfo
+import org.beangle.commons.lang.reflect.{ ClassInfos, ClassInfo }
 import org.beangle.commons.lang.reflect.Reflections.{ getAnnotation, isAnnotationPresent }
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.api.annotation.{ DefaultNone, action, cookie, header, ignore, mapping, param, response, view, views }
@@ -51,7 +51,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     val views = buildViews(clazz, profile)
     val config = new ActionMapping(bean, clazz, actionName, nameAndspace._2, views, profile)
     val mappings = new collection.mutable.HashMap[String, RouteMapping]
-    val classInfo = ClassInfo.get(clazz)
+    val classInfo = ClassInfos.get(clazz)
     classInfo.methods foreach {
       case (methodName, minfos) =>
         val mappingMehtods = new collection.mutable.HashSet[Method]
@@ -176,7 +176,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     // load ftl convension results
     val suffix = profile.viewSuffix
     if (suffix.endsWith(".ftl")) {
-      ClassInfo.get(clazz).getMethods foreach { mi =>
+      ClassInfos.get(clazz).methodList foreach { mi =>
         val viewName = defaultViewName(mi.method)
         if (null != viewName && !annotationResults.contains(viewName)) {
           Strings.split(viewName, ",") foreach { v =>
