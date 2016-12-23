@@ -44,11 +44,7 @@ class Initializer extends org.beangle.commons.web.init.Initializer {
       sc.addListener(new HttpSessionEventPublisher(em))
     }
 
-    val configurer = container.getBean(classOf[Configurer]).get
-    val mapper = container.getBean(classOf[RequestMapper]).get
-    val acb = container.getBean(classOf[ActionContextBuilder]).get
-
-    val action = sc.addServlet("Action", new Dispatcher(configurer, mapper, acb))
+    val action = sc.addServlet("Action", new Dispatcher(container))
 
     action.addMapping("/*")
     action.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))

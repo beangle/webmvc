@@ -34,11 +34,16 @@ import javax.servlet.{ GenericServlet, ServletConfig, ServletRequest, ServletRes
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.commons.web.multipart.StandardMultipartResolver
 import org.beangle.webmvc.execution.ContextAwareHandler
+import org.beangle.commons.cdi.Container
 
 class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBuilder: ActionContextBuilder)
     extends GenericServlet with Logging {
 
   var defaultEncoding = "utf-8"
+
+  def this(container: Container) {
+    this(container.getBean(classOf[Configurer]).get, container.getBean(classOf[RequestMapper]).get, container.getBean(classOf[ActionContextBuilder]).get)
+  }
 
   override def init(config: ServletConfig): Unit = {
     //1. build configuration
