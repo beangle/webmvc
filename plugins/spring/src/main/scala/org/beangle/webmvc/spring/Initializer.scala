@@ -21,6 +21,7 @@ package org.beangle.webmvc.spring
 import org.beangle.commons.event.EventMulticaster
 import org.beangle.commons.lang.SystemInfo
 import org.beangle.commons.web.session.HttpSessionEventPublisher
+import org.beangle.commons.cdi.spring.web.ContextListener
 import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.context.ActionContextBuilder
 import org.beangle.webmvc.dispatch.Dispatcher
