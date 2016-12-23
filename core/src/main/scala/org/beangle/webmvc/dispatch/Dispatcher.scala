@@ -29,29 +29,22 @@ import org.beangle.commons.web.resource.filter.HeaderFilter
 import org.beangle.commons.web.resource.impl.PathResolverImpl
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.config.Configurer
-import org.beangle.webmvc.context.{ ActionContextBuilder, ContainerHelper }
+import org.beangle.webmvc.context.{ ActionContextBuilder }
 import javax.servlet.{ GenericServlet, ServletConfig, ServletRequest, ServletResponse }
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.commons.web.multipart.StandardMultipartResolver
 import org.beangle.webmvc.execution.ContextAwareHandler
 
-class Dispatcher extends GenericServlet with Logging {
+class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBuilder: ActionContextBuilder)
+    extends GenericServlet with Logging {
 
   var defaultEncoding = "utf-8"
-  var mapper: RequestMapper = _
-  var actionContextBuilder: ActionContextBuilder = _
 
   override def init(config: ServletConfig): Unit = {
-    val context = ContainerHelper.get
-
     //1. build configuration
-    context.getBean(classOf[Configurer]).get.build()
-
-    mapper = context.getBean(classOf[RequestMapper]).get
+    configurer.build()
     // 2. build mapper
     mapper.build()
-
-    actionContextBuilder = context.getBean(classOf[ActionContextBuilder]).get
   }
 
   override def service(req: ServletRequest, res: ServletResponse): Unit = {

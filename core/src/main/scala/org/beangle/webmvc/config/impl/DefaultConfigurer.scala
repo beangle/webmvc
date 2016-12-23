@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.config.impl
 
-import org.beangle.commons.inject.Container
+import org.beangle.commons.cdi.Container
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging

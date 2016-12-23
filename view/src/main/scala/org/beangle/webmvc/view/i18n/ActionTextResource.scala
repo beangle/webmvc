@@ -23,7 +23,7 @@ import java.{ util => jl }
 import scala.collection.mutable.{ HashSet, Set }
 
 import org.beangle.commons.bean.Properties
-import org.beangle.commons.i18n.{ DefaultTextResource, TextBundleRegistry, TextFormater }
+import org.beangle.commons.text.i18n.{ DefaultTextResource, TextBundleRegistry, TextFormater }
 import org.beangle.commons.lang.Strings
 import org.beangle.webmvc.api.action.EntitySupport
 import org.beangle.webmvc.api.context.ActionContext

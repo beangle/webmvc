@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc
 
-import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
+import org.beangle.commons.cdi.bind.{ AbstractBindModule, profile }
 import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider }
 import org.beangle.webmvc.context.impl.{ ContainerActionFinder, DefaultActionContextBuilder, ParamLocaleResolver }
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper }

@@ -22,7 +22,7 @@ import java.io.StringWriter
 
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.web.util.RequestUtils
-import org.beangle.template.freemarker.{ Configurer => FreemarkerConfigurer }
+import org.beangle.commons.template.freemarker.{ Configurer => FreemarkerConfigurer }
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.execution.Handler

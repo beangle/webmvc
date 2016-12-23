@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.view.impl
 
-import org.beangle.commons.inject.{ Container, ContainerListener }
+import org.beangle.commons.cdi.{ Container, ContainerListener }
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.webmvc.view.{ TagLibrary, TagLibraryProvider }

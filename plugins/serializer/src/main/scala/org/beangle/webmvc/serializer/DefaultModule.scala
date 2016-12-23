@@ -19,7 +19,7 @@
 package org.beangle.webmvc.serializer
 
 import org.beangle.commons.http.accept.ContentNegotiationManagerFactory
-import org.beangle.commons.inject.bind.AbstractBindModule
+import org.beangle.commons.cdi.bind.AbstractBindModule
 import org.beangle.data.serialize.{ CsvSerializer, JsonSerializer, JsonpSerializer, XmlSerializer }
 import org.beangle.data.serialize.io.csv.DefaultCsvDriver
 import org.beangle.data.serialize.io.json.DefaultJsonDriver

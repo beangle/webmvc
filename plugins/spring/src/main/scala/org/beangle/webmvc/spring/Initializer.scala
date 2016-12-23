@@ -18,24 +18,37 @@
  */
 package org.beangle.webmvc.spring
 
-import java.util.EnumSet
-import org.beangle.commons.web.session.HttpSessionEventPublisher
-import org.beangle.cdi.spring.web.ContextListener
-import org.beangle.webmvc.dispatch.Dispatcher
-import javax.servlet.{ DispatcherType, ServletContext }
-import javax.servlet.MultipartConfigElement
+import org.beangle.commons.event.EventMulticaster
 import org.beangle.commons.lang.SystemInfo
+import org.beangle.commons.web.session.HttpSessionEventPublisher
+import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.context.ActionContextBuilder
+import org.beangle.webmvc.dispatch.Dispatcher
+import org.beangle.webmvc.dispatch.RequestMapper
+
+import javax.servlet.MultipartConfigElement
+import javax.servlet.ServletContext
 
 class Initializer extends org.beangle.commons.web.init.Initializer {
 
   override def onStartup(sc: ServletContext) {
     sc.setInitParameter("templatePath", "class://")
-    sc.setInitParameter("contextConfigLocation", "classpath:spring-context.xml")
-    sc.setInitParameter("childContextConfigLocation", "WebApplicationContext:Action@classpath:spring-web-context.xml")
 
-    addListener(new ContextListener)
-    sc.addListener(new HttpSessionEventPublisher)
-    val action = sc.addServlet("Action", new Dispatcher)
+    val ctxListener = new ContextListener
+    ctxListener.childContextConfigLocation = "WebApplicationContext:Action@classpath:spring-web-context.xml"
+    val container = ctxListener.loadContainer()
+    addListener(ctxListener)
+
+    container.getBean(classOf[EventMulticaster]) foreach { em =>
+      sc.addListener(new HttpSessionEventPublisher(em))
+    }
+
+    val configurer = container.getBean(classOf[Configurer]).get
+    val mapper = container.getBean(classOf[RequestMapper]).get
+    val acb = container.getBean(classOf[ActionContextBuilder]).get
+
+    val action = sc.addServlet("Action", new Dispatcher(configurer, mapper, acb))
+
     action.addMapping("/*")
     action.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))
   }

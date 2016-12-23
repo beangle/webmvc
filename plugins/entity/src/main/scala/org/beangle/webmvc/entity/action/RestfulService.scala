@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.entity.action
 
-import org.beangle.data.model.Entity
+import org.beangle.commons.model.Entity
 import org.beangle.webmvc.api.action.{ ActionSupport, MimeSupport }
 import org.beangle.webmvc.api.annotation.{ mapping, param, response }
 import org.beangle.webmvc.api.context.Params
