@@ -45,7 +45,6 @@ class Initializer extends org.beangle.commons.web.init.Initializer {
     }
 
     val action = sc.addServlet("Action", new Dispatcher(container))
-
     action.addMapping("/*")
     action.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))
   }
