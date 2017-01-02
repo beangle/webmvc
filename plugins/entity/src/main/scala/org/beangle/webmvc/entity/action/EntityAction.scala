@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2016, Beangle Software.
+ * Copyright (c) 2005-2017, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -25,9 +25,9 @@ import org.beangle.commons.collection.page.PageLimit
 import org.beangle.commons.config.property.PropertyConfig
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.logging.Logging
-import org.beangle.data.dao.{ EntityDao, OqlBuilder }
-import org.beangle.data.model.Entity
-import org.beangle.data.model.meta.{ EntityMetadata, EntityType }
+import org.beangle.commons.dao.{ EntityDao, OqlBuilder }
+import org.beangle.commons.model.Entity
+import org.beangle.commons.model.meta.{ EntityMetadata, EntityType }
 import org.beangle.webmvc.api.action.{ EntitySupport, ParamSupport, RouteSupport }
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params

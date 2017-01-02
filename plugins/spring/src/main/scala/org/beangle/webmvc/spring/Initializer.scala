@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2016, Beangle Software.
+ * Copyright (c) 2005-2017, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,24 +18,33 @@
  */
 package org.beangle.webmvc.spring
 
-import java.util.EnumSet
-import org.beangle.commons.web.session.HttpSessionEventPublisher
-import org.beangle.cdi.spring.web.ContextListener
-import org.beangle.webmvc.dispatch.Dispatcher
-import javax.servlet.{ DispatcherType, ServletContext }
-import javax.servlet.MultipartConfigElement
+import org.beangle.commons.event.EventMulticaster
 import org.beangle.commons.lang.SystemInfo
+import org.beangle.commons.web.session.HttpSessionEventPublisher
+import org.beangle.commons.cdi.spring.web.ContextListener
+import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.context.ActionContextBuilder
+import org.beangle.webmvc.dispatch.Dispatcher
+import org.beangle.webmvc.dispatch.RequestMapper
+
+import javax.servlet.MultipartConfigElement
+import javax.servlet.ServletContext
 
 class Initializer extends org.beangle.commons.web.init.Initializer {
 
   override def onStartup(sc: ServletContext) {
     sc.setInitParameter("templatePath", "class://")
-    sc.setInitParameter("contextConfigLocation", "classpath:spring-context.xml")
-    sc.setInitParameter("childContextConfigLocation", "WebApplicationContext:Action@classpath:spring-web-context.xml")
 
-    addListener(new ContextListener)
-    sc.addListener(new HttpSessionEventPublisher)
-    val action = sc.addServlet("Action", new Dispatcher)
+    val ctxListener = new ContextListener
+    ctxListener.childContextConfigLocation = "WebApplicationContext:Action@classpath:spring-web-context.xml"
+    val container = ctxListener.loadContainer()
+    addListener(ctxListener)
+
+    container.getBean(classOf[EventMulticaster]) foreach { em =>
+      sc.addListener(new HttpSessionEventPublisher(em))
+    }
+
+    val action = sc.addServlet("Action", new Dispatcher(container))
     action.addMapping("/*")
     action.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))
   }

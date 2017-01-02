@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-parent_2.12</artifactId>
-    <version>0.3.10-SNAPSHOT</version>
+    <version>0.3.10</version>
   </parent>
   <artifactId>beangle-webmvc-view_2.12</artifactId>
   <packaging>jar</packaging>
@@ -12,20 +12,26 @@
   <properties>
     <bundle.symbolicName>org.beangle.webmvc.view</bundle.symbolicName>
     <bundle.namespace>org.beangle.webmvc.view</bundle.namespace>
+    <freemarker.version>2.3.25-incubating</freemarker.version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.beangle.template</groupId>
-      <artifactId>beangle-template-freemarker_2.12</artifactId>
+      <groupId>org.beangle.commons</groupId>
+      <artifactId>beangle-commons-template_2.12</artifactId>
     </dependency>
     <dependency>
       <groupId>org.beangle.commons</groupId>
-      <artifactId>beangle-commons-i18n_2.12</artifactId>
+      <artifactId>beangle-commons-text_2.12</artifactId>
     </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
       <artifactId>beangle-webmvc-core_2.12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>${freemarker.version}</version>
     </dependency>
   </dependencies>
 </project>

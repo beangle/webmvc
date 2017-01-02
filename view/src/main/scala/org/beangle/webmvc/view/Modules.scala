@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2016, Beangle Software.
+ * Copyright (c) 2005-2017, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,8 +18,8 @@
  */
 package org.beangle.webmvc.view
 
-import org.beangle.commons.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
-import org.beangle.commons.inject.bind.{ AbstractBindModule, profile }
+import org.beangle.commons.text.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
+import org.beangle.commons.cdi.bind.{ AbstractBindModule, profile }
 import org.beangle.webmvc.view.i18n.{ ActionTextResourceProvider, TextResourceInitializer }
 import org.beangle.webmvc.view.tag.CoreTagLibrary
 import org.beangle.webmvc.view.tag.freemarker.FreemarkerTemplateEngine

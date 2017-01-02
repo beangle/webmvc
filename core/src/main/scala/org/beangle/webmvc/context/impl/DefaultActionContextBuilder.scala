@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2016, Beangle Software.
+ * Copyright (c) 2005-2017, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -25,7 +25,7 @@ import org.beangle.webmvc.context.{ ActionContextBuilder, LocaleResolver }
 import org.beangle.webmvc.execution.Handler
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.webmvc.context.ActionContextInitializer
-import org.beangle.commons.inject.Container
+import org.beangle.commons.cdi.Container
 
 /**
  * @author chaostone

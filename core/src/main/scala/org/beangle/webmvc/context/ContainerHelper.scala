@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2016, Beangle Software.
+ * Copyright (c) 2005-2017, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,14 +18,14 @@
  */
 package org.beangle.webmvc.context
 
-import org.beangle.commons.inject.Container
+import org.beangle.commons.cdi.Container
 
 object ContainerHelper {
 
   def get: Container = {
     Container.containers.find { c => c.parent == Container.ROOT && c.parent != null } match {
       case Some(c) => c
-      case None => throw new RuntimeException("Cannot find container from Containers")
+      case None    => throw new RuntimeException("Cannot find container from Containers")
     }
   }
 }

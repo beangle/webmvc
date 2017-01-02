@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2016, Beangle Software.
+ * Copyright (c) 2005-2017, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,29 +29,27 @@ import org.beangle.commons.web.resource.filter.HeaderFilter
 import org.beangle.commons.web.resource.impl.PathResolverImpl
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.config.Configurer
-import org.beangle.webmvc.context.{ ActionContextBuilder, ContainerHelper }
+import org.beangle.webmvc.context.{ ActionContextBuilder }
 import javax.servlet.{ GenericServlet, ServletConfig, ServletRequest, ServletResponse }
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.commons.web.multipart.StandardMultipartResolver
 import org.beangle.webmvc.execution.ContextAwareHandler
+import org.beangle.commons.cdi.Container
 
-class Dispatcher extends GenericServlet with Logging {
+class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBuilder: ActionContextBuilder)
+    extends GenericServlet with Logging {
 
   var defaultEncoding = "utf-8"
-  var mapper: RequestMapper = _
-  var actionContextBuilder: ActionContextBuilder = _
+
+  def this(container: Container) {
+    this(container.getBean(classOf[Configurer]).get, container.getBean(classOf[RequestMapper]).get, container.getBean(classOf[ActionContextBuilder]).get)
+  }
 
   override def init(config: ServletConfig): Unit = {
-    val context = ContainerHelper.get
-
     //1. build configuration
-    context.getBean(classOf[Configurer]).get.build()
-
-    mapper = context.getBean(classOf[RequestMapper]).get
+    configurer.build()
     // 2. build mapper
     mapper.build()
-
-    actionContextBuilder = context.getBean(classOf[ActionContextBuilder]).get
   }
 
   override def service(req: ServletRequest, res: ServletResponse): Unit = {

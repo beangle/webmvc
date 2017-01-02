@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2016, Beangle Software.
+ * Copyright (c) 2005-2017, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,7 @@ import java.{ util => jl }
 import scala.collection.mutable.{ HashSet, Set }
 
 import org.beangle.commons.bean.Properties
-import org.beangle.commons.i18n.{ DefaultTextResource, TextBundleRegistry, TextFormater }
+import org.beangle.commons.text.i18n.{ DefaultTextResource, TextBundleRegistry, TextFormater }
 import org.beangle.commons.lang.Strings
 import org.beangle.webmvc.api.action.EntitySupport
 import org.beangle.webmvc.api.context.ActionContext

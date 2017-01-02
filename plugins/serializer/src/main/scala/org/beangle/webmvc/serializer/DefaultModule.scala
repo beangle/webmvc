@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2016, Beangle Software.
+ * Copyright (c) 2005-2017, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -19,7 +19,7 @@
 package org.beangle.webmvc.serializer
 
 import org.beangle.commons.http.accept.ContentNegotiationManagerFactory
-import org.beangle.commons.inject.bind.AbstractBindModule
+import org.beangle.commons.cdi.bind.AbstractBindModule
 import org.beangle.data.serialize.{ CsvSerializer, JsonSerializer, JsonpSerializer, XmlSerializer }
 import org.beangle.data.serialize.io.csv.DefaultCsvDriver
 import org.beangle.data.serialize.io.json.DefaultJsonDriver

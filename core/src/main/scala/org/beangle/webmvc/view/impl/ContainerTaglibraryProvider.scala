@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2016, Beangle Software.
+ * Copyright (c) 2005-2017, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.view.impl
 
-import org.beangle.commons.inject.{ Container, ContainerListener }
+import org.beangle.commons.cdi.{ Container, ContainerListener }
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.webmvc.view.{ TagLibrary, TagLibraryProvider }
