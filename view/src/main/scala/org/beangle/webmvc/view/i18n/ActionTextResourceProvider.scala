@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2016, Beangle Software.
+ * Copyright (c) 2005-2017, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,12 +23,12 @@ import java.{ util => ju }
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
-import org.beangle.commons.i18n.{ TextBundleRegistry, TextFormater, TextResource, TextResourceProvider }
+import org.beangle.commons.text.i18n.{ TextBundleRegistry, TextFormater, TextResource, TextResourceProvider }
 import org.beangle.webmvc.api.context.ActionContext
 
 @description("基于Action的文本资源提供者")
 class ActionTextResourceProvider(registry: TextBundleRegistry, formater: TextFormater)
-  extends TextResourceProvider with Initializing {
+    extends TextResourceProvider with Initializing {
 
   var defaults: String = "beangle,application"
 

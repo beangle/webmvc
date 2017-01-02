@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-plugins_2.12</artifactId>
-    <version>0.3.9</version>
+    <version>0.3.10</version>
   </parent>
   <artifactId>beangle-webmvc-html2pdf-plugin_2.12</artifactId>
   <packaging>jar</packaging>
@@ -12,7 +12,6 @@
   <properties>
     <bundle.symbolicName>org.beangle.webmvc.html2pdf.plugin</bundle.symbolicName>
     <bundle.namespace>org.beangle.webmvc.html2pdf</bundle.namespace>
-    <itextpdf.version>5.5.7</itextpdf.version>
   </properties>
 
   <dependencies>
@@ -28,7 +27,7 @@
     <dependency>
       <groupId>com.itextpdf</groupId>
       <artifactId>itext-asian</artifactId>
-      <version>5.2.0</version>
+      <version>${itext.asian.version}</version>
     </dependency>
     <dependency>
       <groupId>com.itextpdf.tool</groupId>

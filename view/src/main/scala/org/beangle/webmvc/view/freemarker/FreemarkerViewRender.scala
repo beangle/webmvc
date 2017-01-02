@@ -1,7 +1,7 @@
 /*
  * Beangle, Agile Development Scaffold and Toolkit
  *
- * Copyright (c) 2005-2016, Beangle Software.
+ * Copyright (c) 2005-2017, Beangle Software.
  *
  * Beangle is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,7 +22,7 @@ import java.io.StringWriter
 
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.web.util.RequestUtils
-import org.beangle.template.freemarker.{ Configurer => FreemarkerConfigurer }
+import org.beangle.commons.template.freemarker.{ Configurer => FreemarkerConfigurer }
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.execution.Handler
