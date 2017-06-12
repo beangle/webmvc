@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.beangle</groupId>
     <artifactId>beangle-scala</artifactId>
-    <version>24.0</version>
+    <version>24.1</version>
   </parent>
   <groupId>org.beangle.webmvc</groupId>
   <artifactId>beangle-webmvc-parent_2.12</artifactId>
@@ -12,8 +12,8 @@
   <version>0.3.11-SNAPSHOT</version>
 
   <properties>
-    <beangle.commons.version>4.6.0</beangle.commons.version>
-    <beangle.data.version>4.4.2</beangle.data.version>
+    <beangle.commons.version>5.0.0.M2</beangle.commons.version>
+    <beangle.data.version>5.0.0.M2</beangle.data.version>
     <javassist.version>3.20.0-GA</javassist.version>
     <itextpdf.version>5.5.10</itextpdf.version>
     <itext.asian.version>5.2.0</itext.asian.version>

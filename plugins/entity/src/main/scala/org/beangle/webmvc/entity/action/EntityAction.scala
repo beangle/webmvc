@@ -23,11 +23,10 @@ import java.{ io => jo }
 import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.PageLimit
 import org.beangle.commons.config.property.PropertyConfig
-import org.beangle.commons.lang.Strings
-import org.beangle.commons.logging.Logging
 import org.beangle.commons.dao.{ EntityDao, OqlBuilder }
+import org.beangle.commons.logging.Logging
 import org.beangle.commons.model.Entity
-import org.beangle.commons.model.meta.{ EntityMetadata, EntityType }
+import org.beangle.commons.model.meta.EntityType
 import org.beangle.webmvc.api.action.{ EntitySupport, ParamSupport, RouteSupport }
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params
@@ -37,7 +36,6 @@ import org.beangle.webmvc.entity.helper.{ PopulateHelper, QueryHelper }
 trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with EntitySupport[T] with Logging {
   var entityDao: EntityDao = _
   var config: PropertyConfig = _
-  var entityMetaData: EntityMetadata = _
 
   /**
    * 将request中的参数设置到clazz对应的bean。
@@ -126,7 +124,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   protected def populateEntity[E <: Entity[_]](entityName: String, simpleEntityName: String): E = {
-    getId(simpleEntityName, entityMetaData.getType(entityName).get.idType) match {
+    getId(simpleEntityName, entityDao.domain.getEntity(entityName).get.id.clazz) match {
       case Some(entityId) => populate(getModel[E](entityName, entityId), entityName, Params.sub(simpleEntityName))
       case None           => populate(entityName, simpleEntityName).asInstanceOf[E]
     }
@@ -134,14 +132,14 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
 
   protected def populateEntity[E](entityClass: Class[E], simpleEntityName: String): E = {
     val entityType =
-      if (entityClass.isInterface) entityMetaData.getType(entityClass.getName)
-      else entityMetaData.getType(entityClass)
+      if (entityClass.isInterface) entityDao.domain.getEntity(entityClass.getName)
+      else entityDao.domain.getEntity(entityClass)
     populateEntity(entityType.get.entityName, simpleEntityName)
   }
 
   protected def getEntity[E <: Entity[_]](entityName: String, name: String): E = {
-    val entityType: EntityType = entityMetaData.getType(entityName).get
-    getId(name, entityType.idType) match {
+    val entityType = entityDao.domain.getEntity(entityName).get
+    getId(name, entityType.id.clazz) match {
       case Some(entityId) => getModel(entityName, entityId).asInstanceOf[E]
       case None           => populate(entityType.newInstance.asInstanceOf[E], entityType.entityName, name)
     }
@@ -149,8 +147,8 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
 
   protected def getEntity[E](entityClass: Class[E], simpleEntityName: String): E = {
     val entityType: EntityType =
-      (if (entityClass.isInterface) entityMetaData.getType(entityClass.getName)
-      else entityMetaData.getType(entityClass)).get
+      (if (entityClass.isInterface) entityDao.domain.getEntity(entityClass.getName)
+      else entityDao.domain.getEntity(entityClass)).get
     getEntity(entityType.entityName, simpleEntityName).asInstanceOf[E]
   }
 
@@ -159,10 +157,13 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   protected def getModel[E](entityName: String, id: Any): E = {
-    val entityType: EntityType = entityMetaData.getType(entityName).get
-    Params.converter.convert(id, entityType.idType) match {
-      case Some(rid) => entityDao.get(entityType.entityClass.asInstanceOf[Class[Entity[jo.Serializable]]], rid).asInstanceOf[E]
-      case None      => null.asInstanceOf[E]
+    val entityType = entityDao.domain.getEntity(entityName).get
+    val idType = entityType.id.clazz
+    Params.converter.convert(id, idType) match {
+      case Some(rid) =>
+        val classE = entityType.clazz.asInstanceOf[Class[Entity[Serializable]]]
+        entityDao.get(classE, rid.asInstanceOf[Serializable]).asInstanceOf[E]
+      case None => null.asInstanceOf[E]
     }
   }
 
@@ -172,7 +173,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   protected def convertId[ID](id: String): ID = {
-    Params.converter.convert(id, entityMetaData.getType(entityName).get.idType) match {
+    Params.converter.convert(id, entityDao.domain.getEntity(entityName).get.id.clazz) match {
       case None      => null.asInstanceOf[ID]
       case Some(nid) => nid.asInstanceOf[ID]
     }

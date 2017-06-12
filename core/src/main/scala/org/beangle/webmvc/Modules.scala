@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc
 
-import org.beangle.commons.cdi.bind.{ AbstractBindModule, profile }
+import org.beangle.commons.cdi.bind.{ BindModule, profile }
 import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider }
 import org.beangle.webmvc.context.impl.{ ContainerActionFinder, DefaultActionContextBuilder, ParamLocaleResolver }
 import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper }
@@ -26,7 +26,7 @@ import org.beangle.webmvc.execution.impl.{ DynaMethodInvokerBuilder, MvcRequestC
 import org.beangle.webmvc.execution.interceptors.CorsInterceptor
 import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender, ViewManager }
 
-object DefaultModule extends AbstractBindModule {
+object DefaultModule extends BindModule {
 
   protected override def binding() {
     //config
@@ -66,14 +66,14 @@ object DefaultModule extends AbstractBindModule {
 }
 
 @profile("dev")
-class DevModule extends AbstractBindModule {
+class DevModule extends BindModule {
   protected override def binding() {
     bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan", "false")
     bind("mvc.HandlerInvoker.method", classOf[DynaMethodInvokerBuilder]).primary
   }
 }
 
-class SecurityModule extends AbstractBindModule {
+class SecurityModule extends BindModule {
   protected override def binding() {
     bind("web.RequestConvertor.mvc", classOf[MvcRequestConvertor])
   }

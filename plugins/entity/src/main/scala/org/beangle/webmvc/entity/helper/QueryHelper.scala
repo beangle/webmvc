@@ -65,7 +65,7 @@ object QueryHelper extends Logging {
     var newClazz: Class[_] = clazz
     var entityType = PopulateHelper.getType(clazz)
     try {
-      if (clazz.isInterface()) newClazz = entityType.entityClass
+      if (clazz.isInterface()) newClazz = entityType.clazz
       entity = newClazz.newInstance().asInstanceOf[Entity[_]]
     } catch {
       case e: Exception => throw new RuntimeException("[RequestUtil.extractConditions]: error in in initialize " + clazz)
@@ -145,7 +145,7 @@ object QueryHelper extends Logging {
    * @throws ParseException
    */
   def addDateIntervalCondition(query: OqlBuilder[_], alias: String, attr: String, beginOn: String,
-    endOn: String) {
+                               endOn: String) {
     val stime = Params.get(beginOn)
     val etime = Params.get(endOn)
     var df = new SimpleDateFormat("yyyy-MM-dd")

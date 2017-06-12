@@ -18,14 +18,15 @@
  */
 package org.beangle.webmvc.entity.action
 
-import java.{ util => ju }
-import org.beangle.commons.model.{ Entity, Updated }
+import java.time.ZonedDateTime
+
+import org.beangle.commons.model.Entity
+import org.beangle.commons.model.pojo.Updated
+import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.execution.Handler
-import org.beangle.commons.text.inflector.en.EnNounPluralizer
-import java.time.ZonedDateTime
 
 abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAction[T] {
 
@@ -65,7 +66,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
 
   @mapping(method = "delete")
   def remove(): View = {
-    val idclass = entityMetaData.getType(entityName).get.idType
+    val idclass = entityDao.domain.getEntity(entityName).get.id.clazz
     val entities: Seq[T] = getId(simpleEntityName, idclass) match {
       case Some(entityId) => List(getModel[T](entityName, entityId))
       case None           => getModels[T](entityName, ids(simpleEntityName, idclass))
@@ -88,7 +89,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
   protected def saveAndRedirect(entity: T): View = {
     try {
       entity match {
-        case updated: Updated => updated.updatedAt = new java.util.Date()
+        case updated: Updated => updated.updatedAt = ZonedDateTime.now.toInstant
         case _                =>
       }
       saveOrUpdate(entity)
@@ -99,7 +100,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
           case "save"   => "editNew"
           case "update" => "edit"
         }
-        logger.info("saveAndForwad failure", e)
+        logger.info("saveAndRedirect failure", e)
         redirect(redirectTo, "info.save.failure")
       }
     }

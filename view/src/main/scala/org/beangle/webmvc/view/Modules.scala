@@ -19,7 +19,7 @@
 package org.beangle.webmvc.view
 
 import org.beangle.commons.text.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
-import org.beangle.commons.cdi.bind.{ AbstractBindModule, profile }
+import org.beangle.commons.cdi.bind.{ BindModule, profile }
 import org.beangle.webmvc.view.i18n.{ ActionTextResourceProvider, TextResourceInitializer }
 import org.beangle.webmvc.view.tag.CoreTagLibrary
 import org.beangle.webmvc.view.tag.freemarker.FreemarkerTemplateEngine
@@ -30,7 +30,7 @@ import org.beangle.webmvc.view.freemarker.FreemarkerViewResolver
 import org.beangle.webmvc.view.freemarker.FreemarkerViewRender
 import org.beangle.webmvc.view.freemarker.FreemarkerModelBuilder
 
-object DefaultModule extends AbstractBindModule {
+object DefaultModule extends BindModule {
 
   protected override def binding() {
     //config

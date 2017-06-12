@@ -20,7 +20,7 @@ package org.beangle.webmvc.entity.action
 
 import org.beangle.commons.model.Entity
 import org.beangle.webmvc.api.action.{ ActionSupport, MimeSupport }
-import org.beangle.webmvc.api.annotation.{ mapping, param, response }
+import org.beangle.webmvc.api.annotation.{ ignore, mapping, param, response }
 import org.beangle.webmvc.api.context.Params
 
 class RestfulService[T <: Entity[_ <: java.io.Serializable]] extends ActionSupport with EntityAction[T] with MimeSupport {
@@ -36,7 +36,7 @@ class RestfulService[T <: Entity[_ <: java.io.Serializable]] extends ActionSuppo
   @response
   @mapping(value = "{id}")
   def info(@param("id") id: String): T = {
-    Params.converter.convert(id, entityMetaData.getType(entityName).get.idType) match {
+    Params.converter.convert(id, entityDao.domain.getEntity(entityName).get.id.clazz) match {
       case None           => null.asInstanceOf[T]
       case Some(entityId) => getModel[T](entityName, entityId)
     }

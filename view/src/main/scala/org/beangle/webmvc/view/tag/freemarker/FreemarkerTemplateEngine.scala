@@ -72,8 +72,10 @@ class FreemarkerTemplateEngine(modelBuilder: FreemarkerModelBuilder) extends Tem
    */
   override def init(): Unit = {
     config.setEncoding(config.getLocale(), "UTF-8")
-    IOs.readJavaProperties(ClassLoaders.getResource("org/beangle/webmvc/view/tag/freemarker/tag.properties")) foreach {
-      case (k, v) => config.setSetting(k, v)
+    ClassLoaders.getResource("org/beangle/webmvc/view/tag/freemarker/tag.properties") foreach { r =>
+      IOs.readJavaProperties(r) foreach {
+        case (k, v) => config.setSetting(k, v)
+      }
     }
     val wrapper = new CachedObjectWrapper()
     wrapper.setUseCache(false)
