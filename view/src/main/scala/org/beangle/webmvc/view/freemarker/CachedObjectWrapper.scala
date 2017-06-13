@@ -19,7 +19,7 @@
 package org.beangle.webmvc.view.freemarker
 
 import org.beangle.commons.collection.IdentityCache
-import org.beangle.commons.template.freemarker.BeangleObjectWrapper
+import org.beangle.template.freemarker.BeangleObjectWrapper
 import org.beangle.webmvc.api.context.ActionContext
 
 import freemarker.template.TemplateModel

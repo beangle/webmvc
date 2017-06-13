@@ -34,7 +34,7 @@ import javax.servlet.{ GenericServlet, ServletConfig, ServletRequest, ServletRes
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.commons.web.multipart.StandardMultipartResolver
 import org.beangle.webmvc.execution.ContextAwareHandler
-import org.beangle.commons.cdi.Container
+import org.beangle.cdi.Container
 
 class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBuilder: ActionContextBuilder)
     extends GenericServlet with Logging {

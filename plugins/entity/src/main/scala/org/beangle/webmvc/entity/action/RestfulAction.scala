@@ -20,8 +20,8 @@ package org.beangle.webmvc.entity.action
 
 import java.time.ZonedDateTime
 
-import org.beangle.commons.model.Entity
-import org.beangle.commons.model.pojo.Updated
+import org.beangle.data.model.Entity
+import org.beangle.data.model.pojo.Updated
 import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }

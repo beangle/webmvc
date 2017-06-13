@@ -26,8 +26,8 @@ import org.beangle.commons.collection.page.{ Page, PageLimit }
 import org.beangle.commons.lang.{ Numbers, Strings }
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.CookieUtils
-import org.beangle.commons.dao.{ Condition, OqlBuilder }
-import org.beangle.commons.model.Entity
+import org.beangle.data.dao.{ Condition, OqlBuilder }
+import org.beangle.data.model.Entity
 import org.beangle.webmvc.api.context.{ ActionContext, Params }
 
 object QueryHelper extends Logging {

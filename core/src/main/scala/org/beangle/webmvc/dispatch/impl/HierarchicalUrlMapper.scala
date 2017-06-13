@@ -20,7 +20,7 @@ package org.beangle.webmvc.dispatch.impl
 
 import java.{ lang => jl }
 import org.beangle.commons.http.HttpMethods.{ GET, POST }
-import org.beangle.commons.cdi.Container
+import org.beangle.cdi.Container
 import org.beangle.commons.lang.{ Arrays, Strings }
 import org.beangle.commons.lang.Strings.split
 import org.beangle.commons.lang.annotation.{ description, spi }
