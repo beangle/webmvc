@@ -19,9 +19,9 @@
 package org.beangle.webmvc.entity.helper
 
 import org.beangle.commons.lang.Strings
-import org.beangle.commons.model.Entity
-import org.beangle.commons.model.meta.EntityType
-import org.beangle.commons.model.util.ConvertPopulator
+import org.beangle.data.model.Entity
+import org.beangle.data.model.meta.EntityType
+import org.beangle.data.model.util.ConvertPopulator
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.context.ContainerHelper
 import org.beangle.data.hibernate.DomainFactory

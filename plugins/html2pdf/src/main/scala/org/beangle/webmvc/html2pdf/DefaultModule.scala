@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.html2pdf
 
-import org.beangle.commons.cdi.bind.BindModule
+import org.beangle.cdi.bind.BindModule
 
 /**
  * @author chaostone

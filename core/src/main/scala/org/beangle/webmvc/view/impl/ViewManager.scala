@@ -19,7 +19,7 @@
 package org.beangle.webmvc.view.impl
 
 import org.beangle.commons.http.accept.ContentNegotiationManager
-import org.beangle.commons.cdi.{ Container, ContainerListener }
+import org.beangle.cdi.{ Container, ContainerListener }
 import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.webmvc.view.{ ViewRender, ViewResolver }

@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.spring
 
-import org.beangle.commons.cdi.bind.BindModule
+import org.beangle.cdi.bind.BindModule
 import org.beangle.webmvc.dispatch.impl.StaticResourceRouteProvider
 
 /**

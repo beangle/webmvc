@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.context.impl
 
-import org.beangle.commons.cdi.Container
+import org.beangle.cdi.Container
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.webmvc.context.ActionFinder
 

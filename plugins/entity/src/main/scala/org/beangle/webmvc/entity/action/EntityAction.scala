@@ -23,10 +23,10 @@ import java.{ io => jo }
 import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.PageLimit
 import org.beangle.commons.config.property.PropertyConfig
-import org.beangle.commons.dao.{ EntityDao, OqlBuilder }
+import org.beangle.data.dao.{ EntityDao, OqlBuilder }
 import org.beangle.commons.logging.Logging
-import org.beangle.commons.model.Entity
-import org.beangle.commons.model.meta.EntityType
+import org.beangle.data.model.Entity
+import org.beangle.data.model.meta.EntityType
 import org.beangle.webmvc.api.action.{ EntitySupport, ParamSupport, RouteSupport }
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.Params

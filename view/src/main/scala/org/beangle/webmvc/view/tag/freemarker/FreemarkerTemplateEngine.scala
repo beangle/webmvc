@@ -26,7 +26,7 @@ import org.beangle.commons.io.IOs
 import org.beangle.commons.lang.{ ClassLoaders, Throwables }
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.logging.Logging
-import org.beangle.commons.template.freemarker.BeangleClassTemplateLoader
+import org.beangle.template.freemarker.BeangleClassTemplateLoader
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.view.freemarker.{ CachedObjectWrapper, FreemarkerModelBuilder }
 import org.beangle.webmvc.view.tag.{ Component, TemplateEngine }

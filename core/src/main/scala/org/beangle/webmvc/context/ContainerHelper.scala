@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.context
 
-import org.beangle.commons.cdi.Container
+import org.beangle.cdi.Container
 
 object ContainerHelper {
 

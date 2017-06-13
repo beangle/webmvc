@@ -19,7 +19,7 @@
 package org.beangle.webmvc.view
 
 import org.beangle.commons.text.i18n.{ DefaultTextBundleRegistry, DefaultTextFormater }
-import org.beangle.commons.cdi.bind.{ BindModule, profile }
+import org.beangle.cdi.bind.{ BindModule, profile }
 import org.beangle.webmvc.view.i18n.{ ActionTextResourceProvider, TextResourceInitializer }
 import org.beangle.webmvc.view.tag.CoreTagLibrary
 import org.beangle.webmvc.view.tag.freemarker.FreemarkerTemplateEngine

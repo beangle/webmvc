@@ -9,11 +9,13 @@
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Parent</name>
-  <version>0.3.11-SNAPSHOT</version>
+  <version>0.3.11</version>
 
   <properties>
-    <beangle.commons.version>5.0.0.M2</beangle.commons.version>
+    <beangle.commons.version>5.0.0.M3</beangle.commons.version>
     <beangle.data.version>5.0.0.M2</beangle.data.version>
+    <beangle.cdi.version>0.0.10</beangle.cdi.version>
+    <beangle.template.version>0.0.15</beangle.template.version>
     <javassist.version>3.20.0-GA</javassist.version>
     <itextpdf.version>5.5.10</itextpdf.version>
     <itext.asian.version>5.2.0</itext.asian.version>
@@ -44,9 +46,9 @@
         <version>${beangle.commons.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.beangle.commons</groupId>
-        <artifactId>beangle-commons-model_2.12</artifactId>
-        <version>${beangle.commons.version}</version>
+        <groupId>org.beangle.data</groupId>
+        <artifactId>beangle-data-orm_2.12</artifactId>
+        <version>${beangle.data.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.data</groupId>
@@ -59,9 +61,14 @@
         <version>${beangle.data.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.beangle.commons</groupId>
-        <artifactId>beangle-commons-cdi_2.12</artifactId>
-        <version>${beangle.commons.version}</version>
+        <groupId>org.beangle.cdi</groupId>
+        <artifactId>beangle-cdi-api_2.12</artifactId>
+        <version>${beangle.cdi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.beangle.cdi</groupId>
+        <artifactId>beangle-cdi-spring_2.12</artifactId>
+        <version>${beangle.cdi.version}</version>
       </dependency>
       <dependency>
         <groupId>org.beangle.webmvc</groupId>
@@ -74,9 +81,9 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.beangle.commons</groupId>
-        <artifactId>beangle-commons-template_2.12</artifactId>
-        <version>${beangle.commons.version}</version>
+        <groupId>org.beangle.template</groupId>
+        <artifactId>beangle-template-freemarker_2.12</artifactId>
+        <version>${beangle.template.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -91,8 +98,8 @@
       <artifactId>beangle-commons-web_2.12</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.beangle.commons</groupId>
-      <artifactId>beangle-commons-cdi_2.12</artifactId>
+      <groupId>org.beangle.cdi</groupId>
+      <artifactId>beangle-cdi-api_2.12</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
