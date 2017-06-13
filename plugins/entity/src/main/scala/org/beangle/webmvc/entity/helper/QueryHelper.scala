@@ -26,8 +26,8 @@ import org.beangle.commons.collection.page.{ Page, PageLimit }
 import org.beangle.commons.lang.{ Numbers, Strings }
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.CookieUtils
-import org.beangle.commons.dao.{ Condition, OqlBuilder }
-import org.beangle.commons.model.Entity
+import org.beangle.data.dao.{ Condition, OqlBuilder }
+import org.beangle.data.model.Entity
 import org.beangle.webmvc.api.context.{ ActionContext, Params }
 
 object QueryHelper extends Logging {
@@ -65,7 +65,7 @@ object QueryHelper extends Logging {
     var newClazz: Class[_] = clazz
     var entityType = PopulateHelper.getType(clazz)
     try {
-      if (clazz.isInterface()) newClazz = entityType.entityClass
+      if (clazz.isInterface()) newClazz = entityType.clazz
       entity = newClazz.newInstance().asInstanceOf[Entity[_]]
     } catch {
       case e: Exception => throw new RuntimeException("[RequestUtil.extractConditions]: error in in initialize " + clazz)
@@ -145,7 +145,7 @@ object QueryHelper extends Logging {
    * @throws ParseException
    */
   def addDateIntervalCondition(query: OqlBuilder[_], alias: String, attr: String, beginOn: String,
-    endOn: String) {
+                               endOn: String) {
     val stime = Params.get(beginOn)
     val etime = Params.get(endOn)
     var df = new SimpleDateFormat("yyyy-MM-dd")

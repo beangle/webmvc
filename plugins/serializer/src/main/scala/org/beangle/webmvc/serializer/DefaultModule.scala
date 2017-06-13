@@ -19,7 +19,7 @@
 package org.beangle.webmvc.serializer
 
 import org.beangle.commons.http.accept.ContentNegotiationManagerFactory
-import org.beangle.commons.cdi.bind.AbstractBindModule
+import org.beangle.cdi.bind.BindModule
 import org.beangle.data.serialize.{ CsvSerializer, JsonSerializer, JsonpSerializer, XmlSerializer }
 import org.beangle.data.serialize.io.csv.DefaultCsvDriver
 import org.beangle.data.serialize.io.json.DefaultJsonDriver
@@ -28,7 +28,7 @@ import org.beangle.data.serialize.io.xml.DomDriver
 import org.beangle.data.serialize.mapper.DefaultMapper
 import org.beangle.data.serialize.marshal.DefaultMarshallerRegistry
 
-object DefaultModule extends AbstractBindModule {
+object DefaultModule extends BindModule {
 
   protected override def binding() {
     bind(classOf[ContentNegotiationManagerFactory]).property("favorPathExtension", "true")

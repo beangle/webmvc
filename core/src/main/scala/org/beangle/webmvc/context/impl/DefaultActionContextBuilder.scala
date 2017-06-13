@@ -25,7 +25,7 @@ import org.beangle.webmvc.context.{ ActionContextBuilder, LocaleResolver }
 import org.beangle.webmvc.execution.Handler
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.webmvc.context.ActionContextInitializer
-import org.beangle.commons.cdi.Container
+import org.beangle.cdi.Container
 
 /**
  * @author chaostone

@@ -19,20 +19,25 @@
 package org.beangle.webmvc.entity.helper
 
 import org.beangle.commons.lang.Strings
-import org.beangle.commons.model.Entity
-import org.beangle.commons.model.meta.{ EntityMetadata, EntityType }
-import org.beangle.commons.model.util.ConvertPopulator
+import org.beangle.data.model.Entity
+import org.beangle.data.model.meta.EntityType
+import org.beangle.data.model.util.ConvertPopulator
 import org.beangle.webmvc.api.context.Params
 import org.beangle.webmvc.context.ContainerHelper
+import org.beangle.data.hibernate.DomainFactory
 
 object PopulateHelper {
 
-  var metadata: EntityMetadata = ContainerHelper.get.getBean(classOf[EntityMetadata]).head
+  private var domain = ContainerHelper.get.getBean(classOf[DomainFactory]).head.result
 
   var populator = new ConvertPopulator
 
   final def getType(clazz: Class[_]): EntityType = {
-    metadata.getType(clazz).getOrElse(new EntityType(clazz, clazz.getName, "id"))
+    domain.getEntity(clazz).get
+  }
+
+  final def getType(className: String): EntityType = {
+    domain.getEntity(className).get
   }
   /**
    * 将request中的参数设置到clazz对应的bean。
@@ -72,8 +77,7 @@ object PopulateHelper {
   }
 
   def populate[T <: Entity[_]](obj: T, entityName: String, params: collection.Map[String, Any]): T = {
-    val etype = metadata.getType(entityName).get
-    populator.populate(obj, etype, params)
+    populator.populate(obj, getType(entityName), params)
     obj
   }
 

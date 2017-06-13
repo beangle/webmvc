@@ -18,12 +18,12 @@
  */
 package org.beangle.webmvc.html2pdf
 
-import org.beangle.commons.cdi.bind.AbstractBindModule
+import org.beangle.cdi.bind.BindModule
 
 /**
  * @author chaostone
  */
-class DefaultModule extends AbstractBindModule {
+class DefaultModule extends BindModule {
 
   override def binding(): Unit = {
     bind("web.Decorator.pdf", classOf[PdfDecorator])

@@ -18,13 +18,13 @@
  */
 package org.beangle.webmvc.spring
 
-import org.beangle.commons.cdi.bind.AbstractBindModule
+import org.beangle.cdi.bind.BindModule
 import org.beangle.webmvc.dispatch.impl.StaticResourceRouteProvider
 
 /**
  * @author chaostone
  */
-class DefaultModule extends AbstractBindModule {
+class DefaultModule extends BindModule {
   protected override def binding(): Unit = {
     bind(classOf[StaticResourceRouteProvider])
   }
