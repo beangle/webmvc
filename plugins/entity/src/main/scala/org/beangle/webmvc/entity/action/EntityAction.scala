@@ -161,8 +161,8 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     val idType = entityType.id.clazz
     Params.converter.convert(id, idType) match {
       case Some(rid) =>
-        val classE = entityType.clazz.asInstanceOf[Class[Entity[Serializable]]]
-        entityDao.get(classE, rid.asInstanceOf[Serializable]).asInstanceOf[E]
+        val classE = entityType.clazz.asInstanceOf[Class[Entity[jo.Serializable]]]
+        entityDao.get(classE, rid.asInstanceOf[jo.Serializable]).asInstanceOf[E]
       case None => null.asInstanceOf[E]
     }
   }

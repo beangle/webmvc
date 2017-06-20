@@ -18,11 +18,11 @@
  */
 package org.beangle.webmvc.entity.action
 
-import java.time.ZonedDateTime
+import java.time.Instant
 
+import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.data.model.Entity
 import org.beangle.data.model.pojo.Updated
-import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.view.View
@@ -89,7 +89,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
   protected def saveAndRedirect(entity: T): View = {
     try {
       entity match {
-        case updated: Updated => updated.updatedAt = ZonedDateTime.now.toInstant
+        case updated: Updated => updated.updatedAt = Instant.now
         case _                =>
       }
       saveOrUpdate(entity)
