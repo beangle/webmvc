@@ -23,6 +23,8 @@ import org.beangle.webmvc.api.context.ActionContext
 import scala.reflect.ClassTag
 import java.sql
 import java.{ util => ju }
+import java.time.LocalDateTime
+import java.time.LocalDate
 
 trait ParamSupport {
 
@@ -67,11 +69,11 @@ trait ParamSupport {
     Params.getBoolean(name).getOrElse(defaultValue)
   }
 
-  protected final def getDate(name: String): Option[sql.Date] = {
+  protected final def getDate(name: String): Option[LocalDate] = {
     Params.getDate(name)
   }
 
-  protected final def getDateTime(name: String): Option[ju.Date] = {
+  protected final def getDateTime(name: String): Option[LocalDateTime] = {
     Params.getDateTime(name)
   }
 

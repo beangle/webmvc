@@ -12,10 +12,10 @@
   <version>0.3.12-SNAPSHOT</version>
 
   <properties>
-    <beangle.commons.version>5.0.0.M3</beangle.commons.version>
-    <beangle.data.version>5.0.0.M2</beangle.data.version>
-    <beangle.cdi.version>0.0.10</beangle.cdi.version>
-    <beangle.template.version>0.0.15</beangle.template.version>
+    <beangle.commons.version>5.0.0.M4</beangle.commons.version>
+    <beangle.data.version>5.0.0.M4</beangle.data.version>
+    <beangle.cdi.version>0.0.11</beangle.cdi.version>
+    <beangle.template.version>0.0.16</beangle.template.version>
     <javassist.version>3.20.0-GA</javassist.version>
     <itextpdf.version>5.5.10</itextpdf.version>
     <itext.asian.version>5.2.0</itext.asian.version>
@@ -57,7 +57,7 @@
       </dependency>
       <dependency>
         <groupId>org.beangle.data</groupId>
-        <artifactId>beangle-data-serializer_2.12</artifactId>
+        <artifactId>beangle-data-stream_2.12</artifactId>
         <version>${beangle.data.version}</version>
       </dependency>
       <dependency>

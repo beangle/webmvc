@@ -16,17 +16,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Beangle.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beangle.webmvc.serializer
+package org.beangle.webmvc.stream
 
 import org.beangle.commons.http.accept.ContentNegotiationManagerFactory
 import org.beangle.cdi.bind.BindModule
-import org.beangle.data.serialize.{ CsvSerializer, JsonSerializer, JsonpSerializer, XmlSerializer }
-import org.beangle.data.serialize.io.csv.DefaultCsvDriver
-import org.beangle.data.serialize.io.json.DefaultJsonDriver
-import org.beangle.data.serialize.io.jsonp.DefaultJsonpDriver
-import org.beangle.data.serialize.io.xml.DomDriver
-import org.beangle.data.serialize.mapper.DefaultMapper
-import org.beangle.data.serialize.marshal.DefaultMarshallerRegistry
+import org.beangle.data.stream.{ CsvSerializer, JsonSerializer, JsonpSerializer, XmlSerializer }
+import org.beangle.data.stream.io.csv.DefaultCsvDriver
+import org.beangle.data.stream.io.json.DefaultJsonDriver
+import org.beangle.data.stream.io.jsonp.DefaultJsonpDriver
+import org.beangle.data.stream.io.xml.DomDriver
+import org.beangle.data.stream.mapper.DefaultMapper
+import org.beangle.data.stream.marshal.DefaultMarshallerRegistry
 
 object DefaultModule extends BindModule {
 

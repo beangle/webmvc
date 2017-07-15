@@ -26,7 +26,7 @@ import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 class ShowcaseAction extends RouteSupport {
 
-  def string(): String = {
+  def string(): View = {
     println("in Showcase string")
     forward()
   }

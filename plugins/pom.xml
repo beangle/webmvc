@@ -12,7 +12,7 @@
 
   <modules>
     <module>entity</module>
-    <module>serializer</module>
+    <module>stream</module>
     <module>spring</module>
     <module>html2pdf</module>
   </modules>
