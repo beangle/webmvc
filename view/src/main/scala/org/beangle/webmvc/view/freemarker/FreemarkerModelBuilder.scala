@@ -19,6 +19,7 @@
 package org.beangle.webmvc.view.freemarker
 
 import org.beangle.commons.lang.annotation.description
+import org.beangle.commons.lang.SystemInfo
 import org.beangle.template.freemarker.ParametersHashModel
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.view.TagLibraryProvider
@@ -45,6 +46,9 @@ class FreemarkerModelBuilder(tagLibraryProvider: TagLibraryProvider) {
           model.put(tagName.toString, tag.getModels(request, response))
       }
       model.put("base", request.getContextPath)
+      SystemInfo.properties.get("beangle.webmvc.static_base") foreach { p =>
+        model.put("static_base", p)
+      }
       request.setAttribute(templateModelAttribute, model)
       model
     } else {
