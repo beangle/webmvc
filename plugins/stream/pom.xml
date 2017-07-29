@@ -2,22 +2,22 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-plugins_2.12</artifactId>
-    <version>0.3.11</version>
+    <version>0.3.12</version>
   </parent>
-  <artifactId>beangle-webmvc-serializer-plugin_2.12</artifactId>
+  <artifactId>beangle-webmvc-stream-plugin_2.12</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMVC Plugin - Serializer</name>
+  <name>Beangle WebMVC Plugin - Stream</name>
 
   <properties>
-    <bundle.symbolicName>org.beangle.webmvc.serializer.plugin</bundle.symbolicName>
-    <bundle.namespace>org.beangle.webmvc.serializer</bundle.namespace>
+    <bundle.symbolicName>org.beangle.webmvc.stream.plugin</bundle.symbolicName>
+    <bundle.namespace>org.beangle.webmvc.stream</bundle.namespace>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.beangle.data</groupId>
-      <artifactId>beangle-data-serializer_2.12</artifactId>
+      <artifactId>beangle-data-stream_2.12</artifactId>
     </dependency>
     <dependency>
       <groupId>org.beangle.commons</groupId>

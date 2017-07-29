@@ -51,7 +51,7 @@ class ViewManager extends ContainerListener {
     val buf = new collection.mutable.HashMap[String, Serializer]
     container.getBeans(classOf[Serializer]) foreach {
       case (k, serializer) =>
-        serializer.supportMediaTypes foreach { mimeType =>
+        serializer.mediaTypes foreach { mimeType =>
           buf.put(mimeType.toString, serializer)
         }
     }

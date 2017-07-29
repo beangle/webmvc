@@ -26,6 +26,8 @@ import scala.reflect.ClassTag
 import org.beangle.commons.collection.MapConverter
 import org.beangle.commons.conversion.impl.DefaultConversion
 import org.beangle.commons.lang.Strings.join
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 object Params {
 
@@ -72,11 +74,11 @@ object Params {
     converter.getBoolean(ActionContext.current.params, name)
   }
 
-  def getDate(name: String): Option[sql.Date] = {
+  def getDate(name: String): Option[LocalDate] = {
     converter.getDate(ActionContext.current.params, name)
   }
 
-  def getDateTime(name: String): Option[ju.Date] = {
+  def getDateTime(name: String): Option[LocalDateTime] = {
     converter.getDateTime(ActionContext.current.params, name)
   }
 

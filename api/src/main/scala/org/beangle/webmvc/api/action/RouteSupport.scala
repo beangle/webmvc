@@ -23,18 +23,19 @@ import org.beangle.webmvc.api.view.RedirectActionView
 import org.beangle.commons.lang.Strings
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.api.annotation.ignore
+import org.beangle.webmvc.api.view.PathView
 
 trait RouteSupport extends MessageSupport {
 
   @ignore
-  protected final def forward(view: String = null): String = {
-    view
+  protected final def forward(view: String = null): PathView = {
+    PathView(view)
   }
 
   @ignore
-  protected final def forward(view: String, message: String): String = {
+  protected final def forward(view: String, message: String): PathView = {
     addMessage(getText(message))
-    view
+    PathView(view)
   }
 
   @ignore

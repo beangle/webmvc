@@ -18,11 +18,11 @@
  */
 package org.beangle.webmvc.entity.action
 
-import java.time.ZonedDateTime
+import java.time.Instant
 
+import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.data.model.Entity
 import org.beangle.data.model.pojo.Updated
-import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.view.View
@@ -30,18 +30,18 @@ import org.beangle.webmvc.execution.Handler
 
 abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAction[T] {
 
-  def index(): String = {
+  def index(): View = {
     indexSetting()
     forward()
   }
 
-  def search(): String = {
+  def search(): View = {
     put(EnNounPluralizer.pluralize(simpleEntityName), entityDao.search(getQueryBuilder()))
     forward()
   }
 
   @mapping(value = "{id}")
-  def info(@param("id") id: String): String = {
+  def info(@param("id") id: String): View = {
     put(simpleEntityName, getModel[T](entityName, convertId(id)))
     forward()
   }
@@ -49,7 +49,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
   protected def indexSetting(): Unit = {}
 
   @mapping(value = "{id}/edit")
-  def edit(@param("id") id: String): String = {
+  def edit(@param("id") id: String): View = {
     var entity = getModel(id)
     editSetting(entity)
     put(simpleEntityName, entity)
@@ -57,7 +57,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
   }
 
   @mapping(value = "new", view = "new,form")
-  def editNew(): String = {
+  def editNew(): View = {
     var entity = getEntity(entityType, simpleEntityName)
     editSetting(entity)
     put(simpleEntityName, entity)
@@ -89,7 +89,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
   protected def saveAndRedirect(entity: T): View = {
     try {
       entity match {
-        case updated: Updated => updated.updatedAt = ZonedDateTime.now.toInstant
+        case updated: Updated => updated.updatedAt = Instant.now
         case _                =>
       }
       saveOrUpdate(entity)

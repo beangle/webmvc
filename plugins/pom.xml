@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-parent_2.12</artifactId>
-    <version>0.3.11</version>
+    <version>0.3.12</version>
   </parent>
   <artifactId>beangle-webmvc-plugins_2.12</artifactId>
   <packaging>pom</packaging>
@@ -12,7 +12,7 @@
 
   <modules>
     <module>entity</module>
-    <module>serializer</module>
+    <module>stream</module>
     <module>spring</module>
     <module>html2pdf</module>
   </modules>

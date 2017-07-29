@@ -29,6 +29,7 @@ import org.beangle.webmvc.view.impl.ViewManager
 
 import javax.activation.MimeType
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.webmvc.api.view.PathView
 
 /**
  * 缺省的调用反应堆
@@ -46,10 +47,10 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
       if (lastInterceptorIndex == interceptors.length - 1) {
         var result = invoker.invoke()
         context.flash.writeNextToCookie()
-        if (null == result) result = mapping.defaultView
         val view = result match {
           case null => null
-          case viewName: String =>
+          case PathView(path) =>
+            val viewName = if (null == path) mapping.defaultView else path
             action.views.get(viewName) match {
               case Some(v) => v
               case None =>

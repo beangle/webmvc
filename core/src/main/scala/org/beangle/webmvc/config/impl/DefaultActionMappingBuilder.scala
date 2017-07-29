@@ -141,8 +141,8 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
 
     val returnType = method.getReturnType()
     if (null == getAnnotation(method, classOf[response]) && null == getAnnotation(method, classOf[mapping]) && !containsParamAnnotation(method.getParameterAnnotations)) {
-      //filter method don't return string or view
-      if (returnType != classOf[String] && returnType != classOf[View]) return false
+      //filter method don't return view
+      if (returnType != classOf[View]) return false
     } else {
       if (returnType == classOf[Unit]) throw new RuntimeException(s"${method} return type is unit ")
     }
