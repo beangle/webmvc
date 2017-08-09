@@ -19,7 +19,7 @@
 package org.beangle.webmvc.config
 
 import java.lang.reflect.Method
-import org.beangle.commons.http.HttpMethods.{ DELETE, HEAD, PUT }
+import org.beangle.commons.net.http.HttpMethods.{ DELETE, HEAD, PUT }
 import org.beangle.commons.lang.Strings.{ join, split }
 import org.beangle.webmvc.api.action.ToURL
 import org.beangle.webmvc.api.view.View
@@ -52,7 +52,7 @@ class ActionMapping(val action: AnyRef, val clazz: Class[_], val name: String, v
 object RouteMapping {
   final val DefaultMethod = "index"
   final val MethodParam = "_method"
-  import org.beangle.commons.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
+  import org.beangle.commons.net.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
   final val BrowserUnsupported = Map((PUT, "put"), (DELETE, "delete"), (HEAD, "head"))
 }
 

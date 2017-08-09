@@ -21,7 +21,7 @@ package org.beangle.webmvc.config
 import org.junit.runner.RunWith
 import org.scalatest.{ FunSpec, Matchers }
 import org.scalatest.junit.JUnitRunner
-import org.beangle.commons.http.HttpMethods
+import org.beangle.commons.net.http.HttpMethods
 import org.beangle.webmvc.context.Argument
 import org.beangle.webmvc.api.view.View
 

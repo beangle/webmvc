@@ -18,8 +18,9 @@
  */
 package org.beangle.webmvc.stream
 
-import org.beangle.commons.http.accept.ContentNegotiationManagerFactory
 import org.beangle.cdi.bind.BindModule
+import org.beangle.commons.io.DefaultBinarySerializer
+import org.beangle.commons.web.http.accept.ContentNegotiationManagerFactory
 import org.beangle.data.stream.{ CsvSerializer, JsonSerializer, JsonpSerializer, XmlSerializer }
 import org.beangle.data.stream.io.csv.DefaultCsvDriver
 import org.beangle.data.stream.io.json.DefaultJsonDriver
@@ -45,5 +46,6 @@ object DefaultModule extends BindModule {
     bind("web.Serializer.json", classOf[JsonSerializer])
     bind("web.Serializer.jsonp", classOf[JsonpSerializer])
     bind("web.Serializer.csv", classOf[CsvSerializer])
+    bind("web.Serializer.bin", DefaultBinarySerializer)
   }
 }
