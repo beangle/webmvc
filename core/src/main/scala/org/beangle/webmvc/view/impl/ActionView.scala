@@ -18,18 +18,19 @@
  */
 package org.beangle.webmvc.view.impl
 
-import org.beangle.commons.http.HttpMethods
+import java.net.URLEncoder
+
+import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.webmvc.api.action.{ ToClass, ToURL, To }
+import org.beangle.commons.net.http.HttpMethods
+import org.beangle.webmvc.api.action.{ To, ToClass, ToURL }
 import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.{ ActionView, ForwardActionView, RedirectActionView, View }
-import org.beangle.webmvc.config.{ RouteMapping, Configurer }
+import org.beangle.webmvc.config.{ Configurer, RouteMapping }
 import org.beangle.webmvc.view.{ TypeViewBuilder, ViewRender }
 
 import javax.servlet.http.HttpServletRequest
-import org.beangle.commons.lang.Strings
-import java.net.URLEncoder
 
 @description("前向调转视图构建者")
 class ForwardActionViewBuilder extends TypeViewBuilder {

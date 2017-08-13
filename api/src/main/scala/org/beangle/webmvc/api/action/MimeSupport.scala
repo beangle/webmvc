@@ -20,7 +20,7 @@ package org.beangle.webmvc.api.action
 
 import java.net.URL
 
-import org.beangle.commons.http.accept.ContentNegotiationManager
+import org.beangle.commons.web.http.accept.ContentNegotiationManager
 import org.beangle.commons.lang.{Chars, ClassLoaders, Strings}
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.{CookieUtils, RequestUtils}
