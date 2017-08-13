@@ -19,12 +19,12 @@
 package org.beangle.webmvc.dispatch.impl
 
 import java.{ lang => jl }
-import org.beangle.commons.http.HttpMethods.{ GET, POST }
 import org.beangle.cdi.Container
 import org.beangle.commons.lang.{ Arrays, Strings }
 import org.beangle.commons.lang.Strings.split
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.commons.logging.Logging
+import org.beangle.commons.net.http.HttpMethods.{ GET, POST }
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.config.Path
 import org.beangle.webmvc.config.RouteMapping.{ DefaultMethod, MethodParam }

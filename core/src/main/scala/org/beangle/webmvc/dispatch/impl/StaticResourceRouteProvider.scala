@@ -19,7 +19,7 @@
 package org.beangle.webmvc.dispatch.impl
 
 import org.beangle.commons.bean.Initializing
-import org.beangle.commons.http.HttpMethods.GET
+import org.beangle.commons.net.http.HttpMethods.GET
 import org.beangle.commons.io.ClasspathResourceLoader
 import org.beangle.commons.lang.Strings.substringAfter
 import org.beangle.commons.lang.annotation.spi

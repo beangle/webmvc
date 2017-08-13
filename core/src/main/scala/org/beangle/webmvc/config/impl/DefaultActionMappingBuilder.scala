@@ -20,8 +20,7 @@ package org.beangle.webmvc.config.impl
 
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
-import scala.Range
-import org.beangle.commons.http.HttpMethods.GET
+import org.beangle.commons.net.http.HttpMethods.GET
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.Strings.{ isNotEmpty, split }
 import org.beangle.commons.lang.annotation.{ description, spi }
