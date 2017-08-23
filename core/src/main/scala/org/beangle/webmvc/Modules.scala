@@ -25,6 +25,8 @@ import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, DefaultRoutePr
 import org.beangle.webmvc.execution.impl.{ DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder }
 import org.beangle.webmvc.execution.interceptors.CorsInterceptor
 import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender, ViewManager }
+import org.beangle.commons.web.http.accept.ContentNegotiationManagerFactory
+import org.beangle.commons.io.DefaultBinarySerializer
 
 object DefaultModule extends BindModule {
 
@@ -62,6 +64,11 @@ object DefaultModule extends BindModule {
     bind("mvc.ActionContextBuilder.default", classOf[DefaultActionContextBuilder])
     bind("mvc.ActionFinder.default", classOf[ContainerActionFinder])
     bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
+
+    //content
+    bind(classOf[ContentNegotiationManagerFactory]).property("favorPathExtension", "true")
+      .property("favorParameter", "true").property("parameterName", "format").property("ignoreAcceptHeader", "false")
+    bind("Serializer.bin", DefaultBinarySerializer)
   }
 }
 
