@@ -12,7 +12,6 @@
 
   <modules>
     <module>entity</module>
-    <module>stream</module>
     <module>spring</module>
     <module>html2pdf</module>
   </modules>

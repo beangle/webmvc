@@ -12,10 +12,10 @@
   <version>0.3.14</version>
 
   <properties>
-    <beangle.commons.version>5.0.0.M5</beangle.commons.version>
-    <beangle.data.version>5.0.0.M5</beangle.data.version>
-    <beangle.cdi.version>0.0.12</beangle.cdi.version>
-    <beangle.template.version>0.0.17</beangle.template.version>
+    <beangle.commons.version>5.0.0.M6</beangle.commons.version>
+    <beangle.data.version>5.0.0.M6</beangle.data.version>
+    <beangle.cdi.version>0.0.13</beangle.cdi.version>
+    <beangle.template.version>0.0.18</beangle.template.version>
     <javassist.version>3.20.0-GA</javassist.version>
     <itextpdf.version>5.5.11</itextpdf.version>
     <itext.asian.version>5.2.0</itext.asian.version>
