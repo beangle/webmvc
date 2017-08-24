@@ -19,7 +19,7 @@
 package org.beangle.webmvc.dispatch
 
 import java.io.{ File, FileInputStream }
-import org.beangle.commons.activation.MimeTypeProvider
+import org.beangle.commons.activation.MimeTypes
 import org.beangle.commons.io.{ ClasspathResourceLoader, IOs }
 import org.beangle.commons.lang.Strings.{ isNotEmpty, substringAfter, substringAfterLast }
 import org.beangle.commons.lang.annotation.spi
@@ -81,7 +81,7 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
       findFile(request, servletPath) match {
         case Some(f) =>
           val ext = substringAfterLast(f.getName, ".")
-          if (isNotEmpty(ext)) MimeTypeProvider.getMimeType(ext) foreach (m => response.setContentType(m.toString))
+          if (isNotEmpty(ext)) MimeTypes.getMimeType(ext) foreach (m => response.setContentType(m.toString))
           IOs.copy(new FileInputStream(f), response.getOutputStream)
         case None =>
           response.setStatus(HttpServletResponse.SC_NOT_FOUND)
