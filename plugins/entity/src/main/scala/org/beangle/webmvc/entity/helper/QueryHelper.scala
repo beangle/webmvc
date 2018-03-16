@@ -1,20 +1,20 @@
 /*
- * Beangle, Agile Development Scaffold and Toolkit
+ * Beangle, Agile Development Scaffold and Toolkits.
  *
- * Copyright (c) 2005-2017, Beangle Software.
+ * Copyright © 2005, The Beangle Software.
  *
- * Beangle is free software: you can redistribute it and/or modify
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Beangle is distributed in the hope that it will be useful.
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Beangle.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.beangle.webmvc.entity.helper
 
@@ -102,12 +102,14 @@ object QueryHelper extends Logging {
   /**
    * 从的参数或者cookie中(参数优先)取得分页信息
    */
-  def pageLimit: PageLimit = new PageLimit(pageIndex, pageSize)
+  def pageLimit: PageLimit = {
+    new PageLimit(pageIndex, pageSize)
+  }
 
   /**
    * 获得请求中的页码
    */
-  def pageIndex(): Int = {
+  def pageIndex: Int = {
     var pageIndex = Params.getInt(PageParam) match {
       case Some(p) => p
       case None    => Params.getInt("pageIndex").getOrElse(Page.DefaultPageNo)
@@ -145,7 +147,7 @@ object QueryHelper extends Logging {
    * @throws ParseException
    */
   def addDateIntervalCondition(query: OqlBuilder[_], alias: String, attr: String, beginOn: String,
-                               endOn: String) {
+    endOn: String) {
     val stime = Params.get(beginOn)
     val etime = Params.get(endOn)
     var df = new SimpleDateFormat("yyyy-MM-dd")
