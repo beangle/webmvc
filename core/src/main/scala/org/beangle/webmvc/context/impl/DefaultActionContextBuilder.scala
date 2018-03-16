@@ -31,7 +31,9 @@ import org.beangle.cdi.Container
  * @author chaostone
  */
 @description("缺省的ActionContext构建器")
-class DefaultActionContextBuilder(localeResolver: LocaleResolver, initializers: List[ActionContextInitializer]) extends ActionContextBuilder {
+class DefaultActionContextBuilder(
+  localeResolver: LocaleResolver,
+  initializers: List[ActionContextInitializer]) extends ActionContextBuilder {
 
   override def build(request: HttpServletRequest, response: HttpServletResponse,
     handler: Handler, params2: collection.Map[String, Any]): ActionContext = {
@@ -45,7 +47,9 @@ class DefaultActionContextBuilder(localeResolver: LocaleResolver, initializers: 
       else params.put(paramEntry.getKey, values)
     }
 
-    if (StandardMultipartResolver.isMultipart(request)) params ++= StandardMultipartResolver.resolve(request)
+    if (StandardMultipartResolver.isMultipart(request)) {
+      params ++= StandardMultipartResolver.resolve(request)
+    }
 
     params ++= params2
 

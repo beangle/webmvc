@@ -102,12 +102,14 @@ object QueryHelper extends Logging {
   /**
    * 从的参数或者cookie中(参数优先)取得分页信息
    */
-  def pageLimit: PageLimit = new PageLimit(pageIndex, pageSize)
+  def pageLimit: PageLimit = {
+    new PageLimit(pageIndex, pageSize)
+  }
 
   /**
    * 获得请求中的页码
    */
-  def pageIndex(): Int = {
+  def pageIndex: Int = {
     var pageIndex = Params.getInt(PageParam) match {
       case Some(p) => p
       case None    => Params.getInt("pageIndex").getOrElse(Page.DefaultPageNo)
@@ -145,7 +147,7 @@ object QueryHelper extends Logging {
    * @throws ParseException
    */
   def addDateIntervalCondition(query: OqlBuilder[_], alias: String, attr: String, beginOn: String,
-                               endOn: String) {
+    endOn: String) {
     val stime = Params.get(beginOn)
     val etime = Params.get(endOn)
     var df = new SimpleDateFormat("yyyy-MM-dd")
