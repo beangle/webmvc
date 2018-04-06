@@ -70,7 +70,8 @@ trait Argument {
 
 @spi
 trait ActionContextBuilder {
-  def build(request: HttpServletRequest, response: HttpServletResponse, handler: Handler, params: collection.Map[String, Any]): ActionContext
+  def build(request: HttpServletRequest, response: HttpServletResponse, handler: Handler,
+    params: collection.Map[String, Any]): ActionContext
 }
 
 @spi
