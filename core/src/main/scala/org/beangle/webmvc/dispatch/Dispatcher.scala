@@ -37,9 +37,11 @@ import org.beangle.webmvc.execution.ContextAwareHandler
 import org.beangle.cdi.Container
 
 class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBuilder: ActionContextBuilder)
-    extends GenericServlet with Logging {
+  extends GenericServlet with Logging {
 
   var defaultEncoding = "utf-8"
+
+  var index: String = _
 
   def this(container: Container) {
     this(container.getBean(classOf[Configurer]).get, container.getBean(classOf[RequestMapper]).get, container.getBean(classOf[ActionContextBuilder]).get)
@@ -50,6 +52,15 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
     configurer.build()
     // 2. build mapper
     mapper.build()
+    // 3. find index
+    val indexFile =
+      List("/index.html", "/index.htm", "/index.jsp") find { i =>
+        new File(config.getServletContext().getRealPath(i)).exists()
+      }
+    indexFile match {
+      case None => if (null != mapper.resolve("/index")) this.index = "/index"
+      case Some(i) => this.index = i
+    }
   }
 
   override def service(req: ServletRequest, res: ServletResponse): Unit = {
@@ -76,7 +87,11 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
 
   protected def handleUnknown(servletPath: String, request: HttpServletRequest, response: HttpServletResponse): Unit = {
     if (servletPath.isEmpty) {
-      response.sendRedirect(request.getContextPath + "/")
+      if (null != this.index) {
+        response.sendRedirect(request.getContextPath + this.index)
+      } else {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND)
+      }
     } else {
       findFile(request, servletPath) match {
         case Some(f) =>
