@@ -33,16 +33,10 @@ import javax.servlet.ServletContext
 class Initializer extends org.beangle.commons.web.init.Initializer {
 
   override def onStartup(sc: ServletContext) {
-    sc.setInitParameter("templatePath", "class://")
-
     val ctxListener = new ContextListener
     ctxListener.childContextConfigLocation = "WebApplicationContext:Action@classpath:spring-web-context.xml"
     val container = ctxListener.loadContainer()
     addListener(ctxListener)
-
-    container.getBean(classOf[EventMulticaster]) foreach { em =>
-      sc.addListener(new HttpSessionEventPublisher(em))
-    }
 
     val action = sc.addServlet("Action", new Dispatcher(container))
     action.addMapping("/*")
