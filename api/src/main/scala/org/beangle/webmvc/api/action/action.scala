@@ -40,7 +40,7 @@ object To {
   }
 
   def apply(uri: String, params: String): ToURL = {
-    new ToURL(uri).params(params)
+    apply(uri).params(params)
   }
 
   def apply(uri: String): ToURL = {
@@ -129,6 +129,8 @@ class ToStruts(val namespace: String, val name: String, val method: String, val 
 }
 
 class ToURL(val uri: String) extends To {
+
+  require(null != uri && uri.indexOf('?') == -1)
 
   def toStruts: ToStruts = {
     var endIndex = uri.length

@@ -74,7 +74,7 @@ trait RouteSupport extends MessageSupport {
 
   @ignore
   protected final def to(uri: String, params: String): ToURL = {
-    new ToURL(uri).params(params)
+    To(uri).params(params)
   }
 
   @ignore
