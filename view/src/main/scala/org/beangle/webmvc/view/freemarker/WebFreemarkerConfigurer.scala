@@ -33,7 +33,7 @@ import freemarker.template.ObjectWrapper
 class WebFreemarkerConfigurer extends Configurer {
   override def createTemplateLoader(props: Map[String, String]): TemplateLoader = {
     templatePath = ServletContextHolder.context.getInitParameter("templatePath")
-    if (null != templatePath) templatePath = "class://"
+    if (null == templatePath) templatePath = "class://"
     val paths: Array[String] = split(templatePath, ",")
     val loaders = new collection.mutable.ListBuffer[TemplateLoader]
     for (path <- paths) {
