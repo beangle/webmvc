@@ -46,9 +46,6 @@ class FreemarkerModelBuilder(tagLibraryProvider: TagLibraryProvider) {
           model.put(tagName.toString, tag.getModels(request, response))
       }
       model.put("base", request.getContextPath)
-      val p = System.getProperty("beangle.webmvc.static_base")
-      val staticBase = if (null == p) request.getContextPath + "/static" else p
-      model.put("static_base", staticBase)
       request.setAttribute(templateModelAttribute, model)
       model
     } else {
