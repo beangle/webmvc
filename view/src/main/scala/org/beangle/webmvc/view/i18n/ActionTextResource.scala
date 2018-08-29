@@ -31,7 +31,7 @@ import org.beangle.webmvc.api.i18n.TextProvider
 import org.beangle.webmvc.execution.{ Handler, MappingHandler }
 
 class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: TextBundleRegistry, formater: TextFormater)
-    extends DefaultTextResource(locale, registry, formater) with TextProvider {
+  extends DefaultTextResource(locale, registry, formater) with TextProvider {
 
   /**
    * 1 remove index key(user.roles[0].name etc.)
@@ -59,7 +59,11 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
       // search up model's class hierarchy
       val entityType = mapping.action.action.asInstanceOf[EntitySupport[_]].entityType
       if (entityType != null) {
-        msg = getPackageMessage(entityType, key, checked)
+        val entityPrefix = entityType.getSimpleName + "."
+        if (Strings.capitalize(key).startsWith(entityPrefix)) {
+          msg = getMessage(entityType.getName, locale, key.substring(entityPrefix.length))
+        }
+        if (None == msg) msg = getPackageMessage(entityType, key, checked)
         if (msg != None) return msg
       }
     }
@@ -111,7 +115,6 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
    * Gets the message from the named resource bundle.
    */
   private def getMessage(bundleName: String, locale: jl.Locale, key: String): Option[String] = {
-    var bundle = registry.load(locale, bundleName)
-    if (null == bundle) None else bundle.get(key)
+    registry.load(locale, bundleName).get(key)
   }
 }
