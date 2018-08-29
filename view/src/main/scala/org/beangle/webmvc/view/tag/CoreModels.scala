@@ -32,16 +32,12 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
 
   val textProvider = ActionContext.current.textProvider.get
 
-  def url(url: String) = {
+  def url(url: String): String = {
     context.uriRender.render(Handler.mapping, url)
   }
 
   def base: String = {
     request.getContextPath
-  }
-
-  def staticBase: String = {
-    System.getProperty("static_base")
   }
 
   def now = new ju.Date
