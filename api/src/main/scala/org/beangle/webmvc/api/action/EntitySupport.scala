@@ -43,9 +43,17 @@ trait EntitySupport[T] {
   }
 
   protected def getId(name: String): Option[String] = {
-    Params.get(name + ".id").orElse(Params.get(name + "Id")) match {
-      case Some(id) => Some(id)
-      case None     => if (name == simpleEntityName) Params.get("id") else None
+    var ids = Params.getAll(name + ".id")
+    if (ids.isEmpty) {
+      ids = Params.getAll(name + "Id")
+    }
+    if (ids.isEmpty && name == simpleEntityName) {
+      ids = Params.getAll("id")
+    }
+    if (ids.isEmpty || ids.size > 1) {
+      None
+    } else {
+      Some(ids.head.toString)
     }
   }
 

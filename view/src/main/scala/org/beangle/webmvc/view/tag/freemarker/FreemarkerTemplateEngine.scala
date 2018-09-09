@@ -85,6 +85,7 @@ class FreemarkerTemplateEngine(modelBuilder: FreemarkerModelBuilder) extends Tem
     if (!enableCache) config.setTemplateUpdateDelayMilliseconds(0)
 
     config.setCacheStorage(new StrongCacheStorage())
+    config.setTagSyntax(Configuration.SQUARE_BRACKET_TAG_SYNTAX)
     // Disable auto imports and includes
     config.setAutoImports(new HashMap(0))
     config.setAutoIncludes(new ArrayList(0))
