@@ -32,7 +32,7 @@ import org.beangle.webmvc.api.context.{ ActionContext, Params }
 
 object QueryHelper extends Logging {
 
-  val PageParam = "page"
+  val PageParam = "pageIndex"
 
   val PageSizeParam = "pageSize"
 
