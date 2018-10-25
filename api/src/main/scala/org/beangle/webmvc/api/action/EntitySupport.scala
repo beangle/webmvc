@@ -53,7 +53,8 @@ trait EntitySupport[T] {
     if (ids.isEmpty || ids.size > 1) {
       None
     } else {
-      Some(ids.head.toString)
+      val head = ids.head.toString
+      if (Strings.isBlank(head)) None else Some(head)
     }
   }
 
