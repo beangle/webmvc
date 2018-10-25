@@ -60,7 +60,12 @@ class UIBean(context: ComponentContext) extends Component(context) {
     if (!Chars.isAsciiAlpha(text.charAt(0))) return defaultText
     if (-1 == text.indexOf('.') || -1 < text.indexOf(' ')) return defaultText
     else {
-       ActionContext.current.textProvider.get(text, defaultText)
+      if (text.endsWith(".id")) {
+        val key = Strings.substringBeforeLast(text, ".id")
+        ActionContext.current.textProvider.get(key, defaultText)
+      } else {
+        ActionContext.current.textProvider.get(text, defaultText)
+      }
     }
   }
 
@@ -74,10 +79,10 @@ class UIBean(context: ComponentContext) extends Component(context) {
 
   protected def getValue(obj: Any, property: String): Any = {
     obj match {
-      case null => null
+      case null                      => null
       case map: collection.Map[_, _] => map.asInstanceOf[collection.Map[String, Any]].get(property).orNull
-      case javaMap: ju.Map[_, _] => javaMap.get(property)
-      case o: AnyRef => Properties.get(o, property)
+      case javaMap: ju.Map[_, _]     => javaMap.get(property)
+      case o: AnyRef                 => Properties.get(o, property)
     }
   }
 
