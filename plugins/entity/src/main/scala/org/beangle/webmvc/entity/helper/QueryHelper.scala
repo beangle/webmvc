@@ -85,7 +85,12 @@ object QueryHelper extends Logging {
             conditions += new Condition(prefix + "." + attr + " is null")
           } else {
             PopulateHelper.populator.populate(entity, entityType, attr, strValue)
-            Properties.get[Object](entity, attr) match {
+            val v = Properties.get[Object](entity, attr) match {
+              case Some(s) => s
+              case None    => null
+              case a: Any  => a
+            }
+            v match {
               case null       => logger.error("Error populate entity " + prefix + "'s attribute " + attr)
               case sv: String => conditions += new Condition(s"$prefix.$attr like :${attr.replace('.', '_')}", s"%$sv%")
               case sv         => conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", sv)
@@ -147,7 +152,7 @@ object QueryHelper extends Logging {
    * @throws ParseException
    */
   def addDateIntervalCondition(query: OqlBuilder[_], alias: String, attr: String, beginOn: String,
-    endOn: String) {
+                               endOn: String) {
     val stime = Params.get(beginOn)
     val etime = Params.get(endOn)
     var df = new SimpleDateFormat("yyyy-MM-dd")
