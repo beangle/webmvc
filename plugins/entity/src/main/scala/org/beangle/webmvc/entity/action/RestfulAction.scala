@@ -71,29 +71,43 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
       case Some(entityId) => List(getModel[T](entityName, entityId))
       case None           => getModels[T](entityName, ids(simpleEntityName, idclass))
     }
-    removeAndRedirect(entities)
+    try {
+      removeAndRedirect(entities)
+    } catch {
+      case e: Exception => {
+        logger.info("removeAndRedirect failure", e)
+        redirect("search", "info.delete.failure")
+      }
+    }
+
   }
 
   @mapping(value = "{id}", method = "put")
   def update(@param("id") id: String): View = {
     val entity = populate(getModel(id), entityName, simpleEntityName)
-    saveAndRedirect(entity)
+    persist(entity)
   }
 
   @mapping(method = "post")
   def save(): View = {
-    saveAndRedirect(populateEntity())
+    persist(populateEntity())
   }
 
   @ignore
   protected def saveAndRedirect(entity: T): View = {
+    saveOrUpdate(entity)
+    redirect("search", "info.save.success")
+  }
+
+  protected def editSetting(entity: T): Unit = {}
+
+  private def persist(entity: T): View = {
     try {
       entity match {
         case updated: Updated => updated.updatedAt = Instant.now
         case _                =>
       }
-      saveOrUpdate(entity)
-      redirect("search", "info.save.success")
+      saveAndRedirect(entity)
     } catch {
       case e: Exception => {
         val redirectTo = Handler.mapping.method.getName match {
@@ -105,6 +119,4 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAc
       }
     }
   }
-
-  protected def editSetting(entity: T): Unit = {}
 }

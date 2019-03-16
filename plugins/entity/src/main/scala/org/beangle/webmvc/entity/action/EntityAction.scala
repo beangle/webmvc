@@ -186,15 +186,8 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
 
   @ignore
   protected def removeAndRedirect(entities: Seq[T]): View = {
-    try {
-      remove(entities)
-      redirect("search", "info.remove.success")
-    } catch {
-      case e: Exception => {
-        logger.info("removeAndForwad failure", e)
-        redirect("search", "info.delete.failure")
-      }
-    }
+    remove(entities)
+    redirect("search", "info.remove.success")
   }
 
   /**
