@@ -29,9 +29,6 @@ import org.beangle.commons.web.util.RequestUtils
 import org.beangle.data.dao.{ EntityDao, OqlBuilder }
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.EntityType
-import org.beangle.data.transfer.Format
-import org.beangle.data.transfer.excel.ExcelItemWriter
-import org.beangle.data.transfer.exporter.{ Context, SimpleEntityExporter }
 import org.beangle.webmvc.api.action.{ EntitySupport, ParamSupport, RouteSupport }
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.{ ActionContext, Params }
@@ -188,48 +185,5 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   protected def removeAndRedirect(entities: Seq[T]): View = {
     remove(entities)
     redirect("search", "info.remove.success")
-  }
-
-  /**
-   * 导出
-   */
-  def export(): View = {
-    val ctx = new Context()
-    get("keys") foreach (ctx.put("keys", _))
-    get("titles") foreach (ctx.put("titles", _))
-    get("properties") foreach (ctx.put("properties", _))
-    val format = get("format") match {
-      case None    => Format.Xls
-      case Some(f) => Format.withName(Strings.capitalize(f))
-    }
-    ctx.format = format
-
-    val ext = "." + Strings.uncapitalize(format.toString)
-    val fileName =
-      get("fileName") match {
-        case Some(f) =>
-          val name = if (!f.endsWith(ext)) f + ext else f
-          ctx.put("fileName", name)
-          name
-        case None => "exportFile" + ext
-      }
-
-    val response = ActionContext.current.response
-    RequestUtils.setContentDisposition(response, fileName)
-
-    ctx.exporter = new SimpleEntityExporter()
-    ctx.writer = new ExcelItemWriter(ctx)
-
-    buildExportContext(ctx)
-    ctx.writer.outputStream = response.getOutputStream
-    ctx.exporter.export(ctx, ctx.writer)
-    Status.Ok
-  }
-
-  @ignore
-  def buildExportContext(ctx: Context) {
-    val query = getQueryBuilder()
-    query.limit(null)
-    ctx.datas.put("items", entityDao.search(query))
   }
 }

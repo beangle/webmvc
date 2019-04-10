@@ -28,7 +28,8 @@ import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.execution.Handler
 
-abstract class RestfulAction[T <: Entity[_]] extends ActionSupport with EntityAction[T] {
+abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
+  with EntityAction[T] with ExportSupport[T] with ImportSupport[T] {
 
   def index(): View = {
     indexSetting()
