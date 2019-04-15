@@ -25,6 +25,7 @@ import org.beangle.data.transfer.exporter.{ ExportContext, SimpleEntityExporter,
 import org.beangle.commons.lang.{ Strings, ClassLoaders }
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.{ ActionContext, Params }
+import org.beangle.webmvc.entity.helper.PopulateHelper
 import org.beangle.commons.web.util.RequestUtils
 
 trait ExportSupport[T <: Entity[_]] {
@@ -69,6 +70,13 @@ trait ExportSupport[T <: Entity[_]] {
 
   @ignore
   def configExport(setting: ExportSetting) {
-    setting.context.put("items", entityDao.search(getQueryBuilder().limit(null)))
+    val selectIds = ids(simpleEntityName, PopulateHelper.getType(entityType).id.clazz)
+    val items =
+      if (selectIds.isEmpty) {
+        entityDao.search(getQueryBuilder().limit(null))
+      } else {
+        entityDao.findBy(entityType, "id", selectIds)
+      }
+    setting.context.put("items", items)
   }
 }
