@@ -9,11 +9,11 @@
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Parent</name>
-  <version>0.3.26</version>
+  <version>0.3.27</version>
 
   <properties>
-    <beangle.commons.version>5.1.6</beangle.commons.version>
-    <beangle.data.version>5.1.4</beangle.data.version>
+    <beangle.commons.version>5.1.7</beangle.commons.version>
+    <beangle.data.version>5.1.6</beangle.data.version>
     <beangle.cdi.version>0.0.18</beangle.cdi.version>
     <beangle.template.version>0.0.23</beangle.template.version>
     <javassist.version>3.20.0-GA</javassist.version>

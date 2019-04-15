@@ -18,16 +18,12 @@
  */
 package org.beangle.webmvc.entity.action
 
-import org.beangle.data.model.Entity
-import org.beangle.data.transfer.importer.{ EntityImporter, ImporterFactory, ImportResult }
-import org.beangle.data.transfer.Format
-import org.beangle.data.transfer.importer.listener.ForeignerListener
-import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.entity.helper.PopulateHelper
-import org.beangle.data.transfer.importer.{ ImportListener, ImportSetting, DefaultEntityImporter }
-import org.beangle.webmvc.api.view.View
 import org.beangle.commons.lang.Strings
-import org.beangle.webmvc.entity.helper.ImportHelper
+import org.beangle.data.model.Entity
+import org.beangle.data.transfer.importer.listener.ForeignerListener
+import org.beangle.data.transfer.importer.{DefaultEntityImporter, ImportResult, ImportSetting}
+import org.beangle.webmvc.api.view.View
+import org.beangle.webmvc.entity.helper.{ImportHelper, PopulateHelper}
 
 trait ImportSupport[T <: Entity[_]] {
   self: EntityAction[T] =>
@@ -53,7 +49,11 @@ trait ImportSupport[T <: Entity[_]] {
       importer.domain = this.entityDao.domain
       importer.populator = PopulateHelper.populator
       setting.importer = importer
+      setting.listeners foreach { l =>
+        importer.addListener(l)
+      }
     }
+
     val importer = setting.importer
     if (null == setting.reader) { return forward("/components/importData/error") }
     try {
@@ -76,10 +76,7 @@ trait ImportSupport[T <: Entity[_]] {
   }
 
   protected def configImport(setting: ImportSetting): Unit = {
-    val importerListeners = List(new ForeignerListener(entityDao))
-    importerListeners.foreach { l =>
-      setting.importer.addListener(l)
-    }
+    setting.listeners = List(new ForeignerListener(entityDao))
   }
 
 }

@@ -18,22 +18,20 @@
  */
 package org.beangle.webmvc.entity.action
 
-import java.{ io => jo }
+import java.{io => jo}
 
 import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.PageLimit
 import org.beangle.commons.config.property.PropertyConfig
-import org.beangle.commons.lang.Strings
 import org.beangle.commons.logging.Logging
-import org.beangle.commons.web.util.RequestUtils
-import org.beangle.data.dao.{ EntityDao, OqlBuilder }
+import org.beangle.data.dao.{EntityDao, OqlBuilder}
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.EntityType
-import org.beangle.webmvc.api.action.{ EntitySupport, ParamSupport, RouteSupport }
+import org.beangle.webmvc.api.action.{EntitySupport, ParamSupport, RouteSupport}
 import org.beangle.webmvc.api.annotation.ignore
-import org.beangle.webmvc.api.context.{ ActionContext, Params }
-import org.beangle.webmvc.api.view.{ Status, View }
-import org.beangle.webmvc.entity.helper.{ PopulateHelper, QueryHelper }
+import org.beangle.webmvc.api.context.Params
+import org.beangle.webmvc.api.view.View
+import org.beangle.webmvc.entity.helper.{PopulateHelper, QueryHelper}
 
 trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with EntitySupport[T] with Logging {
   var entityDao: EntityDao = _
@@ -43,7 +41,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
    * 将request中的参数设置到clazz对应的bean。
    */
   protected final def populate[E <: Entity[_]](clazz: Class[E], simpleEntityName: String): E = {
-    PopulateHelper.populate(clazz, simpleEntityName);
+    PopulateHelper.populate(clazz, simpleEntityName)
   }
 
   protected final def populate[E <: Entity[_]](obj: E, simpleEntityName: String): E = {
@@ -51,13 +49,13 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   protected final def populate[E <: Entity[_]](clazz: Class[E]): E = {
-    PopulateHelper.populate(clazz);
+    PopulateHelper.populate(clazz)
   }
 
-  protected final def populate(entityName: String) = PopulateHelper.populate(entityName);
+  protected final def populate(entityName: String): Object = PopulateHelper.populate(entityName)
 
   protected final def populate(entityName: String, simpleEntityName: String): Object = {
-    PopulateHelper.populate(entityName, simpleEntityName);
+    PopulateHelper.populate(entityName, simpleEntityName)
   }
 
   protected final def populate[E <: Entity[_]](obj: E, entityName: String, simpleEntityName: String): E = {
@@ -91,11 +89,11 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   protected final def populateConditions(builder: OqlBuilder[_]): Unit = {
-    QueryHelper.populateConditions(builder);
+    QueryHelper.populateConditions(builder)
   }
 
   protected final def populateConditions(builder: OqlBuilder[_], exclusiveAttrNames: String): Unit = {
-    QueryHelper.populateConditions(builder, exclusiveAttrNames);
+    QueryHelper.populateConditions(builder, exclusiveAttrNames)
   }
 
   // CURD----------------------------------------
@@ -115,7 +113,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     entityDao.saveOrUpdate(obj)
   }
 
-  protected def getQueryBuilder(): OqlBuilder[T] = {
+  protected def getQueryBuilder: OqlBuilder[T] = {
     val builder: OqlBuilder[T] = OqlBuilder.from(entityName, simpleEntityName)
     populateConditions(builder)
     builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit)
