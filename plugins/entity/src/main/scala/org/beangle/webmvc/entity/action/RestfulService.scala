@@ -19,8 +19,8 @@
 package org.beangle.webmvc.entity.action
 
 import org.beangle.data.model.Entity
-import org.beangle.webmvc.api.action.{ ActionSupport, MimeSupport }
-import org.beangle.webmvc.api.annotation.{ ignore, mapping, param, response }
+import org.beangle.webmvc.api.action.{ActionSupport, MimeSupport}
+import org.beangle.webmvc.api.annotation.{mapping, param, response}
 import org.beangle.webmvc.api.context.Params
 
 class RestfulService[T <: Entity[_ <: java.io.Serializable]] extends ActionSupport with EntityAction[T] with MimeSupport {
@@ -28,8 +28,8 @@ class RestfulService[T <: Entity[_ <: java.io.Serializable]] extends ActionSuppo
   @response
   def index(): Any = {
     getInt("page") match {
-      case Some(p) => entityDao.search(getQueryBuilder())
-      case None    => entityDao.search(getQueryBuilder().limit(null))
+      case Some(p) => entityDao.search(getQueryBuilder)
+      case None    => entityDao.search(getQueryBuilder.limit(null))
     }
   }
 

@@ -37,7 +37,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
   }
 
   def search(): View = {
-    put(EnNounPluralizer.pluralize(simpleEntityName), entityDao.search(getQueryBuilder()))
+    put(EnNounPluralizer.pluralize(simpleEntityName), entityDao.search(getQueryBuilder))
     forward()
   }
 
@@ -51,7 +51,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
 
   @mapping(value = "{id}/edit")
   def edit(@param("id") id: String): View = {
-    var entity = getModel(id)
+    val entity = getModel(id)
     editSetting(entity)
     put(simpleEntityName, entity)
     forward()
@@ -59,7 +59,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
 
   @mapping(value = "new", view = "new,form")
   def editNew(): View = {
-    var entity = getEntity(entityType, simpleEntityName)
+    val entity = getEntity(entityType, simpleEntityName)
     editSetting(entity)
     put(simpleEntityName, entity)
     forward()
@@ -75,10 +75,9 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
     try {
       removeAndRedirect(entities)
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         logger.info("removeAndRedirect failure", e)
         redirect("search", "info.delete.failure")
-      }
     }
 
   }
@@ -110,14 +109,13 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
       }
       saveAndRedirect(entity)
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         val redirectTo = Handler.mapping.method.getName match {
           case "save"   => "editNew"
           case "update" => "edit"
         }
         logger.info("saveAndRedirect failure", e)
         redirect(redirectTo, "info.save.failure")
-      }
     }
   }
 }

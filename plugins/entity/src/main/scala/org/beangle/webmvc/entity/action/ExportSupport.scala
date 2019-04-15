@@ -73,7 +73,7 @@ trait ExportSupport[T <: Entity[_]] {
     val selectIds = ids(simpleEntityName, PopulateHelper.getType(entityType).id.clazz)
     val items =
       if (selectIds.isEmpty) {
-        entityDao.search(getQueryBuilder().limit(null))
+        entityDao.search(getQueryBuilder.limit(null))
       } else {
         entityDao.findBy(entityType, "id", selectIds)
       }
