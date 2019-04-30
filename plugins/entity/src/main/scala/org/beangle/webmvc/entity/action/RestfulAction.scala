@@ -24,7 +24,7 @@ import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.data.model.Entity
 import org.beangle.data.model.pojo.Updated
 import org.beangle.webmvc.api.action.ActionSupport
-import org.beangle.webmvc.api.annotation.{ ignore, mapping, param }
+import org.beangle.webmvc.api.annotation.{ignore, mapping, param}
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.execution.Handler
 
@@ -99,6 +99,12 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
     redirect("search", "info.save.success")
   }
 
+  @ignore
+  protected def removeAndRedirect(entities: Seq[T]): View = {
+    remove(entities)
+    redirect("search", "info.remove.success")
+  }
+
   protected def editSetting(entity: T): Unit = {}
 
   private def persist(entity: T): View = {
@@ -118,4 +124,5 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
         redirect(redirectTo, "info.save.failure")
     }
   }
+
 }

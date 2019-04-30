@@ -18,13 +18,14 @@
  */
 package org.beangle.webmvc.dispatch.impl
 
-import org.beangle.commons.lang.annotation.{ description, spi }
+import org.beangle.commons.lang.annotation.{description, spi}
 import org.beangle.commons.web.url.UrlRender
 import org.beangle.webmvc.api.action.To
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.config.RouteMapping
-import org.beangle.webmvc.dispatch.{ ActionUriRender, RequestMapper }
+import org.beangle.webmvc.dispatch.{ActionUriRender, RequestMapper}
 import org.beangle.webmvc.config.Configurer
+import org.beangle.commons.lang.Strings
 
 @description("根据uri相对地址反向生成绝对地址")
 class DefaultActionUriRender extends ActionUriRender {
@@ -34,6 +35,12 @@ class DefaultActionUriRender extends ActionUriRender {
   var configurer: Configurer = _
 
   override def render(router: RouteMapping, uri: String): String = {
+    if (Strings.isEmpty(uri)) {
+      return ActionContext.current.request.getRequestURI()
+    }
+    if (uri.startsWith("http")) {
+      return uri
+    }
     val context = ActionContext.current
     val contextPath = context.request.getServletContext().getContextPath
     if (uri.charAt(0) == '/') return contextPath + uri
