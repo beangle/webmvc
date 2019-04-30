@@ -178,10 +178,4 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
       case Some(nid) => nid.asInstanceOf[ID]
     }
   }
-
-  @ignore
-  protected def removeAndRedirect(entities: Seq[T]): View = {
-    remove(entities)
-    redirect("search", "info.remove.success")
-  }
 }
