@@ -25,10 +25,10 @@ import java.lang.annotation.Target;
 
 /**
  * 标记一个方法，如果它不返回String或者View,却又想成为调用入口
- * @author chaostone
  *
+ * @author chaostone
  */
-@Target({ ElementType.METHOD })
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface response {
 }

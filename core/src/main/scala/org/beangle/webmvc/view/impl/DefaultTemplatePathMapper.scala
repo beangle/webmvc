@@ -18,12 +18,10 @@
  */
 package org.beangle.webmvc.view.impl
 
-import scala.Range
-
-import org.beangle.commons.lang.Strings.{ isNotEmpty, unCamel, uncapitalize }
-import org.beangle.commons.lang.annotation.{ description, spi }
+import org.beangle.commons.lang.Strings.{isNotEmpty, unCamel, uncapitalize}
+import org.beangle.commons.lang.annotation.description
 import org.beangle.webmvc.config.Profile
-import org.beangle.webmvc.config.Profile.{ / => /, FULL_VIEWPATH, SEO_VIEWPATH, SIMPLE_VIEWPATH }
+import org.beangle.webmvc.config.Profile.{/, FULL_VIEWPATH, SEO_VIEWPATH, SIMPLE_VIEWPATH}
 import org.beangle.webmvc.view.TemplatePathMapper
 
 @description("缺省的模板路径映射器")

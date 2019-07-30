@@ -18,19 +18,19 @@
  */
 package org.beangle.webmvc.view.i18n
 
-import java.{ util => jl }
-
-import scala.collection.mutable.{ HashSet, Set }
+import java.{util => ju}
 
 import org.beangle.commons.bean.Properties
-import org.beangle.commons.text.i18n.{ DefaultTextResource, TextBundleRegistry, TextFormater }
 import org.beangle.commons.lang.Strings
+import org.beangle.commons.text.i18n.{DefaultTextResource, TextBundleRegistry, TextFormater}
 import org.beangle.webmvc.api.action.EntitySupport
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.i18n.TextProvider
-import org.beangle.webmvc.execution.{ Handler, MappingHandler }
+import org.beangle.webmvc.execution.{Handler, MappingHandler}
 
-class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: TextBundleRegistry, formater: TextFormater)
+import scala.collection.mutable
+
+class ActionTextResource(context: ActionContext, locale: ju.Locale, registry: TextBundleRegistry, formater: TextFormater)
   extends DefaultTextResource(locale, registry, formater) with TextProvider {
 
   /**
@@ -39,21 +39,21 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
    * 3 remove superclass and interface lookup
    */
   protected override def get(key: String): Option[String] = {
-    if (key == null) ""
+    if (key == null) return Some("")
 
     val handler = Handler.current
-    if (!handler.isInstanceOf[MappingHandler]) return None;
+    if (!handler.isInstanceOf[MappingHandler]) return None
     val amHander = handler.asInstanceOf[MappingHandler]
     val mapping = amHander.mapping
 
     val actionClass = mapping.action.clazz
-    var checked = new HashSet[String]
+    val checked = new mutable.HashSet[String]
     // search up class hierarchy
     var msg = getMessage(actionClass.getName, locale, key)
-    if (msg != None) return msg
+    if (msg.isDefined) return msg
     // nothing still? all right, search the package hierarchy now
     msg = getPackageMessage(actionClass, key, checked)
-    if (msg != None) return msg
+    if (msg.isDefined) return msg
 
     if (classOf[EntitySupport[_]].isAssignableFrom(actionClass)) {
       // search up model's class hierarchy
@@ -63,8 +63,8 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
         if (Strings.capitalize(key).startsWith(entityPrefix)) {
           msg = getMessage(entityType.getName, locale, key.substring(entityPrefix.length))
         }
-        if (None == msg) msg = getPackageMessage(entityType, key, checked)
-        if (msg != None) return msg
+        if (msg.isEmpty) msg = getPackageMessage(entityType, key, checked)
+        if (msg.isDefined) return msg
       }
     }
 
@@ -72,7 +72,7 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
     var idx = key.indexOf(".")
     if (idx > 0) {
       var prop = key.substring(0, idx)
-      var obj = context.attribute[Any](prop)
+      val obj = context.attribute[Any](prop)
       if (null != obj && !prop.equals("action")) {
         var aClass: Class[_] = obj.getClass
         var newKey = key
@@ -80,7 +80,7 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
         while (null != aClass && goOn && msg.isEmpty) {
           msg = getPackageMessage(aClass, newKey, checked)
           if (msg.isEmpty) {
-            var nextIdx = newKey.indexOf(".", idx + 1)
+            val nextIdx = newKey.indexOf(".", idx + 1)
             if (nextIdx == -1) {
               goOn = false
             } else {
@@ -97,14 +97,14 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
     registry.getDefaultText(key, locale)
   }
 
-  private def getPackageMessage(clazz: Class[_], key: String, checked: Set[String]): Option[String] = {
+  private def getPackageMessage(clazz: Class[_], key: String, checked: mutable.Set[String]): Option[String] = {
     var msg: Option[String] = None
     var baseName = clazz.getName
     while (baseName.lastIndexOf('.') != -1 && msg.isEmpty) {
       baseName = baseName.substring(0, baseName.lastIndexOf('.'))
       if (!checked.contains(baseName)) {
         msg = getMessage(baseName + ".package", locale, key)
-        if (!msg.isEmpty) return msg
+        if (msg.isDefined) return msg
         checked += baseName
       }
     }
@@ -114,7 +114,7 @@ class ActionTextResource(context: ActionContext, locale: jl.Locale, registry: Te
   /**
    * Gets the message from the named resource bundle.
    */
-  private def getMessage(bundleName: String, locale: jl.Locale, key: String): Option[String] = {
+  private def getMessage(bundleName: String, locale: ju.Locale, key: String): Option[String] = {
     registry.load(locale, bundleName).get(key)
   }
 }

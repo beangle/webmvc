@@ -19,11 +19,11 @@
 package org.beangle.webmvc.view.impl
 
 import org.beangle.commons.io.IOs
-import org.beangle.commons.lang.annotation.{ description, spi }
+import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.api.view.{ StreamView, View }
+import org.beangle.webmvc.api.view.{StreamView, View}
 import org.beangle.webmvc.view.ViewRender
 
 @description("流视图渲染者")

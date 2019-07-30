@@ -18,18 +18,17 @@
  */
 package org.beangle.webmvc.execution
 
-import org.beangle.commons.lang.annotation.description
+import org.beangle.webmvc.config.Profile
+import org.beangle.webmvc.config.impl.DefaultActionMappingBuilder
 import org.beangle.webmvc.execution.impl.StaticMethodInvokerBuilder
 import org.beangle.webmvc.execution.testaction.ShowcaseAction
 import org.junit.runner.RunWith
-import org.scalatest.{ FunSpec, Matchers }
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.scalatest.junit.JUnitRunner
-import org.beangle.webmvc.config.impl.DefaultActionMappingBuilder
-import org.beangle.webmvc.config.Profile
+import org.scalatest.Matchers
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class StaticMethodHandlerBuilderTest extends FunSpec with Matchers {
+class StaticMethodHandlerBuilderTest extends AnyFunSpec with Matchers {
   val builder = new StaticMethodInvokerBuilder()
   val mappingBuilder = new DefaultActionMappingBuilder
   mappingBuilder.viewScan = false

@@ -62,7 +62,7 @@ trait EntitySupport[T] {
   protected def id(name: String): String = {
     getId(name) match {
       case Some(id) => id
-      case None     => throw new RuntimeException(s"Cannot find ${name}.id or ${name}_id or ${name}Id parameter")
+      case None     => throw new RuntimeException(s"Cannot find $name.id or ${name}_id or ${name}Id parameter")
     }
   }
 
@@ -103,22 +103,23 @@ trait EntitySupport[T] {
    */
   protected final def intIds(shortName: String): List[Int] = {
     ids(shortName, classOf[Int])
+
   }
 
   /**
    * Get entity's id array from parameters shortname.id,shortname.ids,shortnameIds
    */
-  protected final def ids[T: ClassTag](name: String, clazz: Class[T]): List[T] = {
-    var datas: Iterable[T] = Params.getAll(name + ".id", clazz)
+  protected final def ids[X: ClassTag](name: String, clazz: Class[X]): List[X] = {
+    var datas: Iterable[X] = Params.getAll(name + ".id", clazz)
     if (datas.isEmpty) {
       datas =
         Params.get(name + ".ids").orElse(Params.get(name + "Ids")) match {
-          case None => List.empty[T]
+          case None => List.empty[X]
           case Some(datastring) =>
             Params.converter.convert(Strings.split(datastring, ","), clazz).toList
         }
     }
-    datas.asInstanceOf[List[T]]
+    datas.asInstanceOf[List[X]]
   }
 
 }

@@ -18,34 +18,33 @@
  */
 package org.beangle.webmvc.html2pdf
 
-import java.io.{ OutputStream, StringReader }
-import org.beangle.commons.collection.Collections
-import com.itextpdf.text.{ Document, PageSize, Rectangle }
-import com.itextpdf.text.pdf.{ BaseFont, PdfWriter }
-import com.itextpdf.tool.xml.{ XMLWorker, XMLWorkerFontProvider }
-import com.itextpdf.tool.xml.css.StyleAttrCSSResolver
-import com.itextpdf.tool.xml.html.{ CssAppliersImpl, Tags }
+import java.io._
+
+import com.itextpdf.text.pdf.PdfWriter
+import com.itextpdf.text.{Document, PageSize, Rectangle}
+import com.itextpdf.tool.xml.css.{CssFilesImpl, StyleAttrCSSResolver}
+import com.itextpdf.tool.xml.html.{CssAppliersImpl, Tags}
 import com.itextpdf.tool.xml.parser.XMLParser
 import com.itextpdf.tool.xml.pipeline.css.CssResolverPipeline
 import com.itextpdf.tool.xml.pipeline.end.PdfWriterPipeline
-import com.itextpdf.tool.xml.pipeline.html.{ HtmlPipeline, HtmlPipelineContext }
-import ITextPdfReporter.Rectangles
+import com.itextpdf.tool.xml.pipeline.html.{HtmlPipeline, HtmlPipelineContext}
+import com.itextpdf.tool.xml.{XMLWorker, XMLWorkerFontProvider, XMLWorkerHelper}
+import org.beangle.commons.collection.Collections
 import org.beangle.commons.io.IOs
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import com.itextpdf.tool.xml.css.CssFilesImpl
-import com.itextpdf.tool.xml.XMLWorkerHelper
-import java.io.Reader
-import org.beangle.commons.lang.ClassLoaders
+import org.beangle.webmvc.html2pdf.ITextPdfReporter.Rectangles
+
+import scala.collection.mutable
+
 /**
  * @author chaostone
  */
 object ITextPdfReporter {
-  val Rectangles = Collections.newMap[String, Rectangle]
+  val Rectangles: mutable.Map[String, Rectangle] = Collections.newMap[String, Rectangle]
   classOf[PageSize].getFields foreach { f =>
     Rectangles.put(f.getName, f.get(f).asInstanceOf[Rectangle])
   }
-  def main(args: Array[String]) {
+
+  def main(args: Array[String]): Unit = {
     val reporter = new ITextPdfReporter
     val context = new ReportContext
     val html = IOs.readString(new FileInputStream("/home/chaostone/openurp/site/_site/model/partition.html"))
@@ -59,8 +58,8 @@ class ITextPdfReporter {
 
   def generate(reader: Reader, context: ReportContext, os: OutputStream): Unit = {
     val rectangle = context.datas.get("page-size") match {
-      case Some(pageSize) => Rectangles.get(pageSize.toString).getOrElse(PageSize.A4)
-      case None           => PageSize.A4
+      case Some(pageSize) => Rectangles.getOrElse(pageSize.toString, PageSize.A4)
+      case None => PageSize.A4
     }
     val document = new Document(rectangle)
     val writer = PdfWriter.getInstance(document, os)
@@ -81,7 +80,7 @@ class ITextPdfReporter {
     cssAppliers.setChunkCssAplier(new ChineseChunkCssApplier(fontProvider))
 
     val hpc = new HtmlPipelineContext(cssAppliers)
-    hpc.setAcceptUnknown(true).autoBookmark(true).setTagFactory(Tags.getHtmlTagProcessorFactory())
+    hpc.setAcceptUnknown(true).autoBookmark(true).setTagFactory(Tags.getHtmlTagProcessorFactory)
     val pipeline = new CssResolverPipeline(cssResolver, new HtmlPipeline(hpc, new PdfWriterPipeline(
       doc, writer)))
 

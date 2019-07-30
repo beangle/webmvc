@@ -18,26 +18,23 @@
  */
 package org.beangle.webmvc.execution.impl
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.Primitives
-import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.webmvc.api.context.{ ActionContext, Params }
+import org.beangle.commons.lang.annotation.description
+import org.beangle.webmvc.api.context.{ActionContext, Params}
 import org.beangle.webmvc.config.RouteMapping
-import org.beangle.webmvc.execution.{ Invoker, InvokerBuilder }
-
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.webmvc.execution.{Invoker, InvokerBuilder}
 
 class DynaMethodInvoker(val action: AnyRef, val mapping: RouteMapping) extends Invoker {
-  val method = mapping.method
-  val paramTypes = method.getParameterTypes
+  private val method = mapping.method
+  private val paramTypes = method.getParameterTypes
 
   override def invoke(): Any = {
     if (0 == paramTypes.length) {
       method.invoke(action)
     } else {
       val values = new Array[Object](paramTypes.length)
-      var binded = 0
       val context = ActionContext.current
-      val params = context.params
       val arguments = mapping.arguments
       Range(0, paramTypes.length) foreach { i =>
         val pt = paramTypes(i)
@@ -45,7 +42,7 @@ class DynaMethodInvoker(val action: AnyRef, val mapping: RouteMapping) extends I
         else if (pt == classOf[HttpServletResponse]) values(i) = context.response
         else {
           val ov = arguments(i).value(context)
-          val pValue = if (null != ov && !pt.isArray() && ov.getClass.isArray()) ov.asInstanceOf[Array[_]](0) else ov
+          val pValue = if (null != ov && !pt.isArray && ov.getClass.isArray) ov.asInstanceOf[Array[_]](0) else ov
           if (Primitives.isWrapperType(pt)) {
             Params.converter.convert(pValue, pt) foreach { v => values(i) = v.asInstanceOf[Object] }
           } else {

@@ -18,13 +18,12 @@
  */
 package org.beangle.webmvc.view.impl
 
-import org.beangle.commons.web.http.accept.ContentNegotiationManager
-import org.beangle.cdi.{ Container, ContainerListener }
+import org.beangle.cdi.{Container, ContainerListener}
+import org.beangle.commons.activation.MediaType
 import org.beangle.commons.io.Serializer
-import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.webmvc.view.{ ViewRender, ViewResolver }
-
-import javax.activation.MimeType
+import org.beangle.commons.lang.annotation.description
+import org.beangle.commons.web.http.accept.ContentNegotiationManager
+import org.beangle.webmvc.view.{ViewRender, ViewResolver}
 
 @description("视图管理器")
 class ViewManager extends ContainerListener {
@@ -50,7 +49,7 @@ class ViewManager extends ContainerListener {
 
     val buf = new collection.mutable.HashMap[String, Serializer]
     container.getBeans(classOf[Serializer]) foreach {
-      case (k, serializer) =>
+      case (_, serializer) =>
         serializer.mediaTypes foreach { mimeType =>
           buf.put(mimeType.toString, serializer)
         }
@@ -58,7 +57,7 @@ class ViewManager extends ContainerListener {
     serializers = buf.toMap
   }
 
-  def getSerializer(mimeType: MimeType): Serializer = {
+  def getSerializer(mimeType: MediaType): Serializer = {
     serializers.get(mimeType.toString).orNull
   }
 

@@ -34,6 +34,6 @@ class ContainerActionFinder(val container: Container) extends ActionFinder {
       val bean: Object = container.getBean(name).get
       if (actionTest.apply(bean.getClass)) actions += bean
     }
-    actions
+    actions.toSeq
   }
 }

@@ -18,18 +18,16 @@
  */
 package org.beangle.webmvc.dispatch.impl
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.bean.Initializing
-import org.beangle.commons.net.http.HttpMethods.GET
 import org.beangle.commons.io.ClasspathResourceLoader
 import org.beangle.commons.lang.Strings.substringAfter
-import org.beangle.commons.lang.annotation.spi
+import org.beangle.commons.net.http.HttpMethods.GET
 import org.beangle.commons.web.resource.ResourceProcessor
 import org.beangle.commons.web.resource.filter.HeaderFilter
 import org.beangle.commons.web.resource.impl.PathResolverImpl
-import org.beangle.webmvc.dispatch.{ Route, RouteProvider }
+import org.beangle.webmvc.dispatch.{Route, RouteProvider}
 import org.beangle.webmvc.execution.Handler
-
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 /**
  * @author chaostone

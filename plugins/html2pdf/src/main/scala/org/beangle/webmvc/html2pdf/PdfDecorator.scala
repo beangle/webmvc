@@ -18,15 +18,11 @@
  */
 package org.beangle.webmvc.html2pdf
 
-import java.io.OutputStream
-import org.beangle.commons.activation.MimeTypes
-import org.beangle.commons.io.Serializer
-import javax.activation.MimeType
-import org.beangle.webmvc.view.ViewDecorator
+import java.io.{ByteArrayOutputStream, StringReader}
+
+import org.beangle.commons.activation.MediaTypes
 import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.view.ViewResult
-import java.io.ByteArrayOutputStream
-import java.io.StringReader
+import org.beangle.webmvc.view.{ViewDecorator, ViewResult}
 
 /**
  * @author chaostone
@@ -34,20 +30,20 @@ import java.io.StringReader
 class PdfDecorator extends ViewDecorator {
 
   val reporter = new ITextPdfReporter
-  val supportMimeType = MimeTypes.TextHtml.toString
+  val supportMimeType: String = MediaTypes.TextHtml.toString
 
   override def decorate(result: ViewResult, uri: String, context: ActionContext): ViewResult = {
     if (result.contentType.startsWith(supportMimeType) && uri.endsWith(".pdf")) {
       val reader = result.data match {
         case sb: StringBuffer => new StringReader(sb.toString)
-        case s: String        => new StringReader(s)
-        case _                => throw new RuntimeException("Cannot accept " + result.data.getClass)
+        case s: String => new StringReader(s)
+        case _ => throw new RuntimeException("Cannot accept " + result.data.getClass)
       }
       val repcontext = new ReportContext
       val os = new ByteArrayOutputStream
       reporter.generate(reader, repcontext, os)
       os.close()
-      ViewResult(os.toByteArray(), MimeTypes.ApplicationPdf.toString)
+      ViewResult(os.toByteArray, MediaTypes.ApplicationPdf.toString)
     } else {
       result
     }

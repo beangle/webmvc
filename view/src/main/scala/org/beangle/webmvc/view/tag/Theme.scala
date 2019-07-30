@@ -18,17 +18,14 @@
  */
 package org.beangle.webmvc.view.tag
 
+import org.beangle.commons.io.{IOs, ResourcePatternResolver}
 import org.beangle.commons.lang.Strings
-import com.sun.xml.internal.ws.wsdl.writer.document.Import
-import org.beangle.commons.lang.ClassLoaders
-import org.beangle.commons.io.IOs
-import org.beangle.commons.io.ResourcePatternResolver
 
 object Themes {
 
   val Default = new Theme("html")
 
-  val themes = loadThemeProps()
+  private val themes = loadThemeProps()
 
   def getParentTemplate(template: String): String = {
     val start = template.indexOf('/', 1) + 1
@@ -45,7 +42,7 @@ object Themes {
     val resolver = new ResourcePatternResolver
     val urls = resolver.getResources("template/*/theme.properties")
     urls foreach { url =>
-      val themeName = Strings.substringBetween(url.getPath(), "template/", "/theme.properties")
+      val themeName = Strings.substringBetween(url.getPath, "template/", "/theme.properties")
       val theme = new Theme(themeName)
       val parent = IOs.readJavaProperties(url).get("parent").orNull
       theme.parent = if (Strings.isEmpty(parent)) None else Some(parent.trim)
@@ -73,9 +70,9 @@ class Theme(val name: String) {
     sb.toString()
   }
 
-  override def equals(obj: Any): Boolean = name.equals(obj.toString())
+  override def equals(obj: Any): Boolean = name.equals(obj.toString)
 
-  override def toString() = name
+  override def toString: String = name
 
-  override def hashCode() = name.hashCode()
+  override def hashCode: Int = name.hashCode()
 }

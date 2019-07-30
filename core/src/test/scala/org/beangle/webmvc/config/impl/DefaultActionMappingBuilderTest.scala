@@ -18,16 +18,15 @@
  */
 package org.beangle.webmvc.config.impl
 
-import org.beangle.commons.lang.annotation.description
-import org.beangle.webmvc.config.Profile
+import org.beangle.webmvc.config.{Profile, ProfileConfig}
 import org.beangle.webmvc.execution.testaction.ShowcaseAction
 import org.junit.runner.RunWith
-import org.scalatest.{ FunSpec, Matchers }
-import org.scalatest.junit.JUnitRunner
-import org.beangle.webmvc.config.ProfileConfig
+import org.scalatest.Matchers
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class DefaultActionMappingBuilderTest extends FunSpec with Matchers {
+class DefaultActionMappingBuilderTest extends AnyFunSpec with Matchers {
   val builder = new DefaultActionMappingBuilder
   builder.viewScan = false
   val profile = new Profile("test", "org.beangle.webmvc.execution.testaction")
@@ -42,21 +41,21 @@ class DefaultActionMappingBuilderTest extends FunSpec with Matchers {
       val mappings = builder.build(new ShowcaseAction(), classOf[ShowcaseAction], profile).mappings
       assert(null != mappings)
       assert(mappings.size == 7)
-      assert(None != mappings.get("string"))
-      assert(None != mappings.get("request"))
-      assert(None != mappings.get("param"))
-      assert(None != mappings.get("cookie"))
-      assert(None != mappings.get("header"))
-      assert(mappings.get("path").get.name == "path/{id}")
-      assert(mappings.get("echofloat").get.name == "echofloat/{num}")
+      assert(mappings.get("string").isDefined)
+      assert(mappings.get("request").isDefined)
+      assert(mappings.get("param").isDefined)
+      assert(mappings.get("cookie").isDefined)
+      assert(mappings.get("header").isDefined)
+      assert(mappings("path").name == "path/{id}")
+      assert(mappings("echofloat").name == "echofloat/{num}")
     }
 
     it("build plur mapping") {
-      val pp = plurProfile.mkProfile(null,null)
+      val pp = plurProfile.mkProfile(null, null)
       pp.matches(classOf[ShowcaseAction].getName)
       val mappings = builder.build(new ShowcaseAction(), classOf[ShowcaseAction], pp).mappings
       assert(null != mappings)
-      assert(None != mappings.get("string"))
+      assert(mappings.get("string").isDefined)
     }
   }
 }

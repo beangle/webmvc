@@ -18,19 +18,19 @@
  */
 package org.beangle.webmvc
 
-import org.beangle.cdi.bind.{ BindModule, profile }
-import org.beangle.webmvc.config.impl.{ DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider }
-import org.beangle.webmvc.context.impl.{ ContainerActionFinder, DefaultActionContextBuilder, ParamLocaleResolver }
-import org.beangle.webmvc.dispatch.impl.{ DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper }
-import org.beangle.webmvc.execution.impl.{ DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder }
-import org.beangle.webmvc.execution.interceptors.CorsInterceptor
-import org.beangle.webmvc.view.impl.{ ContainerTaglibraryProvider, DefaultTemplatePathMapper, DefaultViewBuilder, ForwardActionViewBuilder, ForwardActionViewRender, RedirectActionViewBuilder, RedirectActionViewRender, StatusViewRender, StreamViewRender, ViewManager }
-import org.beangle.commons.web.http.accept.ContentNegotiationManagerFactory
+import org.beangle.cdi.bind.{BindModule, profile}
 import org.beangle.commons.io.DefaultBinarySerializer
+import org.beangle.commons.web.http.accept.ContentNegotiationManagerFactory
+import org.beangle.webmvc.config.impl.{DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider}
+import org.beangle.webmvc.context.impl.{ContainerActionFinder, DefaultActionContextBuilder, ParamLocaleResolver}
+import org.beangle.webmvc.dispatch.impl.{DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper}
+import org.beangle.webmvc.execution.impl.{DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder}
+import org.beangle.webmvc.execution.interceptors.CorsInterceptor
+import org.beangle.webmvc.view.impl._
 
 object DefaultModule extends BindModule {
 
-  protected override def binding() {
+  protected override def binding(): Unit = {
     //config
     bind("mvc.ProfileProvider.default", classOf[XmlProfileProvider])
     bind("mvc.Configurer.default", classOf[DefaultConfigurer])
@@ -74,14 +74,14 @@ object DefaultModule extends BindModule {
 
 @profile("dev")
 class DevModule extends BindModule {
-  protected override def binding() {
+  protected override def binding(): Unit = {
     bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan", "false")
     bind("mvc.HandlerInvoker.method", classOf[DynaMethodInvokerBuilder]).primary
   }
 }
 
 class SecurityModule extends BindModule {
-  protected override def binding() {
+  protected override def binding(): Unit = {
     bind("web.RequestConvertor.mvc", classOf[MvcRequestConvertor])
   }
 }

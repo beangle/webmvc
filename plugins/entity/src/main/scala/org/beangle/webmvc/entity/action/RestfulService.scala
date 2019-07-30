@@ -28,7 +28,7 @@ class RestfulService[T <: Entity[_ <: java.io.Serializable]] extends ActionSuppo
   @response
   def index(): Any = {
     getInt("page") match {
-      case Some(p) => entityDao.search(getQueryBuilder)
+      case Some(_) => entityDao.search(getQueryBuilder)
       case None    => entityDao.search(getQueryBuilder.limit(null))
     }
   }

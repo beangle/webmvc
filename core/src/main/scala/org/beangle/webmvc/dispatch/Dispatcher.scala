@@ -18,23 +18,20 @@
  */
 package org.beangle.webmvc.dispatch
 
-import java.io.{ File, FileInputStream }
-import org.beangle.commons.activation.MimeTypes
-import org.beangle.commons.io.{ ClasspathResourceLoader, IOs }
-import org.beangle.commons.lang.Strings.{ isNotEmpty, substringAfter, substringAfterLast }
-import org.beangle.commons.lang.annotation.spi
+import java.io.{File, FileInputStream}
+
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import javax.servlet.{GenericServlet, ServletConfig, ServletRequest, ServletResponse}
+import org.beangle.cdi.Container
+import org.beangle.commons.activation.MediaTypes
+import org.beangle.commons.io.IOs
+import org.beangle.commons.lang.Strings.{isNotEmpty, substringAfterLast}
 import org.beangle.commons.logging.Logging
-import org.beangle.commons.web.resource.ResourceProcessor
-import org.beangle.commons.web.resource.filter.HeaderFilter
-import org.beangle.commons.web.resource.impl.PathResolverImpl
+import org.beangle.commons.web.multipart.StandardMultipartResolver
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.config.Configurer
-import org.beangle.webmvc.context.{ ActionContextBuilder }
-import javax.servlet.{ GenericServlet, ServletConfig, ServletRequest, ServletResponse }
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.commons.web.multipart.StandardMultipartResolver
+import org.beangle.webmvc.context.ActionContextBuilder
 import org.beangle.webmvc.execution.ContextAwareHandler
-import org.beangle.cdi.Container
 
 class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBuilder: ActionContextBuilder)
   extends GenericServlet with Logging {
@@ -55,7 +52,7 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
     // 3. find index
     val indexFile =
       List("/index.html", "/index.htm", "/index.jsp") find { i =>
-        new File(config.getServletContext().getRealPath(i)).exists()
+        new File(config.getServletContext.getRealPath(i)).exists()
       }
     indexFile match {
       case None => if (null != mapper.resolve("/index")) this.index = "/index"
@@ -96,7 +93,7 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
       findFile(request, servletPath) match {
         case Some(f) =>
           val ext = substringAfterLast(f.getName, ".")
-          if (isNotEmpty(ext)) MimeTypes.getMimeType(ext) foreach (m => response.setContentType(m.toString))
+          if (isNotEmpty(ext)) MediaTypes.get(ext) foreach (m => response.setContentType(m.toString))
           IOs.copy(new FileInputStream(f), response.getOutputStream)
         case None =>
           response.setStatus(HttpServletResponse.SC_NOT_FOUND)
@@ -106,7 +103,7 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
 
   private def findFile(request: HttpServletRequest, servletPath: String): Option[File] = {
     val filePath = request.getServletContext.getRealPath(servletPath)
-    var p = new File(filePath)
+    val p = new File(filePath)
     if (p.exists) {
       if (p.isDirectory) {
         val index = new File(p.getAbsolutePath + File.separator + "index.html")

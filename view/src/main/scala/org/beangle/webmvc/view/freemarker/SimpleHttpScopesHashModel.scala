@@ -18,9 +18,7 @@
  */
 package org.beangle.webmvc.view.freemarker
 
-import freemarker.template.SimpleHash
-import freemarker.template.TemplateModel
-import freemarker.template.ObjectWrapper
+import freemarker.template.{ObjectWrapper, SimpleHash, TemplateModel}
 import javax.servlet.http.HttpServletRequest
 
 /**
@@ -30,17 +28,17 @@ class SimpleHttpScopesHashModel(wrapper: ObjectWrapper, val request: HttpServlet
 
   override def get(key: String): TemplateModel = {
     // Lookup in page scope
-    val model = super.get(key);
+    val model = super.get(key)
     if (model != null) {
-      return model;
+      return model
     }
 
     // Lookup in request scope
-    val obj = request.getAttribute(key);
+    val obj = request.getAttribute(key)
     if (obj != null) {
-      return wrap(obj);
+      return wrap(obj)
     }
     // return wrapper's null object (probably null).
-    return wrap(null);
+    wrap(null)
   }
 }

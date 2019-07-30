@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse
 @description("Freemaker视图渲染器")
 class FreemarkerViewRender(configurer: FreemarkerConfigurer, modelBuilder: FreemarkerModelBuilder) extends ViewRender {
 
-  val config = configurer.config
+  private val config = configurer.config
 
   def render(view: View, context: ActionContext): Unit = {
     val freemarkerView = view.asInstanceOf[FreemarkerView]

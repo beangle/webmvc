@@ -18,9 +18,9 @@
  */
 package org.beangle.webmvc.api.context
 
-import java.{ util => ju }
-import org.beangle.commons.collection.Collections
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import java.{util => ju}
+
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.webmvc.api.i18n.TextProvider
 
 object ActionContext {
@@ -29,6 +29,7 @@ object ActionContext {
   def set(newer: ActionContext): Unit = {
     contexts.set(newer)
   }
+
   def current: ActionContext = contexts.get()
 }
 
@@ -44,7 +45,7 @@ final class ActionContext(val request: HttpServletRequest, val response: HttpSer
     request.setAttribute(name, value)
   }
 
-  def removeAttribute(names: String*) {
+  def removeAttribute(names: String*): Unit = {
     names foreach { name =>
       request.removeAttribute(name)
     }

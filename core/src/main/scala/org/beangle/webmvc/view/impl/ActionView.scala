@@ -20,17 +20,16 @@ package org.beangle.webmvc.view.impl
 
 import java.net.URLEncoder
 
+import javax.servlet.http.HttpServletRequest
 import org.beangle.commons.lang.Strings
-import org.beangle.commons.lang.annotation.{ description, spi }
+import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.net.http.HttpMethods
-import org.beangle.webmvc.api.action.{ To, ToClass, ToURL }
+import org.beangle.webmvc.api.action.{To, ToClass, ToURL}
 import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.api.view.{ ActionView, ForwardActionView, RedirectActionView, View }
-import org.beangle.webmvc.config.{ Configurer, RouteMapping }
-import org.beangle.webmvc.view.{ TypeViewBuilder, ViewRender }
-
-import javax.servlet.http.HttpServletRequest
+import org.beangle.webmvc.api.view.{ActionView, ForwardActionView, RedirectActionView, View}
+import org.beangle.webmvc.config.{Configurer, RouteMapping}
+import org.beangle.webmvc.view.{TypeViewBuilder, ViewRender}
 
 @description("前向调转视图构建者")
 class ForwardActionViewBuilder extends TypeViewBuilder {
@@ -115,7 +114,7 @@ class RedirectActionViewRender(val configurer: Configurer) extends ViewRender {
           rpsb.append('&')
         }
       }
-      if (rpsb.length > 0) {
+      if (rpsb.nonEmpty) {
         rpsb.deleteCharAt(rpsb.length - 1)
         redirectParams = rpsb.toString
         if (url.contains('?')) url.append("&").append(redirectParams)

@@ -42,7 +42,7 @@ trait ImportSupport[T <: Entity[_]] {
     val shortName = Strings.uncapitalize(Strings.substringAfterLast(entityClazz.getName, "."))
     setting.entityClazz = entityClazz
     setting.shortName = shortName
-    setting.reader = ImportHelper.buildReader("importFile")
+    setting.reader = ImportHelper.buildReader()
     configImport(setting)
     if (null == setting.importer) {
       val importer = new DefaultEntityImporter(setting.entityClazz, setting.shortName)
@@ -55,7 +55,9 @@ trait ImportSupport[T <: Entity[_]] {
     }
 
     val importer = setting.importer
-    if (null == setting.reader) { return forward("/components/importData/error") }
+    if (null == setting.reader) {
+      return forward("/components/importData/error")
+    }
     try {
       importer.reader = setting.reader
       importer.transfer(tr)
@@ -69,7 +71,7 @@ trait ImportSupport[T <: Entity[_]] {
     } catch {
       case e: Exception =>
         logger.error("import error", e)
-        tr.addFailure(getText("error.importformat"), e.getMessage())
+        tr.addFailure(getText("error.importformat"), e.getMessage)
         put("importResult", tr)
         forward("/components/importData/error")
     }

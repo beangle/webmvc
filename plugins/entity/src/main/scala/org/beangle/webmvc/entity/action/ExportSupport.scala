@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.beangle.webmvc.entity.action
+
 import org.beangle.commons.lang.{ClassLoaders, Strings}
 import org.beangle.commons.web.util.RequestUtils
 import org.beangle.data.model.Entity
@@ -45,7 +46,7 @@ trait ExportSupport[T <: Entity[_]] {
         get("titles") foreach (ctx.put("titles", _))
         get("properties") foreach (ctx.put("properties", _))
         val format = get("format") match {
-          case None    => Format.Xls
+          case None => Format.Xls
           case Some(f) => Format.withName(Strings.capitalize(f))
         }
         ctx.format = format
@@ -60,7 +61,7 @@ trait ExportSupport[T <: Entity[_]] {
     val fileName =
       get("fileName") match {
         case Some(f) => if (!f.endsWith(ext)) f + ext else f
-        case None    => "exportFile" + ext
+        case None => "exportFile" + ext
       }
     RequestUtils.setContentDisposition(response, fileName)
     configExport(setting)
@@ -69,7 +70,7 @@ trait ExportSupport[T <: Entity[_]] {
   }
 
   @ignore
-  def configExport(setting: ExportSetting) {
+  def configExport(setting: ExportSetting): Unit = {
     val selectIds = ids(simpleEntityName, PopulateHelper.getType(entityType).id.clazz)
     val items =
       if (selectIds.isEmpty) {

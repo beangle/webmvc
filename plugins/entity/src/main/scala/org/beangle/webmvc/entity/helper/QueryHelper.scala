@@ -18,17 +18,18 @@
  */
 package org.beangle.webmvc.entity.helper
 
-import java.text.{ ParseException, SimpleDateFormat }
-import java.{ util => ju }
+import java.text.{ParseException, SimpleDateFormat}
+import java.{util => ju}
 
 import org.beangle.commons.bean.Properties
-import org.beangle.commons.collection.page.{ Page, PageLimit }
-import org.beangle.commons.lang.{ Numbers, Strings }
+import org.beangle.commons.collection.page.{Page, PageLimit}
+import org.beangle.commons.lang.reflect.Reflections
+import org.beangle.commons.lang.{Numbers, Strings}
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.CookieUtils
-import org.beangle.data.dao.{ Condition, OqlBuilder }
+import org.beangle.data.dao.{Condition, OqlBuilder}
 import org.beangle.data.model.Entity
-import org.beangle.webmvc.api.context.{ ActionContext, Params }
+import org.beangle.webmvc.api.context.{ActionContext, Params}
 
 object QueryHelper extends Logging {
 
@@ -38,46 +39,44 @@ object QueryHelper extends Logging {
 
   val RESERVED_NULL = true
 
-  def populateConditions(builder: OqlBuilder[_]) {
+  def populateConditions(builder: OqlBuilder[_]): Unit = {
     builder.where(extractConditions(builder.entityClass, builder.alias, null))
   }
 
   /**
    * 把entity alias的别名的参数转换成条件.<br>
-   *
-   * @param entityQuery
-   * @param exclusiveAttrNames   以entityQuery中alias开头的属性串
+   * @param entityQuery        查询构建器
+   * @param exclusiveAttrNames 以entityQuery中alias开头的属性串
    */
-  def populateConditions(entityQuery: OqlBuilder[_], exclusiveAttrNames: String) {
+  def populateConditions(entityQuery: OqlBuilder[_], exclusiveAttrNames: String): Unit = {
     entityQuery.where(extractConditions(entityQuery.entityClass, entityQuery.alias,
       exclusiveAttrNames))
   }
 
   /**
    * 提取中的条件
-   *
-   * @param clazz
-   * @param prefix
-   * @param exclusiveAttrNames
+   * @param clazz              实体类型
+   * @param prefix             参数中的前缀（不包含最后的.）
+   * @param exclusiveAttrNames 排除属性列表(prefix.attr1,prefix.attr2)
    */
   def extractConditions(clazz: Class[_], prefix: String, exclusiveAttrNames: String): List[Condition] = {
     var entity: Entity[_] = null
     var newClazz: Class[_] = clazz
-    var entityType = PopulateHelper.getType(clazz)
+    val entityType = PopulateHelper.getType(clazz)
     try {
-      if (clazz.isInterface()) newClazz = entityType.clazz
-      entity = newClazz.newInstance().asInstanceOf[Entity[_]]
+      if (clazz.isInterface) newClazz = entityType.clazz
+      entity = Reflections.newInstance(clazz.asInstanceOf[Class[Entity[_]]])
     } catch {
-      case e: Exception => throw new RuntimeException("[RequestUtil.extractConditions]: error in in initialize " + clazz)
+      case _: Exception => throw new RuntimeException("[RequestUtil.extractConditions]: error in in initialize " + clazz)
     }
     var conditions = new collection.mutable.ListBuffer[Condition]()
-    var params = Params.sub(prefix, exclusiveAttrNames)
+    val params = Params.sub(prefix, exclusiveAttrNames)
     val paramIter = params.iterator
     while (paramIter.hasNext) {
       val entry = paramIter.next()
       val attr = entry._1
       val value = entry._2
-      var strValue = value.toString.trim
+      val strValue = value.toString.trim
       // 过滤空属性
       if (Strings.isNotEmpty(strValue)) {
         try {
@@ -87,13 +86,13 @@ object QueryHelper extends Logging {
             PopulateHelper.populator.populate(entity, entityType, attr, strValue)
             val v = Properties.get[Object](entity, attr) match {
               case Some(s) => s
-              case None    => null
-              case a: Any  => a
+              case None => null
+              case a: Any => a
             }
             v match {
-              case null       => logger.error("Error populate entity " + prefix + "'s attribute " + attr)
+              case null => logger.error("Error populate entity " + prefix + "'s attribute " + attr)
               case sv: String => conditions += new Condition(s"$prefix.$attr like :${attr.replace('.', '_')}", s"%$sv%")
-              case sv         => conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", sv)
+              case sv => conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", sv)
             }
           }
         } catch {
@@ -115,9 +114,9 @@ object QueryHelper extends Logging {
    * 获得请求中的页码
    */
   def pageIndex: Int = {
-    var pageIndex = Params.getInt(PageParam) match {
+    val pageIndex = Params.getInt(PageParam) match {
       case Some(p) => p
-      case None    => Params.getInt("pageIndex").getOrElse(Page.DefaultPageNo)
+      case None => Params.getInt("pageIndex").getOrElse(Page.DefaultPageNo)
     }
     if (pageIndex < 1) Page.DefaultPageNo else pageIndex
   }
@@ -137,36 +136,42 @@ object QueryHelper extends Logging {
     if (pagesize < 1) Page.DefaultPageSize else pagesize
   }
 
-  def addDateIntervalCondition(query: OqlBuilder[_], attr: String, beginOn: String, endOn: String) {
+  def addDateIntervalCondition(query: OqlBuilder[_], attr: String, beginOn: String, endOn: String): Unit = {
     addDateIntervalCondition(query, query.alias, attr, beginOn, endOn)
   }
 
   /**
    * 增加日期区间查询条件
-   *
-   * @param query
-   * @param alias
-   * @param attr 时间限制属性
+   * @param query   查询构建器
+   * @param alias   别名
+   * @param attr    时间限制属性
    * @param beginOn 开始的属性名字(全名)
-   * @param endOn 结束的属性名字(全名)
-   * @throws ParseException
+   * @param endOn   结束的属性名字(全名)
    */
   def addDateIntervalCondition(query: OqlBuilder[_], alias: String, attr: String, beginOn: String,
-                               endOn: String) {
+                               endOn: String): Unit = {
     val stime = Params.get(beginOn)
     val etime = Params.get(endOn)
-    var df = new SimpleDateFormat("yyyy-MM-dd")
-    val sdate: ju.Date = if (stime.isDefined) try { df.parse(stime.get) } catch { case e: ParseException => null } else null
-    var edate: ju.Date = if (etime.isDefined) try { df.parse(etime.get) } catch { case e: ParseException => null } else null
+    val df = new SimpleDateFormat("yyyy-MM-dd")
+    val sdate: ju.Date = if (stime.isDefined) try {
+      df.parse(stime.get)
+    } catch {
+      case _: ParseException => null
+    } else null
+    var edate: ju.Date = if (etime.isDefined) try {
+      df.parse(etime.get)
+    } catch {
+      case _: ParseException => null
+    } else null
 
     // 截至日期增加一天
     if (null != edate) {
-      var gc = new ju.GregorianCalendar()
+      val gc = new ju.GregorianCalendar()
       gc.setTime(edate)
       gc.set(ju.Calendar.DAY_OF_YEAR, gc.get(ju.Calendar.DAY_OF_YEAR) + 1)
-      edate = gc.getTime()
+      edate = gc.getTime
     }
-    var objAttr = (if (null == alias) query.alias else alias) + "." + attr
+    val objAttr = (if (null == alias) query.alias else alias) + "." + attr
     if (null != sdate && null == edate) {
       query.where(objAttr + " >=:sdate", sdate)
     } else if (null != sdate && null != edate) {

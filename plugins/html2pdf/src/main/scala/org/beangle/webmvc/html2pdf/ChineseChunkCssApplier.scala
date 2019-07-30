@@ -25,7 +25,7 @@ import ChineseChunkCssApplier._
 import com.itextpdf.text.FontProvider
 
 object ChineseChunkCssApplier {
-  val basefont = BaseFont.createFont("STSongStd-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED)
+  private val basefont = BaseFont.createFont("STSongStd-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED)
 
   def isChinese(c: Char): Boolean = {
     val ub = Character.UnicodeBlock.of(c)
@@ -38,7 +38,7 @@ object ChineseChunkCssApplier {
   }
 
   def isChinese(strName: String): Boolean = {
-    val ch = strName.toCharArray()
+    val ch = strName.toCharArray
     (0 until ch.length).exists(i => isChinese(ch(i)))
   }
 }
@@ -50,8 +50,8 @@ class ChineseChunkCssApplier(fontProvider: FontProvider) extends ChunkCssApplier
 
   override def applyFontStyles(t: Tag): Font = {
     val f = super.applyFontStyles(t)
-    if (null != basefont && (null == f.getBaseFont())) {
-      new Font(basefont, f.getSize(), f.getStyle(), f.getColor())
+    if (null != basefont && (null == f.getBaseFont)) {
+      new Font(basefont, f.getSize, f.getStyle, f.getColor)
     } else {
       f
     }

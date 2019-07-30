@@ -20,17 +20,16 @@ package org.beangle.webmvc.execution.impl
 
 import java.lang.reflect.Method
 
-import org.beangle.commons.lang.{ ClassLoaders, Primitives }
-import org.beangle.commons.lang.annotation.{ description, spi }
+import javassist._
+import javassist.compiler.Javac
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import org.beangle.commons.lang.annotation.description
+import org.beangle.commons.lang.{ClassLoaders, Primitives}
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.api.annotation.DefaultNone
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.context.Argument
-import org.beangle.webmvc.execution.{ Invoker, InvokerBuilder }
-
-import javassist.{ ClassPool, CtConstructor, CtField, CtMethod, LoaderClassPath }
-import javassist.compiler.Javac
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.beangle.webmvc.execution.{Invoker, InvokerBuilder}
 
 @description("句柄构建者，生成静态调用类")
 class StaticMethodInvokerBuilder extends InvokerBuilder with Logging {
@@ -39,8 +38,8 @@ class StaticMethodInvokerBuilder extends InvokerBuilder with Logging {
 
   def build(action: AnyRef, mapping: RouteMapping): Invoker = {
     val method = mapping.method
-    val actionClassName = action.getClass().getName()
-    val invokerName = action.getClass().getSimpleName() + "_" + method.getName() + "_" + handlerCount
+    val actionClassName = action.getClass.getName
+    val invokerName = action.getClass.getSimpleName + "_" + method.getName + "_" + handlerCount
     val invokerClassName = "org.beangle.webmvc.execution.invoker." + invokerName
 
     val body = new CodeGenerator().gen(method, mapping, action)
@@ -60,7 +59,7 @@ class StaticMethodInvokerBuilder extends InvokerBuilder with Logging {
     handleMethod.setBody(body)
     cct.addMethod(handleMethod)
 
-//    cct.debugWriteFile("/tmp/invokers")
+    //    cct.debugWriteFile("/tmp/invokers")
     val maked = cct.toClass()
     cct.detach()
     handlerCount += 1
@@ -139,14 +138,14 @@ class CodeGenerator {
               sb ++= s"scala.Option tmp =  converter.convert(v$pt_index, ${pt.getName}.class);\n"
               sb ++= s"if(!tmp.isEmpty()) vp$pt_index = (${pt.getName})tmp.get();\n"
               if (argument.required) {
-                sb ++= s"if(null == vp$pt_index) throw new IllegalArgumentException(${q}Cannot bind parameter ${argument} for ${action.getClass.getName}.${method.getName}$q);\n"
+                sb ++= s"if(null == vp$pt_index) throw new IllegalArgumentException(${q}Cannot bind parameter $argument for ${action.getClass.getName}.${method.getName}$q);\n"
               }
             }
           } else {
             sb ++= s"Object vWrapper$pt_index = null;\n"
             sb ++= s"scala.Option tmp =  converter.convert(v$pt_index, ${Primitives.wrap(pt).getName}.class);\n"
             sb ++= s"if(!tmp.isEmpty()) vWrapper$pt_index =tmp.get();\n"
-            sb ++= s"if(null== vWrapper$pt_index) throw new IllegalArgumentException(${q}Cannot bind parameter ${argument} for ${action.getClass.getName}.${method.getName}$q);\n"
+            sb ++= s"if(null== vWrapper$pt_index) throw new IllegalArgumentException(${q}Cannot bind parameter $argument for ${action.getClass.getName}.${method.getName}$q);\n"
             sb ++= s"${pt.getName} vp$pt_index = ((${Primitives.wrap(pt).getName})vWrapper$pt_index).${pt.getName}Value();"
           }
         }
@@ -158,15 +157,16 @@ class CodeGenerator {
       } else {
         sb ++= (s"action.${method.getName}(" + paramList.mkString(",") + ");\nreturn null;\n")
       }
-      sb ++= ("}")
+      sb ++= "}"
       sb.toString
     }
   }
+
   def handleNone(argument: Argument, idx: Int, actionClass: Class[_], method: Method): String = {
     val q = "\""
     if (argument.required) {
       if (argument.defaultValue == DefaultNone.value) {
-        s"throw new IllegalArgumentException(${q}Cannot bind parameter ${argument} for ${actionClass.getName}.${method.getName}$q);"
+        s"throw new IllegalArgumentException(${q}Cannot bind parameter $argument for ${actionClass.getName}.${method.getName}$q);"
       } else {
         s"v$idx=$q${argument.defaultValue}$q;"
       }

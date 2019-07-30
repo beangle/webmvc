@@ -18,15 +18,15 @@
  */
 package org.beangle.webmvc.api.context
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
-import org.scalatest.{ FunSpec, Matchers }
-import org.scalatest.junit.JUnitRunner
-
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import org.scalatest.Matchers
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class ParamsTest extends FunSpec with Matchers {
+class ParamsTest extends AnyFunSpec with Matchers {
 
   describe("Params") {
     it("getInt will ignore empty string") {
@@ -38,9 +38,9 @@ class ParamsTest extends FunSpec with Matchers {
       val context = new ActionContext(request, response, null, params)
       ActionContext.set(context)
 
-      assert(None == Params.getInt("x"))
-      assert(None == Params.getInt("y"))
-      assert(Some(1) == Params.getInt("z"))
+      assert(Params.getInt("x").isEmpty)
+      assert(Params.getInt("y").isEmpty)
+      assert(Params.getInt("z").contains(1))
     }
   }
 }

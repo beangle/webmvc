@@ -19,11 +19,12 @@
 package org.beangle.webmvc.config
 
 import org.junit.runner.RunWith
-import org.scalatest.{ FunSpec, Matchers }
-import org.scalatest.junit.JUnitRunner
+import org.scalatest.Matchers
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class ProfileTest extends FunSpec with Matchers {
+class ProfileTest extends AnyFunSpec with Matchers {
 
   describe("Profile") {
     it("compare") {

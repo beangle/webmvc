@@ -18,13 +18,11 @@
  */
 package org.beangle.webmvc.api.context
 
-import java.net.{ URLDecoder, URLEncoder }
-import java.util.{ Collection, HashMap, Map, Set }
+import java.{util => ju}
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.web.util.CookieUtils
-
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 object Flash {
 
@@ -39,12 +37,12 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
   /**
    * current request
    */
-  val now: Map[String, String] = new HashMap()
+  val now: ju.Map[String, String] = new ju.HashMap()
 
   /**
    * next request
    */
-  private val next: Map[String, String] = new HashMap()
+  private val next: ju.Map[String, String] = new ju.HashMap()
 
   moveCookieToNow()
 
@@ -61,15 +59,15 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
   }
 
   def writeNextToCookie(): Unit = {
-    if (next.isEmpty()) return ;
+    if (next.isEmpty) return
     val sb = new StringBuilder
     val i = next.entrySet().iterator()
-    while (i.hasNext()) {
+    while (i.hasNext) {
       val e = i.next()
       val kv = e.getKey + "=" + e.getValue
       sb.append(kv).append(",")
     }
-    if (sb.length > 0) {
+    if (sb.nonEmpty) {
       sb.deleteCharAt(sb.length - 1)
       CookieUtils.addCookie(request, response, Flash.CookieName, sb.toString(), 1)
     } else {
@@ -84,7 +82,7 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
     value
   }
 
-  def putAll(values: Map[_ <: String, _ <: String]): Unit = {
+  def putAll(values: ju.Map[_ <: String, _ <: String]): Unit = {
     next.putAll(values)
   }
 
@@ -92,33 +90,34 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
     next.put(key, now.get(key))
   }
 
-  def keep() {
+  def keep(): Unit = {
     next.putAll(now)
   }
 
-  def clear() {
+  def clear(): Unit = {
     now.clear()
   }
 
   import Flash._
+
   /**
    * 添加消息到下一次请求
    */
-  def addMessage(message: String) {
+  def addMessage(message: String): Unit = {
     updateMessages(next, MessagesKey, message)
   }
 
   /**
    * 添加错误消息到下一次请求
    */
-  def addError(error: String) {
+  def addError(error: String): Unit = {
     updateMessages(next, ErrorsKey, error)
   }
 
   /**
    * 添加消息到本次请求
    */
-  def addMessageNow(message: String) {
+  def addMessageNow(message: String): Unit = {
     updateMessages(now, MessagesKey, message)
   }
 
@@ -145,8 +144,8 @@ class Flash(request: HttpServletRequest, response: HttpServletResponse) extends 
     }
   }
 
-  private def updateMessages(map: Map[String, String], key: String, content: String): Unit = {
+  private def updateMessages(map: ju.Map[String, String], key: String, content: String): Unit = {
     val exist = map.get(key)
-    map.put(key, if (null == exist) content else (exist + ";" + content))
+    map.put(key, if (null == exist) content else exist + ";" + content)
   }
 }

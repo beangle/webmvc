@@ -18,13 +18,12 @@
  */
 package org.beangle.webmvc.view
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.config.{ RouteMapping, Profile }
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import javax.activation.MimeType
+import org.beangle.webmvc.config.{Profile, RouteMapping}
 
 @spi
 trait TagLibrary {
@@ -53,7 +52,7 @@ trait TemplateResolver {
 @spi
 trait ViewRender {
   def supportViewClass: Class[_]
-  def render(view: View, context: ActionContext)
+  def render(view: View, context: ActionContext): Unit
 }
 case class ViewResult(data: AnyRef, contentType: String)
 

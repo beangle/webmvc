@@ -36,15 +36,15 @@ trait ServletSupport {
     CookieUtils.getCookieValue(request, cookieName)
   }
 
-  protected final def addCookie(name: String, value: String, path: String, age: Int) {
+  protected final def addCookie(name: String, value: String, path: String, age: Int): Unit = {
     CookieUtils.addCookie(request, response, name, value, path, age)
   }
 
-  protected final def addCookie(name: String, value: String, age: Int) {
+  protected final def addCookie(name: String, value: String, age: Int): Unit = {
     CookieUtils.addCookie(request, response, name, value, age)
   }
 
-  protected final def deleteCookie(name: String) {
+  protected final def deleteCookie(name: String): Unit = {
     CookieUtils.deleteCookieByName(request, response, name)
   }
 

@@ -18,31 +18,29 @@
  */
 package org.beangle.webmvc.view.tag.freemarker
 
-import java.io.{ IOException, Writer }
-import java.util.{ ArrayList, HashMap }
-
-import org.beangle.commons.bean.Initializing
-import org.beangle.commons.io.IOs
-import org.beangle.commons.lang.{ ClassLoaders, Throwables }
-import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.commons.logging.Logging
-import org.beangle.template.freemarker.BeangleClassTemplateLoader
-import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.view.freemarker.{ CachedObjectWrapper, FreemarkerModelBuilder }
-import org.beangle.webmvc.view.tag.{ Component, TemplateEngine }
+import java.io.{IOException, Writer}
+import java.{util => ju}
 
 import freemarker.cache.StrongCacheStorage
 import freemarker.core.ParseException
-import freemarker.template.{ Configuration, Template }
+import freemarker.template.{Configuration, Template}
+import org.beangle.commons.bean.Initializing
+import org.beangle.commons.io.IOs
+import org.beangle.commons.lang.annotation.description
+import org.beangle.commons.lang.{ClassLoaders, Throwables}
+import org.beangle.commons.logging.Logging
+import org.beangle.template.freemarker.BeangleClassTemplateLoader
+import org.beangle.webmvc.api.context.ActionContext
+import org.beangle.webmvc.view.freemarker.{CachedObjectWrapper, FreemarkerModelBuilder}
+import org.beangle.webmvc.view.tag.{Component, TemplateEngine}
 
-/**
- * Freemarker Template Engine
+/** Freemarker Template Engine
+ *
  * <ul>
  * <li>User hashmodel store in request</li>
  * <li>Load hierarchical templates</li>
  * <li>Disabled freemarker localized lookup in template loading</li>
  * </ul>
- *
  * @author chaostone
  */
 @description("Freemarker 模板引擎")
@@ -53,7 +51,7 @@ class FreemarkerTemplateEngine(modelBuilder: FreemarkerModelBuilder) extends Tem
   var enableCache: Boolean = true
 
   @throws(classOf[Exception])
-  def render(template: String, writer: Writer, component: Component) = {
+  def render(template: String, writer: Writer, component: Component): Unit = {
     val context = ActionContext.current
     val model = modelBuilder.createModel(config.getObjectWrapper, context.request, context.response, context)
     val prevTag = model.get("tag")
@@ -71,7 +69,7 @@ class FreemarkerTemplateEngine(modelBuilder: FreemarkerModelBuilder) extends Tem
    * </ul>
    */
   override def init(): Unit = {
-    config.setEncoding(config.getLocale(), "UTF-8")
+    config.setEncoding(config.getLocale, "UTF-8")
     ClassLoaders.getResource("org/beangle/webmvc/view/tag/freemarker/tag.properties") foreach { r =>
       IOs.readJavaProperties(r) foreach {
         case (k, v) => config.setSetting(k, v)
@@ -87,8 +85,8 @@ class FreemarkerTemplateEngine(modelBuilder: FreemarkerModelBuilder) extends Tem
     config.setCacheStorage(new StrongCacheStorage())
     config.setTagSyntax(Configuration.SQUARE_BRACKET_TAG_SYNTAX)
     // Disable auto imports and includes
-    config.setAutoImports(new HashMap(0))
-    config.setAutoIncludes(new ArrayList(0))
+    config.setAutoImports(new ju.HashMap(0))
+    config.setAutoIncludes(new ju.ArrayList(0))
   }
 
   /**
@@ -96,11 +94,11 @@ class FreemarkerTemplateEngine(modelBuilder: FreemarkerModelBuilder) extends Tem
    */
   private def getTemplate(templateName: String): Template = {
     try {
-      return config.getTemplate(templateName, "UTF-8")
+      config.getTemplate(templateName, "UTF-8")
     } catch {
       case e: ParseException => throw e
       case e: IOException =>
-        logger.error(s"Couldn't load template '${templateName}',loader is ${config.getTemplateLoader().getClass()}")
+        logger.error(s"Couldn't load template '$templateName',loader is ${config.getTemplateLoader.getClass}")
         throw Throwables.propagate(e)
     }
   }

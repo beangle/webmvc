@@ -18,7 +18,6 @@
  */
 package org.beangle.webmvc.api.util
 
-import javax.servlet.http.HttpServletResponse
 import org.beangle.webmvc.api.context.ActionContext
 
 /**
