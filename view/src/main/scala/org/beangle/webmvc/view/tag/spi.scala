@@ -18,10 +18,9 @@
  */
 package org.beangle.webmvc.view.tag
 
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpServletRequest
-import org.beangle.commons.lang.annotation.spi
 import java.io.Writer
+
+import org.beangle.commons.lang.annotation.spi
 
 @spi
 trait TemplateEngine {

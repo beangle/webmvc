@@ -18,23 +18,18 @@
  */
 package org.beangle.webmvc.dispatch.impl
 
-import java.{ lang => jl }
-import org.beangle.cdi.Container
-import org.beangle.commons.lang.{ Arrays, Strings }
-import org.beangle.commons.lang.Strings.split
-import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.commons.logging.Logging
-import org.beangle.commons.net.http.HttpMethods.{ GET, POST }
-import org.beangle.commons.web.util.RequestUtils
-import org.beangle.webmvc.config.Path
-import org.beangle.webmvc.config.RouteMapping.{ DefaultMethod, MethodParam }
-import org.beangle.webmvc.dispatch.{ RequestMapper, HandlerHolder }
+import java.{lang => jl}
+
 import javax.servlet.http.HttpServletRequest
-import org.beangle.webmvc.execution.InvokerBuilder
-import org.beangle.webmvc.view.impl.ViewManager
-import org.beangle.webmvc.execution.MappingHandler
-import org.beangle.webmvc.dispatch.RouteProvider
-import org.beangle.webmvc.api.annotation.mapping
+import org.beangle.cdi.Container
+import org.beangle.commons.lang.Strings.split
+import org.beangle.commons.lang.annotation.description
+import org.beangle.commons.lang.{Arrays, Strings}
+import org.beangle.commons.logging.Logging
+import org.beangle.commons.net.http.HttpMethods.{GET, POST}
+import org.beangle.webmvc.config.Path
+import org.beangle.webmvc.config.RouteMapping.{DefaultMethod, MethodParam}
+import org.beangle.webmvc.dispatch.{HandlerHolder, RequestMapper, RouteProvider}
 import org.beangle.webmvc.execution.Handler
 
 @description("支持层级的url映射器")
@@ -46,7 +41,7 @@ class HierarchicalUrlMapper(container: Container) extends RequestMapper with Log
 
   override def build(): Unit = {
     container.getBeans(classOf[RouteProvider]) foreach {
-      case (n, p) =>
+      case (_, p) =>
         p.routes foreach { r =>
           add(r.httpMethod, r.url, r.handler)
         }
@@ -78,10 +73,10 @@ class HierarchicalUrlMapper(container: Container) extends RequestMapper with Log
       sb.append(uri).append(DefaultMethod)
     } else {
       var i = lastSlashIdx + 2
-      var chars = new Array[Char](uri.length)
+      val chars = new Array[Char](uri.length)
       uri.getChars(0, chars.length, chars, 0)
       while (i < chars.length) {
-        var c = chars(i)
+        val c = chars(i)
         if ('!' == c) bangIdx = i
         else if ('.' == c) dotIdx = i
         i += 1
@@ -97,12 +92,12 @@ class HierarchicalUrlMapper(container: Container) extends RequestMapper with Log
       case Some(dm) => dm.get(httpMethod)
       case None     => None
     }
-    if (None != directMapping) return directMapping
+    if (directMapping.isDefined)  directMapping
     else hierarchicalMappings.resolve(httpMethod, finalUrl)
   }
 
   private def determineHttpMethod(request: HttpServletRequest): String = {
-    var httpMethod = request.getParameter(MethodParam)
+    val httpMethod = request.getParameter(MethodParam)
     if (null == httpMethod) request.getMethod else httpMethod.toUpperCase()
   }
 }
@@ -171,7 +166,7 @@ class HierarchicalMappings {
       val nextdepth = if (mydepth > 0) mydepth + 1 else mydepth
       add(httpMethod, nextdepth, pattern.substring(slashIndex), holder, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
     }
-    mappings.tailRecursion = (mappings.children.size == 1 && mappings.mappings.size == 1 && mappings.children.get("*") == Some(mappings))
+    mappings.tailRecursion = mappings.children.size == 1 && mappings.mappings.size == 1 && mappings.children.get("*").contains(mappings)
   }
 
   private def filterDepth(hm: Option[HttpMethodMappings], depth: Int): Option[HttpMethodMappings] = {
@@ -188,10 +183,10 @@ class HierarchicalMappings {
       } else if (index == parts.length - 1) {
         val depth = parts.length
         val mapping = filterDepth(mappings.mappings.get(parts(index)), depth)
-        if (mapping == None) filterDepth(mappings.mappings.get("*"), depth) else mapping
+        if (mapping.isEmpty) filterDepth(mappings.mappings.get("*"), depth) else mapping
       } else {
         val mapping = find(index + 1, parts, mappings.children.get(parts(index)).orNull)
-        if (mapping == None) find(index + 1, parts, mappings.children.get("*").orNull)
+        if (mapping.isEmpty) find(index + 1, parts, mappings.children.get("*").orNull)
         else mapping
       }
     } else {

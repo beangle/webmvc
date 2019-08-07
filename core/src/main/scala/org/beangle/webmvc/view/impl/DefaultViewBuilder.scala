@@ -18,17 +18,16 @@
  */
 package org.beangle.webmvc.view.impl
 
-import org.beangle.cdi.Container
 import org.beangle.commons.lang.Strings
-import org.beangle.commons.lang.annotation.{ description, spi }
+import org.beangle.commons.lang.annotation.description
 import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.view.View
-import org.beangle.webmvc.view.{ TypeViewBuilder, ViewBuilder }
+import org.beangle.webmvc.view.{TypeViewBuilder, ViewBuilder}
 
 @description("缺省视图构建者")
 class DefaultViewBuilder(typeViewBuilders: List[TypeViewBuilder]) extends ViewBuilder {
 
-  val builders = typeViewBuilders.map(builder => (builder.supportViewType, builder)).toMap
+  private val builders = typeViewBuilders.map(builder => (builder.supportViewType, builder)).toMap
 
   override def build(view: view, defaultType: String): View = {
     val viewType = if (Strings.isEmpty(view.`type`)) defaultType else view.`type`

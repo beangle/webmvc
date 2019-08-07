@@ -18,21 +18,14 @@
  */
 package org.beangle.webmvc.spring
 
-import org.beangle.commons.event.EventMulticaster
-import org.beangle.commons.lang.SystemInfo
-import org.beangle.commons.web.session.HttpSessionEventPublisher
+import javax.servlet.{MultipartConfigElement, ServletContext}
 import org.beangle.cdi.spring.web.ContextListener
-import org.beangle.webmvc.config.Configurer
-import org.beangle.webmvc.context.ActionContextBuilder
+import org.beangle.commons.lang.SystemInfo
 import org.beangle.webmvc.dispatch.Dispatcher
-import org.beangle.webmvc.dispatch.RequestMapper
-
-import javax.servlet.MultipartConfigElement
-import javax.servlet.ServletContext
 
 class Initializer extends org.beangle.commons.web.init.Initializer {
 
-  override def onStartup(sc: ServletContext) {
+  override def onStartup(sc: ServletContext): Unit = {
     val ctxListener = new ContextListener
     ctxListener.childContextConfigLocation = "WebApplicationContext:Action@classpath:spring-web-context.xml"
     val container = ctxListener.loadContainer()

@@ -18,11 +18,10 @@
  */
 package org.beangle.webmvc.view.freemarker
 
+import freemarker.template.TemplateModel
 import org.beangle.commons.collection.IdentityCache
 import org.beangle.template.freemarker.BeangleObjectWrapper
 import org.beangle.webmvc.api.context.ActionContext
-
-import freemarker.template.TemplateModel
 
 class CachedObjectWrapper extends BeangleObjectWrapper {
 
@@ -35,10 +34,13 @@ class CachedObjectWrapper extends BeangleObjectWrapper {
       models = new IdentityCache[AnyRef, TemplateModel]
       context.stash("_TemplateModels", models)
     }
-    var model = models.get(obj)
-    if (null != model) return model
-    model = super.wrap(obj)
-    models.put(obj, model)
-    model
+    val model = models.get(obj)
+    if (null == model) {
+      val supModel = super.wrap(obj)
+      models.put(obj, supModel)
+      supModel
+    } else {
+      model
+    }
   }
 }

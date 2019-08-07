@@ -18,13 +18,11 @@
  */
 package org.beangle.webmvc.api.action
 
-import org.beangle.webmvc.api.context.Params
-import org.beangle.webmvc.api.context.ActionContext
+import java.time.{LocalDate, LocalDateTime}
+
+import org.beangle.webmvc.api.context.{ActionContext, Params}
+
 import scala.reflect.ClassTag
-import java.sql
-import java.{ util => ju }
-import java.time.LocalDateTime
-import java.time.LocalDate
 
 trait ParamSupport {
 

@@ -18,21 +18,20 @@
  */
 package org.beangle.webmvc.config.impl
 
-import org.beangle.commons.lang.Strings.{ substringBeforeLast, unCamel, uncapitalize, capitalize }
+import org.beangle.commons.lang.Strings.{unCamel, uncapitalize}
+import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.webmvc.api.annotation.action
 import org.beangle.webmvc.config.Profile
-import org.beangle.commons.text.inflector.en.EnNounPluralizer
-import org.beangle.webmvc.api.action.EntitySupport
 
 object ActionNameBuilder {
 
   /**
    * Return namespace and action name.
    *
-   *  <li>namespace start with / and DONOT ends with /(except only /)
-   *  <li>action name contains namespace and DONOT ends with /(except only /)
+   * <li>namespace start with / and DONOT ends with /(except only /)
+   * <li>action name contains namespace and DONOT ends with /(except only /)
    */
-  def build(clazz: Class[_], profile: Profile): Tuple2[String, String] = {
+  def build(clazz: Class[_], profile: Profile): (String, String) = {
     val className = clazz.getName
     val ann = clazz.getAnnotation(classOf[action])
     val nameBuilder = new StringBuilder()

@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.beangle.webmvc</groupId>
-    <artifactId>beangle-webmvc-plugins_2.12</artifactId>
-    <version>0.3.29</version>
+    <artifactId>beangle-webmvc-plugins_2.13</artifactId>
+    <version>0.3.30</version>
   </parent>
-  <artifactId>beangle-webmvc-html2pdf-plugin_2.12</artifactId>
+  <artifactId>beangle-webmvc-html2pdf-plugin_2.13</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
   <name>Beangle WebMVC Plugin - Html2pdf</name>
@@ -17,7 +17,7 @@
   <dependencies>
     <dependency>
       <groupId>org.beangle.commons</groupId>
-      <artifactId>beangle-commons-web_2.12</artifactId>
+      <artifactId>beangle-commons-web_2.13</artifactId>
     </dependency>
     <dependency>
       <groupId>com.itextpdf</groupId>

@@ -18,26 +18,26 @@
  */
 package org.beangle.webmvc.api.view
 
-import java.io.{ File, FileInputStream, InputStream }
+import java.io.{File, FileInputStream, InputStream}
 import java.net.URL
 
-import org.beangle.commons.activation.MimeTypes
-import org.beangle.commons.lang.Strings.{ isBlank, substringAfterLast }
+import org.beangle.commons.activation.MediaTypes
+import org.beangle.commons.lang.Strings.{isBlank, substringAfterLast}
 
 object Stream {
 
   def apply(url: URL): StreamView = {
-    val fileName = substringAfterLast(url.toString(), "/")
+    val fileName = substringAfterLast(url.toString, "/")
     new StreamView(url.openStream(), decideContentType(fileName), getAttachName(fileName))
   }
 
   def apply(url: URL, displayName: String): StreamView = {
-    val fileName = substringAfterLast(url.toString(), "/")
+    val fileName = substringAfterLast(url.toString, "/")
     new StreamView(url.openStream(), decideContentType(fileName), getAttachName(fileName, displayName))
   }
 
   def apply(url: URL, contentType: String, displayName: String): StreamView = {
-    val fileName = substringAfterLast(url.toString(), "/")
+    val fileName = substringAfterLast(url.toString, "/")
     new StreamView(url.openStream(), contentType, getAttachName(fileName, displayName))
   }
 
@@ -60,7 +60,7 @@ object Stream {
   }
 
   private def decideContentType(fileName: String): String = {
-    MimeTypes.getMimeType(substringAfterLast(fileName, "."), MimeTypes.ApplicationOctetStream).toString
+    MediaTypes.get(substringAfterLast(fileName, "."), MediaTypes.ApplicationOctetStream).toString
   }
 
   private def getAttachName(name: String, display: String = null): String = {

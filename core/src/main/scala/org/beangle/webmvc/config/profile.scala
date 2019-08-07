@@ -20,11 +20,8 @@ package org.beangle.webmvc.config
 
 import java.net.URL
 
-import scala.Range
-
-import org.beangle.commons.lang.Objects
-import org.beangle.commons.lang.Strings.{ isEmpty, split, uncapitalize }
-import org.beangle.commons.lang.Strings
+import org.beangle.commons.lang.{Objects, Strings}
+import org.beangle.commons.lang.Strings.{isEmpty, split, uncapitalize}
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.intercept.Interceptor
 import org.beangle.webmvc.view.ViewDecorator
@@ -82,11 +79,11 @@ object Profile extends Logging {
     val simpleName = uncapitalize(className.substring(afterLastDotIdx, className.length - postfix.length))
 
     val infix = new StringBuilder(reserved)
-    if (infix.length > 0) infix.append('.')
+    if (infix.nonEmpty) infix.append('.')
 
     if (startIndex + 2 < afterLastDotIdx) infix.append(className.substring(startIndex + 2, afterLastDotIdx))
 
-    if (infix.length == 0) return simpleName
+    if (infix.isEmpty) return simpleName
     infix.append(simpleName)
     Range(0, infix.length) foreach { i =>
       if (infix.charAt(i) == '.') infix.setCharAt(i, '/')
@@ -100,27 +97,27 @@ object Profile extends Logging {
  * pattern :action所在的包,匹配action的唯一条件
  */
 final class Profile(val name: String,
-    val pattern: String,
-    val actionSuffix: String,
-    val defaultMethod: String,
-    val viewPath: String,
-    val viewPathStyle: String,
-    val viewSuffix: String,
-    val viewType: String,
-    val urlPath: String,
-    val urlStyle: String,
-    val urlSuffix: String,
-    val interceptors: Array[Interceptor],
-    val decorators: Array[ViewDecorator],
-    val source: URL) extends Comparable[Profile] {
+                    val pattern: String,
+                    val actionSuffix: String,
+                    val defaultMethod: String,
+                    val viewPath: String,
+                    val viewPathStyle: String,
+                    val viewSuffix: String,
+                    val viewType: String,
+                    val urlPath: String,
+                    val urlStyle: String,
+                    val urlSuffix: String,
+                    val interceptors: Array[Interceptor],
+                    val decorators: Array[ViewDecorator],
+                    val source: URL) extends Comparable[Profile] {
 
   def this(name: String, pattern: String) {
     this(name, pattern, "Action", "index", "/", "full", ".ftl", "freemarker", "/", "seo", "", Array(), Array(), null)
   }
-  import Profile._
 
   // 匹配缓存[className,matched_info]
   private val matched = new collection.mutable.HashMap[String, String]
+
   /**
    * 得到控制器的起始位置
    */
@@ -129,7 +126,7 @@ final class Profile(val name: String,
     if (result.isEmpty) {
       if (className.endsWith(actionSuffix)) {
         val newMatchInfo = Profile.matches(className, this.actionSuffix, pattern)
-        if (!newMatchInfo.isEmpty) {
+        if (newMatchInfo.nonEmpty) {
           matched.put(className, newMatchInfo.get)
           result = newMatchInfo
         }
@@ -141,6 +138,7 @@ final class Profile(val name: String,
   def getMatched(className: String): String = {
     matched(className)
   }
+
   /**
    * 子包优先
    * first com.beangle.aa.bb.web.action then com.beangle.*.web.action

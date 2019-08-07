@@ -22,13 +22,11 @@ import java.io.Writer
 import java.lang.reflect.Constructor
 import java.{util => ju}
 
-import org.beangle.commons.bean.Properties
-import org.beangle.commons.lang.annotation.description
-import org.beangle.commons.logging.Logging
-import org.beangle.webmvc.view.tag.{Component, ComponentContext}
-
 import freemarker.ext.beans.BeansWrapper
 import freemarker.template.{TemplateModel, TemplateTransformModel}
+import org.beangle.commons.bean.Properties
+import org.beangle.commons.logging.Logging
+import org.beangle.webmvc.view.tag.{Component, ComponentContext}
 
 class TagModel(context: ComponentContext, clazz: Class[_ <: Component] = null) extends TemplateTransformModel with Logging {
 
@@ -37,9 +35,9 @@ class TagModel(context: ComponentContext, clazz: Class[_ <: Component] = null) e
   private val wrapper = context.templateEngine.asInstanceOf[FreemarkerTemplateEngine].config.getObjectWrapper.asInstanceOf[BeansWrapper]
 
   def getWriter(writer: Writer, params: ju.Map[_, _]): Writer = {
-    val bean = getBean()
+    val bean = getBean
     val iterator = params.keySet().iterator()
-    while (iterator.hasNext()) {
+    while (iterator.hasNext) {
       val key = iterator.next().asInstanceOf[String]
       val property = if (key == "class") "cssClass" else key
       val value = params.get(key).asInstanceOf[Object]
@@ -60,15 +58,14 @@ class TagModel(context: ComponentContext, clazz: Class[_ <: Component] = null) e
         }
       }
     }
-    return new ResetCallbackWriter(bean, writer)
+    new ResetCallbackWriter(bean, writer)
   }
 
-  protected def getBean(): Component = {
+  protected def getBean: Component = {
     try {
-      return componentCon.newInstance(context)
+      componentCon.newInstance(context)
     } catch {
-      case e: Exception =>
-        throw new RuntimeException(e)
+      case e: Exception => throw new RuntimeException(e)
     }
   }
 }

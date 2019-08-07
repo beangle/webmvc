@@ -19,8 +19,8 @@
 package org.beangle.webmvc.config
 
 import java.lang.reflect.Method
-import org.beangle.commons.net.http.HttpMethods.{ DELETE, HEAD, PUT }
-import org.beangle.commons.lang.Strings.{ join, split }
+
+import org.beangle.commons.lang.Strings.{join, split}
 import org.beangle.webmvc.api.action.ToURL
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.context.Argument
@@ -41,6 +41,7 @@ trait Configurer {
 }
 
 class ActionConfig(val url: String, val mapping: RouteMapping, val action: Object)
+
 /**
  * action mapping (namespace endwith /)
  * name is action fullname ,so it starts with /,and contains namespace
@@ -52,18 +53,20 @@ class ActionMapping(val action: AnyRef, val clazz: Class[_], val name: String, v
 object RouteMapping {
   final val DefaultMethod = "index"
   final val MethodParam = "_method"
-  import org.beangle.commons.net.http.HttpMethods.{ DELETE, GET, HEAD, POST, PUT }
+
+  import org.beangle.commons.net.http.HttpMethods.{DELETE, HEAD, PUT}
+
   final val BrowserUnsupported = Map((PUT, "put"), (DELETE, "delete"), (HEAD, "head"))
 }
 
 class RouteMapping(val httpMethod: String, val action: ActionMapping, val method: Method, val name: String,
-    val arguments: Array[Argument], val urlParams: Map[String, Integer], val defaultView: String) {
+                   val arguments: Array[Argument], val urlParams: Map[String, Integer], val defaultView: String) {
 
   def url: String = {
     if ("" == name) {
       action.name
     } else {
-      if (action.name.endsWith("/")) action.name + name else (action.name + "/" + name)
+      if (action.name.endsWith("/")) action.name + name else action.name + "/" + name
     }
   }
 
@@ -74,7 +77,7 @@ class RouteMapping(val httpMethod: String, val action: ActionMapping, val method
       case (name, index) =>
         val iter = paramMaps.iterator
         var value: Option[Any] = None
-        while (iter.hasNext && value == None) {
+        while (iter.hasNext && value.isEmpty) {
           value = iter.next.get(name)
         }
         parts(index) = String.valueOf(value.get)
@@ -107,16 +110,17 @@ object Path {
   }
 
   def isPattern(pathSegment: String): Boolean = {
-    (pathSegment.charAt(0) == '{' && pathSegment.charAt(pathSegment.length - 1) == '}')
+    pathSegment.charAt(0) == '{' && pathSegment.charAt(pathSegment.length - 1) == '}'
   }
+
   /**
    * /a/b/c => ()
    * /{a}/&star/{c} => (a->0,1->1,c->2)
    * /a/b/{c}/{a*} => (c->2,a*->3)
    */
   def parse(pattern: String): Map[String, Integer] = {
-    var parts = split(pattern, "/")
-    var params = new collection.mutable.HashMap[String, Integer]
+    val parts = split(pattern, "/")
+    val params = new collection.mutable.HashMap[String, Integer]
     var i = 0
     while (i < parts.length) {
       val p = parts(i)

@@ -20,12 +20,12 @@ package org.beangle.webmvc.config.impl
 
 import java.net.URL
 
-import scala.xml.{ Node, XML }
-
-import org.beangle.commons.bean.Properties.{ copy, get }
+import org.beangle.commons.bean.Properties.{copy, get}
 import org.beangle.commons.lang.ClassLoaders
-import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.webmvc.config.{ ProfileConfig, ProfileProvider }
+import org.beangle.commons.lang.annotation.description
+import org.beangle.webmvc.config.{ProfileConfig, ProfileProvider}
+
+import scala.xml.{Node, XML}
 
 @description("基于xml的配置提供者")
 class XmlProfileProvider extends ProfileProvider {
@@ -105,7 +105,7 @@ class XmlProfileProvider extends ProfileProvider {
       }
 
       val decoratorNodes = profileElem \\ "decorator"
-      if (!decoratorNodes.isEmpty) {
+      if (decoratorNodes.nonEmpty) {
         val decorators = new collection.mutable.ListBuffer[String]
         decoratorNodes foreach (elem => decorators += (elem \ "@name").text)
         profile.decoratorNames = decorators.toArray
@@ -113,12 +113,12 @@ class XmlProfileProvider extends ProfileProvider {
       profile.source = url
       profiles += profile
     }
-    profiles
+    profiles.toSeq
   }
 
   private def readProperty(elem: Node, profile: ProfileConfig, attrName: String, propertyName: String): Unit = {
     val xmlAttribute = "@" + attrName
-    if (!(elem \ xmlAttribute).isEmpty) {
+    if ((elem \ xmlAttribute).nonEmpty) {
       copy(profile, propertyName, (elem \ xmlAttribute).text.intern)
     } else {
       copy(profile, propertyName, get(defaultProfile, propertyName))

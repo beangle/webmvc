@@ -28,7 +28,7 @@ import org.beangle.data.hibernate.DomainFactory
 
 object PopulateHelper {
 
-  private var domain = ContainerHelper.get.getBean(classOf[DomainFactory]).head.result
+  private val domain = ContainerHelper.get.getBean(classOf[DomainFactory]).head.result
 
   var populator = new ConvertPopulator
 
@@ -44,12 +44,12 @@ object PopulateHelper {
    */
   def populate[T <: Entity[_]](clazz: Class[T], name: String): T = {
     val etype = getType(clazz)
-    populate(etype.newInstance().asInstanceOf[T], etype.entityName, name).asInstanceOf[T]
+    populate(etype.newInstance().asInstanceOf[T], etype.entityName, name)
   }
 
   def populate[T <: Entity[_]](clazz: Class[T]): T = {
     val etype = getType(clazz)
-    populate(etype.newInstance().asInstanceOf[T], etype.entityName, shortName(etype.entityName)).asInstanceOf[T]
+    populate(etype.newInstance().asInstanceOf[T], etype.entityName, shortName(etype.entityName))
   }
 
   def populate(entityName: String): Object = {
@@ -59,14 +59,14 @@ object PopulateHelper {
 
   def populate(entityName: String, name: String): Object = {
     val etype = getType(Class.forName(entityName))
-    var params = Params.sub(name)
+    val params = Params.sub(name)
     val entity = etype.newInstance().asInstanceOf[Entity[_]]
     populator.populate(entity, etype, params)
     entity
   }
 
   def populate[T <: Entity[_]](obj: T, entityName: String, name: String): T = {
-    var params = Params.sub(name)
+    val params = Params.sub(name)
     populator.populate(obj, getType(obj.getClass), params)
     obj
   }

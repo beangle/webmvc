@@ -18,17 +18,17 @@
  */
 package org.beangle.webmvc.api.util
 
+import java.{util => ju}
+
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.webmvc.api.context.ActionContext
-import java.{ util => ju }
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpServletRequest
 
 object CacheControl {
 
   def expiresAfter(minutes: Int, response: HttpServletResponse = ActionContext.current.response): this.type = {
     val cal = ju.Calendar.getInstance()
     cal.add(ju.Calendar.MINUTE, minutes)
-    val expires = cal.getTimeInMillis()
+    val expires = cal.getTimeInMillis
     response.setDateHeader("Date", System.currentTimeMillis())
     response.setDateHeader("Expires", expires)
     response.setDateHeader("Retry-After", expires)
@@ -40,7 +40,7 @@ object CacheControl {
    * return true if already has it's etag
    */
   def withEtag(etag: String, request: HttpServletRequest = ActionContext.current.request,
-    response: HttpServletResponse = ActionContext.current.response): Boolean = {
+               response: HttpServletResponse = ActionContext.current.response): Boolean = {
     val requestETag = request.getHeader("If-None-Match")
     response.setHeader("ETag", etag)
 

@@ -18,32 +18,35 @@
  */
 package org.beangle.webmvc.api.action
 
-import org.beangle.commons.lang.{ Chars, Strings }
+import org.beangle.commons.lang.{Chars, Strings}
 import org.beangle.webmvc.api.annotation.ignore
-import org.beangle.webmvc.api.context.{ ActionContext, Flash }
+import org.beangle.webmvc.api.context.{ActionContext, Flash}
 
 trait MessageSupport {
 
   final def getText(aTextName: String): String = {
     ActionContext.current.textProvider match {
       case Some(p) => p(aTextName).get
-      case None    => aTextName
+      case None => aTextName
     }
   }
 
   final def getText(key: String, defaultValue: String, args: Any*): String = {
     ActionContext.current.textProvider match {
       case Some(p) => p(key, defaultValue, args: _*)
-      case None    => defaultValue
+      case None => defaultValue
     }
   }
 
   protected final def getTextInternal(msgKey: String, args: Any*): String = {
-    if (Strings.isEmpty(msgKey)) null
-    if (Chars.isAsciiAlpha(msgKey.charAt(0)) && msgKey.indexOf('.') > 0) {
-      getText(msgKey, msgKey, args: _*)
+    if (Strings.isEmpty(msgKey)) {
+      null
     } else {
-      msgKey
+      if (Chars.isAsciiAlpha(msgKey.charAt(0)) && msgKey.indexOf('.') > 0) {
+        getText(msgKey, msgKey, args: _*)
+      } else {
+        msgKey
+      }
     }
   }
 
@@ -63,8 +66,7 @@ trait MessageSupport {
     ActionContext.current.flash.addMessage(getTextInternal(msgKey, args: _*))
   }
 
-  /**
-   * 获得action消息<br>
+  /** 获得action消息
    */
   @ignore
   protected final def actionMessages: List[String] = {

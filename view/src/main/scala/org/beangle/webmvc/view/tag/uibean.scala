@@ -19,15 +19,13 @@
 package org.beangle.webmvc.view.tag
 
 import java.io.Writer
-import java.{ util => ju }
-
-import org.beangle.commons.bean.Properties
-import org.beangle.commons.lang.{ Chars, Strings }
-import org.beangle.commons.lang.annotation.spi
-import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.execution.Handler
+import java.{util => ju}
 
 import javax.servlet.http.HttpServletRequest
+import org.beangle.commons.bean.Properties
+import org.beangle.commons.lang.{Chars, Strings}
+import org.beangle.webmvc.api.context.ActionContext
+import org.beangle.webmvc.execution.Handler
 
 class UIBean(context: ComponentContext) extends Component(context) {
 
@@ -49,8 +47,7 @@ class UIBean(context: ComponentContext) extends Component(context) {
 
   /**
    * 获得对应的国际化信息
-   *
-   * @param text
+   * @param text 国际化key
    * @return 当第一个字符不是字母或者不包含.或者包含空格的均返回原有字符串
    */
   protected final def getText(text: String): String = getText(text, text)
@@ -58,8 +55,9 @@ class UIBean(context: ComponentContext) extends Component(context) {
   protected final def getText(text: String, defaultText: String): String = {
     if (Strings.isEmpty(text)) return defaultText
     if (!Chars.isAsciiAlpha(text.charAt(0))) return defaultText
-    if (-1 == text.indexOf('.') || -1 < text.indexOf(' ')) return defaultText
-    else {
+    if (-1 == text.indexOf('.') || -1 < text.indexOf(' ')) {
+      defaultText
+    } else {
       if (text.endsWith(".id")) {
         val key = Strings.substringBeforeLast(text, ".id")
         ActionContext.current.textProvider.get(key, defaultText)
@@ -73,16 +71,20 @@ class UIBean(context: ComponentContext) extends Component(context) {
     ActionContext.current.request
   }
 
-  protected final def requestURI: String = request.getRequestURI()
+  protected final def requestURI: String = {
+    request.getRequestURI
+  }
 
-  protected final def requestParameter(name: String): String = request.getParameter(name)
+  protected final def requestParameter(name: String): String = {
+    request.getParameter(name)
+  }
 
   protected def getValue(obj: Any, property: String): Any = {
     obj match {
-      case null                      => null
+      case null => null
       case map: collection.Map[_, _] => map.asInstanceOf[collection.Map[String, Any]].get(property).orNull
-      case javaMap: ju.Map[_, _]     => javaMap.get(property)
-      case o: AnyRef                 => Properties.get(o, property)
+      case javaMap: ju.Map[_, _] => javaMap.get(property)
+      case o: AnyRef => Properties.get(o, property)
     }
   }
 
@@ -125,11 +127,12 @@ class ClosingUIBean(context: ComponentContext) extends UIBean(context) {
   }
 
 }
+
 class IterableUIBean(context: ComponentContext) extends ClosingUIBean(context) {
 
   protected def next(): Boolean = false
 
-  protected def iterator(writer: Writer, body: String) {
+  protected def iterator(writer: Writer, body: String): Unit = {
     this.body = body
     mergeTemplate(writer)
   }

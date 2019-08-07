@@ -18,14 +18,14 @@
  */
 package org.beangle.webmvc.view.tag.freemarker
 
-import java.io.{ StringWriter, Writer }
+import java.io.{StringWriter, Writer}
+
 import freemarker.template.TransformControl
-import freemarker.template.TransformControl.{ END_EVALUATION, EVALUATE_BODY, REPEAT_EVALUATION, SKIP_BODY }
+import freemarker.template.TransformControl.{END_EVALUATION, EVALUATE_BODY, REPEAT_EVALUATION, SKIP_BODY}
 import org.beangle.webmvc.view.tag.Component
 
 /**
  * ResetCallbackWriter
- *
  * @author chaostone
  * @since 2.4
  */
@@ -42,46 +42,46 @@ class ResetCallbackWriter extends Writer with TransformControl {
     if (bean.usesBody()) this.body = new StringWriter()
   }
 
-  def close() {
+  def close(): Unit = {
     if (bean.usesBody()) body.close()
   }
 
   /**
    * let's just not do it (it will be flushed eventually anyway)
    */
-  def flush() {
+  def flush(): Unit = {
     // writer.flush()
   }
 
-  def write(cbuf: Array[Char], off: Int, len: Int) {
+  def write(cbuf: Array[Char], off: Int, len: Int): Unit = {
     if (bean.usesBody() && !_afterBody) body.write(cbuf, off, len)
     else writer.write(cbuf, off, len)
   }
 
   def onStart(): Int = {
     bean.context.push(bean)
-    return if (bean.start(this)) EVALUATE_BODY else SKIP_BODY
+    if (bean.start(this)) EVALUATE_BODY else SKIP_BODY
   }
 
   def afterBody(): Int = {
     _afterBody = true
-    val repeat = bean.end(this, if (bean.usesBody()) body.toString() else "")
+    val repeat = bean.end(this, if (bean.usesBody()) body.toString else "")
     if (repeat) {
       if (bean.usesBody()) {
         _afterBody = false
-        body.getBuffer().delete(0, body.getBuffer().length())
+        body.getBuffer.delete(0, body.getBuffer.length())
       }
-      return REPEAT_EVALUATION
+      REPEAT_EVALUATION
     } else {
       bean.context.pop()
-      return END_EVALUATION
+      END_EVALUATION
     }
   }
 
-  def onError(throwable: Throwable) {
+  def onError(throwable: Throwable): Unit = {
     throw throwable
   }
 
-  def getBean() = bean
+  def getBean: Component = bean
 
 }

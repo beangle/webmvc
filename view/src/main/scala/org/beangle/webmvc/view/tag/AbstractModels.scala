@@ -18,7 +18,8 @@
  */
 package org.beangle.webmvc.view.tag
 
-import java.util.HashMap
+import java.{util => ju}
+
 import javax.servlet.http.HttpServletRequest
 import org.beangle.webmvc.view.tag.freemarker.TagModel
 
@@ -27,7 +28,7 @@ import org.beangle.webmvc.view.tag.freemarker.TagModel
  */
 abstract class AbstractModels(val context: ComponentContext, request: HttpServletRequest) {
 
-  val models = new HashMap[Class[_], TagModel]
+  val models = new ju.HashMap[Class[_], TagModel]
 
   protected def get(clazz: Class[_ <: Component]): TagModel = {
     var model = models.get(clazz)
@@ -35,6 +36,6 @@ abstract class AbstractModels(val context: ComponentContext, request: HttpServle
       model = new TagModel(context, clazz)
       models.put(clazz, model)
     }
-    return model
+    model
   }
 }

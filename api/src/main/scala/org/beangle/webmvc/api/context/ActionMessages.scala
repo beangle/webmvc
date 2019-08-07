@@ -26,7 +26,7 @@ class ActionMessages extends Serializable {
   val messages = new ListBuffer[String]
   val errors = new ListBuffer[String]
 
-  def clear() {
+  def clear(): Unit = {
     messages.clear()
     errors.clear()
   }

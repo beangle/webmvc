@@ -18,14 +18,12 @@
  */
 package org.beangle.webmvc.view.freemarker
 
+import freemarker.template.{ObjectWrapper, SimpleHash}
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.annotation.description
-import org.beangle.commons.lang.SystemInfo
 import org.beangle.template.freemarker.ParametersHashModel
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.view.TagLibraryProvider
-
-import freemarker.template.{ ObjectWrapper, SimpleHash }
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 /**
  * @author chaostone

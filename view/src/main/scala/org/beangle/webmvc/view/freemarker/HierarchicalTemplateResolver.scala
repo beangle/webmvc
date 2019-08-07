@@ -18,12 +18,12 @@
  */
 package org.beangle.webmvc.view.freemarker
 
-import java.io.{ FileNotFoundException, IOException }
+import java.io.{FileNotFoundException, IOException}
 
 import org.beangle.commons.lang.annotation.description
-import org.beangle.template.freemarker.{ Configurer => FreemarkerConfigurer }
+import org.beangle.template.freemarker.{Configurer => FreemarkerConfigurer}
 import org.beangle.webmvc.config.Configurer
-import org.beangle.webmvc.view.{ TemplatePathMapper, TemplateResolver }
+import org.beangle.webmvc.view.{TemplatePathMapper, TemplateResolver}
 
 /**
  * Find template in class hierarchy with configuration without caching.
@@ -46,10 +46,8 @@ class HierarchicalTemplateResolver(freemarkerConfigurer: FreemarkerConfigurer, t
       try {
         source = configuration.getTemplate(path)
       } catch {
-        case e: FileNotFoundException => null //ignore
-        case e: IOException => {
-          source = "error ftl"
-        }
+        case _: FileNotFoundException =>  //ignore
+        case _: IOException => source = "error ftl"
       }
       superClass = superClass.getSuperclass
     } while (null == source && !superClass.equals(classOf[Object]) && !superClass.isPrimitive)

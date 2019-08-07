@@ -18,15 +18,14 @@
  */
 package org.beangle.webmvc.view.tag
 
-import java.util.Stack
+import java.{util => ju}
 
 /**
  * ui主体栈
- *
  * @author chaostone
  */
 class ThemeStack {
-  private val themes = new Stack[Theme]()
+  private val themes = new ju.Stack[Theme]()
 
   def push(item: Theme): Theme = themes.push(item)
 
@@ -34,6 +33,6 @@ class ThemeStack {
 
   def peek(): Theme = themes.peek()
 
-  def isEmpty(): Boolean = themes.isEmpty()
+  def isEmpty: Boolean = themes.isEmpty
 
 }

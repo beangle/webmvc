@@ -19,8 +19,9 @@
 package org.beangle.webmvc.view.tag.freemarker
 
 import java.io.Reader
-import org.beangle.webmvc.view.tag.Themes
+
 import freemarker.cache.TemplateLoader
+import org.beangle.webmvc.view.tag.Themes
 
 class HierarchicalTemplateLoader(loader: TemplateLoader) extends TemplateLoader {
 
@@ -40,18 +41,18 @@ class HierarchicalTemplateLoader(loader: TemplateLoader) extends TemplateLoader 
         }
       } while (null == source && !break)
     }
-    return source
+    source
   }
 
   def getLastModified(templateSource: Object): Long = {
-    return loader.getLastModified(templateSource)
+    loader.getLastModified(templateSource)
   }
 
   def getReader(templateSource: Object, encoding: String): Reader = {
-    return loader.getReader(templateSource, encoding)
+    loader.getReader(templateSource, encoding)
   }
 
-  def closeTemplateSource(templateSource: Object) {
+  def closeTemplateSource(templateSource: Object): Unit = {
     loader.closeTemplateSource(templateSource)
   }
 }

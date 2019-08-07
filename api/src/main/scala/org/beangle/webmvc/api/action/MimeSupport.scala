@@ -18,17 +18,8 @@
  */
 package org.beangle.webmvc.api.action
 
-import java.net.URL
-
 import org.beangle.commons.web.http.accept.ContentNegotiationManager
-import org.beangle.commons.lang.{Chars, ClassLoaders, Strings}
-import org.beangle.commons.logging.Logging
-import org.beangle.commons.web.util.{CookieUtils, RequestUtils}
-import org.beangle.webmvc.api.annotation.ignore
-import org.beangle.webmvc.api.context.{ActionMessages, ActionContext, Flash}
-import org.beangle.webmvc.api.view.{ForwardActionView, RedirectActionView, View}
-
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import org.beangle.webmvc.api.context.ActionContext
 
 trait MimeSupport {
 
@@ -37,7 +28,7 @@ trait MimeSupport {
   def isRequestCsv: Boolean = {
     if (null == contentNegotiationManager) false
     else {
-      contentNegotiationManager.resolve(ActionContext.current.request).exists { p => p.getBaseType == "text/csv" }
+      contentNegotiationManager.resolve(ActionContext.current.request).exists(_.primaryType == "text/csv")
     }
   }
 }

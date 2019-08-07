@@ -20,9 +20,11 @@ package org.beangle.webmvc.html2pdf
 
 import org.beangle.commons.collection.Collections
 
+import scala.collection.mutable
+
 /**
  * @author chaostone
  */
 class ReportContext {
-  val datas = Collections.newMap[String, Any]
+  val datas: mutable.Map[String, Any] = Collections.newMap[String, Any]
 }

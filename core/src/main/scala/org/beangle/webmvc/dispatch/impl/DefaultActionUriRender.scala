@@ -18,14 +18,13 @@
  */
 package org.beangle.webmvc.dispatch.impl
 
-import org.beangle.commons.lang.annotation.{description, spi}
+import org.beangle.commons.lang.Strings
+import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.web.url.UrlRender
 import org.beangle.webmvc.api.action.To
 import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.config.RouteMapping
-import org.beangle.webmvc.dispatch.{ActionUriRender, RequestMapper}
-import org.beangle.webmvc.config.Configurer
-import org.beangle.commons.lang.Strings
+import org.beangle.webmvc.config.{Configurer, RouteMapping}
+import org.beangle.webmvc.dispatch.ActionUriRender
 
 @description("根据uri相对地址反向生成绝对地址")
 class DefaultActionUriRender extends ActionUriRender {
@@ -36,19 +35,19 @@ class DefaultActionUriRender extends ActionUriRender {
 
   override def render(router: RouteMapping, uri: String): String = {
     if (Strings.isEmpty(uri)) {
-      return ActionContext.current.request.getRequestURI()
+      return ActionContext.current.request.getRequestURI
     }
     if (uri.startsWith("http")) {
       return uri
     }
     val context = ActionContext.current
-    val contextPath = context.request.getServletContext().getContextPath
+    val contextPath = context.request.getServletContext.getContextPath
     if (uri.charAt(0) == '/') return contextPath + uri
 
     var params: collection.mutable.Map[String, String] = null
     val mapping =
       if (uri.charAt(0) == '!') {
-        var dotIdx = uriEndIndexOf(uri)
+        val dotIdx = uriEndIndexOf(uri)
         params = To(uri).parameters
         router.action.mappings(uri.substring(1, dotIdx))
       } else {
@@ -61,7 +60,7 @@ class DefaultActionUriRender extends ActionUriRender {
         }
         val goNamespace =
           if (backStep > 0) {
-            var chars = new Array[Char](namespace.length)
+            val chars = new Array[Char](namespace.length)
             namespace.getChars(0, chars.length, chars, 0)
             var findedSlash = chars.length - 1
             while (backStep > 0 && findedSlash > -1) {
@@ -94,12 +93,12 @@ class DefaultActionUriRender extends ActionUriRender {
    * Return uri end index of url
    */
   def uriEndIndexOf(url: String): Int = {
-    var lastIndex = url.length
-    var chars = new Array[Char](lastIndex)
+    val lastIndex = url.length
+    val chars = new Array[Char](lastIndex)
     url.getChars(0, lastIndex, chars, 0)
     var i = 0
     while (i < lastIndex) {
-      var c = chars(i)
+      val c = chars(i)
       if (c == '.' || c == '?') return i
       i += 1
     }

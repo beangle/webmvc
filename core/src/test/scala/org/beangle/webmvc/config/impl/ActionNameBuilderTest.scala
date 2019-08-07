@@ -20,8 +20,8 @@ package org.beangle.webmvc.config.impl
 
 import org.junit.runner.RunWith
 import org.scalatest.Matchers
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.FunSpec
+import org.scalatestplus.junit.JUnitRunner
+import org.scalatest.funspec.AnyFunSpec
 import org.beangle.webmvc.execution.testaction.IndexAction
 import org.beangle.webmvc.config.Profile
 
@@ -29,7 +29,7 @@ import org.beangle.webmvc.config.Profile
  * @author chaostone
  */
 @RunWith(classOf[JUnitRunner])
-class ActionNameBuilderTest extends FunSpec with Matchers {
+class ActionNameBuilderTest extends AnyFunSpec with Matchers {
 
   describe("ActionNameBuilder") {
     it("build indexmapping") {

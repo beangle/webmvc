@@ -18,10 +18,10 @@
  */
 package org.beangle.webmvc.view.impl
 
-import org.beangle.cdi.{ Container, ContainerListener }
+import org.beangle.cdi.{Container, ContainerListener}
 import org.beangle.commons.lang.Strings
-import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.webmvc.view.{ TagLibrary, TagLibraryProvider }
+import org.beangle.commons.lang.annotation.description
+import org.beangle.webmvc.view.{TagLibrary, TagLibraryProvider}
 
 @description("所有标签库提供者")
 class ContainerTaglibraryProvider extends TagLibraryProvider with ContainerListener {

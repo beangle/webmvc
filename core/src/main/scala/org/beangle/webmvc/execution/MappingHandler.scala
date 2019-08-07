@@ -18,18 +18,16 @@
  */
 package org.beangle.webmvc.execution
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import org.beangle.commons.activation.MediaType
 import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.Strings
-import org.beangle.commons.lang.annotation.{ description, spi }
+import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.web.intercept.Interceptor
 import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.api.view.View
+import org.beangle.webmvc.api.view.{PathView, View}
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.view.impl.ViewManager
-
-import javax.activation.MimeType
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.webmvc.api.view.PathView
 
 /**
  * 缺省的调用反应堆
@@ -45,7 +43,7 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
     val lastInterceptorIndex = preHandle(interceptors, context, request, response)
     try {
       if (lastInterceptorIndex == interceptors.length - 1) {
-        var result = invoker.invoke()
+        val result = invoker.invoke()
         context.flash.writeNextToCookie()
         val view = result match {
           case null => null
@@ -71,19 +69,19 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
                 }
             }
           case view: View => view
-          case _          => null
+          case _ => null
         }
 
         if (null != view) {
           viewManager.getRender(view.getClass) match {
             case Some(render) => render.render(view, context)
-            case None         => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
+            case None => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
           }
         } else {
           if (null != viewManager.contentNegotiationManager) {
             val mimeTypes = viewManager.contentNegotiationManager.resolve(request).iterator
             var serializer: Serializer = null
-            var mimeType: MimeType = null
+            var mimeType: MediaType = null
             while (mimeTypes.hasNext && serializer == null) {
               mimeType = mimeTypes.next()
               serializer = viewManager.getSerializer(mimeType)
@@ -93,7 +91,7 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
               response.setContentType(mimeType.toString + "; charset=UTF-8")
               val params = new collection.mutable.HashMap[String, Any]
               val enum = request.getAttributeNames
-              while (enum.hasMoreElements()) {
+              while (enum.hasMoreElements) {
                 val attr = enum.nextElement()
                 params.put(attr, request.getAttribute(attr))
               }

@@ -91,7 +91,7 @@ trait To {
   def url: String = {
     val buf = new StringBuilder(uri)
     if (null != suffix) buf.append(suffix)
-    if (parameters.size > 0) {
+    if (parameters.nonEmpty) {
       var first = true
       for ((key, value) <- parameters) {
         try {
@@ -103,7 +103,7 @@ trait To {
           }
           buf.append(key).append("=").append(URLEncoder.encode(value, "UTF-8"))
         } catch {
-          case e: Exception => throw new RuntimeException(e.getMessage())
+          case e: Exception => throw new RuntimeException(e.getMessage)
         }
       }
     }
@@ -152,7 +152,7 @@ class ToURL(val uri: String) extends To {
     val actionName = uri.substring(actionIndex, if (bandIndex > 0) bandIndex else endIndex)
     val methodName = if (bandIndex > 0 && bandIndex < endIndex) uri.substring(bandIndex + 1, endIndex) else null
     val sa = new ToStruts(namespace, actionName, methodName)
-    if (!parameters.isEmpty) sa.params(parameters)
+    if (parameters.nonEmpty) sa.params(parameters)
     sa.suffix = suffix
     sa
   }

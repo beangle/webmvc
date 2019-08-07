@@ -19,11 +19,11 @@
 package org.beangle.webmvc.config.impl
 
 import org.beangle.cdi.Container
-import org.beangle.commons.lang.annotation.{ description, spi }
+import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.intercept.Interceptor
-import org.beangle.webmvc.config.{ ActionMapping, RouteMapping, ActionMappingBuilder, Configurer, Profile, ProfileProvider }
+import org.beangle.webmvc.config._
 import org.beangle.webmvc.context.ActionFinder
 import org.beangle.webmvc.view.ViewDecorator
 
@@ -65,7 +65,7 @@ class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) 
     actionFinder.actions(new ActionFinder.Test(this)) foreach { bean =>
       val clazz = bean.getClass
       val mapping = actionMappingBuilder.build(bean, clazz, this.getProfile(clazz.getName))
-      if (!mapping.mappings.isEmpty) {
+      if (mapping.mappings.nonEmpty) {
         mutableClassMappings.put(mapping.clazz, mapping)
         mutableActionMappings.put(mapping.name, mapping)
         actionCount += 1
@@ -74,17 +74,17 @@ class DefaultConfigurer(profileProvider: ProfileProvider, container: Container) 
     }
     actionMappings = mutableActionMappings.toMap
     classMappings = mutableClassMappings.toMap
-    logger.info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in ${watch}.")
+    logger.info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in $watch.")
   }
 
   override def getProfile(className: String): Profile = {
     var matched = class2Profiles.get(className).orNull
     if (null != matched) return matched
-    profiles.find(p => !p.matches(className).isEmpty) match {
+    profiles.find(p => p.matches(className).nonEmpty) match {
       case Some(p) =>
         class2Profiles.put(className, p)
         matched = p
-        logger.debug(s"${className} match profile:${p}")
+        logger.debug(s"$className match profile:$p")
       case None =>
     }
     matched

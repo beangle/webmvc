@@ -18,7 +18,6 @@
  */
 package org.beangle.webmvc.view.tag
 
-import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.dispatch.ActionUriRender
 import org.beangle.webmvc.view.impl.UIIdGenerator
 
@@ -46,7 +45,7 @@ class ComponentContext(val uriRender: ActionUriRender, val idGenerator: UIIdGene
 
   def theme: Theme = {
     if (themeStack.isEmpty) Themes.Default
-    else themeStack.peek
+    else themeStack.peek()
   }
 
   def push(component: Component): Unit = {

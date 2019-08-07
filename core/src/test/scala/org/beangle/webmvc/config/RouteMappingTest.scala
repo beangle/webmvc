@@ -19,14 +19,15 @@
 package org.beangle.webmvc.config
 
 import org.junit.runner.RunWith
-import org.scalatest.{ FunSpec, Matchers }
-import org.scalatest.junit.JUnitRunner
+import org.scalatest.Matchers
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatestplus.junit.JUnitRunner
 import org.beangle.commons.net.http.HttpMethods
 import org.beangle.webmvc.context.Argument
 import org.beangle.webmvc.api.view.View
 
 @RunWith(classOf[JUnitRunner])
-class RouteMappingTest extends FunSpec with Matchers {
+class RouteMappingTest extends AnyFunSpec with Matchers {
 
   describe("RouteMapping") {
     it("url") {
