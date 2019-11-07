@@ -46,12 +46,12 @@ trait ExportSupport[T <: Entity[_]] {
         get("titles") foreach (ctx.put("titles", _))
         get("properties") foreach (ctx.put("properties", _))
         val format = get("format") match {
-          case None => Format.Xls
-          case Some(f) => Format.withName(Strings.capitalize(f))
+          case None => Format.Xlsx
+          case Some(f) => Format.withName(Strings.capitalize(if (f == "xls") "xlsx" else f))
         }
         ctx.format = format
       case Some(template) =>
-        ctx.format = Format.Xls
+        ctx.format = Format.Xlsx
         setting.exporter = new ExcelTemplateExporter()
         setting.writer = new ExcelTemplateWriter(
           ClassLoaders.getResource(template).get, ctx, response.getOutputStream)
