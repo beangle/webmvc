@@ -21,6 +21,7 @@ package org.beangle.webmvc.entity.helper
 import java.io.{InputStreamReader, LineNumberReader}
 
 import javax.servlet.http.Part
+import org.beangle.commons.lang.Strings
 import org.beangle.data.transfer.Format
 import org.beangle.data.transfer.csv.CsvItemReader
 import org.beangle.data.transfer.excel.ExcelItemReader
@@ -42,10 +43,14 @@ object ImportHelper {
       return null
     }
     val is = filePart.getInputStream
-    val format = Format.withName("Xls")
-
-    if (format.equals(Format.Xls)) {
-      new ExcelItemReader(is, 0)
+    var ext = Strings.substringAfterLast(filePart.getSubmittedFileName, ".")
+    ext = Strings.capitalize(ext)
+    if (ext != "Xlsx" && ext != "Xls") {
+      return null
+    }
+    val format = Format.withName(ext)
+    if (format.equals(Format.Xls) || format.equals(Format.Xlsx)) {
+      new ExcelItemReader(is, 0, format)
     } else {
       val reader = new LineNumberReader(new InputStreamReader(is))
       new CsvItemReader(reader)

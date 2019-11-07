@@ -50,7 +50,7 @@ object Stream {
     val fileName = file.getName
     new StreamView(new FileInputStream(file), decideContentType(fileName), getAttachName(fileName, displayName))
   }
-
+  
   def apply(file: File, contentType: String, displayName: String): StreamView = {
     new StreamView(new FileInputStream(file), contentType, getAttachName(file.getName, displayName))
   }
@@ -63,11 +63,11 @@ object Stream {
     MediaTypes.get(substringAfterLast(fileName, "."), MediaTypes.ApplicationOctetStream).toString
   }
 
-  private def getAttachName(name: String, display: String = null): String = {
+  private def getAttachName(fileName: String, display: String = null): String = {
     var attch_name = ""
-    val ext = substringAfterLast(name, ".")
+    val ext = substringAfterLast(fileName, ".")
     if (isBlank(display)) {
-      attch_name = name
+      attch_name = fileName
       var iPos = attch_name.lastIndexOf("\\")
       if (iPos > -1) attch_name = attch_name.substring(iPos + 1)
       iPos = attch_name.lastIndexOf("/")

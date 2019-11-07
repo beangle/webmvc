@@ -12,9 +12,9 @@
   <version>0.3.32-SNAPSHOT</version>
 
   <properties>
-    <beangle.commons.version>5.1.9</beangle.commons.version>
-    <beangle.data.version>5.1.9</beangle.data.version>
-    <beangle.cdi.version>0.1.1</beangle.cdi.version>
+    <beangle.commons.version>5.1.10</beangle.commons.version>
+    <beangle.data.version>5.2.0-SNAPSHOT</beangle.data.version>
+    <beangle.cdi.version>0.2.0</beangle.cdi.version>
     <beangle.template.version>0.0.24</beangle.template.version>
     <javassist.version>3.25.0-GA</javassist.version>
     <itextpdf.version>5.5.11</itextpdf.version>
