@@ -2,12 +2,12 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-plugins_2.13</artifactId>
-    <version>0.3.32</version>
+    <version>0.3.33</version>
   </parent>
   <artifactId>beangle-webmvc-entity-plugin_2.13</artifactId>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <name>Beangle WebMVC Plugin - Entity Support</name>
+  <name>Beangle WebMVC Plugin - Entity</name>
 
   <properties>
     <bundle.symbolicName>org.beangle.webmvc.entity-plugin</bundle.symbolicName>
