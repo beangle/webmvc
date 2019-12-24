@@ -47,8 +47,8 @@ object ITextPdfReporter {
   def main(args: Array[String]): Unit = {
     val reporter = new ITextPdfReporter
     val context = new ReportContext
-    val html = IOs.readString(new FileInputStream("/home/chaostone/openurp/site/_site/model/partition.html"))
-    val os = new FileOutputStream("/home/chaostone/openurp/site/_site/model.pdf")
+    val html = IOs.readString(new FileInputStream("~/openurp/site/_site/model/partition.html"))
+    val os = new FileOutputStream("~/openurp/site/_site/model.pdf")
     reporter.generate(new StringReader(html), context, os)
     os.close()
   }
