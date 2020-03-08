@@ -112,9 +112,17 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   protected def getQueryBuilder: OqlBuilder[T] = {
-    val builder: OqlBuilder[T] = OqlBuilder.from(entityName, simpleEntityName)
+    val alias = simpleEntityName
+    val builder: OqlBuilder[T] = OqlBuilder.from(entityName, alias)
     populateConditions(builder)
-    builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit)
+    get(Order.OrderStr) foreach { orderClause =>
+      if (orderClause.contains(alias + ".id")) {
+        builder.orderBy(orderClause)
+      } else {
+        builder.orderBy(orderClause + "," + alias + ".id")
+      }
+    }
+    builder.limit(getPageLimit)
   }
 
   protected def populateEntity(): T = {
@@ -124,7 +132,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   protected def populateEntity[E <: Entity[_]](entityName: String, simpleEntityName: String): E = {
     getId(simpleEntityName, entityDao.domain.getEntity(entityName).get.id.clazz) match {
       case Some(entityId) => populate(getModel[E](entityName, entityId), entityName, Params.sub(simpleEntityName))
-      case None           => populate(entityName, simpleEntityName).asInstanceOf[E]
+      case None => populate(entityName, simpleEntityName).asInstanceOf[E]
     }
   }
 
@@ -139,7 +147,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     val entityType = entityDao.domain.getEntity(entityName).get
     getId(name, entityType.id.clazz) match {
       case Some(entityId) => getModel(entityName, entityId).asInstanceOf[E]
-      case None           => populate(entityType.newInstance.asInstanceOf[E], entityType.entityName, name)
+      case None => populate(entityType.newInstance.asInstanceOf[E], entityType.entityName, name)
     }
   }
 
@@ -172,7 +180,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
 
   protected def convertId[ID](id: String): ID = {
     Params.converter.convert(id, entityDao.domain.getEntity(entityName).get.id.clazz) match {
-      case None      => null.asInstanceOf[ID]
+      case None => null.asInstanceOf[ID]
       case Some(nid) => nid.asInstanceOf[ID]
     }
   }
