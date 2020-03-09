@@ -76,8 +76,7 @@ trait ExportSupport[T <: Entity[_]] {
     val items =
       if (selectIds.isEmpty) {
         val builder = getQueryBuilder
-        val statement = builder.build().statement.toLowerCase
-        if (statement.contains("having") || statement.contains("group by")) {
+        if (builder.hasGroupBy) {
           entityDao.search(builder.limit(null))
         } else {
           val query = builder.limit(1, 500)

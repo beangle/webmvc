@@ -116,12 +116,9 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     val builder: OqlBuilder[T] = OqlBuilder.from(entityName, alias)
     populateConditions(builder)
     get(Order.OrderStr) foreach { orderClause =>
-      if (orderClause.contains(alias + ".id")) {
-        builder.orderBy(orderClause)
-      } else {
-        builder.orderBy(orderClause + "," + alias + ".id")
-      }
+      builder.orderBy(orderClause)
     }
+    builder.tailOrder(alias + ".id")
     builder.limit(getPageLimit)
   }
 
