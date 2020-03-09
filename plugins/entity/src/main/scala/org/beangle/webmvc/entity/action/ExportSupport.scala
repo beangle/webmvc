@@ -20,6 +20,7 @@ package org.beangle.webmvc.entity.action
 
 import org.beangle.commons.lang.{ClassLoaders, Strings}
 import org.beangle.commons.web.util.RequestUtils
+import org.beangle.data.dao.{LimitQuery, QueryPage}
 import org.beangle.data.model.Entity
 import org.beangle.data.transfer.Format
 import org.beangle.data.transfer.excel.{ExcelItemWriter, ExcelTemplateExporter, ExcelTemplateWriter}
@@ -74,7 +75,13 @@ trait ExportSupport[T <: Entity[_]] {
     val selectIds = ids(simpleEntityName, PopulateHelper.getType(entityType).id.clazz)
     val items =
       if (selectIds.isEmpty) {
-        entityDao.search(getQueryBuilder.limit(null))
+        val builder = getQueryBuilder
+        if (builder.hasGroupBy) {
+          entityDao.search(builder.limit(null))
+        } else {
+          val query = builder.limit(1, 500)
+          new QueryPage(query.build().asInstanceOf[LimitQuery[T]], entityDao)
+        }
       } else {
         entityDao.findBy(entityType, "id", selectIds)
       }
