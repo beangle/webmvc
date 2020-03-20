@@ -40,7 +40,7 @@ class DefaultActionMappingBuilderTest extends AnyFunSpec with Matchers {
       profile.matches(classOf[ShowcaseAction].getName)
       val mappings = builder.build(new ShowcaseAction(), classOf[ShowcaseAction], profile).mappings
       assert(null != mappings)
-      assert(mappings.size == 7)
+      assert(mappings.size == 8)
       assert(mappings.get("string").isDefined)
       assert(mappings.get("request").isDefined)
       assert(mappings.get("param").isDefined)
