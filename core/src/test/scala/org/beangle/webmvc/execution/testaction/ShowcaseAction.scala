@@ -64,7 +64,7 @@ class ShowcaseAction extends RouteSupport {
   }
 
   @response
-  def ok:Boolean={
+  def ok(@param("n") n:String):Boolean={
     true
   }
 }

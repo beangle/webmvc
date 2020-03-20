@@ -46,7 +46,7 @@ class StaticMethodHandlerBuilderTest extends AnyFunSpec with Matchers {
       builder.build(action, mappings("header"))
       builder.build(action, mappings("path"))
       builder.build(action, mappings("echofloat"))
-      builder.build(action, mappings("ok")).invoke()
+      builder.build(action, mappings("ok"))
     }
   }
 }

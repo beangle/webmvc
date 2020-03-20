@@ -160,7 +160,11 @@ class CodeGenerator {
       }
 
       if (nonevoid) {
-        sb ++= (s"return action.${method.getName}(" + paramList.mkString(",") + ");\n")
+        if (method.getReturnType.isPrimitive) {
+          sb ++= (s"return ${Primitives.wrap(method.getReturnType).getName}.valueOf(action.${method.getName}(" + paramList.mkString(",") + "));\n")
+        } else {
+          sb ++= (s"return action.${method.getName}(" + paramList.mkString(",") + ");\n")
+        }
       } else {
         sb ++= (s"action.${method.getName}(" + paramList.mkString(",") + ");\nreturn null;\n")
       }
