@@ -38,7 +38,7 @@ class StaticMethodHandlerBuilderTest extends AnyFunSpec with Matchers {
   describe("StaticMethodHandlerBuilder") {
     it("build handler") {
       val action = new ShowcaseAction
-      val mappings = mappingBuilder.build(action,classOf[ShowcaseAction], profile).mappings
+      val mappings = mappingBuilder.build(action, classOf[ShowcaseAction], profile).mappings
       builder.build(action, mappings("string")).invoke()
       builder.build(action, mappings("request"))
       builder.build(action, mappings("param"))
@@ -46,6 +46,7 @@ class StaticMethodHandlerBuilderTest extends AnyFunSpec with Matchers {
       builder.build(action, mappings("header"))
       builder.build(action, mappings("path"))
       builder.build(action, mappings("echofloat"))
+      builder.build(action, mappings("ok")).invoke()
     }
   }
 }

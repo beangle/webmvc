@@ -62,4 +62,9 @@ class ShowcaseAction extends RouteSupport {
   def echofloat(num: Float, request: HttpServletRequest, @header("Accept") accept: String): String = {
     "in Showcase echo :" + num
   }
+
+  @response
+  def ok:Boolean={
+    true
+  }
 }
