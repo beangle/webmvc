@@ -71,8 +71,15 @@ class CodeGenerator {
   def gen(method: Method, mapping: RouteMapping, action: AnyRef): String = {
     val nonevoid = method.getReturnType != classOf[Unit]
     if (method.getParameterTypes.length == 0) {
-      if (nonevoid) s"{return action.${method.getName}();}\n"
-      else s"{action.${method.getName}();return null;}\n"
+      if (nonevoid) {
+        if (method.getReturnType.isPrimitive) {
+          s"{return ${Primitives.wrap(method.getReturnType).getName}.valueOf(action.${method.getName}());}\n"
+        } else {
+          s"{return action.${method.getName}();}\n"
+        }
+      } else {
+        s"{action.${method.getName}();return null;}\n"
+      }
     } else {
       val q = "\""
       var needRequest = false
@@ -153,7 +160,11 @@ class CodeGenerator {
       }
 
       if (nonevoid) {
-        sb ++= (s"return action.${method.getName}(" + paramList.mkString(",") + ");\n")
+        if (method.getReturnType.isPrimitive) {
+          sb ++= (s"return ${Primitives.wrap(method.getReturnType).getName}.valueOf(action.${method.getName}(" + paramList.mkString(",") + "));\n")
+        } else {
+          sb ++= (s"return action.${method.getName}(" + paramList.mkString(",") + ");\n")
+        }
       } else {
         sb ++= (s"action.${method.getName}(" + paramList.mkString(",") + ");\nreturn null;\n")
       }
