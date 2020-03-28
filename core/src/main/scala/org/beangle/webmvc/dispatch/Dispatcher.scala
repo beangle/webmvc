@@ -18,14 +18,9 @@
  */
 package org.beangle.webmvc.dispatch
 
-import java.io.{File, FileInputStream}
-
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.servlet.{GenericServlet, ServletConfig, ServletRequest, ServletResponse}
 import org.beangle.cdi.Container
-import org.beangle.commons.activation.MediaTypes
-import org.beangle.commons.io.IOs
-import org.beangle.commons.lang.Strings.{isNotEmpty, substringAfterLast}
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.multipart.StandardMultipartResolver
 import org.beangle.commons.web.util.RequestUtils
@@ -52,7 +47,7 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
     // 3. find index
     val indexFile =
       List("/index.html", "/index.htm", "/index.jsp") find { i =>
-        new File(config.getServletContext.getRealPath(i)).exists()
+        null != config.getServletContext.getResource(i)
       }
     indexFile match {
       case None => if (null != mapper.resolve("/index")) this.index = "/index"
@@ -90,32 +85,9 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
         response.setStatus(HttpServletResponse.SC_NOT_FOUND)
       }
     } else {
-      findFile(request, servletPath) match {
-        case Some(f) =>
-          val ext = substringAfterLast(f.getName, ".")
-          if (isNotEmpty(ext)) MediaTypes.get(ext) foreach (m => response.setContentType(m.toString))
-          IOs.copy(new FileInputStream(f), response.getOutputStream)
-        case None =>
-          response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-      }
-    }
-  }
-
-  private def findFile(request: HttpServletRequest, servletPath: String): Option[File] = {
-    val filePath = request.getServletContext.getRealPath(servletPath)
-    val p = new File(filePath)
-    if (p.exists) {
-      if (p.isDirectory) {
-        val index = new File(p.getAbsolutePath + File.separator + "index.html")
-        if (index.exists) Some(index) else None
-      } else {
-        Some(p)
-      }
-    } else {
-      None
+      WebResource.deliver(response, request.getServletContext, servletPath)
     }
   }
 
   override def destroy(): Unit = {}
-
 }
