@@ -21,7 +21,7 @@ package org.beangle.webmvc.config
 import java.lang.reflect.Method
 
 import org.beangle.commons.lang.Strings.{join, split}
-import org.beangle.webmvc.api.action.ToURL
+import org.beangle.webmvc.api.action.{To, ToURI}
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.context.Argument
 
@@ -90,8 +90,8 @@ class RouteMapping(val httpMethod: String, val action: ActionMapping, val method
       method.getName + "(" + join(arguments, ",") + ")"
   }
 
-  def toURL(paramMaps: collection.Map[String, Any]*): ToURL = {
-    val ua = new ToURL(fill(paramMaps: _*))
+  def toURL(paramMaps: collection.Map[String, Any]*): ToURI = {
+    val ua = new ToURI(fill(paramMaps: _*))
     RouteMapping.BrowserUnsupported.get(this.httpMethod) foreach { m =>
       ua.param(RouteMapping.MethodParam, m)
     }

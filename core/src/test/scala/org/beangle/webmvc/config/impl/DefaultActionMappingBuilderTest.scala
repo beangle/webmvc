@@ -21,7 +21,7 @@ package org.beangle.webmvc.config.impl
 import org.beangle.webmvc.config.{Profile, ProfileConfig}
 import org.beangle.webmvc.execution.testaction.ShowcaseAction
 import org.junit.runner.RunWith
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatestplus.junit.JUnitRunner
 

@@ -18,12 +18,9 @@
  */
 package org.beangle.webmvc.api.action
 
-import org.beangle.webmvc.api.view.ForwardActionView
-import org.beangle.webmvc.api.view.RedirectActionView
 import org.beangle.commons.lang.Strings
-import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.api.annotation.ignore
-import org.beangle.webmvc.api.view.PathView
+import org.beangle.webmvc.api.view.{ForwardActionView, PathView, RedirectActionView, View}
 
 trait RouteSupport extends MessageSupport {
 
@@ -73,13 +70,17 @@ trait RouteSupport extends MessageSupport {
   }
 
   @ignore
-  protected final def to(uri: String, params: String): ToURL = {
-    To(uri).params(params)
+  protected final def to(uri: String, params: String): ToURI = {
+    To(uri, params)
   }
 
   @ignore
-  protected final def to(uri: String): ToURL = {
-    To(uri)
+  protected final def to(uri: String): To = {
+    if (uri.startsWith("http:") || uri.startsWith("https:")) {
+      To(uri)
+    } else {
+      To(uri, null)
+    }
   }
 
   @ignore

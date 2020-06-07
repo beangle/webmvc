@@ -23,7 +23,7 @@ import org.beangle.webmvc.config.impl.DefaultActionMappingBuilder
 import org.beangle.webmvc.execution.impl.StaticMethodInvokerBuilder
 import org.beangle.webmvc.execution.testaction.ShowcaseAction
 import org.junit.runner.RunWith
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatestplus.junit.JUnitRunner
 
