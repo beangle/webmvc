@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.net.http.HttpMethods
-import org.beangle.webmvc.api.action.{To, ToClass, ToURL}
+import org.beangle.webmvc.api.action.{To, ToClass}
 import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.{ActionView, ForwardActionView, RedirectActionView, View}
@@ -35,7 +35,7 @@ import org.beangle.webmvc.view.{TypeViewBuilder, ViewRender}
 class ForwardActionViewBuilder extends TypeViewBuilder {
 
   override def build(view: view): View = {
-    new ForwardActionView(To(view.location))
+    new ForwardActionView(To(view.location,null))
   }
 
   override def supportViewType: String = {
@@ -47,7 +47,7 @@ class ForwardActionViewBuilder extends TypeViewBuilder {
 class RedirectActionViewBuilder extends TypeViewBuilder {
 
   override def build(view: view): View = {
-    new RedirectActionView(To(view.location))
+    new RedirectActionView(To(view.location,null))
   }
 
   override def supportViewType: String = {
@@ -80,7 +80,8 @@ class ForwardActionViewRender(val configurer: Configurer) extends ViewRender {
             ua.url
           case None => throw new RuntimeException(s"Cannot find action mapping for ${ca.clazz.getName} ${ca.method}")
         }
-      case ua: ToURL => ua.url
+      case ua: To => ua.url
+      case _ => throw new RuntimeException(s"Unsupported action view ${view.asInstanceOf[ActionView].to}")
     }
   }
 }
@@ -142,7 +143,7 @@ class RedirectActionViewRender(val configurer: Configurer) extends ViewRender {
             ua.url
           case None => throw new RuntimeException(s"Cannot find action mapping for ${ca.clazz.getName} ${ca.method}")
         }
-      case ua: ToURL => ua.url
+      case ua: To => ua.url
     }
   }
 }

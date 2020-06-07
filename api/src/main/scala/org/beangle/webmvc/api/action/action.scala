@@ -39,19 +39,26 @@ object To {
     new ToClass(obj.getClass, method).params(params)
   }
 
-  def apply(uri: String, params: String): ToURL = {
-    apply(uri).params(params)
+  def apply(uri: String, params: String): ToURI = {
+    val index = uri.indexOf('?')
+    val tp = if (-1 == index) new ToURI(uri) else new ToURI(uri.substring(0, index)).params(uri.substring(index + 1))
+    tp.params(params)
   }
 
-  def apply(uri: String): ToURL = {
-    val index = uri.indexOf('?')
-    if (-1 == index) new ToURL(uri) else new ToURL(uri.substring(0, index)).params(uri.substring(index + 1))
+  def apply(url: String): To = {
+    require(url.startsWith("http:") || url.startsWith("https:"))
+    new ToURL(url)
   }
 }
 
 trait To {
+  def url: String
+}
+
+trait ToBuilder extends To {
   var suffix: String = _
   val parameters = new collection.mutable.HashMap[String, String]
+
   def uri: String
 
   def suffix(suffix: String): this.type = {
@@ -111,11 +118,12 @@ trait To {
   }
 }
 
-class ToClass(val clazz: Class[_], val method: String) extends To {
+class ToClass(val clazz: Class[_], val method: String) extends ToBuilder {
   var uri: String = _
 }
 
-class ToStruts(val namespace: String, val name: String, val method: String, val path: String = null) extends To {
+class ToStruts(val namespace: String, val name: String, val method: String, val path: String = null)
+  extends ToBuilder {
   def uri: String = {
     if (null != path) return path
     val buf = new StringBuilder(40)
@@ -128,7 +136,9 @@ class ToStruts(val namespace: String, val name: String, val method: String, val 
   }
 }
 
-class ToURL(val uri: String) extends To {
+class ToURL(val url: String) extends To
+
+class ToURI(val uri: String) extends ToBuilder {
 
   require(null != uri && uri.indexOf('?') == -1)
 

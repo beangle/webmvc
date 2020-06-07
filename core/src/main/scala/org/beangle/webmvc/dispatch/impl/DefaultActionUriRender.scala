@@ -48,7 +48,7 @@ class DefaultActionUriRender extends ActionUriRender {
     val mapping =
       if (uri.charAt(0) == '!') {
         val dotIdx = uriEndIndexOf(uri)
-        params = To(uri).parameters
+        params = To(uri,null).parameters
         router.action.mappings(uri.substring(1, dotIdx))
       } else {
         val namespace = router.action.namespace
@@ -74,7 +74,7 @@ class DefaultActionUriRender extends ActionUriRender {
             if (namespace.endsWith("/")) namespace else namespace + "/"
           }
         val finalURL = goNamespace + (if (index == 0) uri else uri.substring(index))
-        val struts = To(finalURL).toStruts
+        val struts = To(finalURL,null).toStruts
         params = struts.parameters
 
         val actionName = new StringBuilder

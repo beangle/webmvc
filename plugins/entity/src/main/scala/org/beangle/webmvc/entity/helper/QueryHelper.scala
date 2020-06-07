@@ -45,6 +45,7 @@ object QueryHelper extends Logging {
 
   /**
    * 把entity alias的别名的参数转换成条件.<br>
+   *
    * @param entityQuery        查询构建器
    * @param exclusiveAttrNames 以entityQuery中alias开头的属性串
    */
@@ -55,6 +56,7 @@ object QueryHelper extends Logging {
 
   /**
    * 提取中的条件
+   *
    * @param clazz              实体类型
    * @param prefix             参数中的前缀（不包含最后的.）
    * @param exclusiveAttrNames 排除属性列表(prefix.attr1,prefix.attr2)
@@ -87,6 +89,7 @@ object QueryHelper extends Logging {
             val v = Properties.get[Object](entity, attr) match {
               case Some(s) => s
               case None => null
+              case null => null
               case a: Any => a
             }
             v match {
@@ -142,6 +145,7 @@ object QueryHelper extends Logging {
 
   /**
    * 增加日期区间查询条件
+   *
    * @param query   查询构建器
    * @param alias   别名
    * @param attr    时间限制属性
