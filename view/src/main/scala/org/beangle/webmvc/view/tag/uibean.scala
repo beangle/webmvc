@@ -104,6 +104,16 @@ class UIBean(context: ComponentContext) extends Component(context) {
       if (Strings.isEmpty(label)) null else getText(label)
     } else getText(name)
   }
+
+  protected final def addClass(added: String): Unit = {
+    if (null == cssClass) cssClass = added
+    else {
+      val clazzes = Strings.split(cssClass, ' ').map(_.trim)
+      if (!clazzes.contains(added)) {
+        cssClass = added + " " + cssClass
+      }
+    }
+  }
 }
 
 class ClosingUIBean(context: ComponentContext) extends UIBean(context) {
