@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.api.context
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{Instant, LocalDate, LocalDateTime}
 
 import org.beangle.commons.collection.MapConverter
 import org.beangle.commons.conversion.impl.DefaultConversion
@@ -81,6 +81,13 @@ object Params {
 
   def getDateTime(name: String): Option[LocalDateTime] = {
     converter.getDateTime(ActionContext.current.params, name)
+  }
+
+  def getInstant(name: String): Option[Instant] = {
+    converter.get[String](ActionContext.current.params, name, classOf[String]) match {
+      case None => None
+      case Some(v) => converter.convert(v, classOf[Instant])
+    }
   }
 
   def getFloat(name: String): Option[Float] = {

@@ -146,7 +146,7 @@ object QueryHelper extends Logging {
   @deprecated("Using dateBetween")
   def addDateIntervalCondition(query: OqlBuilder[_], alias: String, attr: String, beginOnName: String,
                                endOnName: String): Unit = {
-    dateBetween(query, query.alias, attr, beginOnName, endOnName)
+    dateBetween(query, alias, attr, beginOnName, endOnName)
   }
 
   /**

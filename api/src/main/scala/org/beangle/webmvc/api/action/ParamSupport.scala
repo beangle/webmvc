@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.api.action
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{Instant, LocalDate, LocalDateTime}
 
 import org.beangle.webmvc.api.context.{ActionContext, Params}
 
@@ -73,6 +73,10 @@ trait ParamSupport {
 
   protected final def getDateTime(name: String): Option[LocalDateTime] = {
     Params.getDateTime(name)
+  }
+
+  protected final def getInstant(name: String): Option[Instant] = {
+    Params.getInstant(name)
   }
 
   protected final def getFloat(name: String): Option[Float] = {
