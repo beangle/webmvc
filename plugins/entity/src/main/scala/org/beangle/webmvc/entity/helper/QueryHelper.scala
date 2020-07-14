@@ -19,11 +19,12 @@
 package org.beangle.webmvc.entity.helper
 
 import java.text.{ParseException, SimpleDateFormat}
+import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
 import java.{util => ju}
 
 import org.beangle.commons.bean.Properties
 import org.beangle.commons.collection.page.{Page, PageLimit}
-import org.beangle.commons.lang.reflect.Reflections
+import org.beangle.commons.lang.reflect.{BeanInfos, Reflections}
 import org.beangle.commons.lang.{Numbers, Strings}
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.util.CookieUtils
@@ -45,7 +46,6 @@ object QueryHelper extends Logging {
 
   /**
    * 把entity alias的别名的参数转换成条件.<br>
-   *
    * @param entityQuery        查询构建器
    * @param exclusiveAttrNames 以entityQuery中alias开头的属性串
    */
@@ -56,7 +56,6 @@ object QueryHelper extends Logging {
 
   /**
    * 提取中的条件
-   *
    * @param clazz              实体类型
    * @param prefix             参数中的前缀（不包含最后的.）
    * @param exclusiveAttrNames 排除属性列表(prefix.attr1,prefix.attr2)
@@ -139,49 +138,82 @@ object QueryHelper extends Logging {
     if (pagesize < 1) Page.DefaultPageSize else pagesize
   }
 
-  def addDateIntervalCondition(query: OqlBuilder[_], attr: String, beginOn: String, endOn: String): Unit = {
-    addDateIntervalCondition(query, query.alias, attr, beginOn, endOn)
+  @deprecated("Using dateBetween")
+  def addDateIntervalCondition(query: OqlBuilder[_], attr: String, beginOnName: String, endOnName: String): Unit = {
+    dateBetween(query, query.alias, attr, beginOnName, endOnName)
+  }
+
+  @deprecated("Using dateBetween")
+  def addDateIntervalCondition(query: OqlBuilder[_], alias: String, attr: String, beginOnName: String,
+                               endOnName: String): Unit = {
+    dateBetween(query, alias, attr, beginOnName, endOnName)
   }
 
   /**
    * 增加日期区间查询条件
-   *
-   * @param query   查询构建器
-   * @param alias   别名
-   * @param attr    时间限制属性
-   * @param beginOn 开始的属性名字(全名)
-   * @param endOn   结束的属性名字(全名)
+   * @param query       查询构建器
+   * @param alias       别名
+   * @param attr        时间限制属性
+   * @param beginOnName 开始的属性名字(全名)
+   * @param endOnName   结束的属性名字(全名)
    */
-  def addDateIntervalCondition(query: OqlBuilder[_], alias: String, attr: String, beginOn: String,
-                               endOn: String): Unit = {
-    val stime = Params.get(beginOn)
-    val etime = Params.get(endOn)
+  def dateBetween(query: OqlBuilder[_], alias: String, attr: String, beginOnName: String,
+                  endOnName: String): Unit = {
+    val stime = Params.get(beginOnName)
+    val etime = Params.get(endOnName)
     val df = new SimpleDateFormat("yyyy-MM-dd")
-    val sdate: ju.Date = if (stime.isDefined) try {
-      df.parse(stime.get)
-    } catch {
-      case _: ParseException => null
-    } else null
-    var edate: ju.Date = if (etime.isDefined) try {
-      df.parse(etime.get)
-    } catch {
-      case _: ParseException => null
-    } else null
+    val sdate =
+      if (stime.isDefined) try {
+        Some(df.parse(stime.get))
+      } catch {
+        case _: ParseException => None
+      } else None
+
+    var edate =
+      if (etime.isDefined) try {
+        Some(df.parse(etime.get))
+      } catch {
+        case _: ParseException => None
+      } else None
 
     // 截至日期增加一天
-    if (null != edate) {
+    if (edate.isDefined) {
       val gc = new ju.GregorianCalendar()
-      gc.setTime(edate)
+      gc.setTime(edate.get)
       gc.set(ju.Calendar.DAY_OF_YEAR, gc.get(ju.Calendar.DAY_OF_YEAR) + 1)
-      edate = gc.getTime
+      edate = Some(gc.getTime)
     }
     val objAttr = (if (null == alias) query.alias else alias) + "." + attr
+
+    if (null != query.entityClass) {
+      BeanInfos.get(query.entityClass.getName).getPropertyType(attr) match {
+        case Some(pc) =>
+          if (classOf[LocalDateTime].isAssignableFrom(pc)) {
+            val start = sdate.map(x => LocalDateTime.ofInstant(x.toInstant, ZoneId.systemDefault()))
+            val end = edate.map(x => LocalDateTime.ofInstant(x.toInstant, ZoneId.systemDefault()))
+            between(query, objAttr, start, end)
+          } else if (classOf[Instant].isAssignableFrom(pc)) {
+            between(query, objAttr, sdate.map(_.toInstant), edate.map(_.toInstant))
+          } else if (classOf[LocalDate].isAssignableFrom(pc)) {
+            val start = sdate.map(x => LocalDate.ofInstant(x.toInstant, ZoneId.systemDefault()))
+            val end = edate.map(x => LocalDate.ofInstant(x.toInstant, ZoneId.systemDefault()))
+            between(query, objAttr, start, end)
+          } else {
+            between(query, objAttr, sdate, edate)
+          }
+        case None =>
+          between(query, objAttr, sdate, edate)
+      }
+    }
+  }
+
+  private def between(query: OqlBuilder[_], path: String, sdate: Option[AnyRef], edate: Option[AnyRef]): Unit = {
     if (null != sdate && null == edate) {
-      query.where(objAttr + " >=:sdate", sdate)
+      query.where(path + " >=:sdate", sdate)
     } else if (null != sdate && null != edate) {
-      query.where(objAttr + " >=:sdate and " + objAttr + " <:edate", sdate, edate)
+      query.where(path + " >=:sdate and " + path + " <:edate", sdate, edate)
     } else if (null == sdate && null != edate) {
-      query.where(objAttr + " <:edate", edate)
+      query.where(path + " <:edate", edate)
     }
   }
 }
