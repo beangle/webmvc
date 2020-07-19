@@ -78,7 +78,7 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
   }
 
   protected def handleUnknown(servletPath: String, request: HttpServletRequest, response: HttpServletResponse): Unit = {
-    if (servletPath.isEmpty) {
+    if (servletPath.isEmpty || servletPath == "/") {
       if (null != this.index) {
         response.sendRedirect(request.getContextPath + this.index)
       } else {
