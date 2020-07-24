@@ -111,7 +111,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
                   case _ => defaultView
                 }
               }
-              val mapping = new RouteMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
+              val mapping = RouteMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
               mappings.put(method.getName, mapping)
             } else {
               logger.warn(s"Only support one method, but $mappingMehtods finded")

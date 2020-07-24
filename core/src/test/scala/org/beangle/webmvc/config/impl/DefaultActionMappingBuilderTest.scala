@@ -21,8 +21,8 @@ package org.beangle.webmvc.config.impl
 import org.beangle.webmvc.config.{Profile, ProfileConfig}
 import org.beangle.webmvc.execution.testaction.ShowcaseAction
 import org.junit.runner.RunWith
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
@@ -46,8 +46,8 @@ class DefaultActionMappingBuilderTest extends AnyFunSpec with Matchers {
       assert(mappings.get("param").isDefined)
       assert(mappings.get("cookie").isDefined)
       assert(mappings.get("header").isDefined)
-      assert(mappings("path").name == "path/{id}")
-      assert(mappings("echofloat").name == "echofloat/{num}")
+      assert(mappings("path").url.endsWith("/path/{id}"))
+      assert(mappings("echofloat").url.endsWith("/echofloat/{num}"))
     }
 
     it("build plur mapping") {

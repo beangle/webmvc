@@ -18,6 +18,7 @@
  */
 package org.beangle.webmvc.dispatch.impl
 
+import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.config.Configurer
@@ -45,10 +46,20 @@ class DefaultRouteProvider extends RouteProvider with Logging {
           case (_, mapping) =>
             val handler = new MappingHandler(mapping, invokerBuilder.build(am.action, mapping), viewManager)
             results += new Route(mapping.httpMethod, mapping.url, handler)
-            if (mapping.name == "index") results += new Route(mapping.httpMethod, mapping.action.name, handler)
+            val shortUrl = stripTailIndex(mapping.url)
+            if (shortUrl != mapping.url) {
+              results += new Route(mapping.httpMethod, shortUrl, handler)
+            }
         }
     }
     results
   }
 
+  def stripTailIndex(url: String): String = {
+    if (url.endsWith("/index")) {
+      stripTailIndex(Strings.substringBeforeLast(url, "/index"))
+    } else {
+      url
+    }
+  }
 }
