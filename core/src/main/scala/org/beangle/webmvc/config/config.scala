@@ -21,7 +21,7 @@ package org.beangle.webmvc.config
 import java.lang.reflect.Method
 
 import org.beangle.commons.lang.Strings.{join, split}
-import org.beangle.webmvc.api.action.{To, ToURI}
+import org.beangle.webmvc.api.action.ToURI
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.context.Argument
 
@@ -57,18 +57,23 @@ object RouteMapping {
   import org.beangle.commons.net.http.HttpMethods.{DELETE, HEAD, PUT}
 
   final val BrowserUnsupported = Map((PUT, "put"), (DELETE, "delete"), (HEAD, "head"))
-}
 
-class RouteMapping(val httpMethod: String, val action: ActionMapping, val method: Method, val name: String,
-                   val arguments: Array[Argument], val urlParams: Map[String, Integer], val defaultView: String) {
-
-  def url: String = {
+  private def actionUrl(action: ActionMapping, name: String): String = {
     if ("" == name) {
       action.name
     } else {
       if (action.name.endsWith("/")) action.name + name else action.name + "/" + name
     }
   }
+
+  def apply(httpMethod: String, action: ActionMapping, method: Method, name: String,
+            arguments: Array[Argument], urlParams: Map[String, Integer], defaultView: String): RouteMapping = {
+    new RouteMapping(httpMethod, action, method, actionUrl(action, name), arguments, urlParams, defaultView)
+  }
+}
+
+class RouteMapping private(val httpMethod: String, val action: ActionMapping, val method: Method, val url: String,
+                           val arguments: Array[Argument], val urlParams: Map[String, Integer], val defaultView: String) {
 
   def fill(paramMaps: collection.Map[String, Any]*): String = {
     if (urlParams.isEmpty) return url

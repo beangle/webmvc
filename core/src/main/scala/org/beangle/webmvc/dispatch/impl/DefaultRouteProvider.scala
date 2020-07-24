@@ -18,12 +18,16 @@
  */
 package org.beangle.webmvc.dispatch.impl
 
+import org.beangle.commons.collection.Collections
+import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.dispatch.{Route, RouteProvider}
 import org.beangle.webmvc.execution.{InvokerBuilder, MappingHandler}
 import org.beangle.webmvc.view.impl.ViewManager
+
+import scala.collection.mutable
 
 /**
  * @author chaostone
@@ -45,10 +49,26 @@ class DefaultRouteProvider extends RouteProvider with Logging {
           case (_, mapping) =>
             val handler = new MappingHandler(mapping, invokerBuilder.build(am.action, mapping), viewManager)
             results += new Route(mapping.httpMethod, mapping.url, handler)
-            if (mapping.name == "index") results += new Route(mapping.httpMethod, mapping.action.name, handler)
+            stripTailIndex(mapping.url) foreach { short =>
+              results += new Route(mapping.httpMethod, short, handler)
+            }
         }
     }
     results
   }
 
+  private def stripTailIndex(url: String): collection.Seq[String] = {
+    val seqs = Collections.newBuffer[String]
+    collectShorts(url, seqs)
+    seqs
+  }
+
+  @scala.annotation.tailrec
+  private def collectShorts(url: String, shorts: mutable.Buffer[String]): Unit = {
+    if (url.endsWith("/index")) {
+      val short = Strings.substringBeforeLast(url, "/index")
+      shorts += short
+      collectShorts(short, shorts)
+    }
+  }
 }
