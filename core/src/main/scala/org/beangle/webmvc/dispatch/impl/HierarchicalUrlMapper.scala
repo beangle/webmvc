@@ -69,7 +69,7 @@ class HierarchicalUrlMapper(container: Container) extends RequestMapper with Log
     var bangIdx, dotIdx = -1
     val lastSlashIdx = uri.lastIndexOf('/')
     val sb = new jl.StringBuilder(uri.length + 10)
-    if (lastSlashIdx == uri.length - 1) {
+    if (lastSlashIdx > 0 && lastSlashIdx == uri.length - 1) {
       sb.append(uri).append(DefaultMethod)
     } else {
       var i = lastSlashIdx + 2
@@ -90,9 +90,9 @@ class HierarchicalUrlMapper(container: Container) extends RequestMapper with Log
     val finalUrl = sb.toString
     val directMapping = directMappings.get(finalUrl) match {
       case Some(dm) => dm.get(httpMethod)
-      case None     => None
+      case None => None
     }
-    if (directMapping.isDefined)  directMapping
+    if (directMapping.isDefined) directMapping
     else hierarchicalMappings.resolve(httpMethod, finalUrl)
   }
 
@@ -124,6 +124,7 @@ class HierarchicalMappings {
   val children = new collection.mutable.HashMap[String, HierarchicalMappings]
   val mappings = new collection.mutable.HashMap[String, HttpMethodMappings]
   var tailRecursion = false
+
   def resolve(httpMethod: String, uri: String): Option[HandlerHolder] = {
     val parts = split(uri, '/')
     find(0, parts, this) match {
@@ -171,8 +172,8 @@ class HierarchicalMappings {
 
   private def filterDepth(hm: Option[HttpMethodMappings], depth: Int): Option[HttpMethodMappings] = {
     hm match {
-      case mm @ Some(m) => if (m.matchesDepth(depth)) mm else None
-      case None         => None
+      case mm@Some(m) => if (m.matchesDepth(depth)) mm else None
+      case None => None
     }
   }
 
