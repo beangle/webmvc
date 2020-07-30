@@ -102,7 +102,11 @@ class UIBean(context: ComponentContext) extends Component(context) {
   protected final def processLabel(label: String, name: String): String = {
     if (null != label) {
       if (Strings.isEmpty(label)) null else getText(label)
-    } else getText(name)
+    } else if (this.theme != "html") {
+      getText(name)
+    } else {
+      null
+    }
   }
 
   protected final def addClass(added: String): Unit = {
