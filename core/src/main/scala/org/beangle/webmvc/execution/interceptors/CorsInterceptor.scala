@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.execution.interceptors
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.web.intercept.Interceptor

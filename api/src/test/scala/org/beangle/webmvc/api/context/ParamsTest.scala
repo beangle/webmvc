@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.api.context
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.scalatest.matchers.should.Matchers

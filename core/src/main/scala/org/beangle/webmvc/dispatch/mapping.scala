@@ -25,7 +25,7 @@ class HandlerHolder(val handler: Handler, val params: collection.Map[String, Any
 
 class Route(val httpMethod: String, val url: String, val handler: Handler) {
 
-  def this(url: String, handler: Handler) {
+  def this(url: String, handler: Handler) = {
     this(HttpMethods.GET, url, handler)
   }
 }

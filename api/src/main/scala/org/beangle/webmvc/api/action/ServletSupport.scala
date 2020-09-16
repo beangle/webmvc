@@ -22,7 +22,7 @@ import org.beangle.commons.web.util.{CookieUtils, RequestUtils}
 import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.context.ActionContext
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 trait ServletSupport {
 

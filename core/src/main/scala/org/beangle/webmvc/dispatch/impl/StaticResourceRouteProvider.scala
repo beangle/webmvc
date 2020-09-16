@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.dispatch.impl
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.io.ClasspathResourceLoader
 import org.beangle.commons.lang.Strings.substringAfter

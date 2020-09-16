@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.execution
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.activation.MediaType
 import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.Strings

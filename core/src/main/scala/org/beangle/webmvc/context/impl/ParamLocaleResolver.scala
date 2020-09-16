@@ -24,7 +24,7 @@ import org.beangle.commons.lang.Locales
 import org.beangle.commons.lang.annotation.{ description, spi }
 import org.beangle.webmvc.context.LocaleResolver
 
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import jakarta.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 @description("基于参数的Locale解析器")
 class ParamLocaleResolver extends LocaleResolver {

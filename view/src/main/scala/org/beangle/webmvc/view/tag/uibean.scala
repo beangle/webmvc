@@ -21,7 +21,7 @@ package org.beangle.webmvc.view.tag
 import java.io.Writer
 import java.{util => ju}
 
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.{Chars, Strings}
 import org.beangle.webmvc.api.context.ActionContext

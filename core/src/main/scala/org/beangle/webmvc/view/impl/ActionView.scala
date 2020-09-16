@@ -20,7 +20,7 @@ package org.beangle.webmvc.view.impl
 
 import java.net.URLEncoder
 
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.net.http.HttpMethods

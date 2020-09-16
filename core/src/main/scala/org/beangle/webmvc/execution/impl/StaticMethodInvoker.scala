@@ -22,7 +22,7 @@ import java.lang.reflect.Method
 
 import javassist._
 import javassist.compiler.Javac
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.{ClassLoaders, Primitives}
 import org.beangle.commons.logging.Logging
@@ -104,7 +104,7 @@ class CodeGenerator {
       if (needConverter)
         sb ++= "org.beangle.commons.collection.MapConverter converter = org.beangle.webmvc.api.context.Params$.MODULE$.converter();\n"
       if (needRequest)
-        sb ++= "javax.servlet.http.HttpServletRequest request = context.request();\n"
+        sb ++= "jakarta.servlet.http.HttpServletRequest request = context.request();\n"
       if (needParam)
         sb ++= "scala.collection.immutable.Map params = context.params();\n"
 

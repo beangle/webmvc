@@ -29,7 +29,7 @@ import org.beangle.webmvc.execution.Handler
 import org.beangle.webmvc.view.{ ViewRender, ViewResult }
 
 import freemarker.template.{ SimpleHash, Template }
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 
 /**
  * @author chaostone

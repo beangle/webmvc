@@ -22,7 +22,7 @@ import java.{ util => ju }
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.commons.lang.functor.Predicate
 import org.beangle.webmvc.config.Configurer
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import jakarta.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.execution.Handler
 

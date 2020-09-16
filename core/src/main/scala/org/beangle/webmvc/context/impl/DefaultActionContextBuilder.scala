@@ -23,7 +23,7 @@ import org.beangle.commons.web.multipart.StandardMultipartResolver
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.context.{ ActionContextBuilder, LocaleResolver }
 import org.beangle.webmvc.execution.Handler
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import jakarta.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.webmvc.context.ActionContextInitializer
 import org.beangle.cdi.Container
 

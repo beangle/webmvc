@@ -76,7 +76,7 @@ object DefaultModule extends BindModule {
 class DevModule extends BindModule {
   protected override def binding(): Unit = {
     bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan", "false")
-    bind("mvc.HandlerInvoker.method", classOf[DynaMethodInvokerBuilder]).primary
+    bind("mvc.HandlerInvoker.method", classOf[DynaMethodInvokerBuilder]).primary()
   }
 }
 

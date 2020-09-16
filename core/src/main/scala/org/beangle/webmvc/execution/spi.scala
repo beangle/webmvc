@@ -20,8 +20,8 @@ package org.beangle.webmvc.execution
 
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.config.RouteMapping
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletRequest
 import org.beangle.webmvc.api.context.ActionContext
 
 @spi

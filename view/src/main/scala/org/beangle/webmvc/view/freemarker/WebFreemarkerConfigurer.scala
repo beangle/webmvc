@@ -24,7 +24,7 @@ import org.beangle.commons.lang.Strings.{ split, substringAfter }
 import org.beangle.commons.web.context.ServletContextHolder
 import org.beangle.template.freemarker.{ BeangleClassTemplateLoader, Configurer }
 
-import freemarker.cache.{ FileTemplateLoader, MultiTemplateLoader, TemplateLoader, WebappTemplateLoader }
+import freemarker.cache.{ FileTemplateLoader, MultiTemplateLoader, TemplateLoader }
 import freemarker.template.ObjectWrapper
 
 /**

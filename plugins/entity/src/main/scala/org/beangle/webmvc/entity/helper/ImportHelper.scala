@@ -20,7 +20,7 @@ package org.beangle.webmvc.entity.helper
 
 import java.io.{InputStreamReader, LineNumberReader}
 
-import javax.servlet.http.Part
+import jakarta.servlet.http.Part
 import org.beangle.commons.lang.Strings
 import org.beangle.data.transfer.Format
 import org.beangle.data.transfer.csv.CsvItemReader

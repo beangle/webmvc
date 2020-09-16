@@ -19,7 +19,7 @@
 package org.beangle.webmvc.view.freemarker
 
 import freemarker.template.{ ObjectWrapper, TemplateHashModel, TemplateModel }
-import javax.servlet.ServletContext
+import jakarta.servlet.ServletContext
 
 /**
  * Just replace freemarker ServletContextHashModel

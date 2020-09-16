@@ -20,7 +20,7 @@ package org.beangle.webmvc.api.util
 
 import java.{util => ju}
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.webmvc.api.context.ActionContext
 
 object CacheControl {

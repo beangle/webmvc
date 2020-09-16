@@ -19,7 +19,7 @@
 package org.beangle.webmvc.view.freemarker
 
 import freemarker.template.{ObjectWrapper, SimpleHash, TemplateModel}
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 /**
  * Just extract value from default scope and request(omit session/context)
