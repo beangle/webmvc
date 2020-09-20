@@ -26,7 +26,7 @@ import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.execution.Handler
 
 import _root_.freemarker.template.utility.StringUtil
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 class CoreModels(context: ComponentContext, request: HttpServletRequest) extends AbstractModels(context, request) {
 

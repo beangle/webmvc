@@ -20,7 +20,7 @@ package org.beangle.webmvc.api.context
 
 import java.{util => ju}
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.web.util.CookieUtils
 

@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.view
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.api.annotation.view
 import org.beangle.webmvc.api.context.ActionContext

@@ -144,7 +144,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     val entityType = entityDao.domain.getEntity(entityName).get
     getId(name, entityType.id.clazz) match {
       case Some(entityId) => getModel(entityName, entityId).asInstanceOf[E]
-      case None => populate(entityType.newInstance.asInstanceOf[E], entityType.entityName, name)
+      case None => populate(entityType.newInstance().asInstanceOf[E], entityType.entityName, name)
     }
   }
 

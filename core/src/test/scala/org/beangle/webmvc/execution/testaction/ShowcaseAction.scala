@@ -22,7 +22,7 @@ import org.beangle.webmvc.api.action.RouteSupport
 import org.beangle.webmvc.api.annotation.{ cookie, header, mapping, param, response }
 import org.beangle.webmvc.api.view.{ Status, View }
 
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+import jakarta.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 class ShowcaseAction extends RouteSupport {
 

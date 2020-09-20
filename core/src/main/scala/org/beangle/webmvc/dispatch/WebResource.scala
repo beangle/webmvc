@@ -18,8 +18,8 @@
  */
 package org.beangle.webmvc.dispatch
 
-import javax.servlet.ServletContext
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.ServletContext
+import jakarta.servlet.http.HttpServletResponse
 import org.beangle.commons.activation.MediaTypes
 import org.beangle.commons.io.IOs
 import org.beangle.commons.lang.Strings.{isNotEmpty, substringAfterLast}

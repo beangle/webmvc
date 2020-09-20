@@ -20,7 +20,7 @@ package org.beangle.webmvc.view.tag
 
 import org.beangle.webmvc.view.TagLibrary
 import org.beangle.webmvc.dispatch.ActionUriRender
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 import org.beangle.webmvc.view.impl.IndexableIdGenerator
 
 object AbstractTagLibrary {

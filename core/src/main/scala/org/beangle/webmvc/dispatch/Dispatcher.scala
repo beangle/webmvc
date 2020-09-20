@@ -18,8 +18,8 @@
  */
 package org.beangle.webmvc.dispatch
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import javax.servlet.{GenericServlet, ServletConfig, ServletRequest, ServletResponse}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.{GenericServlet, ServletConfig, ServletRequest, ServletResponse}
 import org.beangle.cdi.Container
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.web.multipart.StandardMultipartResolver
@@ -35,7 +35,7 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
 
   var index: String = _
 
-  def this(container: Container) {
+  def this(container: Container) = {
     this(container.getBean(classOf[Configurer]).get, container.getBean(classOf[RequestMapper]).get, container.getBean(classOf[ActionContextBuilder]).get)
   }
 
