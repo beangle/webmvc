@@ -20,7 +20,7 @@ package org.beangle.webmvc.dispatch
 
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.config.RouteMapping
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 @spi
 trait RequestMapper {

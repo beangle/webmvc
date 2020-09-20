@@ -92,8 +92,8 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
               j += 1
             }
             if (argument == null) {
-              argument = if (parameterTypes(i).getName == "javax.servlet.http.HttpServletRequest") RequestArgument
-              else if (parameterTypes(i).getName == "javax.servlet.http.HttpServletResponse") ResponseArgument
+              argument = if (parameterTypes(i).getName == "jakarta.servlet.http.HttpServletRequest") RequestArgument
+              else if (parameterTypes(i).getName == "jakarta.servlet.http.HttpServletResponse") ResponseArgument
               else {
                 if (i < urlPathNames.length) new ParamArgument(urlPathNames(i), true, DefaultNone.value)
                 else null

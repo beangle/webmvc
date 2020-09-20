@@ -20,7 +20,7 @@ package org.beangle.webmvc.view.tag
 
 import java.{util => ju}
 
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 import org.beangle.webmvc.view.tag.freemarker.TagModel
 
 /**

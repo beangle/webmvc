@@ -25,7 +25,7 @@ import org.beangle.commons.web.util.RequestUtils
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.execution.{ Handler, MappingHandler }
 
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 @description("基于Mvc的请求转换器")
 class MvcRequestConvertor extends RequestConvertor {

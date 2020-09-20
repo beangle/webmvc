@@ -35,7 +35,7 @@ class ResetCallbackWriter extends Writer with TransformControl {
   private var body: StringWriter = _
   private var _afterBody = false
 
-  def this(bean: Component, writer: Writer) {
+  def this(bean: Component, writer: Writer) = {
     this()
     this.bean = bean
     this.writer = writer

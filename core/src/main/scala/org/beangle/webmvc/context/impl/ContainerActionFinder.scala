@@ -30,7 +30,7 @@ class ContainerActionFinder(val container: Container) extends ActionFinder {
 
   override def actions(actionTest: ActionFinder.Test): Seq[Object] = {
     val actions = new collection.mutable.ListBuffer[Object]
-    container.keys() foreach { name =>
+    container.keys foreach { name =>
       val bean: Object = container.getBean(name).get
       if (actionTest.apply(bean.getClass)) actions += bean
     }

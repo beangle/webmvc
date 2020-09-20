@@ -20,7 +20,7 @@ package org.beangle.webmvc.dispatch.impl
 
 import java.{lang => jl}
 
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 import org.beangle.cdi.Container
 import org.beangle.commons.lang.Strings.split
 import org.beangle.commons.lang.annotation.description

@@ -111,7 +111,7 @@ final class Profile(val name: String,
                     val decorators: Array[ViewDecorator],
                     val source: URL) extends Comparable[Profile] {
 
-  def this(name: String, pattern: String) {
+  def this(name: String, pattern: String) = {
     this(name, pattern, "Action", "index", "/", "full", ".ftl", "freemarker", "/", "seo", "", Array(), Array(), null)
   }
 

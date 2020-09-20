@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.api.view
 
-import javax.servlet.http.HttpServletResponse._
+import jakarta.servlet.http.HttpServletResponse._
 
 object Status {
 

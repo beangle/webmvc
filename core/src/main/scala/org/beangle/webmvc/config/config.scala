@@ -83,7 +83,7 @@ class RouteMapping private(val httpMethod: String, val action: ActionMapping, va
         val iter = paramMaps.iterator
         var value: Option[Any] = None
         while (iter.hasNext && value.isEmpty) {
-          value = iter.next.get(name)
+          value = iter.next().get(name)
         }
         parts(index) = String.valueOf(value.get)
     }

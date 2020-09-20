@@ -18,7 +18,7 @@
  */
 package org.beangle.webmvc.spring
 
-import javax.servlet.{MultipartConfigElement, ServletContext}
+import jakarta.servlet.{MultipartConfigElement, ServletContext}
 import org.beangle.cdi.spring.web.ContextListener
 import org.beangle.commons.lang.SystemInfo
 import org.beangle.webmvc.dispatch.Dispatcher
