@@ -186,7 +186,7 @@ object QueryHelper extends Logging {
     val objAttr = (if (null == alias) query.alias else alias) + "." + attr
 
     if (null != query.entityClass) {
-      BeanInfos.get(query.entityClass.getName).getPropertyType(attr) match {
+      BeanInfos.get(query.entityClass).getPropertyType(attr) match {
         case Some(pc) =>
           if (classOf[LocalDateTime].isAssignableFrom(pc)) {
             val start = sdate.map(x => LocalDateTime.ofInstant(x.toInstant, ZoneId.systemDefault()))
