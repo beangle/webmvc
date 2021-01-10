@@ -85,7 +85,7 @@ object Profile extends Logging {
 
     if (infix.isEmpty) return simpleName
     infix.append(simpleName)
-    Range(0, infix.length) foreach { i =>
+    infix.indices foreach { i =>
       if (infix.charAt(i) == '.') infix.setCharAt(i, '/')
     }
     infix.toString

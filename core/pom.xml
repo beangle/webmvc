@@ -16,6 +16,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.beangle.cache</groupId>
+      <artifactId>beangle-cache-api_2.13</artifactId>
+      <version>${beangle.cache.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.beangle.webmvc</groupId>
       <artifactId>beangle-webmvc-api_2.13</artifactId>
     </dependency>

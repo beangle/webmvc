@@ -36,7 +36,7 @@ trait Invoker {
 
 @spi
 trait Handler {
-  def handle(request: HttpServletRequest, response: HttpServletResponse): Any
+  def handle(request: HttpServletRequest, response: HttpServletResponse): Unit
 }
 
 trait ContextAwareHandler extends Handler
@@ -53,3 +53,5 @@ object Handler {
     current.asInstanceOf[MappingHandler].mapping
   }
 }
+
+case class CacheElem(contentType:String,data:Array[Byte])

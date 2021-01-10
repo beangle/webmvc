@@ -18,9 +18,11 @@
  */
 package org.beangle.webmvc.execution
 
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
+
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.activation.MediaType
-import org.beangle.commons.io.Serializer
+import org.beangle.commons.io.{IOs, Serializer}
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.web.intercept.Interceptor
@@ -36,8 +38,19 @@ import org.beangle.webmvc.view.impl.ViewManager
 @description("缺省的调用反应堆")
 class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManager: ViewManager) extends ContextAwareHandler {
 
-  override def handle(request: HttpServletRequest, response: HttpServletResponse): Any = {
+  var responseCache: ResponseCache = EmptyResponseCache
+
+  override def handle(request: HttpServletRequest, response: HttpServletResponse): Unit = {
     val action = mapping.action
+    if (mapping.cacheable) {
+      responseCache.get(request) match {
+        case Some(cr) =>
+          response.setContentType(cr.contentType)
+          response.getOutputStream.write(cr.data)
+          return
+        case None =>
+      }
+    }
     val interceptors = action.profile.interceptors
     val context = ActionContext.current
     val lastInterceptorIndex = preHandle(interceptors, context, request, response)
@@ -96,7 +109,15 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
                 params.put(attr, request.getAttribute(attr))
               }
               params ++= context.params
-              serializer.serialize(result.asInstanceOf[AnyRef], response.getOutputStream, params.toMap)
+              if (Handler.mapping.cacheable) {
+                val os = new ByteArrayOutputStream
+                serializer.serialize(result.asInstanceOf[AnyRef], os, params.toMap)
+                val bytes = os.toByteArray
+                responseCache.put(request, mimeType.toString + "; charset=UTF-8", bytes)
+                response.getOutputStream.write(bytes)
+              } else {
+                serializer.serialize(result.asInstanceOf[AnyRef], response.getOutputStream, params.toMap)
+              }
             }
           }
         }

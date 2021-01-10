@@ -27,10 +27,5 @@
       <groupId>org.beangle.webmvc</groupId>
       <artifactId>beangle-webmvc-core_2.13</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-orm</artifactId>
-      <version>5.3.2</version>
-    </dependency>
   </dependencies>
 </project>
