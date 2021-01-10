@@ -67,7 +67,7 @@ object PopulateHelper {
 
   def populate[T <: Entity[_]](obj: T, entityName: String, name: String): T = {
     val params = Params.sub(name)
-    populator.populate(obj, getType(obj.getClass), params)
+    populator.populate(obj, getType(entityName), params)
     obj
   }
 
