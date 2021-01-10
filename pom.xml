@@ -13,7 +13,7 @@
 
   <properties>
     <beangle.commons.version>5.2.1</beangle.commons.version>
-    <beangle.data.version>5.3.11</beangle.data.version>
+    <beangle.data.version>5.3.17</beangle.data.version>
     <beangle.cdi.version>0.2.4</beangle.cdi.version>
     <beangle.template.version>0.0.29</beangle.template.version>
     <javassist.version>3.27.0-GA</javassist.version>
