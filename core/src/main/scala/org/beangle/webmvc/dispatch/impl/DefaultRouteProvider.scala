@@ -24,7 +24,7 @@ import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.dispatch.{Route, RouteProvider}
-import org.beangle.webmvc.execution.{InvokerBuilder, MappingHandler}
+import org.beangle.webmvc.execution.{EmptyResponseCache, InvokerBuilder, MappingHandler, ResponseCache}
 import org.beangle.webmvc.view.impl.ViewManager
 
 import scala.collection.mutable
@@ -41,13 +41,15 @@ class DefaultRouteProvider extends RouteProvider with Logging {
 
   var viewManager: ViewManager = _
 
+  var responseCache: ResponseCache = EmptyResponseCache
+
   override def routes: Iterable[Route] = {
     val results = new collection.mutable.ArrayBuffer[Route]
     configurer.actionMappings foreach {
       case (_, am) =>
         am.mappings foreach {
           case (_, mapping) =>
-            val handler = new MappingHandler(mapping, invokerBuilder.build(am.action, mapping), viewManager)
+            val handler = new MappingHandler(mapping, invokerBuilder.build(am.action, mapping), viewManager, responseCache)
             results += new Route(mapping.httpMethod, mapping.url, handler)
             stripTailIndex(mapping.url) foreach { short =>
               results += new Route(mapping.httpMethod, short, handler)

@@ -22,6 +22,7 @@ import java.lang.reflect.Method
 
 import org.beangle.commons.lang.Strings.{join, split}
 import org.beangle.webmvc.api.action.ToURI
+import org.beangle.webmvc.api.annotation.response
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.context.Argument
 
@@ -66,14 +67,28 @@ object RouteMapping {
     }
   }
 
+  private def isCacheMethod(method: Method): Boolean = {
+    if (null == method) {
+      false
+    } else {
+      val res = method.getAnnotation(classOf[response])
+      if (null == res) {
+        false
+      } else {
+        res.cacheable()
+      }
+    }
+  }
+
   def apply(httpMethod: String, action: ActionMapping, method: Method, name: String,
             arguments: Array[Argument], urlParams: Map[String, Integer], defaultView: String): RouteMapping = {
-    new RouteMapping(httpMethod, action, method, actionUrl(action, name), arguments, urlParams, defaultView)
+    new RouteMapping(httpMethod, action, method, actionUrl(action, name), arguments, urlParams, defaultView, isCacheMethod(method))
   }
 }
 
 class RouteMapping private(val httpMethod: String, val action: ActionMapping, val method: Method, val url: String,
-                           val arguments: Array[Argument], val urlParams: Map[String, Integer], val defaultView: String) {
+                           val arguments: Array[Argument], val urlParams: Map[String, Integer], val defaultView: String,
+                           val cacheable: Boolean) {
 
   def fill(paramMaps: collection.Map[String, Any]*): String = {
     if (urlParams.isEmpty) return url

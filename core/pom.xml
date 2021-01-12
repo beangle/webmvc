@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.beangle.webmvc</groupId>
     <artifactId>beangle-webmvc-parent_2.13</artifactId>
-    <version>0.3.45</version>
+    <version>0.3.46</version>
   </parent>
   <artifactId>beangle-webmvc-core_2.13</artifactId>
   <packaging>jar</packaging>
@@ -15,6 +15,11 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.beangle.cache</groupId>
+      <artifactId>beangle-cache-api_2.13</artifactId>
+      <version>${beangle.cache.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.beangle.webmvc</groupId>
       <artifactId>beangle-webmvc-api_2.13</artifactId>

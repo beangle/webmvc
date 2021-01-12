@@ -52,7 +52,7 @@ class StaticResourceRouteProvider extends RouteProvider with Initializing {
 
 class StaticResourceHandler(processor: ResourceProcessor) extends Handler {
 
-  def handle(request: HttpServletRequest, response: HttpServletResponse): Any = {
+  override def handle(request: HttpServletRequest, response: HttpServletResponse): Unit = {
     val ctxPath = request.getContextPath
     val uri =
       if (!(ctxPath.equals("") || ctxPath.equals("/"))) substringAfter(request.getRequestURI, ctxPath) else request.getRequestURI
