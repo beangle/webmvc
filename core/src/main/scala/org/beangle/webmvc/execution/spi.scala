@@ -54,4 +54,4 @@ object Handler {
   }
 }
 
-case class CacheElem(contentType:String,data:Array[Byte])
+case class CacheResult(contentType:String, data:Array[Byte])

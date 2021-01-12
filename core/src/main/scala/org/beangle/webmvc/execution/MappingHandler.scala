@@ -18,11 +18,12 @@
  */
 package org.beangle.webmvc.execution
 
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
+import java.io.ByteArrayOutputStream
+import java.util.Calendar
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.activation.MediaType
-import org.beangle.commons.io.{IOs, Serializer}
+import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.web.intercept.Interceptor
@@ -32,21 +33,20 @@ import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.view.impl.ViewManager
 
 /**
- * 缺省的调用反应堆
+ * 缺省的调用处理器
  * 负责调用Action,渲染结果
  */
-@description("缺省的调用反应堆")
-class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManager: ViewManager) extends ContextAwareHandler {
-
-  var responseCache: ResponseCache = EmptyResponseCache
+@description("缺省的调用处理器")
+class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
+                     viewManager: ViewManager,
+                     responseCache: ResponseCache) extends ContextAwareHandler {
 
   override def handle(request: HttpServletRequest, response: HttpServletResponse): Unit = {
     val action = mapping.action
     if (mapping.cacheable) {
       responseCache.get(request) match {
         case Some(cr) =>
-          response.setContentType(cr.contentType)
-          response.getOutputStream.write(cr.data)
+          writeToResponse(response, cr.contentType, cr.data,15)
           return
         case None =>
       }
@@ -101,7 +101,7 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
             }
             if (null != serializer) {
               response.setCharacterEncoding("UTF-8")
-              response.setContentType(mimeType.toString + "; charset=UTF-8")
+              val contentType = mimeType.toString + "; charset=UTF-8"
               val params = new collection.mutable.HashMap[String, Any]
               val enum = request.getAttributeNames
               while (enum.hasMoreElements) {
@@ -109,14 +109,15 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
                 params.put(attr, request.getAttribute(attr))
               }
               params ++= context.params
+              val os = new ByteArrayOutputStream
+              serializer.serialize(result.asInstanceOf[AnyRef], os, params.toMap)
+              val bytes = os.toByteArray
+
               if (Handler.mapping.cacheable) {
-                val os = new ByteArrayOutputStream
-                serializer.serialize(result.asInstanceOf[AnyRef], os, params.toMap)
-                val bytes = os.toByteArray
-                responseCache.put(request, mimeType.toString + "; charset=UTF-8", bytes)
-                response.getOutputStream.write(bytes)
+                responseCache.put(request, contentType, bytes)
+                writeToResponse(response, contentType, bytes,15)
               } else {
-                serializer.serialize(result.asInstanceOf[AnyRef], response.getOutputStream, params.toMap)
+                writeToResponse(response, contentType, bytes,0)
               }
             }
           }
@@ -126,6 +127,17 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker, viewManage
       //FIXME process exception
       postHandle(interceptors, context, lastInterceptorIndex, request, response)
     }
+  }
+
+  private def writeToResponse(res: HttpServletResponse, contentType: String, data: Array[Byte],maxAge:Int): Unit = {
+    res.setContentType(contentType)
+    res.setContentLength(data.length)
+    if(maxAge <= 0){
+      res.addHeader("Cache-Control", "no-store")
+    }else{
+      res.addHeader("Cache-Control", s"public,s-maxage=${maxAge}")
+    }
+    res.getOutputStream.write(data)
   }
 
   def preHandle(interceptors: Array[Interceptor], context: ActionContext, request: HttpServletRequest, response: HttpServletResponse): Int = {
