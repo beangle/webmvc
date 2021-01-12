@@ -67,15 +67,22 @@ object RouteMapping {
     }
   }
 
-  def apply(httpMethod: String, action: ActionMapping, method: Method, name: String,
-            arguments: Array[Argument], urlParams: Map[String, Integer], defaultView: String): RouteMapping = {
-    val res = method.getAnnotation(classOf[response])
-    val cacheable = if (null == res) {
+  private def isCacheMethod(method: Method): Boolean = {
+    if (null == method) {
       false
     } else {
-      res.cacheable()
+      val res = method.getAnnotation(classOf[response])
+      if (null == res) {
+        false
+      } else {
+        res.cacheable()
+      }
     }
-    new RouteMapping(httpMethod, action, method, actionUrl(action, name), arguments, urlParams, defaultView, cacheable)
+  }
+
+  def apply(httpMethod: String, action: ActionMapping, method: Method, name: String,
+            arguments: Array[Argument], urlParams: Map[String, Integer], defaultView: String): RouteMapping = {
+    new RouteMapping(httpMethod, action, method, actionUrl(action, name), arguments, urlParams, defaultView, isCacheMethod(method))
   }
 }
 
