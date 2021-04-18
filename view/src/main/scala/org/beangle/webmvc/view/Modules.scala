@@ -20,6 +20,8 @@ package org.beangle.webmvc.view
 
 import org.beangle.cdi.bind.BindModule
 import org.beangle.commons.text.i18n.{DefaultTextBundleRegistry, DefaultTextFormater}
+import org.beangle.template.freemarker.web.FreemarkerModelBuilder
+import org.beangle.webmvc.DefaultModule.bind
 import org.beangle.webmvc.view.freemarker._
 import org.beangle.webmvc.view.i18n.{ActionTextResourceProvider, TextResourceInitializer}
 import org.beangle.webmvc.view.tag.CoreTagLibrary
@@ -41,11 +43,12 @@ object DefaultModule extends BindModule {
     bind("mvc.ViewResolver.freemarker", classOf[FreemarkerViewResolver])
     bind("mvc.ViewRender.freemarker", classOf[FreemarkerViewRender])
     bind("mvc.TypeViewBuilder.freemarker", classOf[FreemarkerViewBuilder])
+    bind("mvc.TagLibraryProvider.default", classOf[ContainerTaglibraryProvider])
     bind("mvc.FreemarkerModelBuilder", classOf[FreemarkerModelBuilder])
 
     //i18n
     bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
-    bind("mvc.TextFormater.default", classOf[DefaultTextFormater])
+    bind("mvc.TextFormatter.default", classOf[DefaultTextFormater])
     bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", devEnabled)
     bind("mvc.ActionContextInitializer.text", classOf[TextResourceInitializer])
   }

@@ -18,18 +18,18 @@
  */
 package org.beangle.webmvc.view.freemarker
 
-import java.io.StringWriter
-
+import freemarker.template.{SimpleHash, Template}
+import jakarta.servlet.http.HttpServletResponse
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.web.util.RequestUtils
-import org.beangle.template.freemarker.{ Configurer => FreemarkerConfigurer }
+import org.beangle.template.freemarker.web.FreemarkerModelBuilder
+import org.beangle.template.freemarker.{Configurer => FreemarkerConfigurer}
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.execution.Handler
-import org.beangle.webmvc.view.{ ViewRender, ViewResult }
+import org.beangle.webmvc.view.{ViewRender, ViewResult}
 
-import freemarker.template.{ SimpleHash, Template }
-import jakarta.servlet.http.HttpServletResponse
+import java.io.StringWriter
 
 /**
  * @author chaostone
@@ -42,7 +42,7 @@ class FreemarkerViewRender(configurer: FreemarkerConfigurer, modelBuilder: Freem
   def render(view: View, context: ActionContext): Unit = {
     val freemarkerView = view.asInstanceOf[FreemarkerView]
     val template = config.getTemplate(freemarkerView.location, context.locale)
-    val model = modelBuilder.createModel(config.getObjectWrapper, context.request, context.response, context)
+    val model = modelBuilder.createModel(config.getObjectWrapper, context.request, context.response, context.params)
     processTemplate(template, model, context.response)
   }
 
@@ -66,8 +66,8 @@ class FreemarkerViewRender(configurer: FreemarkerConfigurer, modelBuilder: Freem
       response.setContentType(lastResult.contentType)
       lastResult.data match {
         case s: StringBuffer => response.getOutputStream.write(s.toString.getBytes)
-        case b: Array[Byte]  => response.getOutputStream.write(b)
-        case _               =>
+        case b: Array[Byte] => response.getOutputStream.write(b)
+        case _ =>
       }
     }
   }

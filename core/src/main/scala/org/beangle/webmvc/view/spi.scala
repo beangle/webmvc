@@ -26,17 +26,6 @@ import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.config.{Profile, RouteMapping}
 
 @spi
-trait TagLibrary {
-  def getModels(req: HttpServletRequest, res: HttpServletResponse): AnyRef
-}
-
-@spi
-trait TagLibraryProvider {
-
-  def tagLibraries: Map[String, TagLibrary]
-}
-
-@spi
 trait TemplatePathMapper {
   /**
    * viewname -> 页面路径的映射

@@ -18,27 +18,29 @@
  */
 package org.beangle.webmvc.view.freemarker
 
-import freemarker.template.{ObjectWrapper, SimpleHash, TemplateModel}
-import jakarta.servlet.http.HttpServletRequest
+import freemarker.template.TemplateModel
+import org.beangle.commons.collection.IdentityCache
+import org.beangle.template.freemarker.BeangleObjectWrapper
+import org.beangle.webmvc.api.context.ActionContext
 
-/**
- * Just extract value from default scope and request(omit session/context)
- */
-class SimpleHttpScopesHashModel(wrapper: ObjectWrapper, val request: HttpServletRequest) extends SimpleHash(wrapper) {
+class ContextObjectWrapper extends BeangleObjectWrapper {
 
-  override def get(key: String): TemplateModel = {
-    // Lookup in page scope
-    val model = super.get(key)
-    if (model != null) {
-      return model
+  override def wrap(obj: AnyRef): TemplateModel = {
+    if (null == obj) return null
+    //FIXME need ab test
+    val context = ActionContext.current
+    var models = context.stash[IdentityCache[AnyRef, TemplateModel]]("_TemplateModels")
+    if (models == null) {
+      models = new IdentityCache[AnyRef, TemplateModel]
+      context.stash("_TemplateModels", models)
     }
-
-    // Lookup in request scope
-    val obj = request.getAttribute(key)
-    if (obj != null) {
-      return wrap(obj)
+    val model = models.get(obj)
+    if (null == model) {
+      val supModel = super.wrap(obj)
+      models.put(obj, supModel)
+      supModel
+    } else {
+      model
     }
-    // return wrapper's null object (probably null).
-    wrap(null)
   }
 }

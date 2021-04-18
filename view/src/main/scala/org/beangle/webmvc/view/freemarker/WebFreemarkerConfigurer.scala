@@ -18,14 +18,14 @@
  */
 package org.beangle.webmvc.view.freemarker
 
-import java.io.{ File, IOException }
-
-import org.beangle.commons.lang.Strings.{ split, substringAfter }
-import org.beangle.commons.web.context.ServletContextHolder
-import org.beangle.template.freemarker.{ BeangleClassTemplateLoader, Configurer }
-
-import freemarker.cache.{ FileTemplateLoader, MultiTemplateLoader, TemplateLoader }
+import freemarker.cache.{FileTemplateLoader, MultiTemplateLoader, TemplateLoader}
 import freemarker.template.ObjectWrapper
+import org.beangle.commons.lang.Strings.{split, substringAfter}
+import org.beangle.commons.web.context.ServletContextHolder
+import org.beangle.template.freemarker.web.WebappTemplateLoader
+import org.beangle.template.freemarker.{BeangleClassTemplateLoader, Configurer}
+
+import java.io.{File, IOException}
 
 /**
  * @author chaostone
@@ -50,14 +50,14 @@ class WebFreemarkerConfigurer extends Configurer {
         loaders += new WebappTemplateLoader(ServletContextHolder.context, substringAfter(path, "webapp://"))
       } else {
         throw new RuntimeException("templatePath: " + path
-          + " is not well-formed. Use [class://|file://|webapp://] seperated with ,")
+          + " is not well-formed. Use [class://|file://|webapp://|https://] seperated with ,")
       }
     }
     new MultiTemplateLoader(loaders.toArray[TemplateLoader])
   }
 
   override def createObjectWrapper(props: Map[String, String]): ObjectWrapper = {
-    val wrapper = new CachedObjectWrapper()
+    val wrapper = new ContextObjectWrapper()
     wrapper.setUseCache(false)
     wrapper
   }

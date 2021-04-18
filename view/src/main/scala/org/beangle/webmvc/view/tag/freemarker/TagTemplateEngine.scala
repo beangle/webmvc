@@ -24,9 +24,10 @@ import org.beangle.commons.bean.Initializing
 import org.beangle.commons.io.IOs
 import org.beangle.commons.lang.ClassLoaders
 import org.beangle.commons.lang.annotation.description
+import org.beangle.template.freemarker.web.FreemarkerModelBuilder
 import org.beangle.template.freemarker.{AbstractTemplateEngine, BeangleClassTemplateLoader, IncludeIfExistsModel}
 import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.view.freemarker.{CachedObjectWrapper, FreemarkerModelBuilder}
+import org.beangle.webmvc.view.freemarker.ContextObjectWrapper
 
 import java.io.Writer
 import java.{util => ju}
@@ -51,7 +52,7 @@ class TagTemplateEngine(modelBuilder: FreemarkerModelBuilder) extends AbstractTe
   @throws(classOf[Exception])
   override def renderTo(template: String, component: Any, writer: Writer): Unit = {
     val context = ActionContext.current
-    val model = modelBuilder.createModel(config.getObjectWrapper, context.request, context.response, context)
+    val model = modelBuilder.createModel(config.getObjectWrapper, context.request, context.response, context.params)
     val prevTag = model.get("tag")
     model.put("tag", component)
     getTemplate(config, template).process(model, writer)
@@ -73,7 +74,7 @@ class TagTemplateEngine(modelBuilder: FreemarkerModelBuilder) extends AbstractTe
         case (k, v) => config.setSetting(k, v)
       }
     }
-    val wrapper = new CachedObjectWrapper()
+    val wrapper = new ContextObjectWrapper()
     wrapper.setUseCache(false)
     config.setObjectWrapper(wrapper)
     config.setTemplateLoader(new ThemeTemplateLoader(new BeangleClassTemplateLoader()))

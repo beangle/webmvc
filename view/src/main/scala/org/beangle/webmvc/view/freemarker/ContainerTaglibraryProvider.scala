@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beangle.webmvc.view.impl
+package org.beangle.webmvc.view.freemarker
 
 import org.beangle.cdi.{Container, ContainerListener}
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
-import org.beangle.webmvc.view.{TagLibrary, TagLibraryProvider}
+import org.beangle.template.core.{TagLibrary, TagLibraryProvider}
 
 @description("所有标签库提供者")
 class ContainerTaglibraryProvider extends TagLibraryProvider with ContainerListener {
@@ -31,7 +31,7 @@ class ContainerTaglibraryProvider extends TagLibraryProvider with ContainerListe
   override def onStarted(container: Container): Unit = {
     tagLibraries = container.getBeans(classOf[TagLibrary]).map {
       case (key, library) =>
-        val name = key.toString
+        val name = key
         if (name.contains(".")) (Strings.substringAfterLast(name, "."), library) else (name, library)
     }
   }
