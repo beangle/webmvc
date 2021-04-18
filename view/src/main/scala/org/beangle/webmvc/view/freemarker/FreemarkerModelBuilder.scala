@@ -41,7 +41,7 @@ class FreemarkerModelBuilder(tagLibraryProvider: TagLibraryProvider) {
       model.put(KEY_REQUEST_PARAMETERS, new ParametersHashModel(context.params, wrapper))
       tagLibraryProvider.tagLibraries foreach {
         case (tagName, tag) =>
-          model.put(tagName.toString, tag.getModels(request, response))
+          model.put(tagName, tag.getModels(request, response))
       }
       model.put("base", request.getContextPath)
       request.setAttribute(templateModelAttribute, model)

@@ -20,11 +20,11 @@ package org.beangle.webmvc.view.freemarker
 
 import java.io._
 import java.net.{MalformedURLException, URL}
-
 import freemarker.cache.TemplateLoader
 import freemarker.log.Logger
 import freemarker.template.utility.{NullArgumentException, StringUtil}
 import jakarta.servlet.ServletContext
+import org.beangle.template.freemarker.URLTemplateSource
 
 /**
  * A {@link TemplateLoader} that uses streams reachable through {@link ServletContext# getResource ( String )} as its source

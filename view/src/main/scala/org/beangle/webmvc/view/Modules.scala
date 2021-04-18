@@ -23,13 +23,13 @@ import org.beangle.commons.text.i18n.{DefaultTextBundleRegistry, DefaultTextForm
 import org.beangle.webmvc.view.freemarker._
 import org.beangle.webmvc.view.i18n.{ActionTextResourceProvider, TextResourceInitializer}
 import org.beangle.webmvc.view.tag.CoreTagLibrary
-import org.beangle.webmvc.view.tag.freemarker.FreemarkerTemplateEngine
+import org.beangle.webmvc.view.tag.freemarker.TagTemplateEngine
 
 object DefaultModule extends BindModule {
 
   protected override def binding(): Unit = {
     //config
-    bind("mvc.TemplateEngine.freemarker", classOf[FreemarkerTemplateEngine])
+    bind("mvc.TagTemplateEngine.freemarker", classOf[TagTemplateEngine])
       .property("enableCache", !devEnabled)
     bind("mvc.Taglibrary.c", classOf[CoreTagLibrary])
 

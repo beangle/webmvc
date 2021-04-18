@@ -32,7 +32,7 @@ class TagModel(context: ComponentContext, clazz: Class[_ <: Component] = null) e
 
   private val componentCon: Constructor[_ <: Component] = if (clazz != null) clazz.getConstructor(classOf[ComponentContext]) else null
 
-  private val wrapper = context.templateEngine.asInstanceOf[FreemarkerTemplateEngine].config.getObjectWrapper.asInstanceOf[BeansWrapper]
+  private val wrapper = context.templateEngine.asInstanceOf[TagTemplateEngine].config.getObjectWrapper.asInstanceOf[BeansWrapper]
 
   def getWriter(writer: Writer, params: ju.Map[_, _]): Writer = {
     val bean = getBean
