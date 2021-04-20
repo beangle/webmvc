@@ -39,7 +39,7 @@ object Stream {
   def apply(url: URL, contentType: String, displayName: String): StreamView = {
     val fileName = substringAfterLast(url.toString, "/")
     val conn = url.openConnection()
-    new StreamView(conn.getInputStream, contentType, getAttachName(fileName, displayName), None, Some(conn.getLastModified))
+    new StreamView(conn.getInputStream, contentType, getAttachName(fileName, displayName), Some(conn.getLastModified))
   }
 
   def apply(file: File): StreamView = {
@@ -53,11 +53,11 @@ object Stream {
   }
 
   def apply(file: File, contentType: String, displayName: String): StreamView = {
-    new StreamView(new FileInputStream(file), contentType, getAttachName(file.getName, displayName), Some(file.length()), Some(file.lastModified()))
+    new StreamView(new FileInputStream(file), contentType, getAttachName(file.getName, displayName), Some(file.lastModified()))
   }
 
-  def apply(is: InputStream, contentType: String, displayName: String, contentLength: Option[Long], lastModified: Option[Long]): StreamView = {
-    new StreamView(is, contentType, displayName, contentLength, lastModified)
+  def apply(is: InputStream, contentType: String, displayName: String, lastModified: Option[Long]): StreamView = {
+    new StreamView(is, contentType, displayName, lastModified)
   }
 
   private def decideContentType(fileName: String): String = {
@@ -81,6 +81,6 @@ object Stream {
   }
 }
 
-class StreamView(val inputStream: InputStream, val contentType: String, val displayName: String, val contentLength: Option[Long], val lastModified: Option[Long]) extends View {
+class StreamView(val inputStream: InputStream, val contentType: String, val displayName: String, val lastModified: Option[Long]) extends View {
 
 }

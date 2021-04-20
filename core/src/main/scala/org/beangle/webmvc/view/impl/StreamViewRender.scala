@@ -39,13 +39,11 @@ class StreamViewRender extends ViewRender with Logging {
       val response = context.response
       response.setContentType(stream.contentType)
       RequestUtils.setContentDisposition(response, stream.displayName)
-      stream.contentLength foreach { cl =>
-        response.setContentLengthLong(cl)
-      }
       stream.lastModified foreach { lm =>
         response.addDateHeader("Last-Modified", lm)
       }
-      IOs.copy(stream.inputStream, response.getOutputStream)
+      val length = IOs.copy(stream.inputStream, response.getOutputStream)
+      response.setContentLengthLong(length)
     } catch {
       case e: Exception => logger.warn(s"download file error ${stream.displayName}", e)
     } finally {

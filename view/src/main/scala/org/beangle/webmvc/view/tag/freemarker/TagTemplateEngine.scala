@@ -25,7 +25,7 @@ import org.beangle.commons.io.IOs
 import org.beangle.commons.lang.ClassLoaders
 import org.beangle.commons.lang.annotation.description
 import org.beangle.template.freemarker.web.FreemarkerModelBuilder
-import org.beangle.template.freemarker.{AbstractTemplateEngine, BeangleClassTemplateLoader, IncludeIfExistsModel}
+import org.beangle.template.freemarker.{AbstractTemplateEngine, PrefixClassTemplateLoader, IncludeIfExistsModel}
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.view.freemarker.ContextObjectWrapper
 
@@ -77,7 +77,7 @@ class TagTemplateEngine(modelBuilder: FreemarkerModelBuilder) extends AbstractTe
     val wrapper = new ContextObjectWrapper()
     wrapper.setUseCache(false)
     config.setObjectWrapper(wrapper)
-    config.setTemplateLoader(new ThemeTemplateLoader(new BeangleClassTemplateLoader()))
+    config.setTemplateLoader(new ThemeTemplateLoader(new PrefixClassTemplateLoader()))
 
     if (!enableCache) config.setTemplateUpdateDelayMilliseconds(0)
 
