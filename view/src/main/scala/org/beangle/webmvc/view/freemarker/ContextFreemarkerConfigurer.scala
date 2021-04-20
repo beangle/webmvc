@@ -18,21 +18,17 @@
  */
 package org.beangle.webmvc.view.freemarker
 
-import org.beangle.cdi.{Container, ContainerListener}
-import org.beangle.commons.lang.Strings
-import org.beangle.commons.lang.annotation.description
-import org.beangle.template.core.{TagLibrary, TagLibraryProvider}
+import freemarker.template.ObjectWrapper
+import org.beangle.template.freemarker.web.WebConfigurer
 
-@description("所有标签库提供者")
-class ContainerTaglibraryProvider extends TagLibraryProvider with ContainerListener {
+/**
+ * @author chaostone
+ */
+class ContextFreemarkerConfigurer extends WebConfigurer {
 
-  var tagLibraries: Map[String, TagLibrary] = Map.empty
-
-  override def onStarted(container: Container): Unit = {
-    tagLibraries = container.getBeans(classOf[TagLibrary]).map {
-      case (key, library) =>
-        val name = key
-        if (name.contains(".")) (Strings.substringAfterLast(name, "."), library) else (name, library)
-    }
+  override def createObjectWrapper(props: Map[String, String]): ObjectWrapper = {
+    val wrapper = new ContextObjectWrapper()
+    wrapper.setUseCache(false)
+    wrapper
   }
 }

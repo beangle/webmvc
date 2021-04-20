@@ -20,8 +20,8 @@ package org.beangle.webmvc.view
 
 import org.beangle.cdi.bind.BindModule
 import org.beangle.commons.text.i18n.{DefaultTextBundleRegistry, DefaultTextFormater}
+import org.beangle.template.core.ContainerTaglibraryProvider
 import org.beangle.template.freemarker.web.FreemarkerModelBuilder
-import org.beangle.webmvc.DefaultModule.bind
 import org.beangle.webmvc.view.freemarker._
 import org.beangle.webmvc.view.i18n.{ActionTextResourceProvider, TextResourceInitializer}
 import org.beangle.webmvc.view.tag.CoreTagLibrary
@@ -36,7 +36,8 @@ object DefaultModule extends BindModule {
     bind("mvc.Taglibrary.c", classOf[CoreTagLibrary])
 
     //template
-    bind("mvc.FreemarkerConfigurer.default", classOf[WebFreemarkerConfigurer]).property("enableCache", !devEnabled)
+    bind("mvc.FreemarkerConfigurer.default", classOf[ContextFreemarkerConfigurer])
+      .property("enableCache", !devEnabled)
     bind("mvc.TemplateResolver.freemarker", classOf[HierarchicalTemplateResolver])
 
     //view
@@ -49,7 +50,8 @@ object DefaultModule extends BindModule {
     //i18n
     bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
     bind("mvc.TextFormatter.default", classOf[DefaultTextFormater])
-    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry]).property("reloadable", devEnabled)
+    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
+      .property("reloadable", devEnabled)
     bind("mvc.ActionContextInitializer.text", classOf[TextResourceInitializer])
   }
 }
