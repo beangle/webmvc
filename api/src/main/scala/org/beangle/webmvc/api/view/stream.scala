@@ -56,7 +56,7 @@ object Stream {
     new StreamView(new FileInputStream(file), contentType, getAttachName(file.getName, displayName), Some(file.lastModified()))
   }
 
-  def apply(is: InputStream, contentType: String, displayName: String, lastModified: Option[Long]): StreamView = {
+  def apply(is: InputStream, contentType: String, displayName: String, lastModified: Option[Long] = None): StreamView = {
     new StreamView(is, contentType, displayName, lastModified)
   }
 
