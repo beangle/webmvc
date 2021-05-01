@@ -23,7 +23,7 @@ import org.beangle.webmvc.api.action.{ActionSupport, MimeSupport}
 import org.beangle.webmvc.api.annotation.{mapping, param, response}
 import org.beangle.webmvc.api.context.Params
 
-class RestfulService[T <: Entity[_ <: java.io.Serializable]] extends ActionSupport with EntityAction[T] with MimeSupport {
+class RestfulService[T <: Entity[_]] extends ActionSupport with EntityAction[T] with MimeSupport {
 
   @response
   def index(): Any = {

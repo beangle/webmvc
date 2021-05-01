@@ -18,8 +18,8 @@
  */
 package org.beangle.webmvc.view.tag
 
-import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.annotation.description
+import org.beangle.webmvc.api.context.ActionContext
 
 /**
  * Beangle tag Library
@@ -30,7 +30,8 @@ import org.beangle.commons.lang.annotation.description
 @description("beangle webmvc core 标签库")
 class CoreTagLibrary extends AbstractTagLibrary {
 
-  def getModels(req: HttpServletRequest, res: HttpServletResponse): AnyRef = {
+  def models(): AnyRef = {
+    val req = ActionContext.current.request
     new CoreModels(buildComponentContext(req), req)
   }
 

@@ -18,14 +18,14 @@
  */
 package org.beangle.webmvc.view.tag
 
-import java.io.Writer
-import java.{util => ju}
-
 import jakarta.servlet.http.HttpServletRequest
 import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.{Chars, Strings}
 import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.execution.Handler
+
+import java.io.Writer
+import java.{util => ju}
 
 class UIBean(context: ComponentContext) extends Component(context) {
 
@@ -42,11 +42,12 @@ class UIBean(context: ComponentContext) extends Component(context) {
   @throws(classOf[Exception])
   protected final def mergeTemplate(writer: Writer): Unit = {
     val engine = context.templateEngine
-    engine.render(context.theme.getTemplatePath(getClass, engine.suffix), writer, this)
+    engine.renderTo(context.theme.getTemplatePath(getClass, engine.suffix), this, writer)
   }
 
   /**
    * 获得对应的国际化信息
+   *
    * @param text 国际化key
    * @return 当第一个字符不是字母或者不包含.或者包含空格的均返回原有字符串
    */

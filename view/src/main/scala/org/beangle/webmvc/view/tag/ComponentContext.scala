@@ -18,6 +18,7 @@
  */
 package org.beangle.webmvc.view.tag
 
+import org.beangle.template.core.TemplateEngine
 import org.beangle.webmvc.dispatch.ActionUriRender
 import org.beangle.webmvc.view.impl.UIIdGenerator
 

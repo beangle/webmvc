@@ -23,7 +23,7 @@ import java.io.Reader
 import freemarker.cache.TemplateLoader
 import org.beangle.webmvc.view.tag.Themes
 
-class HierarchicalTemplateLoader(loader: TemplateLoader) extends TemplateLoader {
+class ThemeTemplateLoader(loader: TemplateLoader) extends TemplateLoader {
 
   def findTemplateSource(name: String): Object = {
     var resource = name

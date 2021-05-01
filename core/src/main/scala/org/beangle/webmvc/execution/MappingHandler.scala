@@ -18,9 +18,6 @@
  */
 package org.beangle.webmvc.execution
 
-import java.io.ByteArrayOutputStream
-import java.util.Calendar
-
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.activation.MediaType
 import org.beangle.commons.io.Serializer
@@ -31,6 +28,8 @@ import org.beangle.webmvc.api.context.ActionContext
 import org.beangle.webmvc.api.view.{PathView, View}
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.view.impl.ViewManager
+
+import java.io.ByteArrayOutputStream
 
 /**
  * 缺省的调用处理器
@@ -46,7 +45,7 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     if (mapping.cacheable) {
       responseCache.get(request) match {
         case Some(cr) =>
-          writeToResponse(response, cr.contentType, cr.data,15)
+          writeToResponse(response, cr.contentType, cr.data, 15)
           return
         case None =>
       }
@@ -90,7 +89,7 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
             case Some(render) => render.render(view, context)
             case None => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
           }
-        } else {
+        } else if (null != result) {
           if (null != viewManager.contentNegotiationManager) {
             val mimeTypes = viewManager.contentNegotiationManager.resolve(request).iterator
             var serializer: Serializer = null
@@ -115,9 +114,9 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
 
               if (Handler.mapping.cacheable) {
                 responseCache.put(request, contentType, bytes)
-                writeToResponse(response, contentType, bytes,15)
+                writeToResponse(response, contentType, bytes, 15)
               } else {
-                writeToResponse(response, contentType, bytes,0)
+                writeToResponse(response, contentType, bytes, 0)
               }
             }
           }
@@ -129,12 +128,12 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     }
   }
 
-  private def writeToResponse(res: HttpServletResponse, contentType: String, data: Array[Byte],maxAge:Int): Unit = {
+  private def writeToResponse(res: HttpServletResponse, contentType: String, data: Array[Byte], maxAge: Int): Unit = {
     res.setContentType(contentType)
     res.setContentLength(data.length)
-    if(maxAge <= 0){
+    if (maxAge <= 0) {
       res.addHeader("Cache-Control", "no-store")
-    }else{
+    } else {
       res.addHeader("Cache-Control", s"public,s-maxage=${maxAge}")
     }
     res.getOutputStream.write(data)

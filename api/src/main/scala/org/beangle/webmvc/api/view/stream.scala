@@ -18,45 +18,46 @@
  */
 package org.beangle.webmvc.api.view
 
-import java.io.{File, FileInputStream, InputStream}
-import java.net.URL
-
 import org.beangle.commons.activation.MediaTypes
 import org.beangle.commons.lang.Strings.{isBlank, substringAfterLast}
+
+import java.io.{File, FileInputStream, InputStream}
+import java.net.URL
 
 object Stream {
 
   def apply(url: URL): StreamView = {
     val fileName = substringAfterLast(url.toString, "/")
-    new StreamView(url.openStream(), decideContentType(fileName), getAttachName(fileName))
+    apply(url, fileName)
   }
 
   def apply(url: URL, displayName: String): StreamView = {
     val fileName = substringAfterLast(url.toString, "/")
-    new StreamView(url.openStream(), decideContentType(fileName), getAttachName(fileName, displayName))
+    apply(url, decideContentType(fileName), displayName)
   }
 
   def apply(url: URL, contentType: String, displayName: String): StreamView = {
     val fileName = substringAfterLast(url.toString, "/")
-    new StreamView(url.openStream(), contentType, getAttachName(fileName, displayName))
+    val conn = url.openConnection()
+    new StreamView(conn.getInputStream, contentType, getAttachName(fileName, displayName), Some(conn.getLastModified))
   }
 
   def apply(file: File): StreamView = {
     val fileName = file.getName
-    new StreamView(new FileInputStream(file), decideContentType(fileName), getAttachName(fileName))
+    apply(file, decideContentType(fileName), getAttachName(fileName))
   }
 
   def apply(file: File, displayName: String): StreamView = {
     val fileName = file.getName
-    new StreamView(new FileInputStream(file), decideContentType(fileName), getAttachName(fileName, displayName))
-  }
-  
-  def apply(file: File, contentType: String, displayName: String): StreamView = {
-    new StreamView(new FileInputStream(file), contentType, getAttachName(file.getName, displayName))
+    apply(file, decideContentType(fileName), displayName)
   }
 
-  def apply(is: InputStream, contentType: String, displayName: String): StreamView = {
-    new StreamView(is, contentType, displayName)
+  def apply(file: File, contentType: String, displayName: String): StreamView = {
+    new StreamView(new FileInputStream(file), contentType, getAttachName(file.getName, displayName), Some(file.lastModified()))
+  }
+
+  def apply(is: InputStream, contentType: String, displayName: String, lastModified: Option[Long] = None): StreamView = {
+    new StreamView(is, contentType, displayName, lastModified)
   }
 
   private def decideContentType(fileName: String): String = {
@@ -80,6 +81,6 @@ object Stream {
   }
 }
 
-class StreamView(val inputStream: InputStream, val contentType: String, val displayName: String) extends View {
+class StreamView(val inputStream: InputStream, val contentType: String, val displayName: String, val lastModified: Option[Long]) extends View {
 
 }

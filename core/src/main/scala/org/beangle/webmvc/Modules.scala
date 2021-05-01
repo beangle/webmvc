@@ -47,7 +47,6 @@ object DefaultModule extends BindModule {
     bind("mvc.TypeViewBuilder.redirect", classOf[RedirectActionViewBuilder])
     bind("mvc.ViewRender.chain", classOf[ForwardActionViewRender])
     bind("mvc.ViewRender.redirect", classOf[RedirectActionViewRender])
-    bind("mvc.TaglibraryProvider.default", classOf[ContainerTaglibraryProvider])
     bind("mvc.ViewRender.stream", classOf[StreamViewRender])
     bind("mvc.ViewRender.status", classOf[StatusViewRender])
     bind("mvc.ViewManager", classOf[ViewManager])
