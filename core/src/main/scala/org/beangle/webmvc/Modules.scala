@@ -21,11 +21,9 @@ package org.beangle.webmvc
 import org.beangle.cdi.bind.{BindModule, profile}
 import org.beangle.commons.io.DefaultBinarySerializer
 import org.beangle.commons.web.http.accept.ContentNegotiationManagerFactory
-import org.beangle.webmvc.DefaultModule.bind
 import org.beangle.webmvc.config.impl.{DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider}
 import org.beangle.webmvc.context.impl.{ContainerActionFinder, DefaultActionContextBuilder, ParamLocaleResolver}
 import org.beangle.webmvc.dispatch.impl.{DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper}
-import org.beangle.webmvc.execution.DefaultResponseCache
 import org.beangle.webmvc.execution.impl.{DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder}
 import org.beangle.webmvc.execution.interceptors.CorsInterceptor
 import org.beangle.webmvc.view.impl._
