@@ -5,7 +5,7 @@
 
   <bean id="BeanContainer" class="org.beangle.cdi.spring.context.SpringContainer">
     <property name="moduleLocations" value="classpath*:META-INF/beangle/cdi.xml" />
-    <property name="reconfigLocations" value=";classpath*:spring-web-config.xml" />
+    <property name="reconfigUrl" value="${beangle.cdi.reconfig_url}"/>
     <property name="name" value="web" />
   </bean>
 
