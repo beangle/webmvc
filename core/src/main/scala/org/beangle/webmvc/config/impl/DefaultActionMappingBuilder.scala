@@ -18,9 +18,6 @@
  */
 package org.beangle.webmvc.config.impl
 
-import java.lang.annotation.Annotation
-import java.lang.reflect.Method
-
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.Strings.isNotEmpty
 import org.beangle.commons.lang.annotation.description
@@ -35,6 +32,9 @@ import org.beangle.webmvc.context.Argument
 import org.beangle.webmvc.context.impl._
 import org.beangle.webmvc.view.ViewBuilder
 import org.beangle.webmvc.view.impl.ViewManager
+
+import java.lang.annotation.Annotation
+import java.lang.reflect.Method
 
 @description("缺省的ActionMapping构建器")
 class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
@@ -186,11 +186,13 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     val suffix = profile.viewSuffix
     if (suffix.endsWith(".ftl")) {
       ClassInfos.get(clazz).methodList foreach { mi =>
-        val viewName = defaultViewName(mi.method)
-        if (null != viewName && !annotationResults.contains(viewName)) {
-          Strings.split(viewName, ",") foreach { v =>
-            val view = resolver.resolve(clazz, v, suffix)
-            if (null != view) viewMap.put(v, view)
+        if (classOf[View].isAssignableFrom(mi.method.getReturnType)) {
+          val viewName = defaultViewName(mi.method)
+          if (null != viewName && !annotationResults.contains(viewName)) {
+            Strings.split(viewName, ",") foreach { v =>
+              val view = resolver.resolve(clazz, v, suffix)
+              if (null != view) viewMap.put(v, view)
+            }
           }
         }
       }
