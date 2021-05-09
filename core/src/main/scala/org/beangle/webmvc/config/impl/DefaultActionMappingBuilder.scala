@@ -167,7 +167,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     if (methodName.contains("$")) return false
     if (isPropertyMethod(methodName)) return false
     if (null != getAnnotation(method, classOf[ignore])) return false
-    classOf[View].isAssignableFrom(method.getReturnType)
+    null == getAnnotation(method, classOf[response]) && classOf[View].isAssignableFrom(method.getReturnType)
   }
 
   protected def buildViews(clazz: Class[_], profile: Profile): Map[String, View] = {
