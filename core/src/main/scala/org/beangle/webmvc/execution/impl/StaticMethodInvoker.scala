@@ -19,7 +19,6 @@
 package org.beangle.webmvc.execution.impl
 
 import java.lang.reflect.Method
-
 import javassist._
 import javassist.compiler.Javac
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -29,6 +28,7 @@ import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.api.annotation.DefaultNone
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.context.Argument
+import org.beangle.webmvc.execution.invoker.Placeholder
 import org.beangle.webmvc.execution.{Invoker, InvokerBuilder}
 
 @description("句柄构建者，生成静态调用类")
@@ -60,7 +60,7 @@ class StaticMethodInvokerBuilder extends InvokerBuilder with Logging {
     cct.addMethod(handleMethod)
 
     //    cct.debugWriteFile("/tmp/invokers")
-    val maked = cct.toClass()
+    val maked = cct.toClass(classOf[Placeholder])
     cct.detach()
     handlerCount += 1
     maked.getConstructor(action.getClass).newInstance(action).asInstanceOf[Invoker]
