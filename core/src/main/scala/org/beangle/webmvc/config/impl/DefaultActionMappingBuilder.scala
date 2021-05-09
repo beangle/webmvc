@@ -140,11 +140,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     val methodName = method.getName
 
     if (methodName.contains("$")) return false
-    if (methodName == "get" || methodName.startsWith("get") && methodName.length > 3 && Character.isUpperCase(methodName.charAt(3))
-      || methodName.startsWith("is") && methodName.length > 2 && Character.isUpperCase(methodName.charAt(2))) {
-      return false
-    }
-
+    if (isPropertyMethod(methodName)) return false
     //filter ignore
     if (null != getAnnotation(method, classOf[ignore])) return false
 
@@ -158,6 +154,20 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     //filter field
     if (method.getParameterTypes.length == 0 && classInfo.getMethods(methodName + "_$eq").nonEmpty) return false
     true
+  }
+
+  private def isPropertyMethod(name: String): Boolean = {
+    name == "get" ||
+      name.startsWith("get") && name.length > 3 && Character.isUpperCase(name.charAt(3)) ||
+      name.startsWith("is") && name.length > 2 && Character.isUpperCase(name.charAt(2))
+  }
+
+  private def isViewMethod(method: Method): Boolean = {
+    val methodName = method.getName
+    if (methodName.contains("$")) return false
+    if (isPropertyMethod(methodName)) return false
+    if (null != getAnnotation(method, classOf[ignore])) return false
+    classOf[View].isAssignableFrom(method.getReturnType)
   }
 
   protected def buildViews(clazz: Class[_], profile: Profile): Map[String, View] = {
@@ -186,7 +196,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     val suffix = profile.viewSuffix
     if (suffix.endsWith(".ftl")) {
       ClassInfos.get(clazz).methodList foreach { mi =>
-        if (classOf[View].isAssignableFrom(mi.method.getReturnType)) {
+        if (isViewMethod(mi.method)) {
           val viewName = defaultViewName(mi.method)
           if (null != viewName && !annotationResults.contains(viewName)) {
             Strings.split(viewName, ",") foreach { v =>
