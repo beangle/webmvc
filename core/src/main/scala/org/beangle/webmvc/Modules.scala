@@ -1,32 +1,34 @@
 /*
- * Beangle, Agile Development Scaffold and Toolkits.
- *
- * Copyright © 2005, The Beangle Software.
+ * Copyright (C) 2005, The Beangle Software.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.beangle.webmvc
 
 import org.beangle.cdi.bind.{BindModule, profile}
 import org.beangle.commons.io.DefaultBinarySerializer
-import org.beangle.commons.web.http.accept.ContentNegotiationManagerFactory
+import org.beangle.commons.text.i18n.{DefaultTextBundleRegistry, DefaultTextFormater}
+import org.beangle.web.servlet.http.accept.ContentNegotiationManagerFactory
 import org.beangle.webmvc.config.impl.{DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider}
 import org.beangle.webmvc.context.impl.{ContainerActionFinder, DefaultActionContextBuilder, ParamLocaleResolver}
 import org.beangle.webmvc.dispatch.impl.{DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper}
 import org.beangle.webmvc.execution.impl.{DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder}
 import org.beangle.webmvc.execution.interceptors.CorsInterceptor
+import org.beangle.webmvc.view.i18n.{ActionTextResourceProvider, TextResourceInitializer}
 import org.beangle.webmvc.view.impl._
+import org.beangle.webmvc.view.tag.ContainerTagLibraryProvider
 
 object DefaultModule extends BindModule {
 
@@ -82,5 +84,18 @@ class DevModule extends BindModule {
 class SecurityModule extends BindModule {
   protected override def binding(): Unit = {
     bind("web.RequestConvertor.mvc", classOf[MvcRequestConvertor])
+  }
+}
+
+object ViewModule extends BindModule {
+
+  protected override def binding(): Unit = {
+    bind("mvc.TagLibraryProvider.default", classOf[ContainerTagLibraryProvider])
+    //i18n
+    bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
+    bind("mvc.TextFormatter.default", classOf[DefaultTextFormater])
+    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
+      .property("reloadable", devEnabled)
+    bind("mvc.ActionContextInitializer.text", classOf[TextResourceInitializer])
   }
 }

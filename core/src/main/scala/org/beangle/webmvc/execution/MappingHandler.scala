@@ -1,21 +1,20 @@
 /*
- * Beangle, Agile Development Scaffold and Toolkits.
- *
- * Copyright © 2005, The Beangle Software.
+ * Copyright (C) 2005, The Beangle Software.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.beangle.webmvc.execution
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -23,9 +22,9 @@ import org.beangle.commons.activation.MediaType
 import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
-import org.beangle.commons.web.intercept.Interceptor
-import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.api.view.{PathView, View}
+import org.beangle.web.servlet.intercept.Interceptor
+import org.beangle.web.action.context.ActionContext
+import org.beangle.web.action.view.{PathView, View}
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.view.impl.ViewManager
 
@@ -102,9 +101,9 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
               response.setCharacterEncoding("UTF-8")
               val contentType = mimeType.toString + "; charset=UTF-8"
               val params = new collection.mutable.HashMap[String, Any]
-              val enum = request.getAttributeNames
-              while (enum.hasMoreElements) {
-                val attr = enum.nextElement()
+              val enm = request.getAttributeNames
+              while (enm.hasMoreElements) {
+                val attr = enm.nextElement()
                 params.put(attr, request.getAttribute(attr))
               }
               params ++= context.params

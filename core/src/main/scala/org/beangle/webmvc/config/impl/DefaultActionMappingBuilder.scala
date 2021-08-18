@@ -1,32 +1,31 @@
 /*
- * Beangle, Agile Development Scaffold and Toolkits.
- *
- * Copyright © 2005, The Beangle Software.
+ * Copyright (C) 2005, The Beangle Software.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.beangle.webmvc.config.impl
 
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.Strings.isNotEmpty
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.reflect.Reflections.{getAnnotation, isAnnotationPresent}
-import org.beangle.commons.lang.reflect.{ClassInfo, ClassInfos}
+import org.beangle.commons.lang.reflect.{BeanInfo,BeanInfos}
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.net.http.HttpMethods.GET
-import org.beangle.webmvc.api.annotation._
-import org.beangle.webmvc.api.view.View
+import org.beangle.web.action.annotation._
+import org.beangle.web.action.view.View
 import org.beangle.webmvc.config._
 import org.beangle.webmvc.context.Argument
 import org.beangle.webmvc.context.impl._
@@ -51,9 +50,8 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     val views = buildViews(clazz, profile)
     val config = new ActionMapping(bean, clazz, actionName, nameAndspace._2, views, profile)
     val mappings = new collection.mutable.HashMap[String, RouteMapping]
-    val classInfo = ClassInfos.get(clazz)
-    classInfo.methods foreach {
-      case (methodName, minfos) =>
+    val classInfo = BeanInfos.get(clazz)
+    classInfo.methods foreach {  case (methodName, minfos) =>
         val mappingMehtods = new collection.mutable.HashSet[Method]
         minfos.filter(m => isActionMethod(m.method, classInfo)) foreach { methodinfo =>
           val method = methodinfo.method
@@ -136,7 +134,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
    * <li> Cannot be a field get accessor
    * <li> Without @response/@mapping/@params and return  type is not [String/View]
    */
-  private def isActionMethod(method: Method, classInfo: ClassInfo): Boolean = {
+  private def isActionMethod(method: Method, beanInfo: BeanInfo): Boolean = {
     val methodName = method.getName
 
     if (methodName.contains("$")) return false
@@ -152,7 +150,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
       if (returnType == classOf[Unit]) throw new RuntimeException(s"$method return type is unit ")
     }
     //filter field
-    if (method.getParameterTypes.length == 0 && classInfo.getMethods(methodName + "_$eq").nonEmpty) return false
+    if (method.getParameterTypes.length == 0 && beanInfo.getMethods(methodName + "_$eq").nonEmpty) return false
     true
   }
 
@@ -195,7 +193,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     // load ftl convension results
     val suffix = profile.viewSuffix
     if (suffix.endsWith(".ftl")) {
-      ClassInfos.get(clazz).methodList foreach { mi =>
+      BeanInfos.get(clazz).methodList foreach { mi =>
         if (isViewMethod(mi.method)) {
           val viewName = defaultViewName(mi.method)
           if (null != viewName && !annotationResults.contains(viewName)) {
