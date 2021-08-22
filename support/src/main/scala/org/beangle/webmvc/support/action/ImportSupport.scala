@@ -27,7 +27,7 @@ import org.beangle.webmvc.support.helper.{ImportHelper, PopulateHelper}
 trait ImportSupport[T <: Entity[_]] {
   self: EntityAction[T] =>
 
-  def importForm: View = {
+  def importForm(): View = {
     forward("/components/importData/form")
   }
 

@@ -3,7 +3,7 @@ import BuildSettings._
 import sbt.url
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.4.4-SNAPSHOT"
+ThisBuild / version := "0.4.4"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -21,7 +21,7 @@ ThisBuild / developers := List(
   )
 )
 
-ThisBuild / description := "The Beangle Data Library"
+ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 ThisBuild / resolvers += Resolver.mavenLocal
 

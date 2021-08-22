@@ -70,7 +70,7 @@ trait ExportSupport[T <: Entity[_]] {
   }
 
   @ignore
-  def configExport(setting: ExportSetting): Unit = {
+  protected def configExport(setting: ExportSetting): Unit = {
     val selectIds = ids(simpleEntityName, PopulateHelper.getType(entityType).id.clazz)
     val items =
       if (selectIds.isEmpty) {
