@@ -47,7 +47,7 @@ object ImportHelper {
     if (ext != "Xlsx" && ext != "Xls") {
       return null
     }
-    val format = Format.withName(ext)
+    val format = Format.valueOf(ext)
     if (format.equals(Format.Xls) || format.equals(Format.Xlsx)) {
       new ExcelItemReader(is, 0, format)
     } else {

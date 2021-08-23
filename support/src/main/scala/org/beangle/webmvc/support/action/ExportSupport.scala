@@ -47,7 +47,7 @@ trait ExportSupport[T <: Entity[_]] {
         get("properties") foreach (ctx.put("properties", _))
         val format = get("format") match {
           case None => Format.Xlsx
-          case Some(f) => Format.withName(Strings.capitalize(if (f == "xls") "xlsx" else f))
+          case Some(f) => Format.valueOf(Strings.capitalize(if (f == "xls") "xlsx" else f))
         }
         ctx.format = format
       case Some(template) =>
