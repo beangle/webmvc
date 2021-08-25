@@ -39,12 +39,8 @@ val beangle_template_freemarker = "org.beangle.template" %% "beangle-template-fr
 val beangle_web_action = "org.beangle.web" %% "beangle-web-action" % "0.0.1"
 val beangle_web_servlet = "org.beangle.web" %% "beangle-web-servlet" % "0.0.1"
 
-val itextpdf="com.itextpdf" % "itextpdf" % "5.5.11" % "optional"
-val itext_asian="com.itextpdf" % "itext-asian" % "5.2.0" % "optional"
-val itext_xmlworker="com.itextpdf.tool" % "xmlworker" % "5.5.11" % "optional"
-
 val commonDeps = Seq(beangle_commons_core, beangle_commons_text, javassist, logback_classic, logback_core, scalatest, beangle_web_action, beangle_web_servlet)
-val itext =Seq(itextpdf,itext_asian,itext_xmlworker)
+val itext =Seq(itextpdf % "optional",itext_asian % "optional",itext_xmlworker % "optional")
 
 lazy val root = (project in file("."))
   .settings()
