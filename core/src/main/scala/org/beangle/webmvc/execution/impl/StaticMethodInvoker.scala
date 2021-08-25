@@ -1,21 +1,20 @@
 /*
- * Beangle, Agile Development Scaffold and Toolkits.
- *
- * Copyright © 2005, The Beangle Software.
+ * Copyright (C) 2005, The Beangle Software.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.beangle.webmvc.execution.impl
 
 import java.lang.reflect.Method
@@ -25,7 +24,7 @@ import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.{ClassLoaders, Primitives}
 import org.beangle.commons.logging.Logging
-import org.beangle.webmvc.api.annotation.DefaultNone
+import org.beangle.web.action.annotation.DefaultNone
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.context.Argument
 import org.beangle.webmvc.execution.invoker.Placeholder
@@ -100,9 +99,9 @@ class CodeGenerator {
         argu_index += 1
       }
       val sb = new StringBuilder("{\n")
-      sb ++= "org.beangle.webmvc.api.context.ActionContext context = org.beangle.webmvc.api.context.ActionContext$.MODULE$.current();\n"
+      sb ++= "org.beangle.web.action.context.ActionContext context = org.beangle.web.action.context.ActionContext$.MODULE$.current();\n"
       if (needConverter)
-        sb ++= "org.beangle.commons.collection.MapConverter converter = org.beangle.webmvc.api.context.Params$.MODULE$.converter();\n"
+        sb ++= "org.beangle.commons.collection.MapConverter converter = org.beangle.web.action.context.Params$.MODULE$.converter();\n"
       if (needRequest)
         sb ++= "jakarta.servlet.http.HttpServletRequest request = context.request();\n"
       if (needParam)
@@ -131,7 +130,7 @@ class CodeGenerator {
               sb ++= "}\n"
             case "org.beangle.webmvc.context.impl.CookieArgument" =>
               paramAsString = true
-              sb ++= s"String v$pt_index = org.beangle.commons.web.util.CookieUtils.getCookieValue(request,$q${argument.name}$q);\n"
+              sb ++= s"String v$pt_index = org.beangle.web.servlet.util.CookieUtils.getCookieValue(request,$q${argument.name}$q);\n"
               sb ++= s"if(null==v$pt_index){" + handleNone(argument, pt_index, action.getClass, method) + "}\n"
             case "org.beangle.webmvc.context.impl.HeaderArgument" =>
               paramAsString = true

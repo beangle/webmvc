@@ -1,21 +1,20 @@
 /*
- * Beangle, Agile Development Scaffold and Toolkits.
- *
- * Copyright © 2005, The Beangle Software.
+ * Copyright (C) 2005, The Beangle Software.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.beangle.webmvc.view.impl
 
 import java.net.URLEncoder
@@ -24,10 +23,10 @@ import jakarta.servlet.http.HttpServletRequest
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.net.http.HttpMethods
-import org.beangle.webmvc.api.action.{To, ToClass}
-import org.beangle.webmvc.api.annotation.view
-import org.beangle.webmvc.api.context.ActionContext
-import org.beangle.webmvc.api.view.{ActionView, ForwardActionView, RedirectActionView, View}
+import org.beangle.web.action.{To, ToClass}
+import org.beangle.web.action.annotation.view
+import org.beangle.web.action.context.ActionContext
+import org.beangle.web.action.view.{ActionView, ForwardActionView, RedirectActionView, View}
 import org.beangle.webmvc.config.{Configurer, RouteMapping}
 import org.beangle.webmvc.view.{TypeViewBuilder, ViewRender}
 
@@ -81,7 +80,7 @@ class ForwardActionViewRender(val configurer: Configurer) extends ViewRender {
           case None => throw new RuntimeException(s"Cannot find action mapping for ${ca.clazz.getName} ${ca.method}")
         }
       case ua: To => ua.url
-      case _ => throw new RuntimeException(s"Unsupported action view ${view.asInstanceOf[ActionView].to}")
+      case null => throw new RuntimeException(s"Unsupported action view ${view.asInstanceOf[ActionView].to}")
     }
   }
 }
