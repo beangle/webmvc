@@ -23,21 +23,21 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
-val beangle_commons_core = "org.beangle.commons" %% "beangle-commons-core" %  "5.2.5"
-val beangle_commons_text = "org.beangle.commons" %% "beangle-commons-text" %  "5.2.5"
+val beangle_commons_core = "org.beangle.commons" %% "beangle-commons-core" %  "5.2.6"
+val beangle_commons_text = "org.beangle.commons" %% "beangle-commons-text" %  "5.2.6"
 
-val beangle_data_hibernate = "org.beangle.data" %% "beangle-data-hibernate" % "5.3.24"
-val beangle_data_transfer = "org.beangle.data" %% "beangle-data-transfer" % "5.3.24"
+val beangle_data_hibernate = "org.beangle.data" %% "beangle-data-hibernate" % "5.3.25"
+val beangle_data_transfer = "org.beangle.data" %% "beangle-data-transfer" % "5.3.25"
 
-val beangle_cdi_api = "org.beangle.cdi" %% "beangle-cdi-api" % "0.3.2"
-val beangle_cdi_spring = "org.beangle.cdi" %% "beangle-cdi-spring" % "0.3.2"
+val beangle_cdi_api = "org.beangle.cdi" %% "beangle-cdi-api" % "0.3.3"
+val beangle_cdi_spring = "org.beangle.cdi" %% "beangle-cdi-spring" % "0.3.3"
 
-val beangle_cache_api = "org.beangle.cache" %% "beangle-cache-api" % "0.0.23"
-val beangle_template_api = "org.beangle.template" %% "beangle-template-api" % "0.0.33"
-val beangle_template_freemarker = "org.beangle.template" %% "beangle-template-freemarker" % "0.0.33"
+val beangle_cache_api = "org.beangle.cache" %% "beangle-cache-api" % "0.0.24"
+val beangle_template_api = "org.beangle.template" %% "beangle-template-api" % "0.0.34"
+val beangle_template_freemarker = "org.beangle.template" %% "beangle-template-freemarker" % "0.0.34"
 
-val beangle_web_action = "org.beangle.web" %% "beangle-web-action" % "0.0.1"
-val beangle_web_servlet = "org.beangle.web" %% "beangle-web-servlet" % "0.0.1"
+val beangle_web_action = "org.beangle.web" %% "beangle-web-action" % "0.0.2"
+val beangle_web_servlet = "org.beangle.web" %% "beangle-web-servlet" % "0.0.2"
 
 val commonDeps = Seq(beangle_commons_core, beangle_commons_text, javassist, logback_classic, logback_core, scalatest, beangle_web_action, beangle_web_servlet)
 val itext =Seq(itextpdf % "optional",itext_asian % "optional",itext_xmlworker % "optional")
