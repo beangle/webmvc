@@ -46,13 +46,6 @@
       <module name="jquery-ui" js="jquery-ui.min.js" css="jquery-ui.min.css"/>
     </bundle>
 
-    <!--org.beangle.bundles:beangle-bundles-struts2-jquery:3.6.1-->
-    <bundle name="struts2-jquery" version="3.6.1">
-      <module name="sj-jquery-subscribe" js="js/plugins/jquery.subscribe.js"/>
-      <module name="sj-jquery" js="js/struts2/jquery.struts2.js" depends="sj-jquery-subscribe"/>
-      <module name="sj-jquery-ui" js="js/struts2/jquery.ui.struts2.js" depends="sj-jquery"/>
-    </bundle>
-
     <bundle name="bui" version="0.3.2">
       <module name="beangle" js="js/beangle.js"/>
       <module name="bui" js="js/beangle-ui.js"  css="css/beangle-ui.css"/>
@@ -64,7 +57,7 @@
       <module name="jquery-treetable" js="js/jquery-treetable.js" css="css/jquery.treetable.css"/>
     </bundle>
 
-    <bundle name="my97" version="4.8">
+    <bundle name="my97" version="4.8.5">
       <module name="my97" js="WdatePicker.js"/>
     </bundle>
 
