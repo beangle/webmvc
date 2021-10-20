@@ -21,13 +21,14 @@ import org.beangle.cdi.bind.{BindModule, profile}
 import org.beangle.commons.io.DefaultBinarySerializer
 import org.beangle.commons.text.i18n.{DefaultTextBundleRegistry, DefaultTextFormater}
 import org.beangle.web.servlet.http.accept.ContentNegotiationManagerFactory
+import org.beangle.webmvc.DefaultModule.bind
 import org.beangle.webmvc.config.impl.{DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider}
 import org.beangle.webmvc.context.impl.{ContainerActionFinder, DefaultActionContextBuilder, ParamLocaleResolver}
 import org.beangle.webmvc.dispatch.impl.{DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper}
 import org.beangle.webmvc.execution.impl.{DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder}
 import org.beangle.webmvc.execution.interceptors.CorsInterceptor
-import org.beangle.webmvc.view.i18n.{ActionTextResourceProvider, TextResourceInitializer}
-import org.beangle.webmvc.view.impl._
+import org.beangle.webmvc.view.i18n.ActionTextResourceProvider
+import org.beangle.webmvc.view.impl.*
 import org.beangle.webmvc.view.tag.ContainerTagLibraryProvider
 
 object DefaultModule extends BindModule {
@@ -64,7 +65,6 @@ object DefaultModule extends BindModule {
     //context
     bind("mvc.ActionContextBuilder.default", classOf[DefaultActionContextBuilder])
     bind("mvc.ActionFinder.default", classOf[ContainerActionFinder])
-    bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
 
     //content
     bind(classOf[ContentNegotiationManagerFactory]).property("favorPathExtension", "true")
@@ -84,18 +84,5 @@ class DevModule extends BindModule {
 class SecurityModule extends BindModule {
   protected override def binding(): Unit = {
     bind("web.RequestConvertor.mvc", classOf[MvcRequestConvertor])
-  }
-}
-
-object ViewModule extends BindModule {
-
-  protected override def binding(): Unit = {
-    bind("mvc.TagLibraryProvider.default", classOf[ContainerTagLibraryProvider])
-    //i18n
-    bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
-    bind("mvc.TextFormatter.default", classOf[DefaultTextFormater])
-    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
-      .property("reloadable", devEnabled)
-    bind("mvc.ActionContextInitializer.text", classOf[TextResourceInitializer])
   }
 }

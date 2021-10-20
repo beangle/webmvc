@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.beangle.template.api.*
 import org.beangle.web.action.context.ActionContext
 import org.beangle.webmvc.dispatch.ActionUriRender
-import org.beangle.webmvc.execution.Handler
+import org.beangle.webmvc.execution.MappingHandler
 
 trait WebUIBean {
   self: ComponentContextAware =>
@@ -39,7 +39,8 @@ trait WebUIBean {
   }
 
   final def render(uri: String): String = {
-    context.services("uriRender").asInstanceOf[ActionUriRender].render(Handler.mapping, uri)
+    val mapping = ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
+    context.services("uriRender").asInstanceOf[ActionUriRender].render(mapping, uri)
   }
 }
 

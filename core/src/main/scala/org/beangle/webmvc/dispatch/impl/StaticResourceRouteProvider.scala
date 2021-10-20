@@ -26,7 +26,7 @@ import org.beangle.web.servlet.resource.ResourceProcessor
 import org.beangle.web.servlet.resource.filter.HeaderFilter
 import org.beangle.web.servlet.resource.impl.PathResolverImpl
 import org.beangle.webmvc.dispatch.{Route, RouteProvider}
-import org.beangle.webmvc.execution.Handler
+import org.beangle.web.action.execution.Handler
 
 /**
  * @author chaostone

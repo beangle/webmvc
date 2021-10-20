@@ -17,25 +17,22 @@
 
 package org.beangle.webmvc.context.impl
 
-import org.beangle.commons.lang.annotation.{ description, spi }
-import org.beangle.web.servlet.multipart.StandardMultipartResolver
-import org.beangle.web.action.context.ActionContext
-import org.beangle.webmvc.context.{ ActionContextBuilder, LocaleResolver }
-import org.beangle.webmvc.execution.Handler
-import jakarta.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import org.beangle.webmvc.context.ActionContextInitializer
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.cdi.Container
+import org.beangle.commons.lang.annotation.{description, spi}
+import org.beangle.web.action.context.ActionContext
+import org.beangle.web.action.execution.Handler
+import org.beangle.web.servlet.multipart.StandardMultipartResolver
+import org.beangle.webmvc.context.{ActionContextBuilder, ActionContextInitializer}
 
 /**
  * @author chaostone
  */
 @description("缺省的ActionContext构建器")
-class DefaultActionContextBuilder(
-  localeResolver: LocaleResolver,
-  initializers: List[ActionContextInitializer]) extends ActionContextBuilder {
+class DefaultActionContextBuilder(initializers: List[ActionContextInitializer]) extends ActionContextBuilder {
 
   override def build(request: HttpServletRequest, response: HttpServletResponse,
-    handler: Handler, params2: collection.Map[String, Any]): ActionContext = {
+                     handler: Handler, params2: collection.Map[String, Any]): ActionContext = {
 
     val params = new collection.mutable.HashMap[String, Any]
     val paramIter = request.getParameterMap.entrySet.iterator
@@ -52,8 +49,7 @@ class DefaultActionContextBuilder(
 
     params ++= params2
 
-    val context = new ActionContext(request, response, localeResolver.resolve(request), params.toMap)
-    context.stash(Handler.HandlerAttribute, handler)
+    val context = new ActionContext(request, response, handler, params)
     ActionContext.set(context)
     initializers foreach { i => i.init(context) }
     context

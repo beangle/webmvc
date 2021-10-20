@@ -15,12 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.beangle.webmvc.view.i18n
+package org.beangle.webmvc.view.tag
 
 import org.beangle.commons.text.i18n.TextProvider
+import org.beangle.template.api.{ComponentContext, TagLibrary, TemplateEngine}
+import org.beangle.web.action.context.ActionContext
 
-object NullTextProvider extends TextProvider {
-  def apply(key: String): Option[String] = Some(key)
+/**
+ * @author chaostone
+ */
+abstract class AbstractTagLibrary extends TagLibrary {
 
-  def apply(key: String, defaultValue: String, obj: Any*): String = defaultValue
+  protected final def getComponentContext(): ComponentContext = {
+    ActionContext.current.stash[ComponentContext]("_beangle_webmvc_component_context")
+  }
+
 }

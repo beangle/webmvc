@@ -23,7 +23,7 @@ import org.beangle.commons.lang.functor.Predicate
 import org.beangle.webmvc.config.Configurer
 import jakarta.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import org.beangle.web.action.context.ActionContext
-import org.beangle.webmvc.execution.Handler
+import org.beangle.web.action.execution.Handler
 
 @spi
 trait LocaleResolver {

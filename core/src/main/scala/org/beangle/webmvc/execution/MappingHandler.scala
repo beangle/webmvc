@@ -22,9 +22,9 @@ import org.beangle.commons.activation.MediaType
 import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
-import org.beangle.web.servlet.intercept.Interceptor
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.view.{PathView, View}
+import org.beangle.web.servlet.intercept.Interceptor
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.view.impl.ViewManager
 
@@ -55,7 +55,8 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     try {
       if (lastInterceptorIndex == interceptors.length - 1) {
         val result = invoker.invoke()
-        context.flash.writeNextToCookie()
+        val flash = context.getFlash(false)
+        if (null != flash) flash.writeNextToCookie()
         val view = result match {
           case null => null
           case PathView(path) =>
@@ -111,7 +112,7 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
               serializer.serialize(result.asInstanceOf[AnyRef], os, params.toMap)
               val bytes = os.toByteArray
 
-              if (Handler.mapping.cacheable) {
+              if (context.handler.asInstanceOf[MappingHandler].mapping.cacheable) {
                 responseCache.put(request, contentType, bytes)
                 writeToResponse(response, contentType, bytes, 15)
               } else {

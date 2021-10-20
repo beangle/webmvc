@@ -20,7 +20,7 @@ package org.beangle.webmvc.view.tag
 import jakarta.servlet.http.HttpServletRequest
 import org.beangle.commons.collection.page.Page
 import org.beangle.web.action.context.ActionContext
-import org.beangle.webmvc.execution.Handler
+import org.beangle.webmvc.execution.MappingHandler
 import org.beangle.template.api.{AbstractModels, ComponentContext}
 import org.beangle.webmvc.dispatch.ActionUriRender
 import org.beangle.commons.text.escape.JavascriptEscaper
@@ -30,10 +30,9 @@ import java.util as ju
 
 class CoreModels(context: ComponentContext, request: HttpServletRequest) extends AbstractModels(context) {
 
-  val textProvider = ActionContext.current.textProvider.get
-
   def url(url: String): String = {
-    this.context.services("uriRender").asInstanceOf[ActionUriRender].render(Handler.mapping, url)
+    val mapping = ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
+    this.context.services("uriRender").asInstanceOf[ActionUriRender].render(mapping, url)
   }
 
   def base: String = {
@@ -64,15 +63,15 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
   def isPage(data: Object) = data.isInstanceOf[Page[_]]
 
   def text(name: String): String = {
-    textProvider(name, name)
+    context.textProvider(name, name)
   }
 
   def text(name: String, arg0: Object): String = {
-    textProvider(name, name, arg0)
+    context.textProvider(name, name, arg0)
   }
 
   def text(name: String, arg0: Object, arg1: Object): String = {
-    textProvider(name, name, arg0, arg1)
+    context.textProvider(name, name, arg0, arg1)
   }
 
 }

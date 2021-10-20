@@ -29,7 +29,7 @@ import org.beangle.commons.net.http.HttpMethods.{GET, POST}
 import org.beangle.webmvc.config.Path
 import org.beangle.webmvc.config.RouteMapping.{DefaultMethod, MethodParam}
 import org.beangle.webmvc.dispatch.{HandlerHolder, RequestMapper, RouteProvider}
-import org.beangle.webmvc.execution.Handler
+import org.beangle.web.action.execution.Handler
 
 @description("支持层级的url映射器")
 class HierarchicalUrlMapper(container: Container) extends RequestMapper with Logging {
