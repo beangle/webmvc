@@ -6,6 +6,5 @@
   <container name="web">
     <module class="org.beangle.webmvc.DefaultModule"/>
     <module class="org.beangle.webmvc.DevModule"/>
-    <module class="org.beangle.webmvc.ViewModule"/>
   </container>
 </cdi>

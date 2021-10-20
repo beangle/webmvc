@@ -22,7 +22,7 @@ import org.beangle.webmvc.config.RouteMapping
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import org.beangle.web.action.context.ActionContext
-
+import org.beangle.web.action.execution.Handler
 @spi
 trait InvokerBuilder {
   def build(action: AnyRef, mapping: RouteMapping): Invoker
@@ -33,24 +33,4 @@ trait Invoker {
   def invoke(): Any
 }
 
-@spi
-trait Handler {
-  def handle(request: HttpServletRequest, response: HttpServletResponse): Unit
-}
-
 trait ContextAwareHandler extends Handler
-
-object Handler {
-
-  val HandlerAttribute = "_handler_"
-
-  def current: Handler = {
-    ActionContext.current.stash[Handler](HandlerAttribute)
-  }
-
-  def mapping: RouteMapping = {
-    current.asInstanceOf[MappingHandler].mapping
-  }
-}
-
-case class CacheResult(contentType:String, data:Array[Byte])

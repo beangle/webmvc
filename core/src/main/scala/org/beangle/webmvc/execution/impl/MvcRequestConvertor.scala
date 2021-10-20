@@ -22,7 +22,7 @@ import org.beangle.commons.security.{ DefaultRequest, Request }
 import org.beangle.web.servlet.security.RequestConvertor
 import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.web.action.context.ActionContext
-import org.beangle.webmvc.execution.{ Handler, MappingHandler }
+import org.beangle.webmvc.execution.MappingHandler
 
 import jakarta.servlet.http.HttpServletRequest
 
@@ -30,7 +30,7 @@ import jakarta.servlet.http.HttpServletRequest
 class MvcRequestConvertor extends RequestConvertor {
   def convert(request: HttpServletRequest): Request = {
     val context = ActionContext.current
-    Handler.current match {
+    context.handler match {
       case amhandler: MappingHandler =>
         new DefaultRequest(amhandler.mapping.action.name, amhandler.mapping.method.getName)
       case _ =>

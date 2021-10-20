@@ -18,14 +18,14 @@
 package org.beangle.webmvc.support.action
 
 import java.time.Instant
-
 import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.data.model.Entity
 import org.beangle.data.model.pojo.Updated
 import org.beangle.web.action.support.ActionSupport
 import org.beangle.web.action.annotation.{ignore, mapping, param}
+import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.view.View
-import org.beangle.webmvc.execution.Handler
+import org.beangle.webmvc.execution.MappingHandler
 
 abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
   with EntityAction[T] with ExportSupport[T] with ImportSupport[T] {
@@ -115,7 +115,8 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
       saveAndRedirect(entity)
     } catch {
       case e: Exception =>
-        val redirectTo = Handler.mapping.method.getName match {
+        val mapping= ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
+        val redirectTo = mapping.method.getName match {
           case "save"   => "editNew"
           case "update" => "edit"
         }

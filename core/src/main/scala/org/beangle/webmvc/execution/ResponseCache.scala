@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.beangle.cache.{Cache, CacheManager}
 import org.beangle.commons.bean.Initializing
 import org.beangle.web.servlet.url.UrlBuilder
+import org.beangle.web.action.execution.CacheResult
 
 trait ResponseCache{
   def put(request: HttpServletRequest, contentType: String, data: Array[Byte]): Unit

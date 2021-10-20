@@ -17,9 +17,10 @@
 
 package org.beangle.webmvc.view.tag
 
+import org.beangle.commons.lang.Strings
+import org.beangle.template.api.{ClosingUIBean, ComponentContext, UIBean}
 import org.beangle.web.action.context.ActionContext
-import org.beangle.template.api.ComponentContext
-import org.beangle.template.api.{UIBean,ClosingUIBean}
+import org.beangle.web.action.support.MessageSupport
 
 class Messages(context: ComponentContext) extends UIBean(context) {
   var actionMessages: List[String] = _
@@ -27,13 +28,21 @@ class Messages(context: ComponentContext) extends UIBean(context) {
 
   var clear = "true"
 
+  private def fetchMessages(Key: String): List[String] = {
+    val flash = ActionContext.current.getFlash(true)
+    flash.get(Key) match {
+      case Some(m) => Strings.split(m, ';').toList
+      case None => List.empty
+    }
+  }
+
   override def evaluateParams(): Unit = {
-    actionMessages = ActionContext.current.flash.messages
-    actionErrors = ActionContext.current.flash.errors
+    actionMessages = fetchMessages(MessageSupport.MessagesKey)
+    actionErrors = fetchMessages(MessageSupport.ErrorsKey)
 
     if (actionMessages.nonEmpty || actionErrors.nonEmpty) {
       generateIdIfEmpty()
-      if ("true".equals(clear)) ActionContext.current.flash.clear()
+      if ("true".equals(clear)) ActionContext.current.clearFlash()
     }
   }
 

@@ -18,10 +18,9 @@
 package org.beangle.webmvc.view.tag
 
 import org.beangle.commons.lang.annotation.description
-import org.beangle.template.api.{AbstractTagLibrary, IndexableIdGenerator}
+import org.beangle.template.api.TagLibrary
 import org.beangle.web.action.context.ActionContext
 import org.beangle.webmvc.dispatch.ActionUriRender
-import org.beangle.webmvc.view.i18n.NullTextProvider
 
 /**
  * Beangle tag Library
@@ -32,19 +31,9 @@ import org.beangle.webmvc.view.i18n.NullTextProvider
 @description("beangle webui 标签库")
 class BeangleTagLibrary extends AbstractTagLibrary {
 
-  var uriRender: ActionUriRender = _
-
   override def models(): AnyRef = {
-    val req = ActionContext.current.request
-    new BeangleModels(this.buildComponentContext(), req)
+    val ctx = ActionContext.current
+    new BeangleModels(getComponentContext(), ctx.request)
   }
 
-  def buildServices(): Map[String, AnyRef] = {
-    val req = ActionContext.current.request
-    val queryString = req.getQueryString
-    val fullpath = if (null == queryString) req.getRequestURI else req.getRequestURI + queryString
-    val idGenerator = new IndexableIdGenerator(String.valueOf(Math.abs(fullpath.hashCode)))
-    val textProvider = ActionContext.current.textProvider.getOrElse(NullTextProvider)
-    Map("idGenerator" -> idGenerator, "textProvider" -> textProvider, "uriRender" -> uriRender)
-  }
 }

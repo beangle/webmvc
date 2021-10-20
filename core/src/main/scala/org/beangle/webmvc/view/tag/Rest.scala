@@ -19,23 +19,26 @@ package org.beangle.webmvc.view.tag
 
 import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.functor.{NotEmpty, NotZero}
+import org.beangle.web.action.context.ActionContext
 import org.beangle.webmvc.dispatch.ActionUriRender
-import org.beangle.webmvc.execution.Handler
+import org.beangle.webmvc.execution.MappingHandler
 
 class Rest(uriRender: ActionUriRender) {
 
   def save_url(obj: AnyRef): String = {
     val id: Any = Properties.get(obj, "id")
+    val mapping = ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
     if (isValid(id)) {
-      uriRender.render(Handler.mapping, "!update?id=" + id)
+      uriRender.render(mapping, "!update?id=" + id)
     } else {
-      uriRender.render(Handler.mapping, "!save")
+      uriRender.render(mapping, "!save")
     }
   }
 
   def info_url(obj: AnyRef): String = {
     val id: Any = Properties.get(obj, "id")
-    uriRender.render(Handler.mapping, "!info?id=" + id)
+    val mapping = ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
+    uriRender.render(mapping, "!info?id=" + id)
   }
 
   def save(obj: AnyRef): String = {

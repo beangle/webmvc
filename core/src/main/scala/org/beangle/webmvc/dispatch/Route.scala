@@ -17,7 +17,7 @@
 
 package org.beangle.webmvc.dispatch
 
-import org.beangle.webmvc.execution.Handler
+import org.beangle.web.action.execution.Handler
 import org.beangle.commons.net.http.HttpMethods
 
 class HandlerHolder(val handler: Handler, val params: collection.Map[String, Any])

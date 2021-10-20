@@ -25,7 +25,7 @@ import org.beangle.commons.text.i18n.{DefaultTextResource, TextBundleRegistry, T
 import org.beangle.web.action.support.EntitySupport
 import org.beangle.web.action.context.ActionContext
 import org.beangle.commons.text.i18n.TextProvider
-import org.beangle.webmvc.execution.{Handler, MappingHandler}
+import org.beangle.webmvc.execution.MappingHandler
 
 import scala.collection.mutable
 
@@ -40,7 +40,7 @@ class ActionTextResource(context: ActionContext, locale: ju.Locale, registry: Te
   protected override def get(key: String): Option[String] = {
     if (key == null) return Some("")
 
-    val handler = Handler.current
+    val handler = context.handler
     if (!handler.isInstanceOf[MappingHandler]) return None
     val amHander = handler.asInstanceOf[MappingHandler]
     val mapping = amHander.mapping
