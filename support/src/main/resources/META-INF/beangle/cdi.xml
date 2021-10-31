@@ -3,6 +3,5 @@
   <container name="web">
     <module class="org.beangle.webmvc.support.spring.DefaultModule"/>
     <module class="org.beangle.webmvc.support.hibernate.DefaultModule"/>
-
   </container>
 </cdi>
