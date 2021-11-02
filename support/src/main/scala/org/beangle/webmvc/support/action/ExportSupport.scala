@@ -24,7 +24,7 @@ import org.beangle.data.model.Entity
 import org.beangle.data.transfer.Format
 import org.beangle.data.transfer.excel.{ExcelItemWriter, ExcelTemplateExporter, ExcelTemplateWriter}
 import org.beangle.data.transfer.exporter.{ExportSetting, SimpleEntityExporter}
-import org.beangle.web.action.annotation.ignore
+import org.beangle.web.action.annotation.{ignore, mapping}
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.view.{Status, View}
 import org.beangle.webmvc.support.helper.PopulateHelper
@@ -34,6 +34,7 @@ trait ExportSupport[T <: Entity[_]] {
   /**
    * 导出
    */
+  @mapping("export")
   def exportData(): View = {
     val response = ActionContext.current.response
     val setting = new ExportSetting
