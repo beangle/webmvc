@@ -21,8 +21,8 @@ import org.beangle.commons.collection.Collections
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.logging.Logging
+import org.beangle.web.action.dispatch.{Route, RouteProvider}
 import org.beangle.webmvc.config.Configurer
-import org.beangle.webmvc.dispatch.{Route, RouteProvider}
 import org.beangle.webmvc.execution.{EmptyResponseCache, InvokerBuilder, MappingHandler, ResponseCache}
 import org.beangle.webmvc.view.impl.ViewManager
 

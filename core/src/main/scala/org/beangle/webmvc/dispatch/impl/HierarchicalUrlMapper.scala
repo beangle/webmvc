@@ -17,8 +17,7 @@
 
 package org.beangle.webmvc.dispatch.impl
 
-import java.{lang => jl}
-
+import java.lang as jl
 import jakarta.servlet.http.HttpServletRequest
 import org.beangle.cdi.Container
 import org.beangle.commons.lang.Strings.split
@@ -26,13 +25,13 @@ import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.{Arrays, Strings}
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.net.http.HttpMethods.{GET, POST}
-import org.beangle.webmvc.config.Path
+import org.beangle.web.action.dispatch.{HandlerHolder, RequestMapper, RouteProvider}
+import org.beangle.webmvc.config.{Buildable, Path}
 import org.beangle.webmvc.config.RouteMapping.{DefaultMethod, MethodParam}
-import org.beangle.webmvc.dispatch.{HandlerHolder, RequestMapper, RouteProvider}
 import org.beangle.web.action.execution.Handler
 
 @description("支持层级的url映射器")
-class HierarchicalUrlMapper(container: Container) extends RequestMapper with Logging {
+class HierarchicalUrlMapper(container: Container) extends RequestMapper with Buildable with Logging {
 
   private val hierarchicalMappings = new HierarchicalMappings
 
@@ -49,9 +48,9 @@ class HierarchicalUrlMapper(container: Container) extends RequestMapper with Log
 
   def add(httpMethod: String, url: String, handler: Handler): Unit = {
     if (!url.contains("{")) {
-      directMappings.getOrElseUpdate(url, new HttpMethodMappings).methods.put(httpMethod, new HandlerHolder(handler, Map.empty))
+      directMappings.getOrElseUpdate(url, new HttpMethodMappings).methods.put(httpMethod, HandlerHolder(handler, Map.empty))
     } else {
-      hierarchicalMappings.add(httpMethod, url, new HandlerHolder(handler, Path.parse(url)))
+      hierarchicalMappings.add(httpMethod, url, HandlerHolder(handler, Path.parse(url)))
     }
   }
 
@@ -137,7 +136,7 @@ class HierarchicalMappings {
                 if (Path.isTailMatch(v)) params.put(v.substring(0, v.length - 1), Strings.join(Arrays.subarray(parts, k, parts.length), "/"))
                 else params.put(v, parts(k))
             }
-            Some(new HandlerHolder(m.handler, params))
+            Some(HandlerHolder(m.handler, params))
           case None => None
         }
       case None => None

@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.beangle.webmvc.dispatch
+package org.beangle.webmvc.spring
 
-import org.beangle.web.action.execution.Handler
-import org.beangle.commons.net.http.HttpMethods
+import org.beangle.cdi.bind.BindModule
+import org.beangle.web.action.dispatch.StaticResourceRouteProvider
 
-class HandlerHolder(val handler: Handler, val params: collection.Map[String, Any])
-
-class Route(val httpMethod: String, val url: String, val handler: Handler) {
-
-  def this(url: String, handler: Handler) = {
-    this(HttpMethods.GET, url, handler)
+/**
+ * @author chaostone
+ */
+class DefaultModule extends BindModule {
+  protected override def binding(): Unit = {
+    bind(classOf[StaticResourceRouteProvider])
   }
 }

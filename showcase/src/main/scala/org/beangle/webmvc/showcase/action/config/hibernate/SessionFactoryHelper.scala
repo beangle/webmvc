@@ -17,7 +17,7 @@
 
 package org.beangle.webmvc.showcase.action.config.hibernate
 
-import org.beangle.data.hibernate.spring.LocalSessionFactoryBean
+import org.beangle.data.orm.hibernate.spring.LocalSessionFactoryBean
 import org.hibernate.SessionFactory
 import org.beangle.cdi.Container
 

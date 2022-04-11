@@ -21,24 +21,9 @@ import org.beangle.commons.lang.annotation.spi
 import org.beangle.webmvc.config.RouteMapping
 import jakarta.servlet.http.HttpServletRequest
 
-@spi
-trait RequestMapper {
-
-  def resolve(uri: String, request: HttpServletRequest): Option[HandlerHolder]
-
-  def resolve(uri: String): Option[HandlerHolder]
-
-  def build(): Unit
-}
-
 /**
  * Url render
  */
 trait ActionUriRender {
   def render(action: RouteMapping, uri: String): String
-}
-
-@spi
-trait RouteProvider {
-  def routes: Iterable[Route]
 }

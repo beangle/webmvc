@@ -25,13 +25,11 @@ import org.beangle.web.action.annotation.response
 import org.beangle.web.action.view.View
 import org.beangle.webmvc.context.Argument
 
-trait Configurer {
+trait Configurer extends Buildable {
 
   def getProfile(className: String): Profile
 
   def profiles: Seq[Profile]
-
-  def build(): Unit
 
   def actionMappings: Map[String, ActionMapping]
 

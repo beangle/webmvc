@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.beangle.webmvc.support.spring
+package org.beangle.webmvc.spring
 
 import jakarta.servlet.{MultipartConfigElement, ServletContext}
 import org.beangle.commons.lang.SystemInfo
