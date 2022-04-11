@@ -15,16 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.beangle.webmvc.support.spring
+package org.beangle.webmvc.config
 
-import org.beangle.cdi.bind.BindModule
-import org.beangle.webmvc.dispatch.impl.StaticResourceRouteProvider
-
-/**
- * @author chaostone
- */
-class DefaultModule extends BindModule {
-  protected override def binding(): Unit = {
-    bind(classOf[StaticResourceRouteProvider])
+object Buildable {
+  def build(objs: Any*): Unit = {
+    objs foreach { obj =>
+      obj match
+        case b: Buildable => b.build()
+        case _ =>
+    }
   }
+}
+
+trait Buildable {
+
+  def build(): Unit
 }

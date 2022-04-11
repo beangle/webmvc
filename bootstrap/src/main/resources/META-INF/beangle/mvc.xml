@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <mvc>
   <static>
-    <bundle name="jquery" version="3.5.1">
+    <bundle name="jquery" version="3.6.0">
       <module name="jquery" js="jquery.min.js"/>
     </bundle>
 
@@ -14,15 +14,15 @@
       <module name="popperjs" js="dist/umd/popper.js"/>
     </bundle>
 
-    <bundle name="bootstrap" version="4.5.0">
+    <bundle name="bootstrap" version="4.6.1">
       <module name="bootstrap" js="js/bootstrap.bundle.min.js" css="css/bootstrap.min.css"/>
     </bundle>
 
-    <bundle name="AdminLTE" version="3.0.5">
+    <bundle name="AdminLTE" version="3.2.0">
       <module name="adminlte" js="dist/js/adminlte.min.js" css="dist/css/adminlte.min.css"/>
     </bundle>
 
-    <bundle name="font-awesome" version="5.13.0">
+    <bundle name="font-awesome" version="6.1.0">
       <module name="font-awesome" css="css/all.min.css"/>
     </bundle>
 
@@ -41,8 +41,8 @@
       <module name="chosen" js="chosen.jquery.min.js" css="chosen.min.css"/>
     </bundle>
 
-    <!--org.webjars:jquery-ui:1.12.1-->
-    <bundle name="jquery-ui" version="1.12.1">
+    <!--org.webjars:jquery-ui:1.13.1-->
+    <bundle name="jquery-ui" version="1.13.1">
       <module name="jquery-ui" js="jquery-ui.min.js" css="jquery-ui.min.css"/>
     </bundle>
 
@@ -64,5 +64,13 @@
     <bundle name="kindeditor" version="4.1.12">
       <module name="kindeditor" js="kindeditor-all-min,lang/zh-CN.js" css="themes/default/default.css"/>
     </bundle>
+
+    <bundle name="echarts" version="5.3.1">
+      <module name="echarts" js="dist/echarts.min.js"/>
+    </bundle>
+
+    <bundle name="virtual-keyboard" version="1.30.3" />
+    <bundle name="cryptojs" version="3.1.2"/>
+    <bundle name="fullcalendar" version="5.10.2"/>
   </static>
 </mvc>

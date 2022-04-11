@@ -20,7 +20,7 @@ package org.beangle.webmvc.support.hibernate
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.annotation.description
 import org.beangle.web.servlet.intercept.OncePerRequestInterceptor
-import org.beangle.data.hibernate.spring.SessionUtils
+import org.beangle.data.orm.hibernate.spring.SessionUtils
 import org.hibernate.SessionFactory
 
 @description("打开Hibernate Session拦截器")

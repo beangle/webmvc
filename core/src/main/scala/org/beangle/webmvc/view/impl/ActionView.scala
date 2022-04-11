@@ -100,7 +100,7 @@ class RedirectActionViewRender(val configurer: Configurer) extends ViewRender {
     var redirectParams = request.getParameter("_params")
     val ajaxHead = "x-requested-with"
     if (null != redirectParams) {
-      if (redirectParams.charAt(0) == '&') redirectParams = redirectParams.substring(1)
+      if (redirectParams.nonEmpty && redirectParams.charAt(0) == '&') redirectParams = redirectParams.substring(1)
       if (null != request.getHeader(ajaxHead)) redirectParams += "&x-requested-with=1"
     } else if (null != request.getHeader(ajaxHead)) redirectParams = "x-requested-with=1"
 

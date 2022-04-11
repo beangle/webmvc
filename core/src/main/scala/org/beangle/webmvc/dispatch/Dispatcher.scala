@@ -21,9 +21,11 @@ import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import jakarta.servlet.{GenericServlet, ServletConfig, ServletRequest, ServletResponse}
 import org.beangle.cdi.Container
 import org.beangle.commons.logging.Logging
+import org.beangle.web.action.dispatch.RequestMapper
+import org.beangle.web.action.util.Resources
 import org.beangle.web.servlet.multipart.StandardMultipartResolver
 import org.beangle.web.servlet.util.RequestUtils
-import org.beangle.webmvc.config.Configurer
+import org.beangle.webmvc.config.{Buildable, Configurer}
 import org.beangle.webmvc.context.ActionContextBuilder
 import org.beangle.webmvc.execution.ContextAwareHandler
 
@@ -39,11 +41,9 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
   }
 
   override def init(config: ServletConfig): Unit = {
-    //1. build configuration
-    configurer.build()
-    // 2. build mapper
-    mapper.build()
-    // 3. find index
+    //1. build configuration and mapper
+    Buildable.build(configurer,mapper)
+    // 2. find index
     val indexFile =
       List("/index.html", "/index.htm", "/index.jsp") find { i =>
         null != config.getServletContext.getResource(i)
@@ -57,8 +57,8 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
   override def service(req: ServletRequest, res: ServletResponse): Unit = {
     val request = req.asInstanceOf[HttpServletRequest]
     val response = res.asInstanceOf[HttpServletResponse]
-    val servletPath = RequestUtils.getServletPath(request)
     request.setCharacterEncoding(defaultEncoding)
+    val servletPath = RequestUtils.getServletPath(request)
     mapper.resolve(servletPath, request) match {
       case Some(hh) =>
         val handler = hh.handler
@@ -84,7 +84,7 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
         response.setStatus(HttpServletResponse.SC_NOT_FOUND)
       }
     } else {
-      WebResource.deliver(response, request.getServletContext, servletPath)
+      Resources.deliver(response, request.getServletContext, servletPath)
     }
   }
 

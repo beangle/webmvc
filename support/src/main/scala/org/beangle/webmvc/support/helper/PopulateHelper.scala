@@ -23,7 +23,7 @@ import org.beangle.data.model.meta.EntityType
 import org.beangle.data.model.util.ConvertPopulator
 import org.beangle.web.action.context.Params
 import org.beangle.webmvc.context.ContainerHelper
-import org.beangle.data.hibernate.DomainFactory
+import org.beangle.data.orm.hibernate.DomainFactory
 
 object PopulateHelper {
 
