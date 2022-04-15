@@ -71,6 +71,9 @@
 
     <bundle name="virtual-keyboard" version="1.30.3" />
     <bundle name="cryptojs" version="3.1.2"/>
-    <bundle name="fullcalendar" version="5.10.2"/>
+    <bundle name="fullcalendar" version="5.10.2">
+      <module name="fullcalendar" js="main.min.js" css="main.min.css"/>
+      <module name="fullcalendar-locale" js="locales-all.min.js" depends="fullcalendar"/>
+    </bundle>
   </static>
 </mvc>
