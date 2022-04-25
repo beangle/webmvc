@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <cdi>
-  <container name="web">
+  <container>
     <module class="org.beangle.webmvc.showcase.action.config.DefaultModule"/>
     <module class="org.beangle.webmvc.showcase.action.config.hibernate.DefaultModule"/>
   </container>
