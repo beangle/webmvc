@@ -29,8 +29,7 @@ class Initializer extends org.beangle.web.servlet.init.Initializer {
     initStaticBase(sc)
 
     val ctxListener = new ContextListener
-    ctxListener.childContextConfigLocation = "WebApplicationContext:Action@classpath:spring-web-context.xml"
-    val container = ctxListener.loadContainer()
+    val container = ctxListener.loadContainer(sc)
     addListener(ctxListener)
 
     val action = sc.addServlet("Action", new Dispatcher(container))

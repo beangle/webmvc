@@ -20,9 +20,8 @@ package org.beangle.webmvc.showcase.action.config
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.web.action.support.ActionSupport
-import org.beangle.webmvc.context.ContainerHelper
 import org.beangle.web.action.view.View
-
+import org.beangle.cdi.Container
 /**
  * @author chaostone
  */
@@ -30,7 +29,7 @@ import org.beangle.web.action.view.View
 class ContainerAction extends ActionSupport {
 
   def index(): View = {
-    var container = ContainerHelper.get
+    var container = Container.get("web")
     val parent = get("parent", "")
     if (Strings.isNotEmpty(parent)) container = container.parent
     put("beanNames", container.keys)

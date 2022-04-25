@@ -17,17 +17,17 @@
 
 package org.beangle.webmvc.support.helper
 
+import org.beangle.cdi.Container
 import org.beangle.commons.lang.Strings
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.EntityType
 import org.beangle.data.model.util.ConvertPopulator
-import org.beangle.web.action.context.Params
-import org.beangle.webmvc.context.ContainerHelper
 import org.beangle.data.orm.hibernate.DomainFactory
+import org.beangle.web.action.context.Params
 
 object PopulateHelper {
 
-  private val domain = ContainerHelper.get.getBean(classOf[DomainFactory]).head.result
+  private val domain = Container.get("web").getBean(classOf[DomainFactory]).head.result
 
   var populator = new ConvertPopulator
 
@@ -38,6 +38,7 @@ object PopulateHelper {
   final def getType(className: String): EntityType = {
     domain.getEntity(className).get
   }
+
   /**
    * 将request中的参数设置到clazz对应的bean。
    */
