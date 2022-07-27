@@ -26,6 +26,7 @@ import org.beangle.web.action.annotation.{ignore, mapping, param}
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.view.View
 import org.beangle.webmvc.execution.MappingHandler
+import org.beangle.webmvc.support.helper.PopulateHelper
 
 abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
   with EntityAction[T] with ExportSupport[T] with ImportSupport[T] {
@@ -42,7 +43,8 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
 
   @mapping(value = "{id}")
   def info(@param("id") id: String): View = {
-    put(simpleEntityName, getModel[T](entityName, convertId(id)))
+    val entityType = entityDao.domain.getEntity(entityName).get
+    put(simpleEntityName, getModel[T](entityType, convertId(entityType,id)))
     forward()
   }
 
@@ -66,10 +68,11 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
 
   @mapping(method = "delete")
   def remove(): View = {
-    val idclass = entityDao.domain.getEntity(entityName).get.id.clazz
+    val entityType = entityDao.domain.getEntity(entityName).get
+    val idclass = entityType.id.clazz
     val entities: Seq[T] = getId(simpleEntityName, idclass) match {
-      case Some(entityId) => List(getModel[T](entityName, entityId))
-      case None           => getModels[T](entityName, ids(simpleEntityName, idclass))
+      case Some(entityId) => List(getModel[T](entityType, entityId))
+      case None           => getModels[T](entityType, ids(simpleEntityName, idclass))
     }
     try {
       removeAndRedirect(entities)
@@ -83,7 +86,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
 
   @mapping(value = "{id}", method = "put")
   def update(@param("id") id: String): View = {
-    val entity = populate(getModel(id), entityName, simpleEntityName)
+    val entity = PopulateHelper.populate(getModel(id), entityDao.domain.getEntity(entityName).get, simpleEntityName)
     persist(entity)
   }
 
