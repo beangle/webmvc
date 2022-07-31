@@ -22,6 +22,7 @@ import org.beangle.commons.lang.Strings
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.EntityType
 import org.beangle.data.model.util.ConvertPopulator
+import org.beangle.data.orm.Jpas
 import org.beangle.data.orm.hibernate.DomainFactory
 import org.beangle.web.action.context.Params
 
@@ -35,6 +36,10 @@ object PopulateHelper {
     domain.getEntity(clazz).get
   }
 
+  final def getType(obj: Entity[_]): EntityType = {
+    domain.getEntity(Jpas.entityClass(obj)).get
+  }
+
   final def getType(className: String): EntityType = {
     domain.getEntity(className).get
   }
@@ -44,40 +49,34 @@ object PopulateHelper {
    */
   def populate[T <: Entity[_]](clazz: Class[T], name: String): T = {
     val etype = getType(clazz)
-    populate(etype.newInstance().asInstanceOf[T], etype.entityName, name)
+    populate(etype.newInstance().asInstanceOf[T], etype, name)
   }
 
   def populate[T <: Entity[_]](clazz: Class[T]): T = {
     val etype = getType(clazz)
-    populate(etype.newInstance().asInstanceOf[T], etype.entityName, shortName(etype.entityName))
+    populate(etype.newInstance().asInstanceOf[T], etype, shortName(etype.entityName))
   }
 
-  def populate(entityName: String): Object = {
-    val etype = getType(Class.forName(entityName))
-    populate(etype.newInstance().asInstanceOf[Entity[_]], etype.entityName, shortName(etype.entityName))
-  }
-
-  def populate(entityName: String, name: String): Object = {
-    val etype = getType(Class.forName(entityName))
+  def populate(entityType: EntityType, name: String): Object = {
     val params = Params.sub(name)
-    val entity = etype.newInstance().asInstanceOf[Entity[_]]
-    populator.populate(entity, etype, params)
+    val entity = entityType.newInstance().asInstanceOf[Entity[_]]
+    populator.populate(entity, entityType, params)
     entity
   }
 
-  def populate[T <: Entity[_]](obj: T, entityName: String, name: String): T = {
+  def populate[T <: Entity[_]](obj: T, entityType: EntityType, name: String): T = {
     val params = Params.sub(name)
-    populator.populate(obj, getType(entityName), params)
+    populator.populate(obj, entityType, params)
     obj
   }
 
   def populate[T <: Entity[_]](obj: T, params: collection.Map[String, Any]): T = {
-    populator.populate(obj, getType(obj.getClass), params)
+    populator.populate(obj, getType(obj), params)
     obj
   }
 
-  def populate[T <: Entity[_]](obj: T, entityName: String, params: collection.Map[String, Any]): T = {
-    populator.populate(obj, getType(entityName), params)
+  def populate[T <: Entity[_]](obj: T, entityType: EntityType, params: collection.Map[String, Any]): T = {
+    populator.populate(obj, entityType, params)
     obj
   }
 
