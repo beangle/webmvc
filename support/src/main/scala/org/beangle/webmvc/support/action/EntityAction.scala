@@ -34,10 +34,10 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   var entityDao: EntityDao = _
   var config: PropertyConfig = _
 
-
   protected final def populate[E <: Entity[_]](clazz: Class[E]): E = {
     PopulateHelper.populate(clazz)
   }
+
   /**
    * 将request中的参数设置到clazz对应的bean。
    */
@@ -55,14 +55,6 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   // query------------------------------------------------------
-  protected final def getPageIndex: Int = {
-    QueryHelper.pageIndex
-  }
-
-  protected final def getPageSize: Int = {
-    QueryHelper.pageSize
-  }
-
   /**
    * 从request的参数或者cookie中(参数优先)取得分页信息
    */
@@ -71,11 +63,11 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   protected final def populateConditions(builder: OqlBuilder[_]): Unit = {
-    QueryHelper.populateConditions(builder)
+    QueryHelper.populate(builder)
   }
 
   protected final def populateConditions(builder: OqlBuilder[_], exclusiveAttrNames: String): Unit = {
-    QueryHelper.populateConditions(builder, exclusiveAttrNames)
+    QueryHelper.populate(builder, exclusiveAttrNames)
   }
 
   // CURD----------------------------------------
@@ -99,9 +91,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     val alias = simpleEntityName
     val builder: OqlBuilder[T] = OqlBuilder.from(entityName, alias)
     populateConditions(builder)
-    get(Order.OrderStr) foreach { orderClause =>
-      builder.orderBy(orderClause)
-    }
+    QueryHelper.sort(builder)
     builder.tailOrder(alias + ".id")
     builder.limit(getPageLimit)
   }

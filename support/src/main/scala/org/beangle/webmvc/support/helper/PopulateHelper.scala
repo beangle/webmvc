@@ -22,9 +22,9 @@ import org.beangle.commons.lang.Strings
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.EntityType
 import org.beangle.data.model.util.ConvertPopulator
+import org.beangle.data.orm.Jpas
 import org.beangle.data.orm.hibernate.DomainFactory
 import org.beangle.web.action.context.Params
-import org.hibernate.proxy.HibernateProxy
 
 object PopulateHelper {
 
@@ -37,10 +37,7 @@ object PopulateHelper {
   }
 
   final def getType(obj: Entity[_]): EntityType = {
-    obj match {
-      case a: HibernateProxy => domain.getEntity(a.getHibernateLazyInitializer.getEntityName).get
-      case _ => domain.getEntity(obj.getClass).get
-    }
+    domain.getEntity(Jpas.entityClass(obj)).get
   }
 
   final def getType(className: String): EntityType = {

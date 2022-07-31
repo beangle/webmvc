@@ -39,10 +39,13 @@ ${tag.body}
     { method:"GET",
       url:"${tag.href}"
     },
-    function (datas){
+    function (obj){
+      var is_restapi = Array.isArray(obj);
+      var datas = is_restapi?obj:obj.datas;
       var items=[]
       jQuery.each(datas,function(i,data){
-        items.push({"value":data['${tag.keyName}'],"text":data['${tag.valueName}']});
+        var title = is_restapi?data.${tag.valueName}:data.attributes.${tag.valueName}
+        items.push({"value":data['${tag.keyName}'],"text":title});
        });
        return items;
     },{placeholder_text_single:"${tag.empty!'...'}",search_contains:true,allow_single_deselect:true[#if tag.width??],width:'${tag.width}'[/#if]}
@@ -52,13 +55,16 @@ ${tag.body}
   jQuery.ajax({
     url: "${tag.href}",
     headers:{"Accept":"application/json"},
-    success: function(datas){
+    success: function(obj){
+      var is_restapi = Array.isArray(obj);
+      var datas = is_restapi?obj:obj.datas;
       var select = $("#${tag.id}")
       var cnt=0;
       for(var i in datas){
         cnt += 1;
-        var data = datas[i], value = data.${tag.keyName}
-        select.append('<option value="'+value+'" title="'+data.${tag.valueName}+'">'+data.${tag.valueName}+'</option>');
+        var data = datas[i], value = data.${tag.keyName};
+        var title = is_restapi?data.${tag.valueName}:data.attributes.${tag.valueName}
+        select.append('<option value="'+value+'" title="'+title+'">'+title+'</option>');
       }
       [#if tag.value??]
       select.val("${tag.value}")

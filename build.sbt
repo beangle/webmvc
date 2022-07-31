@@ -2,7 +2,7 @@ import org.beangle.parent.Dependencies._
 import org.beangle.parent.Settings._
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.5.1-SNAPSHOT"
+ThisBuild / version := "0.5.1"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -23,8 +23,8 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
-val bg_commons_ver = "5.2.16"
-val bg_data_ver = "5.4.2"
+val bg_commons_ver = "5.2.17"
+val bg_data_ver = "5.4.5"
 val bg_cdi_ver = "0.3.6"
 val bg_cache_ver = "0.0.26"
 val bg_template_ver = "0.0.37"
