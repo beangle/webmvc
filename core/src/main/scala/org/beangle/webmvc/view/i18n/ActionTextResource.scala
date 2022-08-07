@@ -56,13 +56,13 @@ class ActionTextResource(context: ActionContext, locale: ju.Locale, registry: Te
 
     if (classOf[EntitySupport[_]].isAssignableFrom(actionClass)) {
       // search up model's class hierarchy
-      val entityType = mapping.action.action.asInstanceOf[EntitySupport[_]].entityType
-      if (entityType != null) {
-        val entityPrefix = entityType.getSimpleName + "."
+      val entityClass = mapping.action.action.asInstanceOf[EntitySupport[_]].entityClass
+      if (entityClass != null) {
+        val entityPrefix = entityClass.getSimpleName + "."
         if (Strings.capitalize(key).startsWith(entityPrefix)) {
-          msg = getMessage(entityType.getName, locale, key.substring(entityPrefix.length))
+          msg = getMessage(entityClass.getName, locale, key.substring(entityPrefix.length))
         }
-        if (msg.isEmpty) msg = getPackageMessage(entityType, key, checked)
+        if (msg.isEmpty) msg = getPackageMessage(entityClass, key, checked)
         if (msg.isDefined) return msg
       }
     }
@@ -86,8 +86,7 @@ class ActionTextResource(context: ActionContext, locale: ju.Locale, registry: Te
               prop = newKey.substring(idx + 1, nextIdx)
               newKey = newKey.substring(idx + 1)
               idx = nextIdx
-              if (Strings.isNotEmpty(prop)) aClass = Properties.getType(aClass, prop)
-              else aClass = null
+              aClass = if (Strings.isNotEmpty(prop)) Properties.getType(aClass, prop) else null
             }
           }
         }

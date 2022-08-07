@@ -40,10 +40,6 @@ object PopulateHelper {
     domain.getEntity(Jpas.entityClass(obj)).get
   }
 
-  final def getType(className: String): EntityType = {
-    domain.getEntity(className).get
-  }
-
   /**
    * 将request中的参数设置到clazz对应的bean。
    */

@@ -37,7 +37,7 @@ trait ImportSupport[T <: Entity[_]] {
   def importData(): View = {
     val tr = new ImportResult()
     val setting = new ImportSetting
-    val entityClazz = this.entityDao.domain.getEntity(this.entityName).get.clazz
+    val entityClazz = this.entityDao.domain.getEntity(this.entityClass).get.clazz
     val shortName = Strings.uncapitalize(Strings.substringAfterLast(entityClazz.getName, "."))
     setting.entityClazz = entityClazz
     setting.shortName = shortName

@@ -21,14 +21,14 @@ import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.Strings.isNotEmpty
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.reflect.Reflections.{getAnnotation, isAnnotationPresent}
-import org.beangle.commons.lang.reflect.{BeanInfo,BeanInfos}
+import org.beangle.commons.lang.reflect.{BeanInfo, BeanInfos}
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.net.http.HttpMethods.GET
-import org.beangle.web.action.annotation._
+import org.beangle.web.action.annotation.*
 import org.beangle.web.action.view.View
-import org.beangle.webmvc.config._
+import org.beangle.webmvc.config.*
 import org.beangle.webmvc.context.Argument
-import org.beangle.webmvc.context.impl._
+import org.beangle.webmvc.context.impl.*
 import org.beangle.webmvc.view.ViewBuilder
 import org.beangle.webmvc.view.impl.ViewManager
 
@@ -51,76 +51,71 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     val config = new ActionMapping(bean, clazz, actionName, nameAndspace._2, views, profile)
     val mappings = new collection.mutable.HashMap[String, RouteMapping]
     val classInfo = BeanInfos.get(clazz)
-    classInfo.methods foreach {  case (methodName, minfos) =>
-        val mappingMehtods = new collection.mutable.HashSet[Method]
-        minfos.filter(m => isActionMethod(m.method, classInfo)) foreach { methodinfo =>
-          val method = methodinfo.method
-          val annTuple = getAnnotation(method, classOf[mapping])
-          val ann = if (null == annTuple) null else annTuple._1
-          val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else GET
-          val name =
-            if (null != ann) {
-              if (ann.value.startsWith("/")) {
-                ann.value.substring(1)
-              } else {
-                ann.value
-              }
-            } else {
-              methodName
-            }
-          val url = if (name == "") actionName else actionName + "/" + name
-          val urlParams = Path.parse(url)
-          val urlParamIdx = urlParams.map { case (p, i) => (i, p) }
-          val urlPathNames = urlParamIdx.keySet.toList.sorted.map { i => urlParamIdx(i) }
-
-          val annotationsList = if (null == annTuple) method.getParameterAnnotations else annTuple._2.getParameterAnnotations
-
-          val parameterTypes = method.getParameterTypes
-          val arguments = Range(0, annotationsList.length) map { i =>
-            var argument: Argument = null
-            var j = 0
-            val annotations = annotationsList(i)
-            while (j < annotations.length && null == argument) {
-              argument = annotations(j) match {
-                case p: param => new ParamArgument(p.value, p.required || parameterTypes(i).isPrimitive, p.defaultValue)
-                case c: cookie => new CookieArgument(c.value, c.required || parameterTypes(i).isPrimitive, c.defaultValue)
-                case h: header => new HeaderArgument(h.value, h.required || parameterTypes(i).isPrimitive, h.defaultValue)
-                case _ => null
-              }
-              j += 1
-            }
-            if (argument == null) {
-              argument = if (parameterTypes(i).getName == "jakarta.servlet.http.HttpServletRequest") RequestArgument
-              else if (parameterTypes(i).getName == "jakarta.servlet.http.HttpServletResponse") ResponseArgument
-              else {
-                if (i < urlPathNames.length) new ParamArgument(urlPathNames(i), true, DefaultNone.value)
-                else null
-              }
-            }
-            argument
-          }
-          if (arguments.isEmpty || !arguments.exists(_ == null)) {
-            mappingMehtods += method
-            if (mappingMehtods.size == 1) {
-              var defaultView = defaultViewName(method)
-              if (null != defaultView && defaultView.contains(",") && views.nonEmpty) {
-                defaultView = Strings.split(defaultView, ",") find (v => views.contains(v)) match {
-                  case Some(v) => v
-                  case _ => defaultView
-                }
-              }
-              val mapping = RouteMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
-              mappings.put(method.getName, mapping)
-            } else {
-              logger.warn(s"Only support one method, but $mappingMehtods finded")
-            }
+    classInfo.methods foreach { case (methodName, minfos) =>
+      val mappingMethods = new collection.mutable.HashSet[Method]
+      minfos.filter(m => isActionMethod(m, classInfo)) foreach { method =>
+        val annTuple = getAnnotation(method, classOf[mapping])
+        val ann = if (null == annTuple) null else annTuple._1
+        val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else GET
+        val name =
+          if (null != ann) {
+            if ann.value.startsWith("/") then ann.value.substring(1) else ann.value
           } else {
-            //ignore arguments contain  all null
-            if (arguments.exists(a => a != null)) {
-              throw new RuntimeException(s"Cannot find enough param for $method,Using @mapping or @param")
+            methodName
+          }
+        val url = if (name == "") actionName else actionName + "/" + name
+        val urlParams = Path.parse(url)
+        val urlParamIdx = urlParams.map { case (p, i) => (i, p) }
+        val urlPathNames = urlParamIdx.keySet.toList.sorted.map { i => urlParamIdx(i) }
+
+        val annotationsList = if (null == annTuple) method.getParameterAnnotations else annTuple._2.getParameterAnnotations
+
+        val parameterTypes = method.getParameterTypes
+        val arguments = Range(0, annotationsList.length) map { i =>
+          var argument: Argument = null
+          var j = 0
+          val annotations = annotationsList(i)
+          while (j < annotations.length && null == argument) {
+            argument = annotations(j) match {
+              case p: param => new ParamArgument(p.value, p.required || parameterTypes(i).isPrimitive, p.defaultValue)
+              case c: cookie => new CookieArgument(c.value, c.required || parameterTypes(i).isPrimitive, c.defaultValue)
+              case h: header => new HeaderArgument(h.value, h.required || parameterTypes(i).isPrimitive, h.defaultValue)
+              case _ => null
             }
+            j += 1
+          }
+          if (argument == null) {
+            argument = if (parameterTypes(i).getName == "jakarta.servlet.http.HttpServletRequest") RequestArgument
+            else if (parameterTypes(i).getName == "jakarta.servlet.http.HttpServletResponse") ResponseArgument
+            else {
+              if (i < urlPathNames.length) new ParamArgument(urlPathNames(i), true, DefaultNone.value)
+              else null
+            }
+          }
+          argument
+        }
+        if (arguments.isEmpty || !arguments.contains(null)) {
+          mappingMethods += method
+          if (mappingMethods.size == 1) {
+            var defaultView = defaultViewName(method)
+            if (null != defaultView && defaultView.contains(",") && views.nonEmpty) {
+              defaultView = Strings.split(defaultView, ",") find (v => views.contains(v)) match {
+                case Some(v) => v
+                case _ => defaultView
+              }
+            }
+            val mapping = RouteMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
+            mappings.put(method.getName, mapping)
+          } else {
+            logger.warn(s"Only support one method, but $mappingMethods found")
+          }
+        } else {
+          //ignore arguments contain  all null
+          if (arguments.exists(a => a != null)) {
+            throw new RuntimeException(s"Cannot find enough param for $method,Using @mapping or @param")
           }
         }
+      }
     }
     config.mappings = mappings.toMap
     config
@@ -150,7 +145,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
       if (returnType == classOf[Unit]) throw new RuntimeException(s"$method return type is unit ")
     }
     //filter field
-    if (method.getParameterTypes.length == 0 && beanInfo.getMethods(methodName + "_$eq").nonEmpty) return false
+    if (method.getParameterTypes.length == 0 && beanInfo.properties.contains(methodName)) return false
     true
   }
 
@@ -190,12 +185,12 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
         annotationResults += result.name
       }
     }
-    // load ftl convension results
+    // load ftl convention results
     val suffix = profile.viewSuffix
     if (suffix.endsWith(".ftl")) {
-      BeanInfos.get(clazz).methodList foreach { mi =>
-        if (isViewMethod(mi.method)) {
-          val viewName = defaultViewName(mi.method)
+      for ((_, methods) <- BeanInfos.get(clazz).methods; method <- methods) {
+        if (isViewMethod(method)) {
+          val viewName = defaultViewName(method)
           if (null != viewName && !annotationResults.contains(viewName)) {
             Strings.split(viewName, ",") foreach { v =>
               val view = resolver.resolve(clazz, v, suffix)
