@@ -72,7 +72,7 @@ trait ExportSupport[T <: Entity[_]] {
 
   @ignore
   protected def configExport(setting: ExportSetting): Unit = {
-    val selectIds = ids(simpleEntityName, PopulateHelper.getType(entityType).id.clazz)
+    val selectIds = ids(simpleEntityName, PopulateHelper.getType(entityClass).id.clazz)
     val items =
       if (selectIds.isEmpty) {
         val builder = getQueryBuilder
@@ -83,7 +83,7 @@ trait ExportSupport[T <: Entity[_]] {
           new QueryPage(query.build().asInstanceOf[LimitQuery[T]], entityDao)
         }
       } else {
-        entityDao.findBy(entityType, "id", selectIds)
+        entityDao.findBy(entityClass, "id", selectIds)
       }
     setting.context.put("items", items)
   }

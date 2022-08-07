@@ -19,7 +19,6 @@ package org.beangle.webmvc.support.action
 
 import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.PageLimit
-import org.beangle.commons.config.property.PropertyConfig
 import org.beangle.commons.logging.Logging
 import org.beangle.data.dao.{EntityDao, OqlBuilder}
 import org.beangle.data.model.Entity
@@ -32,7 +31,6 @@ import java.io as jo
 
 trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with EntitySupport[T] with Logging {
   var entityDao: EntityDao = _
-  var config: PropertyConfig = _
 
   protected final def populate[E <: Entity[_]](clazz: Class[E]): E = {
     PopulateHelper.populate(clazz)
@@ -55,6 +53,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   // query------------------------------------------------------
+
   /**
    * 从request的参数或者cookie中(参数优先)取得分页信息
    */
@@ -89,7 +88,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
 
   protected def getQueryBuilder: OqlBuilder[T] = {
     val alias = simpleEntityName
-    val builder: OqlBuilder[T] = OqlBuilder.from(entityName, alias)
+    val builder = OqlBuilder.from(entityClass, alias)
     populateConditions(builder)
     QueryHelper.sort(builder)
     builder.tailOrder(alias + ".id")
@@ -97,7 +96,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   protected def populateEntity(): T = {
-    populateEntity(entityDao.domain.getEntity(entityName).get, simpleEntityName).asInstanceOf[T]
+    populateEntity(entityDao.domain.getEntity(entityClass).get, simpleEntityName).asInstanceOf[T]
   }
 
   protected def populateEntity[E <: Entity[_]](entityType: EntityType, simpleEntityName: String): E = {
@@ -128,8 +127,8 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
     getEntity(entityType, simpleName).asInstanceOf[E]
   }
 
-  protected def getModel(id: jo.Serializable): T = {
-    getModel[T](entityDao.domain.getEntity(entityName).get, id)
+  protected def getModel(id: Any): T = {
+    getModel[T](entityDao.domain.getEntity(entityClass).get, id)
   }
 
   protected def getModel[E](entityType: EntityType, id: Any): E = {

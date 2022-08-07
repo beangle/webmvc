@@ -35,7 +35,7 @@ class RestfulService[T <: Entity[_]] extends ActionSupport with EntityAction[T] 
   @response
   @mapping(value = "{id}")
   def info(@param("id") id: String): T = {
-    val entityType = entityDao.domain.getEntity(entityName).get
+    val entityType = entityDao.domain.getEntity(entityClass).get
     Params.converter.convert(id, entityType.id.clazz) match {
       case None => null.asInstanceOf[T]
       case Some(entityId) => getModel[T](entityType, entityId)

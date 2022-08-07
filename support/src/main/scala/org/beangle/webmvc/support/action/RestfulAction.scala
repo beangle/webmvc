@@ -17,20 +17,20 @@
 
 package org.beangle.webmvc.support.action
 
-import java.time.Instant
 import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.data.model.Entity
 import org.beangle.data.model.pojo.Updated
-import org.beangle.web.action.support.ActionSupport
 import org.beangle.web.action.annotation.{ignore, mapping, param}
 import org.beangle.web.action.context.ActionContext
+import org.beangle.web.action.support.ActionSupport
 import org.beangle.web.action.view.View
 import org.beangle.webmvc.execution.MappingHandler
 import org.beangle.webmvc.support.helper.PopulateHelper
 
+import java.time.Instant
+
 abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
   with EntityAction[T] with ExportSupport[T] with ImportSupport[T] {
-
   def index(): View = {
     indexSetting()
     forward()
@@ -43,8 +43,8 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
 
   @mapping(value = "{id}")
   def info(@param("id") id: String): View = {
-    val entityType = entityDao.domain.getEntity(entityName).get
-    put(simpleEntityName, getModel[T](entityType, convertId(entityType,id)))
+    val entityType = entityDao.domain.getEntity(entityClass).get
+    put(simpleEntityName, getModel[T](entityType, convertId(entityType, id)))
     forward()
   }
 
@@ -60,7 +60,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
 
   @mapping(value = "new", view = "new,form")
   def editNew(): View = {
-    val entity = getEntity(entityType, simpleEntityName)
+    val entity = getEntity(entityClass, simpleEntityName)
     editSetting(entity)
     put(simpleEntityName, entity)
     forward()
@@ -68,11 +68,11 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
 
   @mapping(method = "delete")
   def remove(): View = {
-    val entityType = entityDao.domain.getEntity(entityName).get
+    val entityType = entityDao.domain.getEntity(entityClass).get
     val idclass = entityType.id.clazz
     val entities: Seq[T] = getId(simpleEntityName, idclass) match {
       case Some(entityId) => List(getModel[T](entityType, entityId))
-      case None           => getModels[T](entityType, ids(simpleEntityName, idclass))
+      case None => getModels[T](entityType, ids(simpleEntityName, idclass))
     }
     try {
       removeAndRedirect(entities)
@@ -86,7 +86,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
 
   @mapping(value = "{id}", method = "put")
   def update(@param("id") id: String): View = {
-    val entity = PopulateHelper.populate(getModel(id), entityDao.domain.getEntity(entityName).get, simpleEntityName)
+    val entity = PopulateHelper.populate(getModel(id), entityDao.domain.getEntity(entityClass).get, simpleEntityName)
     persist(entity)
   }
 
@@ -113,14 +113,14 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
     try {
       entity match {
         case updated: Updated => updated.updatedAt = Instant.now
-        case _                =>
+        case _ =>
       }
       saveAndRedirect(entity)
     } catch {
       case e: Exception =>
-        val mapping= ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
+        val mapping = ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
         val redirectTo = mapping.method.getName match {
-          case "save"   => "editNew"
+          case "save" => "editNew"
           case "update" => "edit"
         }
         logger.info("saveAndRedirect failure", e)
