@@ -45,7 +45,7 @@ ${tag.body}
       var items=[]
       jQuery.each(datas,function(i,data){
         var title = is_restapi?data.${tag.valueName}:data.attributes.${tag.valueName}
-        items.push({"value":data.${tag.keyName},"text":title);
+        items.push({"value":data.${tag.keyName},"text":title});
        });
        return items;
     },{placeholder_text_single:"${tag.empty!'...'}",search_contains:true,allow_single_deselect:true[#if tag.width??],width:'${tag.width}'[/#if]}
