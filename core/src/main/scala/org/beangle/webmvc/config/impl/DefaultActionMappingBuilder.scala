@@ -138,15 +138,13 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
     if (null != getAnnotation(method, classOf[ignore])) return false
 
     val returnType = method.getReturnType
-    if (null == getAnnotation(method, classOf[response]) && null == getAnnotation(method, classOf[mapping]) && !containsParamAnnotation(method.getParameterAnnotations)) {
+    if (null == getAnnotation(method, classOf[response])) {
       //filter method don't return view
-      if (returnType != classOf[View]) return false
+      returnType == classOf[View]
     } else {
       if (returnType == classOf[Unit]) throw new RuntimeException(s"$method return type is unit ")
+      true
     }
-    //filter field
-    if (method.getParameterTypes.length == 0 && beanInfo.properties.contains(methodName)) return false
-    true
   }
 
   private def isPropertyMethod(name: String): Boolean = {
