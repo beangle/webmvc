@@ -18,7 +18,7 @@
 package org.beangle.webmvc.freemarker
 
 import org.beangle.commons.lang.annotation.description
-import org.beangle.template.freemarker.{Configurer => FreemarkerConfigurer}
+import org.beangle.template.freemarker.Configurer as FreemarkerConfigurer
 import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.view.{TemplatePathMapper, TemplateResolver}
 
@@ -34,23 +34,28 @@ class HierarchicalTemplateResolver(freemarkerConfigurer: FreemarkerConfigurer, t
   override def resolve(actionClass: Class[_], viewName: String, suffix: String): String = {
     var path: String = null
     var superClass = actionClass
-    var source: Object = null
+    var found: Boolean = false
     val profile = configurer.getProfile(actionClass.getName)
-    val configuration = freemarkerConfigurer.config
     while {
       val buf = new StringBuilder
       buf.append(templatePathMapper.map(superClass.getName, viewName, profile))
       buf.append(suffix)
       path = buf.toString
-      try {
-        source = configuration.getTemplate(path)
-      } catch {
-        case _: FileNotFoundException =>  //ignore
-        case _: IOException => source = "error ftl"
-      }
+      found = exists(path)
       superClass = superClass.getSuperclass
-      null == source && !superClass.equals(classOf[Object]) && !superClass.isPrimitive
+      !found && !superClass.equals(classOf[Object]) && !superClass.isPrimitive
     } do ()
-    if (null == source) null else path
+    if (found) path else null
+  }
+
+  override def exists(viewPath: String): Boolean = {
+    val freemarkerCfg = freemarkerConfigurer.config
+    try {
+      freemarkerCfg.getTemplate(viewPath)
+      true
+    } catch {
+      case _: FileNotFoundException => false
+      case _: IOException => false
+    }
   }
 }

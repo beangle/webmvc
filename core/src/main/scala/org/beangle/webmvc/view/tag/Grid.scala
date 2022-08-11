@@ -277,7 +277,7 @@ class Grid(context: ComponentContext) extends ClosingUIBean(context) {
   def addCol(column: Col): Unit = {
     var title = column.title
     if (null == title) title = column.property
-    if (null == column.width && column.isInstanceOf[Boxcol]) column.width = "4%"
+    if (null == column.width && column.isInstanceOf[Boxcol]) column.width = "25px"
     if (!colTitles.contains(title)) {
       colTitles.add(title)
       cols += column
