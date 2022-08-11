@@ -45,35 +45,20 @@ trait ImportSupport[T <: Entity[_]] {
     configImport(setting)
     if (null == setting.importer) {
       val importer = new DefaultEntityImporter(setting.entityClazz, setting.shortName)
+      importer.stopOnError = setting.stopOnError
       importer.domain = this.entityDao.domain
       importer.populator = PopulateHelper.populator
       setting.importer = importer
-      setting.listeners foreach { l =>
-        importer.addListener(l)
-      }
+      setting.listeners foreach (importer.addListener(_))
     }
 
     val importer = setting.importer
-    if (null == setting.reader) {
-      return forward("/components/importData/error")
-    }
-    try {
-      importer.reader = setting.reader
-      importer.transfer(tr)
-      put("importer", importer)
-      put("importResult", tr)
-      if (tr.hasErrors) {
-        forward("/components/importData/error")
-      } else {
-        forward("/components/importData/result")
-      }
-    } catch {
-      case e: Exception =>
-        logger.error("import error", e)
-        tr.addFailure(getText("error.importformat"), e.getMessage)
-        put("importResult", tr)
-        forward("/components/importData/error")
-    }
+    importer.reader = setting.reader
+    put("importer", importer)
+    put("importResult", tr)
+    if null == importer.reader then tr.addFailure("reading error", "Cannot build importer reader")
+    else importer.transfer(tr)
+    forward("/components/importData/result,result2")
   }
 
   protected def configImport(setting: ImportSetting): Unit = {

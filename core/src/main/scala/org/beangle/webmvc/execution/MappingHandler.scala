@@ -25,6 +25,7 @@ import org.beangle.commons.lang.annotation.description
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.view.{PathView, View}
 import org.beangle.web.servlet.intercept.Interceptor
+import org.beangle.web.servlet.resource.PathResolver
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.view.impl.ViewManager
 
@@ -68,7 +69,7 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
                 viewManager.getResolver(profile.viewType) match {
                   case Some(resolver) =>
                     var i = 0
-                    val candidates = Strings.split(viewName, ",")
+                    val candidates = PathResolver.resolve(viewName)
                     var newView: View = null
                     while (i < candidates.length && null == newView) {
                       newView = resolver.resolve(candidates(i), mapping)

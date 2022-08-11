@@ -35,6 +35,8 @@ trait TemplatePathMapper {
 @spi
 trait TemplateResolver {
   def resolve(actionClass: Class[_], viewName: String, suffix: String): String
+
+  def exists(viewPath:String):Boolean
 }
 
 @spi
