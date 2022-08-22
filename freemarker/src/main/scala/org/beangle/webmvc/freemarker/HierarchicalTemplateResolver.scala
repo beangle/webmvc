@@ -55,7 +55,7 @@ class HierarchicalTemplateResolver(freemarkerConfigurer: FreemarkerConfigurer, t
       true
     } catch {
       case _: FileNotFoundException => false
-      case _: IOException => false
+      case _: IOException => true
     }
   }
 }
