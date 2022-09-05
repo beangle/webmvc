@@ -42,7 +42,7 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
 
   override def init(config: ServletConfig): Unit = {
     //1. build configuration and mapper
-    Buildable.build(configurer,mapper)
+    Buildable.build(configurer, mapper)
     // 2. find index
     val indexFile =
       List("/index.html", "/index.htm", "/index.jsp") find { i =>
