@@ -10,7 +10,7 @@ title: {{Title}}
 ---
 {% include JB/setup %}
 
-${base}下共计${actionNames?size}个服务，如下表:
+${b.base}下共计${actionNames?size}个服务，如下表:
 
 <table class="table table-bordered table-striped table-condensed">
   <tr><th>序号</th><th>名称</th><th>描述</th></tr>
@@ -22,7 +22,7 @@ ${base}下共计${actionNames?size}个服务，如下表:
 [#list actionNames as name]
 [#assign config = configMap[name]]
 
-<h4 id="action${name?replace("/","_")}">${name_index+1} ${base}${name} ${descriptions.get(name)!}</h4>
+<h4 id="action${name?replace("/","_")}">${name_index+1} ${b.base}${name} ${descriptions.get(name)!}</h4>
 
 <table class="table table-bordered table-striped table-condensed">
  <tr><th>序号</th><th>名称</th><th>HTTP方法</th><th>参数(*为必须)</th><th>描述</th></tr>
@@ -30,7 +30,7 @@ ${base}下共计${actionNames?size}个服务，如下表:
  [#assign mapping = config.mappings.get(mappingkey)/]
  <tr>[#rt/]
  <td>${mappingkey_index+1}</td>[#t/]
- <td>[#if mapping.name?length>0]${base}${config.name}/${mapping.name}[#else]${base}${config.name}[/#if]</td>[#t/]
+ <td>[#if mapping.name?length>0]${b.base}${config.name}/${mapping.name}[#else]${b.base}${config.name}[/#if]</td>[#t/]
  <td>${mapping.httpMethod!"*"}</td>[#t/]
  <td>[#list mapping.arguments as p]${p.toString()}[#if p_has_next],[/#if][/#list]</td>[#t/]
  <td>[#if mapping.method.name=="index"]${messages.get(config.clazz,"class")!}[#else]${messages.get(config.clazz,mapping.method.name)!}[/#if]</td>[#t/]

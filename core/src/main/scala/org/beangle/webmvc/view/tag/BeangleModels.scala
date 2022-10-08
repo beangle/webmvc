@@ -19,8 +19,8 @@ package org.beangle.webmvc.view.tag
 
 import jakarta.servlet.http.HttpServletRequest
 import org.beangle.template.api.{ComponentContext, Tag}
-import org.beangle.webmvc.dispatch.ActionUriRender
 import org.beangle.web.action.view.Static
+import org.beangle.webmvc.dispatch.ActionUriRender
 
 class BeangleModels(context: ComponentContext, request: HttpServletRequest) extends CoreModels(context, request) {
 
@@ -86,17 +86,17 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   def col: Tag = get(classOf[Grid.Col])
 
-//  def col: Tag = {
-//    var model = models.get(classOf[Grid.Col])
-//    if (null == model) {
-//      // just for performance
-//      model = new Tag(context) {
-//        override protected def getBean = new Grid.Col(context)
-//      }
-//      models.put(classOf[Grid.Col], model)
-//    }
-//    model
-//  }
+  //  def col: Tag = {
+  //    var model = models.get(classOf[Grid.Col])
+  //    if (null == model) {
+  //      // just for performance
+  //      model = new Tag(context) {
+  //        override protected def getBean = new Grid.Col(context)
+  //      }
+  //      models.put(classOf[Grid.Col], model)
+  //    }
+  //    model
+  //  }
 
   def treecol: Tag = get(classOf[Grid.Treecol])
 
@@ -106,18 +106,18 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   def password: Tag = get(classOf[Password])
 
-  def a:Tag = get(classOf[Anchor])
-//
-//  def a: Tag = {
-//    var model = models.get(classOf[Anchor])
-//    if (null == model) {
-//      model = new Tag(context) {
-//        override protected def getBean = new Anchor(context)
-//      }
-//      models.put(classOf[Anchor], model)
-//    }
-//    model
-//  }
+  def a: Tag = get(classOf[Anchor])
+  //
+  //  def a: Tag = {
+  //    var model = models.get(classOf[Anchor])
+  //    if (null == model) {
+  //      model = new Tag(context) {
+  //        override protected def getBean = new Anchor(context)
+  //      }
+  //      models.put(classOf[Anchor], model)
+  //    }
+  //    model
+  //  }
 
   def messages: Tag = get(classOf[Messages])
 

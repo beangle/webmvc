@@ -2,7 +2,7 @@ import org.beangle.parent.Dependencies._
 import org.beangle.parent.Settings._
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.6.2-SNAPSHOT"
+ThisBuild / version := "0.6.2"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -28,7 +28,7 @@ val bg_data_ver = "5.5.2"
 val bg_cdi_ver = "0.4.0"
 val bg_cache_ver = "0.1.0"
 val bg_template_ver = "0.1.0"
-val bg_web_ver = "0.2.0"
+val bg_web_ver = "0.3.0"
 
 val bg_commons_core = "org.beangle.commons" %% "beangle-commons-core" % bg_commons_ver
 val bg_commons_text = "org.beangle.commons" %% "beangle-commons-text" % bg_commons_ver

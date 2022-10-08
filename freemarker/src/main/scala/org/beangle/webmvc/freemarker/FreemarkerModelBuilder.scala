@@ -46,7 +46,6 @@ class FreemarkerModelBuilder(tagLibraryProvider: TagLibraryProvider) extends Mod
         case (tagName, tag) =>
           model.put(tagName, tag.models())
       }
-      model.put("base", request.getContextPath)
       request.setAttribute(templateModelAttribute, model)
       model
     } else {
