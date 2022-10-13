@@ -46,7 +46,7 @@
       <module name="jquery-ui" js="jquery-ui.min.js" css="jquery-ui.min.css"/>
     </bundle>
 
-    <bundle name="bui" version="0.4.2">
+    <bundle name="bui" version="0.4.3">
       <module name="history" js="js/beangle-history.js"/>
       <module name="beangle" js="js/beangle.js"/>
       <module name="bui" js="js/beangle-ui.js"  css="css/beangle-ui.css"/>
