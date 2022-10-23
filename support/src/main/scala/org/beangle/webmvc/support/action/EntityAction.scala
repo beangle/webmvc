@@ -30,7 +30,7 @@ import org.beangle.webmvc.support.helper.{PopulateHelper, QueryHelper}
 import java.io as jo
 
 trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with EntitySupport[T] with Logging {
-  var entityDao: EntityDao = _
+  def entityDao: EntityDao
 
   protected final def populate[E <: Entity[_]](clazz: Class[E]): E = {
     PopulateHelper.populate(clazz)

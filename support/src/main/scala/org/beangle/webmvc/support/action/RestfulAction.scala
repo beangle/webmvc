@@ -18,6 +18,7 @@
 package org.beangle.webmvc.support.action
 
 import org.beangle.commons.text.inflector.en.EnNounPluralizer
+import org.beangle.data.dao.EntityDao
 import org.beangle.data.model.Entity
 import org.beangle.data.model.pojo.Updated
 import org.beangle.web.action.annotation.{ignore, mapping, param}
@@ -31,6 +32,8 @@ import java.time.Instant
 
 abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
   with EntityAction[T] with ExportSupport[T] with ImportSupport[T] {
+  var entityDao: EntityDao = _
+
   def index(): View = {
     indexSetting()
     forward()
