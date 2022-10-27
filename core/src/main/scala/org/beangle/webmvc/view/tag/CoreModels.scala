@@ -22,8 +22,8 @@ import org.beangle.commons.collection.page.Page
 import org.beangle.web.action.context.ActionContext
 import org.beangle.webmvc.execution.MappingHandler
 import org.beangle.template.api.{AbstractModels, ComponentContext}
-import org.beangle.webmvc.dispatch.ActionUriRender
 import org.beangle.commons.text.escape.JavascriptEscaper
+import org.beangle.web.action.dispatch.ActionUriRender
 
 import java.io.StringWriter
 import java.util as ju
@@ -31,8 +31,7 @@ import java.util as ju
 class CoreModels(context: ComponentContext, request: HttpServletRequest) extends AbstractModels(context) {
 
   def url(url: String): String = {
-    val mapping = ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
-    this.context.services("uriRender").asInstanceOf[ActionUriRender].render(mapping, url)
+    this.context.services("uriRender").asInstanceOf[ActionUriRender].render(url)
   }
 
   def base: String = {

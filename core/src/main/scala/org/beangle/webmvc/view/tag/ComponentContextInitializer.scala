@@ -20,8 +20,8 @@ package org.beangle.webmvc.view.tag
 import org.beangle.commons.text.i18n.TextProvider
 import org.beangle.template.api.{ComponentContext, IndexableIdGenerator, TagTemplateEngine, TemplateEngine}
 import org.beangle.web.action.context.ActionContext
+import org.beangle.web.action.dispatch.ActionUriRender
 import org.beangle.webmvc.context.{ActionContextInitializer, LocaleResolver}
-import org.beangle.webmvc.dispatch.ActionUriRender
 import org.beangle.webmvc.view.i18n.ActionTextResourceProvider
 
 class ComponentContextInitializer extends ActionContextInitializer {

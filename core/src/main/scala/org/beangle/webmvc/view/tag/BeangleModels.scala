@@ -19,8 +19,8 @@ package org.beangle.webmvc.view.tag
 
 import jakarta.servlet.http.HttpServletRequest
 import org.beangle.template.api.{ComponentContext, Tag}
+import org.beangle.web.action.dispatch.ActionUriRender
 import org.beangle.web.action.view.Static
-import org.beangle.webmvc.dispatch.ActionUriRender
 
 class BeangleModels(context: ComponentContext, request: HttpServletRequest) extends CoreModels(context, request) {
 

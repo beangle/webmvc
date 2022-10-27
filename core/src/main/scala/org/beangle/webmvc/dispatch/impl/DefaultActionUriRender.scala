@@ -19,11 +19,12 @@ package org.beangle.webmvc.dispatch.impl
 
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
-import org.beangle.web.servlet.url.UrlRender
 import org.beangle.web.action.To
 import org.beangle.web.action.context.ActionContext
+import org.beangle.web.action.dispatch.ActionUriRender
+import org.beangle.web.servlet.url.UrlRender
 import org.beangle.webmvc.config.{Configurer, RouteMapping}
-import org.beangle.webmvc.dispatch.ActionUriRender
+import org.beangle.webmvc.execution.MappingHandler
 
 @description("根据uri相对地址反向生成绝对地址")
 class DefaultActionUriRender extends ActionUriRender {
@@ -32,7 +33,7 @@ class DefaultActionUriRender extends ActionUriRender {
 
   var configurer: Configurer = _
 
-  override def render(router: RouteMapping, uri: String): String = {
+  override def render(uri: String): String = {
     if (Strings.isEmpty(uri)) {
       return ActionContext.current.request.getRequestURI
     }
@@ -43,11 +44,12 @@ class DefaultActionUriRender extends ActionUriRender {
     val contextPath = context.request.getServletContext.getContextPath
     if (uri.charAt(0) == '/') return contextPath + uri
 
+    val router = context.handler.asInstanceOf[MappingHandler].mapping
     var params: collection.mutable.Map[String, String] = null
     val mapping =
       if (uri.charAt(0) == '!') {
         val dotIdx = uriEndIndexOf(uri)
-        params = To(uri,null).parameters
+        params = To(uri, null).parameters
         router.action.mappings(uri.substring(1, dotIdx))
       } else {
         val namespace = router.action.namespace
@@ -73,14 +75,14 @@ class DefaultActionUriRender extends ActionUriRender {
             if (namespace.endsWith("/")) namespace else namespace + "/"
           }
         val finalURL = goNamespace + (if (index == 0) uri else uri.substring(index))
-        val struts = To(finalURL,null).toStruts
+        val struts = To(finalURL, null).toStruts
         params = struts.parameters
 
         val actionName = new StringBuilder
         actionName.append(struts.namespace).append('/').append(struts.name)
         configurer.getActionMapping(actionName.toString) match {
           case Some(cfg) => cfg.mappings(if (null == struts.method) cfg.profile.defaultMethod else struts.method)
-          case None      => throw new RuntimeException(s"Cannot find $actionName mapping")
+          case None => throw new RuntimeException(s"Cannot find $actionName mapping")
         }
       }
     val tourl = mapping.toURL(params, context.params)

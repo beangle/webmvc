@@ -20,7 +20,7 @@ package org.beangle.webmvc.view.tag
 import jakarta.servlet.http.HttpServletRequest
 import org.beangle.template.api.*
 import org.beangle.web.action.context.ActionContext
-import org.beangle.webmvc.dispatch.ActionUriRender
+import org.beangle.web.action.dispatch.ActionUriRender
 import org.beangle.webmvc.execution.MappingHandler
 
 trait WebUIBean {
@@ -39,8 +39,7 @@ trait WebUIBean {
   }
 
   final def render(uri: String): String = {
-    val mapping = ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
-    context.services("uriRender").asInstanceOf[ActionUriRender].render(mapping, uri)
+    context.services("uriRender").asInstanceOf[ActionUriRender].render(uri)
   }
 }
 

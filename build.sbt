@@ -24,11 +24,11 @@ ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
 val bg_commons_ver = "5.4.1"
-val bg_data_ver = "5.5.4"
+val bg_data_ver = "5.5.5-SNAPSHOT"
 val bg_cdi_ver = "0.4.1"
 val bg_cache_ver = "0.1.1"
 val bg_template_ver = "0.1.1"
-val bg_web_ver = "0.3.3"
+val bg_web_ver = "0.3.4-SNAPSHOT"
 
 val bg_commons_core = "org.beangle.commons" %% "beangle-commons-core" % bg_commons_ver
 val bg_commons_text = "org.beangle.commons" %% "beangle-commons-text" % bg_commons_ver

@@ -20,7 +20,6 @@ package org.beangle.webmvc.view.tag
 import org.beangle.commons.lang.annotation.description
 import org.beangle.template.api.TagLibrary
 import org.beangle.web.action.context.ActionContext
-import org.beangle.webmvc.dispatch.ActionUriRender
 
 /**
  * Beangle tag Library
