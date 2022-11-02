@@ -20,6 +20,7 @@ package org.beangle.webmvc.dispatch
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import jakarta.servlet.{GenericServlet, ServletConfig, ServletRequest, ServletResponse}
 import org.beangle.cdi.Container
+import org.beangle.commons.lang.Strings
 import org.beangle.commons.logging.Logging
 import org.beangle.web.action.dispatch.RequestMapper
 import org.beangle.web.action.util.Resources
@@ -44,10 +45,7 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
     //1. build configuration and mapper
     Buildable.build(configurer, mapper)
     // 2. find index
-    val indexFile =
-      List("/index.html", "/index.htm", "/index.jsp") find { i =>
-        null != config.getServletContext.getResource(i)
-      }
+    val indexFile = List("/index.html", "/index.htm", "/index.jsp") find (i => null != config.getServletContext.getResource(i))
     indexFile match {
       case None => if (null != mapper.resolve("/index")) this.index = "/index"
       case Some(i) => this.index = i
@@ -79,7 +77,9 @@ class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBui
   protected def handleUnknown(servletPath: String, request: HttpServletRequest, response: HttpServletResponse): Unit = {
     if (servletPath.isEmpty || servletPath == "/") {
       if (null != this.index) {
-        response.sendRedirect(request.getContextPath + this.index)
+        val qs = request.getQueryString
+        val queryString = if Strings.isNotBlank(qs) then "?" + qs else ""
+        response.sendRedirect(request.getContextPath + this.index + queryString)
       } else {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND)
       }
