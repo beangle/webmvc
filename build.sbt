@@ -2,7 +2,7 @@ import org.beangle.parent.Dependencies._
 import org.beangle.parent.Settings._
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.6.7-SNAPSHOT"
+ThisBuild / version := "0.7.0"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -23,12 +23,12 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
-val bg_commons_ver = "5.4.1"
-val bg_data_ver = "5.5.5"
-val bg_cdi_ver = "0.4.1"
-val bg_cache_ver = "0.1.1"
-val bg_template_ver = "0.1.1"
-val bg_web_ver = "0.3.4"
+val bg_commons_ver = "5.4.2"
+val bg_data_ver = "5.5.6"
+val bg_cdi_ver = "0.4.2"
+val bg_cache_ver = "0.1.2"
+val bg_template_ver = "0.1.2"
+val bg_web_ver = "0.3.5"
 
 val bg_commons_core = "org.beangle.commons" %% "beangle-commons-core" % bg_commons_ver
 val bg_commons_text = "org.beangle.commons" %% "beangle-commons-text" % bg_commons_ver
@@ -52,7 +52,7 @@ val itext = Seq(itextpdf % "optional", itext_asian % "optional", itext_xmlworker
 
 lazy val root = (project in file("."))
   .settings()
-  .aggregate(core, spring, freemarker, support, bootstrap, showcase)
+  .aggregate(core, view, support, showcase)
 
 lazy val core = (project in file("core"))
   .settings(
@@ -61,39 +61,27 @@ lazy val core = (project in file("core"))
     libraryDependencies ++= (commonDeps ++ Seq(bg_commons_text, javassist, bg_cache_api, bg_cdi_api, bg_template_api, scalaxml))
   )
 
-lazy val freemarker = (project in file("freemarker"))
+lazy val view = (project in file("view"))
   .settings(
-    name := "beangle-webmvc-freemarker",
+    name := "beangle-webmvc-view",
     common,
     libraryDependencies ++= (commonDeps ++ Seq(bg_template_freemarker))
-  ).dependsOn(core)
-
-lazy val spring = (project in file("spring"))
-  .settings(
-    name := "beangle-webmvc-spring",
-    common,
-    libraryDependencies ++= (commonDeps ++ Seq(bg_cdi_spring))
   ).dependsOn(core)
 
 lazy val support = (project in file("support"))
   .settings(
     name := "beangle-webmvc-support",
     common,
-    libraryDependencies ++= (commonDeps ++ Seq(bg_data_transfer, bg_data_orm, bg_commons_text) ++ itext)
-  ).dependsOn(core, spring)
-
-lazy val bootstrap = (project in file("bootstrap"))
-  .settings(
-    name := "beangle-webmvc-bootstrap",
-    common,
-    libraryDependencies ++= commonDeps
-  )
+    libraryDependencies ++= commonDeps,
+    libraryDependencies ++= itext,
+    libraryDependencies ++= Seq(bg_data_transfer, bg_data_orm, bg_commons_text,bg_cdi_spring),
+  ).dependsOn(core)
 
 lazy val showcase = (project in file("showcase"))
   .settings(
     name := "beangle-webmvc-showcase",
     common,
     libraryDependencies ++= (commonDeps ++ Seq(bg_template_freemarker))
-  ).dependsOn(core, spring, support, freemarker, bootstrap)
+  ).dependsOn(core, support, view)
 
 publish / skip := true
