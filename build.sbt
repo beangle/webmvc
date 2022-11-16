@@ -33,11 +33,11 @@ val bg_web_ver = "0.3.5"
 val bg_commons_core = "org.beangle.commons" %% "beangle-commons-core" % bg_commons_ver
 val bg_commons_text = "org.beangle.commons" %% "beangle-commons-text" % bg_commons_ver
 
-val bg_data_orm = "org.beangle.data" %% "beangle-data-orm" % bg_data_ver
-val bg_data_transfer = "org.beangle.data" %% "beangle-data-transfer" % bg_data_ver
+val bg_data_orm = "org.beangle.data" %% "beangle-data-orm" % bg_data_ver % "optional"
+val bg_data_transfer = "org.beangle.data" %% "beangle-data-transfer" % bg_data_ver % "optional"
 
 val bg_cdi_api = "org.beangle.cdi" %% "beangle-cdi-api" % bg_cdi_ver
-val bg_cdi_spring = "org.beangle.cdi" %% "beangle-cdi-spring" % bg_cdi_ver
+val bg_cdi_spring = "org.beangle.cdi" %% "beangle-cdi-spring" % bg_cdi_ver % "optional"
 
 val bg_cache_api = "org.beangle.cache" %% "beangle-cache-api" % bg_cache_ver
 val bg_template_api = "org.beangle.template" %% "beangle-template-api" % bg_template_ver
