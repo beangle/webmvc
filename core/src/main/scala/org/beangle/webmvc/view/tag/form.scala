@@ -20,10 +20,11 @@ package org.beangle.webmvc.view.tag
 import org.beangle.commons.bean.Properties
 import org.beangle.commons.collection.Collections
 import org.beangle.commons.lang.{Numbers, Primitives, Strings}
-import org.beangle.template.api.{ComponentContext,ClosingUIBean,UIBean}
+import org.beangle.template.api.{ClosingUIBean, ComponentContext, UIBean}
+
 import java.io.Writer
 import java.text.SimpleDateFormat
-import java.{util => ju}
+import java.util as ju
 
 class Form(context: ComponentContext) extends ActionClosingUIBean(context) {
   var name: String = _
@@ -375,12 +376,8 @@ class Select(context: ComponentContext) extends ActionClosingUIBean(context) {
         case _ => keys.add(k.toString)
       }
     }
-    if (emptyValues.nonEmpty) {
-      values = Collections.newBuffer(values).subtractAll(emptyValues)
-    }
-    if (multiple != "true" && keys.size > 1) {
-      multiple = "true"
-    }
+    if emptyValues.nonEmpty then values = valueList.toBuffer.subtractAll(emptyValues)
+    if multiple != "true" && keys.size > 1 then multiple = "true"
   }
 
   def setValue(v: Object): Unit = {
