@@ -14,7 +14,7 @@
     <meta http-equiv="content-script-type" content="text/javascript"/>
     <link rel="icon" href="data:;base64,=">
     <base href="${b.base}/"/>
-    ${b.static.load(["requirejs","jquery","history","beangle","bui"])}
+    ${b.static.load(["requirejs","jquery","beangle","bui"])}
   <script type="text/javascript">
     beangle.register("${b.static_base}/",{
       [#assign contents = b.static.module_contents/]

@@ -46,11 +46,9 @@
       <module name="jquery-ui" js="jquery-ui.min.js" css="jquery-ui.min.css"/>
     </bundle>
 
-    <bundle name="bui" version="0.4.3">
-      <module name="history" js="js/beangle-history.js"/>
+    <bundle name="bui" version="0.5.0">
       <module name="beangle" js="js/beangle.js"/>
       <module name="bui" js="js/beangle-ui.js"  css="css/beangle-ui.css"/>
-      <module name="bui-tabletree" js="js/beangle-ui-tabletree.js"  css="css/beangle-ui-tabletree.css"/>
       <module name="bui-ajaxchosen" js="js/beangle-ui-ajaxchosen.js" depends="chosen"/>
       <module name="jquery-validity" js="js/jquery-validity.js" css="css/jquery.validity.css"/>
       <module name="jquery-pstrength" js="js/jquery-pstrength,jquery-pstrength_zh.js" css="css/jquery.pstrength.css"/>
