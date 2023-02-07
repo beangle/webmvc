@@ -19,23 +19,17 @@ package org.beangle.webmvc.hibernate
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.annotation.description
+import org.beangle.data.orm.hibernate.SessionHelper
 import org.beangle.web.servlet.intercept.OncePerRequestInterceptor
-import org.beangle.data.orm.hibernate.spring.SessionUtils
 import org.hibernate.SessionFactory
 
-@description("打开Hibernate Session拦截器")
-class OpenSessionInViewInterceptor(factories: List[SessionFactory]) extends OncePerRequestInterceptor {
+@description("关闭Hibernate Session拦截器")
+class CloseSessionInterceptor(factories: List[SessionFactory]) extends OncePerRequestInterceptor {
 
-  override def doPreInvoke(request: HttpServletRequest, response: HttpServletResponse): Boolean = {
-    factories.foreach { sf => SessionUtils.enableBinding(sf) }
-    true
-  }
+  override def doPreInvoke(request: HttpServletRequest, response: HttpServletResponse): Boolean = true
 
   override def doPostInvoke(request: HttpServletRequest, response: HttpServletResponse): Unit = {
-    factories.foreach { sf =>
-      SessionUtils.disableBinding(sf)
-      SessionUtils.closeSession(sf)
-    }
+    factories.foreach(sf => SessionHelper.closeSession(sf))
   }
 
 }

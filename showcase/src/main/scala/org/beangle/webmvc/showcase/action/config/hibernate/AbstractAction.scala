@@ -18,7 +18,7 @@
 package org.beangle.webmvc.showcase.action.config.hibernate
 
 import org.beangle.commons.lang.Strings.isEmpty
-import org.beangle.data.orm.hibernate.spring.LocalSessionFactoryBean
+import org.beangle.data.orm.hibernate.LocalSessionFactoryBean
 import org.beangle.web.action.support.{ ParamSupport, RouteSupport }
 import org.hibernate.SessionFactory
 

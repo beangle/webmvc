@@ -22,6 +22,6 @@ import org.beangle.cdi.bind.BindModule
 class DefaultModule extends BindModule {
 
   override def binding(): Unit = {
-    bind("web.Interceptor.hibernate", classOf[OpenSessionInViewInterceptor])
+    bind("web.Interceptor.hibernate", classOf[CloseSessionInterceptor])
   }
 }
