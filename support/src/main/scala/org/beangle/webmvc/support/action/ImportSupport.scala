@@ -21,11 +21,12 @@ import org.beangle.commons.lang.Strings
 import org.beangle.data.model.Entity
 import org.beangle.data.transfer.importer.listener.ForeignerListener
 import org.beangle.data.transfer.importer.{DefaultEntityImporter, ImportResult, ImportSetting}
+import org.beangle.web.action.support.ActionSupport
 import org.beangle.web.action.view.View
 import org.beangle.webmvc.support.helper.{ImportHelper, PopulateHelper}
 
 trait ImportSupport[T <: Entity[_]] {
-  self: EntityAction[T] =>
+  self: ActionSupport with EntityAction[T] =>
 
   def importForm(): View = {
     forward("/components/importData/form")

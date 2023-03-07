@@ -18,15 +18,16 @@
 package org.beangle.webmvc.support.action
 
 import org.beangle.commons.lang.{ClassLoaders, Strings}
-import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.data.dao.{LimitQuery, QueryPage}
 import org.beangle.data.model.Entity
 import org.beangle.data.transfer.Format
 import org.beangle.data.transfer.excel.{ExcelItemWriter, ExcelTemplateExporter, ExcelTemplateWriter}
 import org.beangle.data.transfer.exporter.{ExportSetting, SimpleEntityExporter}
 import org.beangle.web.action.annotation.{ignore, mapping}
-import org.beangle.web.action.context.ActionContext
+import org.beangle.web.action.context.Params.*
+import org.beangle.web.action.context.{ActionContext}
 import org.beangle.web.action.view.{Status, View}
+import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.support.helper.PopulateHelper
 
 trait ExportSupport[T <: Entity[_]] {
@@ -72,7 +73,7 @@ trait ExportSupport[T <: Entity[_]] {
 
   @ignore
   protected def configExport(setting: ExportSetting): Unit = {
-    val selectIds = ids(simpleEntityName, PopulateHelper.getType(entityClass).id.clazz)
+    val selectIds = getIds(simpleEntityName, PopulateHelper.getType(entityClass).id.clazz)
     val items =
       if (selectIds.isEmpty) {
         val builder = getQueryBuilder

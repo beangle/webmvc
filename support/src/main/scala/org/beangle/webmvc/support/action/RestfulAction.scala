@@ -22,7 +22,7 @@ import org.beangle.data.dao.EntityDao
 import org.beangle.data.model.Entity
 import org.beangle.data.model.pojo.Updated
 import org.beangle.web.action.annotation.{ignore, mapping, param}
-import org.beangle.web.action.context.ActionContext
+import org.beangle.web.action.context.{ActionContext, Params}
 import org.beangle.web.action.support.ActionSupport
 import org.beangle.web.action.view.View
 import org.beangle.webmvc.execution.MappingHandler
@@ -30,8 +30,7 @@ import org.beangle.webmvc.support.helper.PopulateHelper
 
 import java.time.Instant
 
-abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
-  with EntityAction[T] with ExportSupport[T] with ImportSupport[T] {
+abstract class RestfulAction[T <: Entity[_]] extends ActionSupport,EntityAction[T] {
   var entityDao: EntityDao = _
 
   def index(): View = {
@@ -73,9 +72,9 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport
   def remove(): View = {
     val entityType = entityDao.domain.getEntity(entityClass).get
     val idclass = entityType.id.clazz
-    val entities: Seq[T] = getId(simpleEntityName, idclass) match {
+    val entities: Seq[T] = Params.getId(simpleEntityName, idclass) match {
       case Some(entityId) => List(getModel[T](entityType, entityId))
-      case None => getModels[T](entityType, ids(simpleEntityName, idclass))
+      case None => getModels[T](entityType, Params.getIds(simpleEntityName, idclass))
     }
     try {
       removeAndRedirect(entities)

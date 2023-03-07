@@ -19,11 +19,12 @@ package org.beangle.webmvc.view.tag
 
 import jakarta.servlet.http.HttpServletRequest
 import org.beangle.commons.collection.page.Page
-import org.beangle.web.action.context.ActionContext
-import org.beangle.webmvc.execution.MappingHandler
-import org.beangle.template.api.{AbstractModels, ComponentContext}
 import org.beangle.commons.text.escape.JavascriptEscaper
+import org.beangle.template.api.{AbstractModels, ComponentContext}
+import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.dispatch.ActionUriRender
+import org.beangle.web.servlet.util.RequestUtils
+import org.beangle.webmvc.execution.MappingHandler
 
 import java.io.StringWriter
 import java.util as ju
@@ -45,18 +46,18 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
    */
   def paramstring: String = {
     val sw = new StringWriter()
-    val em = request.getParameterNames()
-    while (em.hasMoreElements()) {
+    val em = request.getParameterNames
+    while (em.hasMoreElements) {
       val attr = em.nextElement()
       val value = request.getParameter(attr)
-      if (!attr.equals("x-requested-with")) {
+      if (!attr.equals("_")) {
         sw.write(attr)
         sw.write('=')
-        sw.write(JavascriptEscaper.escape(value,false))
-        if (em.hasMoreElements()) sw.write('&')
+        sw.write(JavascriptEscaper.escape(value, false))
+        if (em.hasMoreElements) sw.write('&')
       }
     }
-    sw.toString()
+    sw.toString
   }
 
   def isPage(data: Object) = data.isInstanceOf[Page[_]]
@@ -73,4 +74,7 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
     context.textProvider(name, name, arg0, arg1)
   }
 
+  def isAjax: Boolean = {
+    RequestUtils.isAjax(request)
+  }
 }

@@ -19,17 +19,22 @@ package org.beangle.webmvc.support.action
 
 import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.PageLimit
+import org.beangle.commons.lang.Strings
+import org.beangle.commons.lang.annotation.noreflect
+import org.beangle.commons.lang.reflect.Reflections
 import org.beangle.commons.logging.Logging
 import org.beangle.data.dao.{EntityDao, OqlBuilder}
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.EntityType
+import org.beangle.web.action.annotation.ignore
 import org.beangle.web.action.context.Params
-import org.beangle.web.action.support.{EntitySupport, ParamSupport, RouteSupport}
+import org.beangle.web.action.support.{ActionSupport, ParamSupport, RouteSupport}
+import org.beangle.webmvc.action.EntitySupport
 import org.beangle.webmvc.support.helper.{PopulateHelper, QueryHelper}
 
 import java.io as jo
 
-trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with EntitySupport[T] with Logging {
+trait EntityAction[T <: Entity[_]] extends EntitySupport[T] {
   def entityDao: EntityDao
 
   protected final def populate[E <: Entity[_]](clazz: Class[E]): E = {
@@ -53,7 +58,6 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   // query------------------------------------------------------
-
   /**
    * 从request的参数或者cookie中(参数优先)取得分页信息
    */
@@ -100,7 +104,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   protected def populateEntity[E <: Entity[_]](entityType: EntityType, simpleEntityName: String): E = {
-    getId(simpleEntityName, entityType.id.clazz) match {
+    Params.getId(simpleEntityName, entityType.id.clazz) match {
       case Some(entityId) => PopulateHelper.populate(getModel[E](entityType, entityId), entityType, Params.sub(simpleEntityName))
       case None => PopulateHelper.populate(entityType, simpleEntityName).asInstanceOf[E]
     }
@@ -114,7 +118,7 @@ trait EntityAction[T <: Entity[_]] extends RouteSupport with ParamSupport with E
   }
 
   private def getEntity[E <: Entity[_]](entityType: EntityType, simpleName: String): E = {
-    getId(simpleName, entityType.id.clazz) match {
+    Params.getId(simpleName, entityType.id.clazz) match {
       case Some(entityId) => getModel(entityType, entityId).asInstanceOf[E]
       case None => PopulateHelper.populate(entityType.newInstance().asInstanceOf[E], entityType, simpleName)
     }

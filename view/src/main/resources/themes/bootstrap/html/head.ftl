@@ -1,5 +1,5 @@
 [#ftl]
-[#if !(request.getHeader('x-requested-with')??) && !Parameters['x-requested-with']??]
+[#if !b.ajax]
 <!DOCTYPE html>
 <html lang="zh_CN">
   <head>
