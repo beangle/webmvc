@@ -17,15 +17,14 @@
 
 package org.beangle.webmvc.view.i18n
 
-import java.util as ju
 import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.Strings
-import org.beangle.commons.text.i18n.{DefaultTextResource, TextBundleRegistry, TextFormater}
+import org.beangle.commons.text.i18n.{DefaultTextResource, TextBundleRegistry, TextFormater, TextProvider}
 import org.beangle.web.action.context.ActionContext
-import org.beangle.commons.text.i18n.TextProvider
-import org.beangle.webmvc.action.EntitySupport
+import org.beangle.web.action.support.EntitySupport
 import org.beangle.webmvc.execution.MappingHandler
 
+import java.util as ju
 import scala.collection.mutable
 
 class ActionTextResource(context: ActionContext, locale: ju.Locale, registry: TextBundleRegistry, formater: TextFormater)

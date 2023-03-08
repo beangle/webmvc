@@ -28,8 +28,7 @@ import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.EntityType
 import org.beangle.web.action.annotation.ignore
 import org.beangle.web.action.context.Params
-import org.beangle.web.action.support.{ActionSupport, ParamSupport, RouteSupport}
-import org.beangle.webmvc.action.EntitySupport
+import org.beangle.web.action.support.{ActionSupport, EntitySupport, ParamSupport, RouteSupport}
 import org.beangle.webmvc.support.helper.{PopulateHelper, QueryHelper}
 
 import java.io as jo
@@ -58,6 +57,7 @@ trait EntityAction[T <: Entity[_]] extends EntitySupport[T] {
   }
 
   // query------------------------------------------------------
+
   /**
    * 从request的参数或者cookie中(参数优先)取得分页信息
    */
