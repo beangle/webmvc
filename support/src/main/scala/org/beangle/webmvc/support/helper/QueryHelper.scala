@@ -40,6 +40,8 @@ object QueryHelper extends Logging {
 
   val RESERVED_NULL = true
 
+  private val keySeparators = Set(',', '，', ';', '；')
+
   @deprecated
   def populateConditions(builder: OqlBuilder[_]): this.type = {
     builder.where(extractConditions(builder.entityClass, builder.alias, null))
@@ -92,7 +94,15 @@ object QueryHelper extends Logging {
             }
             v match {
               case null => logger.error("Error populate entity " + prefix + "'s attribute " + attr)
-              case sv: String => conditions += new Condition(s"$prefix.$attr like :${attr.replace('.', '_')}", s"%$sv%")
+              case sv: String =>
+                if (sv.length > 1 && sv.indexOf(',') > 0) {
+                  val values = Strings.split(sv, ',')
+                  val orQuery = values.indices.map { i => s"$prefix.$attr like :${attr.replace('.', '_')}_$i" }.mkString(" or ")
+                  val newValues = values.map(x => s"%$x%")
+                  conditions += new Condition(orQuery, newValues: _*)
+                } else {
+                  conditions += new Condition(s"$prefix.$attr like :${attr.replace('.', '_')}", s"%$sv%")
+                }
               case sv => conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", sv)
             }
           }

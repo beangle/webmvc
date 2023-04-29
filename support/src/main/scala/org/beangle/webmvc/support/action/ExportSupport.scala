@@ -22,10 +22,10 @@ import org.beangle.data.dao.{LimitQuery, QueryPage}
 import org.beangle.data.model.Entity
 import org.beangle.data.transfer.Format
 import org.beangle.data.transfer.excel.{ExcelItemWriter, ExcelTemplateExporter, ExcelTemplateWriter}
-import org.beangle.data.transfer.exporter.{ExportSetting, SimpleEntityExporter}
+import org.beangle.data.transfer.exporter.{ExportContext, SimpleEntityExporter}
 import org.beangle.web.action.annotation.{ignore, mapping}
+import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.context.Params.*
-import org.beangle.web.action.context.{ActionContext}
 import org.beangle.web.action.view.{Status, View}
 import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.support.helper.PopulateHelper
@@ -38,12 +38,11 @@ trait ExportSupport[T <: Entity[_]] {
   @mapping("export")
   def exportData(): View = {
     val response = ActionContext.current.response
-    val setting = new ExportSetting
-    val ctx = setting.context
+    val ctx = new ExportContext
     get("template") match {
       case None =>
-        setting.exporter = new SimpleEntityExporter()
-        setting.writer = new ExcelItemWriter(ctx, response.getOutputStream)
+        ctx.exporter = new SimpleEntityExporter()
+        ctx.writer = new ExcelItemWriter(ctx, response.getOutputStream)
         get("keys") foreach (ctx.put("keys", _))
         get("titles") foreach (ctx.put("titles", _))
         get("properties") foreach (ctx.put("properties", _))
@@ -54,8 +53,8 @@ trait ExportSupport[T <: Entity[_]] {
         ctx.format = format
       case Some(template) =>
         ctx.format = Format.Xlsx
-        setting.exporter = new ExcelTemplateExporter()
-        setting.writer = new ExcelTemplateWriter(
+        ctx.exporter = new ExcelTemplateExporter()
+        ctx.writer = new ExcelTemplateWriter(
           ClassLoaders.getResource(template).get, ctx, response.getOutputStream)
     }
 
@@ -66,13 +65,13 @@ trait ExportSupport[T <: Entity[_]] {
         case None => "exportFile" + ext
       }
     RequestUtils.setContentDisposition(response, fileName)
-    configExport(setting)
-    setting.exporter.exportData(ctx, setting.writer)
+    configExport(ctx)
+    ctx.exporter.exportData(ctx, ctx.writer)
     Status.Ok
   }
 
   @ignore
-  protected def configExport(setting: ExportSetting): Unit = {
+  protected def configExport(context: ExportContext): Unit = {
     val selectIds = getIds(simpleEntityName, PopulateHelper.getType(entityClass).id.clazz)
     val items =
       if (selectIds.isEmpty) {
@@ -86,6 +85,6 @@ trait ExportSupport[T <: Entity[_]] {
       } else {
         entityDao.findBy(entityClass, "id", selectIds)
       }
-    setting.context.put("items", items)
+    context.put("items", items)
   }
 }

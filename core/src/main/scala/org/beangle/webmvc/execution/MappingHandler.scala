@@ -45,7 +45,7 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     if (mapping.cacheable) {
       responseCache.get(request) match {
         case Some(cr) =>
-          writeToResponse(response, cr.contentType, cr.data, 15)
+          writeToResponse(response, cr.contentType, cr.data, Some(15))
           return
         case None =>
       }
@@ -115,9 +115,9 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
 
               if (context.handler.asInstanceOf[MappingHandler].mapping.cacheable) {
                 responseCache.put(request, contentType, bytes)
-                writeToResponse(response, contentType, bytes, 15)
+                writeToResponse(response, contentType, bytes, Some(15))
               } else {
-                writeToResponse(response, contentType, bytes, 0)
+                writeToResponse(response, contentType, bytes, None)
               }
             }
           }
@@ -129,18 +129,20 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     }
   }
 
-  private def writeToResponse(res: HttpServletResponse, contentType: String, data: Array[Byte], maxAge: Int): Unit = {
+  private def writeToResponse(res: HttpServletResponse, contentType: String, data: Array[Byte], maxAgeSecond: Option[Int]): Unit = {
     res.setContentType(contentType)
     res.setContentLength(data.length)
-    if (maxAge <= 0) {
-      res.addHeader("Cache-Control", "no-store")
-    } else {
-      res.addHeader("Cache-Control", s"public,s-maxage=${maxAge}")
+    maxAgeSecond foreach { maxAge =>
+      if (maxAge <= 0) {
+        res.addHeader("Cache-Control", "no-store")
+      } else {
+        res.addHeader("Cache-Control", s"public,s-maxage=${maxAge}")
+      }
     }
     res.getOutputStream.write(data)
   }
 
-  def preHandle(interceptors: Array[Interceptor], context: ActionContext, request: HttpServletRequest, response: HttpServletResponse): Int = {
+  private def preHandle(interceptors: Array[Interceptor], context: ActionContext, request: HttpServletRequest, response: HttpServletResponse): Int = {
     var i = 0
     while (i < interceptors.length) {
       val interceptor = interceptors(i)
@@ -150,7 +152,7 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     i - 1
   }
 
-  def postHandle(interceptors: Array[Interceptor], context: ActionContext, lastInterceptorIndex: Int, request: HttpServletRequest, response: HttpServletResponse): Unit = {
+  private def postHandle(interceptors: Array[Interceptor], context: ActionContext, lastInterceptorIndex: Int, request: HttpServletRequest, response: HttpServletResponse): Unit = {
     var i = lastInterceptorIndex
     while (i >= 0) {
       val interceptor = interceptors(i)
