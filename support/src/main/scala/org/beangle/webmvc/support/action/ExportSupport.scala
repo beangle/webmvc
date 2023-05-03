@@ -21,6 +21,7 @@ import org.beangle.commons.lang.{ClassLoaders, Strings}
 import org.beangle.data.dao.{LimitQuery, QueryPage}
 import org.beangle.data.model.Entity
 import org.beangle.data.transfer.Format
+import org.beangle.data.transfer.csv.CsvItemWriter
 import org.beangle.data.transfer.excel.{ExcelItemWriter, ExcelTemplateExporter, ExcelTemplateWriter}
 import org.beangle.data.transfer.exporter.{ExportContext, SimpleEntityExporter}
 import org.beangle.web.action.annotation.{ignore, mapping}
@@ -39,32 +40,17 @@ trait ExportSupport[T <: Entity[_]] {
   def exportData(): View = {
     val response = ActionContext.current.response
     val ctx = new ExportContext
-    get("template") match {
-      case None =>
-        ctx.exporter = new SimpleEntityExporter()
-        ctx.writer = new ExcelItemWriter(ctx, response.getOutputStream)
-        get("keys") foreach (ctx.put("keys", _))
-        get("titles") foreach (ctx.put("titles", _))
-        get("properties") foreach (ctx.put("properties", _))
-        val format = get("format") match {
-          case None => Format.Xlsx
-          case Some(f) => Format.valueOf(Strings.capitalize(if (f == "xls") "xlsx" else f))
-        }
-        ctx.format = format
-      case Some(template) =>
-        ctx.format = Format.Xlsx
-        ctx.exporter = new ExcelTemplateExporter()
-        ctx.writer = new ExcelTemplateWriter(
-          ClassLoaders.getResource(template).get, ctx, response.getOutputStream)
+    val format = get("format") match {
+      case None => Format.Xlsx
+      case Some(f) => Format.valueOf(Strings.capitalize(if (f == "xls") "xlsx" else f))
     }
-
-    val ext = "." + Strings.uncapitalize(ctx.format.toString)
-    val fileName =
-      get("fileName") match {
-        case Some(f) => if (!f.endsWith(ext)) f + ext else f
-        case None => "exportFile" + ext
-      }
-    RequestUtils.setContentDisposition(response, fileName)
+    val titles = get("titles").orElse(get("properties")).getOrElse("")
+    val os = response.getOutputStream
+    get("template") match {
+      case None => ctx.writeTo(os, format, get("fileName")).setTitles(titles, getBoolean("convertToString"))
+      case Some(template) => ctx.writeTo(os, Format.Xlsx, get("fileName"), ClassLoaders.getResource(template).get)
+    }
+    RequestUtils.setContentDisposition(response, ctx.fileName)
     configExport(ctx)
     ctx.exporter.exportData(ctx, ctx.writer)
     Status.Ok

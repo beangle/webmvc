@@ -425,6 +425,7 @@ class Select(context: ComponentContext) extends ActionClosingUIBean(context) {
   def remoteSearch: Boolean = {
     Strings.contains(href, "{term}")
   }
+
 }
 
 class Email(context: ComponentContext) extends AbstractTextBean(context) {

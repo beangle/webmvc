@@ -25,6 +25,7 @@ import org.beangle.commons.lang.{Numbers, Strings}
 import org.beangle.commons.logging.Logging
 import org.beangle.data.dao.{Condition, OqlBuilder}
 import org.beangle.data.model.Entity
+import org.beangle.data.model.meta.SingularProperty
 import org.beangle.web.action.context.{ActionContext, Params}
 import org.beangle.web.servlet.util.CookieUtils
 
@@ -85,25 +86,31 @@ object QueryHelper extends Logging {
           if (RESERVED_NULL && "null".equals(strValue)) {
             conditions += new Condition(prefix + "." + attr + " is null")
           } else {
-            PopulateHelper.populator.populate(entity, entityType, attr, strValue)
-            val v = Properties.get[Object](entity, attr) match {
-              case Some(s) => s
-              case None => null
-              case null => null
-              case a: Any => a
-            }
-            v match {
-              case null => logger.error("Error populate entity " + prefix + "'s attribute " + attr)
-              case sv: String =>
-                if (sv.length > 1 && sv.indexOf(',') > 0) {
-                  val values = Strings.split(sv, ',')
-                  val orQuery = values.indices.map { i => s"$prefix.$attr like :${attr.replace('.', '_')}_$i" }.mkString(" or ")
-                  val newValues = values.map(x => s"%$x%")
-                  conditions += new Condition(orQuery, newValues: _*)
+            val vt = PopulateHelper.populator.init(entity, entityType, attr)
+            if (null != vt && vt._2.isInstanceOf[SingularProperty]) {
+              var values: List[Any] = getAll(params, attr, vt._2.clazz)
+              if (values.nonEmpty) {
+                if (vt._2.clazz == classOf[String]) {
+                  var head = values.head.toString
+                  if (values.size == 1 && head.contains(',')) {
+                    values = Strings.split(head, ',').toList
+                    head = values.head.toString
+                  }
+                  if (values.size == 1) {
+                    conditions += new Condition(s"$prefix.$attr like :${attr.replace('.', '_')}", s"%$head%")
+                  } else {
+                    val orQuery = values.indices.map { i => s"$prefix.$attr like :${attr.replace('.', '_')}_$i" }.mkString(" or ")
+                    val newValues = values.map(x => s"%$x%")
+                    conditions += new Condition(orQuery, newValues: _*)
+                  }
                 } else {
-                  conditions += new Condition(s"$prefix.$attr like :${attr.replace('.', '_')}", s"%$sv%")
+                  if (values.size == 1) {
+                    conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", values.head)
+                  } else {
+                    conditions += new Condition(s"$prefix.$attr in (:${attr.replace('.', '_')})", values)
+                  }
                 }
-              case sv => conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", sv)
+              }
             }
           }
         } catch {
@@ -112,6 +119,27 @@ object QueryHelper extends Logging {
       }
     }
     conditions.toList
+  }
+
+  private def getAll(params: collection.Map[String, Any], attr: String): List[Any] = {
+    params.get(attr) match {
+      case Some(value) =>
+        if (null == value) List.empty
+        else {
+          if (value.getClass.isArray) value.asInstanceOf[Array[Any]].toList
+          else List(value)
+        }
+      case None => List.empty
+    }
+  }
+
+  private def getAll[T](params: collection.Map[String, Any], attr: String, clazz: Class[T]): List[T] = {
+    val value = getAll(params, attr)
+    if (value.isEmpty) {
+      List.empty[T]
+    } else {
+      value.flatMap(x => Params.converter.convert(x, clazz))
+    }
   }
 
   /**

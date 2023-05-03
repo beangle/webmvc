@@ -2,7 +2,7 @@
 [#if tag.option??][#assign optionTemplate=tag.option?interpret][/#if]
 [#assign remoteSearch=tag.remoteSearch/]
 [#assign localChosen=false]
-[#if tag.items?? && (tag.items?size > (tag.chosenMin?number-1))]
+[#if tag.items?? && ((tag.items?size > (tag.chosenMin?number-1)) || tag.multiple??)]
   [#assign localChosen=true]
 [/#if]
 [#if tag.label??]<label for="${tag.id}" class="title">[#if (tag.required!"")=="true"]<em class="required">*</em>[/#if]${tag.label}:</label>[/#if]
