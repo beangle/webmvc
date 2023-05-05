@@ -51,13 +51,12 @@ trait EntityAction[T <: Entity[_]] extends EntitySupport[T] {
     PopulateHelper.populate(obj, Params.sub(simpleName))
   }
 
-  protected final def populate[E <: Entity[_]](entity: E, params: Map[String, Object]): E = {
+  protected final def populate[E <: Entity[_]](entity: E, params: collection.Map[String, Object]): E = {
     require(null != entity, "Cannot populate to null.")
     PopulateHelper.populate(entity, params)
   }
 
   // query------------------------------------------------------
-
   /**
    * 从request的参数或者cookie中(参数优先)取得分页信息
    */
