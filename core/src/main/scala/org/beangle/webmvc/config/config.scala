@@ -69,11 +69,7 @@ object RouteMapping {
       false
     } else {
       val res = method.getAnnotation(classOf[response])
-      if (null == res) {
-        false
-      } else {
-        res.cacheable()
-      }
+      if null == res then false else res.cacheable()
     }
   }
 

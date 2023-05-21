@@ -118,6 +118,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
       }
     }
     config.mappings = mappings.toMap
+    if config.mappings.isEmpty then logger.warn(s"Cannot find any method in ${clazz.getName}")
     config
   }
 
@@ -127,20 +128,18 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
    * <li> Cannot starts with get/set/is
    * <li> Cannot annotated with @ignore
    * <li> Cannot be a field get accessor
-   * <li> Without @response/@mapping/@params and return  type is not [String/View]
+   * <li> Without @response/@mapping/@params and return type is not [View]
    */
   private def isActionMethod(method: Method, beanInfo: BeanInfo): Boolean = {
     val methodName = method.getName
 
     if (methodName.contains("$")) return false
     if (isPropertyMethod(methodName)) return false
-    //filter ignore
-    if (null != getAnnotation(method, classOf[ignore])) return false
+    if (null != getAnnotation(method, classOf[ignore])) return false //filter ignore
 
     val returnType = method.getReturnType
-    if (null == getAnnotation(method, classOf[response])) {
-      //filter method don't return view
-      returnType == classOf[View]
+    if (null == getAnnotation(method, classOf[response]) && null == getAnnotation(method, classOf[mapping])) {
+      returnType == classOf[View] //filter method don't return view
     } else {
       if (returnType == classOf[Unit]) throw new RuntimeException(s"$method return type is unit ")
       true
