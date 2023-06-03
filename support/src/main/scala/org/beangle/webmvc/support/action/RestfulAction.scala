@@ -83,7 +83,6 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport,EntityAction[
         logger.info("removeAndRedirect failure", e)
         redirect("search", "info.delete.failure")
     }
-
   }
 
   @mapping(value = "{id}", method = "put")

@@ -24,7 +24,7 @@
     });
     bg.load(["jquery-form","bootstrap","font-awesome","adminlte"])
   </script>
-  [@include_if_exists path="head_ext.ftl"/]
+  [@include_optional path="head_ext.ftl"/]
   ${tag.body}
  </head>
  <body>

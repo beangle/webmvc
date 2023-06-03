@@ -20,21 +20,22 @@ package org.beangle.webmvc.freemarker
 import freemarker.template.{SimpleHash, Template}
 import jakarta.servlet.http.HttpServletResponse
 import org.beangle.commons.lang.annotation.description
-import org.beangle.web.servlet.util.RequestUtils
-import org.beangle.template.freemarker.Configurer as FreemarkerConfigurer
 import org.beangle.template.api.ModelBuilder
+import org.beangle.template.freemarker.Configurer as FreemarkerConfigurer
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.view.View
+import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.execution.MappingHandler
 import org.beangle.webmvc.view.{ViewRender, ViewResult}
 
 import java.io.StringWriter
 
-/**
- * @author chaostone
- */
-@description("Freemaker视图渲染器")
-class FreemarkerViewRender(configurer: FreemarkerConfigurer, modelBuilder:ModelBuilder) extends ViewRender {
+/** Freemarker视图渲染器
+  *
+  * @author chaostone
+  */
+@description("Freemarker视图渲染器")
+class FreemarkerViewRender(configurer: FreemarkerConfigurer, modelBuilder: ModelBuilder) extends ViewRender {
 
   private val config = configurer.config
 
@@ -42,13 +43,17 @@ class FreemarkerViewRender(configurer: FreemarkerConfigurer, modelBuilder:ModelB
     val freemarkerView = view.asInstanceOf[FreemarkerView]
     val template = config.getTemplate(freemarkerView.location, context.locale)
     val model = modelBuilder.createModel(config).asInstanceOf[SimpleHash]
-    processTemplate(template, model, context.response)
+    try {
+      processTemplate(template, model, context.response)
+    } finally {
+      configurer.cleanProfile()
+    }
   }
 
   protected def processTemplate(template: Template, model: SimpleHash, response: HttpServletResponse): Unit = {
     var contentType = template.getCustomAttribute("content_type").asInstanceOf[String]
     if (contentType == null) contentType = configurer.contentType
-    val mapping= ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
+    val mapping = ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
     val decorators = mapping.action.profile.decorators
     if (decorators.isEmpty) {
       if (!contentType.contains("charset")) response.setCharacterEncoding(config.getDefaultEncoding)

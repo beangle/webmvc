@@ -77,7 +77,7 @@
     </bundle>
 
     <bundle name="jsrender" version="1.0.2">
-      <module name="jsrender" js="jsrender.js"></module>
+      <module name="jsrender" js="jsrender.js"/>
     </bundle>
 
   </static>
