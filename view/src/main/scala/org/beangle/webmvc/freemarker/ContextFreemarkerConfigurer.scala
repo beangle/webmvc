@@ -20,8 +20,8 @@ package org.beangle.webmvc.freemarker
 import freemarker.cache.{MultiTemplateLoader, TemplateLoader}
 import freemarker.template.ObjectWrapper
 import org.beangle.commons.lang.Strings.{split, substringAfter}
+import org.beangle.template.freemarker.{Configurer, ProfileTemplateLoader}
 import org.beangle.web.servlet.context.ServletContextHolder
-import org.beangle.template.freemarker.Configurer
 
 /**
  * @author chaostone
@@ -35,13 +35,9 @@ class ContextFreemarkerConfigurer extends Configurer {
   }
 
   protected override def detectTemplatePath(props: Map[String, String]): String = {
-    if (null == templatePath) {
-      templatePath = ServletContextHolder.context.getInitParameter("templatePath")
-    }
-    if (null == templatePath) {
-      templatePath = props.getOrElse("template_path", "class://")
-    }
-    if (null == templatePath) templatePath = "class://"
+    if null == templatePath then templatePath = ServletContextHolder.context.getInitParameter("templatePath")
+    if null == templatePath then templatePath = props.getOrElse("template_path", "class://")
+    if null == templatePath then templatePath = "class://"
     templatePath
   }
 
@@ -55,6 +51,6 @@ class ContextFreemarkerConfigurer extends Configurer {
         loaders += super.buildLoader(path)
       }
     }
-    new MultiTemplateLoader(loaders.toArray[TemplateLoader])
+    ProfileTemplateLoader(MultiTemplateLoader(loaders.toArray[TemplateLoader]))
   }
 }
