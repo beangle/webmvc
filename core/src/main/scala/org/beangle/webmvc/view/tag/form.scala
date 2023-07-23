@@ -43,6 +43,8 @@ class Form(context: ComponentContext) extends ActionClosingUIBean(context) {
 
   private var extraChecks: StringBuilder = _
 
+  var scripts: String = _
+
   override def evaluateParams(): Unit = {
     if (null == name && null == id) {
       generateIdIfEmpty()
@@ -88,6 +90,11 @@ class Form(context: ComponentContext) extends ActionClosingUIBean(context) {
         elementChecks.put(id, sb)
         sb.append('.').append(check)
     }
+  }
+
+  def addScript(script: String): Unit = {
+    if (null == scripts) scripts = script
+    else scripts = (scripts + "\n" + script)
   }
 
   def addCheck(check: String): Unit = {
@@ -180,7 +187,7 @@ class Field(context: ComponentContext) extends ClosingUIBean(context) {
   }
 }
 
-class AbstractTextBean(context: ComponentContext) extends UIBean(context) {
+class AbstractTextBean(context: ComponentContext) extends ClosingUIBean(context) {
   var name: String = _
   var label: String = _
   var title: String = _
@@ -430,6 +437,45 @@ class Select(context: ComponentContext) extends ActionClosingUIBean(context) {
 
 class Email(context: ComponentContext) extends AbstractTextBean(context) {
   check = "match('email')"
+}
+
+class Cellphone(context: ComponentContext) extends AbstractTextBean(context) {
+
+  override def evaluateParams(): Unit = {
+    super.evaluateParams()
+
+    if (!parameters.contains("onchange")) {
+      addParameter("onchange", "checkMobile(this)")
+    }
+    val myform = findAncestor(classOf[Form])
+    if (null != myform) {
+      myform.addScript(
+        """
+          |function validateMobile(v){
+          |  return /^1(3[0-9]|4[01456879]|5[0-3,5-9]|6[2567]|7[0-8]|8[0-9]|9[0-3,5-9])\d{8}$/.test(v)
+          |}
+          |function checkMobile(elem){
+          |  var row = jQuery(elem).parent();
+          |  if(elem.value){
+          |    if(!validateMobile(elem)){
+          |      raiseValidateError(row,"请正确填写手机号");
+          |    }else{
+          |      row.find("label.error").remove();
+          |    }
+          |  }else{
+          |    raiseValidateError(row,"请填写手机号");
+          |  }
+          |}
+          |function raiseValidateError(row,msg){
+          |  row.find("label.error").remove();
+          |  row.append('<label class="error">'+msg+'</label>');
+          |  return false;
+          |}
+          |""".stripMargin
+      )
+      myform.addCheck(id, s"match(validateMobile,'请正确填写手机号')")
+    }
+  }
 }
 
 class Number(context: ComponentContext) extends AbstractTextBean(context) {

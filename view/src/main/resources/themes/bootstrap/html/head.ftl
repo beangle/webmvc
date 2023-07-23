@@ -27,5 +27,5 @@
   [@include_optional path="head_ext.ftl"/]
   ${tag.body}
  </head>
- <body>
+ <body class="text-sm">
 [/#if]

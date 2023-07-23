@@ -8,6 +8,7 @@
 [#if (tag.validate!"")=="true" ||tag.onsubmit??]
 <script>
 beangle.load(["jquery-validity"]);
+${tag.scripts!}
 function onsubmit${tag.id}(){
   var res=null;
 [#if (tag.validate!"")=="true"]

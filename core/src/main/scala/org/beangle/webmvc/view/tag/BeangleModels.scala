@@ -86,18 +86,6 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   def col: Tag = get(classOf[Grid.Col])
 
-  //  def col: Tag = {
-  //    var model = models.get(classOf[Grid.Col])
-  //    if (null == model) {
-  //      // just for performance
-  //      model = new Tag(context) {
-  //        override protected def getBean = new Grid.Col(context)
-  //      }
-  //      models.put(classOf[Grid.Col], model)
-  //    }
-  //    model
-  //  }
-
   def treecol: Tag = get(classOf[Grid.Treecol])
 
   def boxcol: Tag = get(classOf[Grid.Boxcol])
@@ -107,23 +95,14 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
   def password: Tag = get(classOf[Password])
 
   def a: Tag = get(classOf[Anchor])
-  //
-  //  def a: Tag = {
-  //    var model = models.get(classOf[Anchor])
-  //    if (null == model) {
-  //      model = new Tag(context) {
-  //        override protected def getBean = new Anchor(context)
-  //      }
-  //      models.put(classOf[Anchor], model)
-  //    }
-  //    model
-  //  }
 
   def messages: Tag = get(classOf[Messages])
 
   def textfield: Tag = get(classOf[Textfield])
 
   def email: Tag = get(classOf[Email])
+
+  def cellphone: Tag = get(classOf[Cellphone])
 
   def number: Tag = get(classOf[Number])
 
