@@ -457,7 +457,7 @@ class Cellphone(context: ComponentContext) extends AbstractTextBean(context) {
           |function checkMobile(elem){
           |  var row = jQuery(elem).parent();
           |  if(elem.value){
-          |    if(!validateMobile(elem)){
+          |    if(!validateMobile(elem.value)){
           |      raiseValidateError(row,"请正确填写手机号");
           |    }else{
           |      row.find("label.error").remove();

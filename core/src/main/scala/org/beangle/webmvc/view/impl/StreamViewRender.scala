@@ -20,9 +20,9 @@ package org.beangle.webmvc.view.impl
 import org.beangle.commons.io.IOs
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.logging.Logging
-import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.view.{StreamView, View}
+import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.view.ViewRender
 
 @description("流视图渲染者")
@@ -47,6 +47,7 @@ class StreamViewRender extends ViewRender with Logging {
       case e: Exception => logger.warn(s"download file error ${stream.displayName}", e)
     } finally {
       IOs.close(stream.inputStream)
+      stream.postHook foreach (f => f())
     }
   }
 }
