@@ -46,11 +46,13 @@ class DefaultActionUriRender extends ActionUriRender {
 
     val router = context.handler.asInstanceOf[MappingHandler].mapping
     var params: collection.mutable.Map[String, String] = null
+    var suffix: String = null
     val mapping =
       if (uri.charAt(0) == '!') {
-        val dotIdx = uriEndIndexOf(uri)
-        params = To(uri, null).parameters
-        router.action.mappings(uri.substring(1, dotIdx))
+        val touri = To(uri, null)
+        suffix = touri.suffix
+        params = touri.parameters
+        router.action.mappings(touri.uri.substring(1))
       } else {
         val namespace = router.action.namespace
         var backStep = 0
@@ -68,14 +70,13 @@ class DefaultActionUriRender extends ActionUriRender {
               if (chars(findedSlash) == '/') backStep -= 1
               findedSlash -= 1
             }
-            //因为循环终止时多减了1,这一次+2补上,截取/
-            namespace.substring(0, findedSlash + 2)
+            namespace.substring(0, findedSlash + 2) //因为循环终止时多减了1,这一次+2补上,截取/
           } else {
-            // 保持最后一个字符是/
-            if (namespace.endsWith("/")) namespace else namespace + "/"
+            if (namespace.endsWith("/")) namespace else namespace + "/" // 保持最后一个字符是/
           }
         val finalURL = goNamespace + (if (index == 0) uri else uri.substring(index))
         val struts = To(finalURL, null).toStruts
+        suffix = struts.suffix
         params = struts.parameters
 
         val actionName = new StringBuilder
@@ -87,22 +88,6 @@ class DefaultActionUriRender extends ActionUriRender {
       }
     val tourl = mapping.toURL(params, context.params)
     params --= mapping.urlParams.keys
-    contextPath + tourl.params(params).url
-  }
-
-  /**
-   * Return uri end index of url
-   */
-  def uriEndIndexOf(url: String): Int = {
-    val lastIndex = url.length
-    val chars = new Array[Char](lastIndex)
-    url.getChars(0, lastIndex, chars, 0)
-    var i = 0
-    while (i < lastIndex) {
-      val c = chars(i)
-      if (c == '.' || c == '?') return i
-      i += 1
-    }
-    lastIndex
+    contextPath + tourl.params(params).suffix(suffix).url
   }
 }

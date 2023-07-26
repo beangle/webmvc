@@ -430,7 +430,7 @@ class Select(context: ComponentContext) extends ActionClosingUIBean(context) {
   def option: String = _option
 
   def remoteSearch: Boolean = {
-    Strings.contains(href, "{term}")
+    Strings.contains(href, "={term}") || Strings.contains(href, "=%7Bterm%7D")
   }
 
 }
@@ -559,4 +559,15 @@ class File(context: ComponentContext) extends AbstractTextBean(context) {
 
 class Url(context: ComponentContext) extends AbstractTextBean(context) {
   check = "match('url')"
+}
+
+class Combobox(context: ComponentContext) extends Select(context) {
+  override def evaluateParams(): Unit = {
+    super.evaluateParams()
+    this.multiple = null
+    this.chosenMin = "1"
+    if (null == this.empty) this.empty = "..."
+    require(null != href)
+  }
+
 }

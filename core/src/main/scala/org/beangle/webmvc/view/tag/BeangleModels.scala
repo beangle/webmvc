@@ -129,6 +129,8 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   def select2: Tag = get(classOf[Select2])
 
+  def combobox: Tag = get(classOf[Combobox])
+
   def navbar: Tag = get(classOf[Navbar])
 
   def nav: Tag = get(classOf[Nav])

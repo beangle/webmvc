@@ -35,11 +35,8 @@ ${tag.body}
 [#elseif tag.href??]
   [#if remoteSearch]
   beangle.load(["chosen","bui-ajaxchosen"],function(){
-    $("#${tag.id}").ajaxchosen(
-    { method:"GET",
-      url:"${tag.href}"
-    },
-    function (obj){
+    $("#${tag.id}").ajaxchosen({method:"GET", url:"${tag.href}"},
+      function (obj){
       var is_restapi = Array.isArray(obj);
       var datas = is_restapi?obj:obj.datas;
       var items=[]
@@ -48,8 +45,7 @@ ${tag.body}
         items.push({"value":data.${tag.keyName},"text":title});
        });
        return items;
-    },{placeholder_text_single:"${tag.empty!'...'}",search_contains:true,allow_single_deselect:true[#if tag.width??],width:'${tag.width}'[/#if]}
-    );
+    },{placeholder_text_single:"${tag.empty!'...'}",search_contains:true,allow_single_deselect:true[#if tag.width??],width:'${tag.width}'[/#if]});
   });
   [#else]
   jQuery.ajax({
