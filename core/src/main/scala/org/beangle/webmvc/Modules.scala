@@ -19,7 +19,6 @@ package org.beangle.webmvc
 
 import org.beangle.cdi.bind.{BindModule, profile}
 import org.beangle.commons.io.DefaultBinarySerializer
-import org.beangle.commons.text.i18n.{DefaultTextBundleRegistry, DefaultTextFormater}
 import org.beangle.web.servlet.http.accept.ContentNegotiationManagerFactory
 import org.beangle.webmvc.DefaultModule.bind
 import org.beangle.webmvc.config.impl.{DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider}
@@ -27,9 +26,7 @@ import org.beangle.webmvc.context.impl.{ContainerActionFinder, DefaultActionCont
 import org.beangle.webmvc.dispatch.impl.{DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper}
 import org.beangle.webmvc.execution.impl.{DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder}
 import org.beangle.webmvc.execution.interceptors.CorsInterceptor
-import org.beangle.webmvc.view.i18n.ActionTextResourceProvider
 import org.beangle.webmvc.view.impl.*
-import org.beangle.webmvc.view.tag.ContainerTagLibraryProvider
 
 object DefaultModule extends BindModule {
 
@@ -50,6 +47,8 @@ object DefaultModule extends BindModule {
     bind("mvc.ViewRender.redirect", classOf[RedirectActionViewRender])
     bind("mvc.ViewRender.stream", classOf[StreamViewRender])
     bind("mvc.ViewRender.status", classOf[StatusViewRender])
+    bind("mvc.ViewRender.raw", classOf[RawViewRender])
+
     bind("mvc.ViewManager", classOf[ViewManager])
 
     //dispatch
@@ -68,7 +67,8 @@ object DefaultModule extends BindModule {
 
     //content
     bind(classOf[ContentNegotiationManagerFactory]).property("favorPathExtension", "true")
-      .property("favorParameter", "true").property("parameterName", "format").property("ignoreAcceptHeader", "false")
+      .property("favorParameter", "true").property("parameterName", "format")
+      .property("ignoreAcceptHeader", "true")
     bind("Serializer.bin", DefaultBinarySerializer)
   }
 }
@@ -76,7 +76,8 @@ object DefaultModule extends BindModule {
 @profile("dev")
 class DevModule extends BindModule {
   protected override def binding(): Unit = {
-    bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan", "false")
+    bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder])
+      .property("viewScan", "false")
     bind("mvc.HandlerInvoker.method", classOf[DynaMethodInvokerBuilder]).primary()
   }
 }

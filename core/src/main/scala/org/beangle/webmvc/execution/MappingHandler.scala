@@ -20,7 +20,6 @@ package org.beangle.webmvc.execution
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.activation.MediaType
 import org.beangle.commons.io.Serializer
-import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.view.{PathView, View}
@@ -99,7 +98,10 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
               mimeType = mimeTypes.next()
               serializer = viewManager.getSerializer(mimeType)
             }
-            if (null != serializer) {
+            if (null == serializer) {
+              response.setCharacterEncoding("UTF-8")
+              response.getWriter.write(result.toString)
+            } else {
               response.setCharacterEncoding("UTF-8")
               val contentType = mimeType.toString + "; charset=UTF-8"
               val params = new collection.mutable.HashMap[String, Any]
