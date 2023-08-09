@@ -38,7 +38,7 @@
 
     <!--org.webjars:chosen:1.8.7-->
     <bundle name="chosen" version="1.8.7">
-      <module name="chosen" js="chosen.jquery.min.js" css="chosen.min.css"/>
+      <module name="chosen" js="chosen.jquery.js" css="chosen.min.css"/>
     </bundle>
 
     <!--org.webjars:jquery-ui:1.13.1-->
@@ -46,7 +46,7 @@
       <module name="jquery-ui" js="jquery-ui.min.js" css="jquery-ui.min.css"/>
     </bundle>
 
-    <bundle name="bui" version="0.5.4">
+    <bundle name="bui" version="0.5.5">
       <module name="beangle" js="js/beangle.js"/>
       <module name="bui" js="js/beangle-ui.js"  css="css/beangle-ui.css"/>
       <module name="bui-ajaxchosen" js="js/beangle-ui-ajaxchosen.js" depends="chosen"/>

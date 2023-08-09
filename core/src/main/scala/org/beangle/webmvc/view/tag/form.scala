@@ -341,10 +341,11 @@ class Select(context: ComponentContext) extends ActionClosingUIBean(context) {
 
     val myform = findAncestor(classOf[Form])
     if (null != myform) {
-      if ("true".equals(required)) myform.addRequire(id)
+      if ("true" == required) myform.addRequire(id)
       if (null != check) myform.addCheck(id, check)
     }
-    if (!"true".equals(required) && null == empty) empty = "..."
+    if ("true" != required && null == empty && multiple != "true") empty = "..."
+    if ("true" == required || "true" == multiple) empty = null
     if (null == values) setValue(requestParameter(name))
     if (null != values) collectKeys()
 
