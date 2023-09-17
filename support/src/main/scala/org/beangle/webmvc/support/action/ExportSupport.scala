@@ -50,8 +50,8 @@ trait ExportSupport[T <: Entity[_]] {
       case None => ctx.writeTo(os, format, get("fileName")).setTitles(titles, getBoolean("convertToString"))
       case Some(template) => ctx.writeTo(os, Format.Xlsx, get("fileName"), ClassLoaders.getResource(template).get)
     }
-    RequestUtils.setContentDisposition(response, ctx.fileName)
     configExport(ctx)
+    RequestUtils.setContentDisposition(response, ctx.fileName)
     ctx.exporter.exportData(ctx, ctx.writer)
     Status.Ok
   }

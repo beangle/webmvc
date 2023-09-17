@@ -17,13 +17,12 @@
 
 package org.beangle.webmvc.support.helper
 
-import org.beangle.commons.bean.Properties
 import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.{Page, PageLimit}
 import org.beangle.commons.lang.reflect.{BeanInfos, Reflections}
 import org.beangle.commons.lang.{Numbers, Strings}
 import org.beangle.commons.logging.Logging
-import org.beangle.data.dao.{Condition, OqlBuilder}
+import org.beangle.data.dao.{Condition, Conditions, OqlBuilder}
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.SingularProperty
 import org.beangle.web.action.context.{ActionContext, Params}
@@ -56,12 +55,12 @@ object QueryHelper extends Logging {
   }
 
   /**
-   * 提取中的条件
-   *
-   * @param clazz              实体类型
-   * @param prefix             参数中的前缀（不包含最后的.）
-   * @param exclusiveAttrNames 排除属性列表(prefix.attr1,prefix.attr2)
-   */
+    * 提取中的条件
+    *
+    * @param clazz              实体类型
+    * @param prefix             参数中的前缀（不包含最后的.）
+    * @param exclusiveAttrNames 排除属性列表(prefix.attr1,prefix.attr2)
+    */
   def extractConditions(clazz: Class[_], prefix: String, exclusiveAttrNames: String): List[Condition] = {
     var entity: Entity[_] = null
     var newClazz: Class[_] = clazz
@@ -79,42 +78,13 @@ object QueryHelper extends Logging {
       val entry = paramIter.next()
       val attr = entry._1
       val value = entry._2
-      val strValue = value.toString.trim
-      // 过滤空属性
-      if (Strings.isNotEmpty(strValue)) {
-        try {
-          if (RESERVED_NULL && "null".equals(strValue)) {
-            conditions += new Condition(prefix + "." + attr + " is null")
-          } else {
-            val vt = PopulateHelper.populator.init(entity, entityType, attr)
-            if (null != vt && vt._2.isInstanceOf[SingularProperty]) {
-              var values: List[Any] = getAll(params, attr, vt._2.clazz)
-              if (values.nonEmpty) {
-                if (vt._2.clazz == classOf[String]) {
-                  var head = values.head.toString
-                  if (values.size == 1 && head.contains(',')) {
-                    values = Strings.split(head, ',').toList
-                    head = values.head.toString
-                  }
-                  if (values.size == 1) {
-                    conditions += new Condition(s"$prefix.$attr like :${attr.replace('.', '_')}", s"%$head%")
-                  } else {
-                    val orQuery = values.indices.map { i => s"$prefix.$attr like :${attr.replace('.', '_')}_$i" }.mkString(" or ")
-                    val newValues = values.map(x => s"%$x%")
-                    conditions += new Condition(orQuery, newValues: _*)
-                  }
-                } else {
-                  if (values.size == 1) {
-                    conditions += new Condition(s"$prefix.$attr =:${attr.replace('.', '_')}", values.head)
-                  } else {
-                    conditions += new Condition(s"$prefix.$attr in (:${attr.replace('.', '_')})", values)
-                  }
-                }
-              }
-            }
+      if (null != value) {
+        val strValue = if value.getClass.isArray then value.asInstanceOf[Array[Any]].mkString(",") else value.toString
+        if (Strings.isNotBlank(strValue)) {
+          val vt = PopulateHelper.populator.init(entity, entityType, attr)
+          if (null != vt && vt._2.isInstanceOf[SingularProperty]) {
+            conditions += Conditions.parse(s"$prefix.$attr", strValue, vt._2.clazz)
           }
-        } catch {
-          case e: Exception => logger.error("Error populate entity " + prefix + "'s attribute " + attr, e)
         }
       }
     }
@@ -143,26 +113,26 @@ object QueryHelper extends Logging {
   }
 
   /**
-   * 把entity alias的别名的参数转换成条件.<br>
-   *
-   * @param entityQuery        查询构建器
-   * @param exclusiveAttrNames 以entityQuery中alias开头的属性串
-   */
+    * 把entity alias的别名的参数转换成条件.<br>
+    *
+    * @param entityQuery        查询构建器
+    * @param exclusiveAttrNames 以entityQuery中alias开头的属性串
+    */
   def populate(builder: OqlBuilder[_]): this.type = {
     builder.where(extractConditions(builder.entityClass, builder.alias, null))
     this
   }
 
   /**
-   * 从的参数或者cookie中(参数优先)取得分页信息
-   */
+    * 从的参数或者cookie中(参数优先)取得分页信息
+    */
   def pageLimit: PageLimit = {
     new PageLimit(pageIndex, pageSize)
   }
 
   /**
-   * 获得请求中的页码
-   */
+    * 获得请求中的页码
+    */
   def pageIndex: Int = {
     val pageIndex = Params.getInt(PageParam) match {
       case Some(p) => p
@@ -172,8 +142,8 @@ object QueryHelper extends Logging {
   }
 
   /**
-   * 获得请求中的页长
-   */
+    * 获得请求中的页长
+    */
   def pageSize: Int = {
     var pageSize = Params.get(PageSizeParam).orElse(Params.get("page[size]")).getOrElse("")
     var pagesize = Page.DefaultPageSize
@@ -214,14 +184,14 @@ object QueryHelper extends Logging {
   }
 
   /**
-   * 增加日期区间查询条件
-   *
-   * @param query       查询构建器
-   * @param alias       别名
-   * @param attr        时间限制属性
-   * @param beginOnName 开始的属性名字(全名)
-   * @param endOnName   结束的属性名字(全名)
-   */
+    * 增加日期区间查询条件
+    *
+    * @param query       查询构建器
+    * @param alias       别名
+    * @param attr        时间限制属性
+    * @param beginOnName 开始的属性名字(全名)
+    * @param endOnName   结束的属性名字(全名)
+    */
   def dateBetween(query: OqlBuilder[_], alias: String, attr: String, beginOnName: String,
                   endOnName: String): Unit = {
     val stime = Params.get(beginOnName)
