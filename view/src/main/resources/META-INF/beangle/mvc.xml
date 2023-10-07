@@ -80,5 +80,6 @@
       <module name="jsrender" js="jsrender.js"/>
     </bundle>
 
+    <bundle name="pdfjs" version="1.9.426"/>
   </static>
 </mvc>

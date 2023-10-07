@@ -23,8 +23,8 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
-val bg_commons_ver = "5.6.0"
-val bg_data_ver = "5.7.0"
+val bg_commons_ver = "5.6.1"
+val bg_data_ver = "5.7.2"
 val bg_cdi_ver = "0.5.5"
 val bg_cache_ver = "0.1.5"
 val bg_template_ver = "0.1.7"
