@@ -18,9 +18,9 @@
 package org.beangle.webmvc.view.tag
 
 import org.beangle.commons.lang.Strings
-import org.beangle.template.api.ComponentContext
+import org.beangle.template.api.{ClosingUIBean, ComponentContext, Themes, UIBean}
+
 import java.io.Writer
-import org.beangle.template.api.{UIBean,ClosingUIBean,Themes}
 
 class Head(context: ComponentContext) extends ActionClosingUIBean(context) {
   var loadui = true
@@ -88,4 +88,8 @@ class Anchor(context: ComponentContext) extends ActionClosingUIBean(context) {
       super.doEnd(writer, body)
     }
   }
+}
+
+class HairLine(context: ComponentContext) extends UIBean(context) {
+
 }

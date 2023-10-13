@@ -199,7 +199,7 @@ object Grid {
     override def doEnd(writer: Writer, body: String): Boolean = {
       if (context.theme == Themes.Default) {
         try {
-          writer.append("<td class=\"gridselect\"")
+          writer.append("<td class=\"grid-select\"")
           if (null != id) writer.append(" id=\"").append(id).append("\"")
           writer.append(parameterString).append(">")
           if (display) {

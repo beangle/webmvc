@@ -6,6 +6,7 @@
 <div class="search-header">
   <span class="toolbar-icon action-info"></span><em>${tag.title}</em>
 </div>
+[@b.hairline/]
 [/#if]
 ${tag.body}
 [#if !tag.body?contains('submit')]

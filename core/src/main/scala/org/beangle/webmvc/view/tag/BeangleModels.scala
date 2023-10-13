@@ -118,6 +118,8 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   def textfields: Tag = get(classOf[Textfields])
 
+  def hairline:Tag = get(classOf[HairLine])
+
   @deprecated("using @b.date")
   def datepicker: Tag = get(classOf[Date])
 
