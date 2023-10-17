@@ -2,7 +2,7 @@
 [#if tag.caption??]<div class="grid-caption">${tag.caption?html}</div>[/#if]
 [#if tag.hasbar]<div id="${tag.id}_bar1" class="grid-bar"></div>[/#if]
 <div class="grid-content">
-<table class="grid-table border-1px border-blue" id="${tag.id}">
+<table class="grid-table border-0px-lr [#if !tag.hasbar]border-0px-tb[/#if]" id="${tag.id}">
 [#if tag.cols?size>0]
 <thead class="grid-head">
 [#assign filterable = (tag.filterable=="true" || tag.filters?size > 0 )]
