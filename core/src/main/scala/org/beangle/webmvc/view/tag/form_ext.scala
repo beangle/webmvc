@@ -19,7 +19,7 @@ package org.beangle.webmvc.view.tag
 
 import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.{Numbers, Strings}
-import org.beangle.template.api.{ComponentContext,UIBean}
+import org.beangle.template.api.{ComponentContext, UIBean}
 
 import scala.jdk.javaapi.CollectionConverters.asScala
 
@@ -80,7 +80,7 @@ class Radios(context: ComponentContext) extends UIBean(context) {
   }
 
   private def convertItems(): Iterable[_] = {
-    import Radio._
+    import Radio.*
     items match {
       case m: collection.Map[_, _] =>
         m.keys.toList
@@ -280,7 +280,6 @@ class Startend(context: ComponentContext) extends UIBean(context) {
     dates = new Array[Date](nameArray.length)
     Date.ResvervedFormats.get(format) foreach { f => format = f }
     val requiredArray = Strings.split(required, ',')
-    val commentArray = Strings.split(comment, ',')
     val labelArray = Strings.split(label, ',')
     nameArray.indices foreach { i =>
       if (i < 2) {
@@ -291,11 +290,8 @@ class Startend(context: ComponentContext) extends UIBean(context) {
         if (requiredArray != null) {
           dates(i).required = if (requiredArray.length == 1) required else requiredArray(i)
         }
-        if (commentArray != null) {
-          dates(i).comment = if (commentArray.length == 1) comment else commentArray(i)
-        }
-        if (labelArray != null) {
-          dates(i).label = if (labelArray.length == 1) label else labelArray(i)
+        if (labelArray != null && labelArray.length == 2) {
+          dates(i).label = labelArray(i)
         }
         dates(i).title = dates(i).label
         if (i == 0) dates(0).value = start
