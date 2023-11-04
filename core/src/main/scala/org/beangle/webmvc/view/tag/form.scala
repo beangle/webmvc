@@ -136,6 +136,7 @@ class Submit(context: ComponentContext) extends ActionUIBean(context) {
       if (null != f) formId = f.id
     }
     if (null != onsubmit && -1 != onsubmit.indexOf('(')) onsubmit = Strings.concat("'", onsubmit, "'")
+    if (null == value) value = "action.submit"
     value = getText(value)
     if (null != action) action = render(action)
   }
@@ -344,8 +345,8 @@ class Select(context: ComponentContext) extends ActionClosingUIBean(context) {
       if ("true" == required) myform.addRequire(id)
       if (null != check) myform.addCheck(id, check)
     }
-    if ("true" != required && null == empty && multiple != "true") empty = "..."
-    if ("true" == required || "true" == multiple) empty = null
+    if (null == empty && "true" != required && multiple != "true") empty = "..."
+    if ("true" == multiple) empty = null
     if (null == values) setValue(requestParameter(name))
     if (null != values) collectKeys()
 
