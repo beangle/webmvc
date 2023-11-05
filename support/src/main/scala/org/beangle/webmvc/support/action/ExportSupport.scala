@@ -18,12 +18,11 @@
 package org.beangle.webmvc.support.action
 
 import org.beangle.commons.lang.{ClassLoaders, Strings}
+import org.beangle.commons.text.i18n.Messages
 import org.beangle.data.dao.{LimitQuery, QueryPage}
 import org.beangle.data.model.Entity
 import org.beangle.data.transfer.Format
-import org.beangle.data.transfer.csv.CsvItemWriter
-import org.beangle.data.transfer.excel.{ExcelItemWriter, ExcelTemplateExporter, ExcelTemplateWriter}
-import org.beangle.data.transfer.exporter.{ExportContext, SimpleEntityExporter}
+import org.beangle.data.transfer.exporter.ExportContext
 import org.beangle.web.action.annotation.{ignore, mapping}
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.context.Params.*
@@ -45,9 +44,12 @@ trait ExportSupport[T <: Entity[_]] {
       case Some(f) => Format.valueOf(Strings.capitalize(if (f == "xls") "xlsx" else f))
     }
     val titles = get("titles").orElse(get("properties")).getOrElse("")
+    val messages = Messages(ActionContext.current.locale)
+    val entityClazz = this.entityClass
+    val properties = Strings.split(titles).map(p => if p.contains(":") then p else p + ":" + messages.get(entityClazz, p))
     val os = response.getOutputStream
     get("template") match {
-      case None => ctx.writeTo(os, format, get("fileName")).setTitles(titles, getBoolean("convertToString"))
+      case None => ctx.writeTo(os, format, get("fileName")).setTitles(properties.mkString(","), getBoolean("convertToString"))
       case Some(template) => ctx.writeTo(os, Format.Xlsx, get("fileName"), ClassLoaders.getResource(template).get)
     }
     configExport(ctx)
