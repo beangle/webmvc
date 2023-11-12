@@ -15,18 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.beangle.webmvc.view.tag
+package org.beangle.webmvc.view.i18n
 
-import org.beangle.template.api.{ComponentContext, TagLibrary, TemplateEngine}
-import org.beangle.web.action.context.ActionContext
+import org.beangle.commons.lang.annotation.spi
+import org.beangle.commons.text.i18n.TextResource
+import org.beangle.web.action.execution.Handler
 
-/**
-  * @author chaostone
-  */
-abstract class AbstractTagLibrary extends TagLibrary {
+import java.util as ju
 
-  protected final def getComponentContext(): ComponentContext = {
-    ActionContext.current.stash[ComponentContext]("_beangle_webmvc_component_context")
-  }
-
+@spi
+trait TextResourceProvider {
+  def getTextResource(locale: ju.Locale, handler: Handler): TextResource
 }

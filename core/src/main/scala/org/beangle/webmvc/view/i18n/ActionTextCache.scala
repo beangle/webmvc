@@ -15,18 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.beangle.webmvc.view.tag
+package org.beangle.webmvc.view.i18n
 
-import org.beangle.template.api.{ComponentContext, TagLibrary, TemplateEngine}
-import org.beangle.web.action.context.ActionContext
+class ActionTextCache {
+  private var caches: Map[Class[_], Map[String, String]] = Map.empty
 
-/**
-  * @author chaostone
-  */
-abstract class AbstractTagLibrary extends TagLibrary {
-
-  protected final def getComponentContext(): ComponentContext = {
-    ActionContext.current.stash[ComponentContext]("_beangle_webmvc_component_context")
+  def getText(clazz: Class[_], key: String): Option[String] = {
+    caches.get(clazz) match
+      case None => None
+      case Some(kvs) => kvs.get(key)
   }
 
+  def update(clazz: Class[_], key: String, value: String, common: Boolean): Unit = {
+    caches.get(clazz) match
+      case None =>
+        if common then caches += (clazz, Map(key.intern() -> value.intern()))
+        else caches += (clazz, Map(key -> value))
+      case Some(map) =>
+        if common then caches += (clazz, map + (key.intern() -> value.intern()))
+        else caches += (clazz, map + (key -> value))
+
+  }
 }

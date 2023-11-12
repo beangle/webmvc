@@ -17,25 +17,42 @@
 
 package org.beangle.webmvc.view.i18n
 
-import java.{util => ju}
-
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
-import org.beangle.commons.text.i18n.{TextBundleRegistry, TextFormater, TextResource, TextResourceProvider}
+import org.beangle.commons.text.i18n.*
 import org.beangle.web.action.context.ActionContext
+import org.beangle.web.action.execution.Handler
+import org.beangle.webmvc.execution.MappingHandler
+
+import java.util as ju
 
 @description("基于Action的文本资源提供者")
-class ActionTextResourceProvider(registry: TextBundleRegistry, formater: TextFormater)
+class ActionTextResourceProvider(loader: TextBundleLoader, formatter: TextFormatter)
   extends TextResourceProvider with Initializing {
 
+  var reloadable: Boolean = _
   var defaults: String = "beangle,application"
+  private val registry = new DefaultTextBundleRegistry
+  private val textCache = new ActionTextCache
 
   override def init(): Unit = {
     registry.addDefaults(Strings.split(defaults, ",").toIndexedSeq: _*)
   }
 
-  def getTextResource(locale: ju.Locale): TextResource = {
-    new ActionTextResource(ActionContext.current, locale, registry, formater)
+  override def getTextResource(locale: ju.Locale, handler: Handler): TextResource = {
+    if reloadable then
+      val newRegistry = new DefaultTextBundleRegistry
+      newRegistry.loader = this.loader
+      newRegistry.addDefaults(Strings.split(defaults, ",").toIndexedSeq: _*)
+      newResource(locale, newRegistry, handler, null)
+    else
+      newResource(locale, registry, handler, textCache)
+  }
+
+  def newResource(locale: ju.Locale, registry: TextBundleRegistry, handler: Handler, cache: ActionTextCache): TextResource = {
+    handler match
+      case mh: MappingHandler => new ActionTextResource(ActionContext.current, mh.mapping.action, locale, registry, formatter, cache)
+      case _ => new DefaultTextResource(locale, registry, formatter)
   }
 }

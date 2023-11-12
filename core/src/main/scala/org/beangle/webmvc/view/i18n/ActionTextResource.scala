@@ -19,98 +19,92 @@ package org.beangle.webmvc.view.i18n
 
 import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.Strings
-import org.beangle.commons.text.i18n.{DefaultTextResource, TextBundleRegistry, TextFormater, TextProvider}
+import org.beangle.commons.text.i18n.{ClassTextFinder, DefaultTextResource, TextBundleRegistry, TextFormatter}
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.support.EntitySupport
+import org.beangle.webmvc.config.ActionMapping
 import org.beangle.webmvc.execution.MappingHandler
 
 import java.util as ju
 import scala.collection.mutable
 
-class ActionTextResource(context: ActionContext, locale: ju.Locale, registry: TextBundleRegistry, formater: TextFormater)
-  extends DefaultTextResource(locale, registry, formater) with TextProvider {
+class ActionTextResource(context: ActionContext, action: ActionMapping, locale: ju.Locale, registry: TextBundleRegistry, formatter: TextFormatter, cache: ActionTextCache)
+  extends DefaultTextResource(locale, registry, formatter) {
 
-  /**
-   * 1 remove index key(user.roles[0].name etc.)
-   * 2 change ModelDriven to EntitySupport
-   * 3 remove superclass and interface lookup
-   */
+  /** Get text by key,don't apply format by variables
+    * 1 get text by action and package
+    * 2 get text according EntitySupport's entity class
+    * 3 get text by superclass and interfaces
+    */
   protected override def get(key: String): Option[String] = {
     if (key == null) return Some("")
+    val actionClass = action.clazz
+    var msg: Option[String] = None
 
-    val handler = context.handler
-    if (!handler.isInstanceOf[MappingHandler]) return None
-    val amHander = handler.asInstanceOf[MappingHandler]
-    val mapping = amHander.mapping
+    if null != cache then
+      msg = cache.getText(actionClass, key)
+      if (msg.isDefined) return msg
 
-    val actionClass = mapping.action.clazz
-    val checked = new mutable.HashSet[String]
+    msg = find(actionClass, key)
+
+    if (msg.isEmpty) {
+      msg = registry.getDefaultText(key, locale)
+      if msg.nonEmpty && null != cache then cache.update(actionClass, key, msg.get, true)
+    } else {
+      if null != cache then cache.update(actionClass, key, msg.get, false)
+    }
+    msg
+  }
+
+  private def find(actionClass: Class[_], key: String): Option[String] = {
     // search up class hierarchy
-    var msg = getMessage(actionClass.getName, locale, key)
-    if (msg.isDefined) return msg
-    // nothing still? all right, search the package hierarchy now
-    msg = getPackageMessage(actionClass, key, checked)
+    var msg = new ClassTextFinder(locale, registry).find(actionClass, key)
     if (msg.isDefined) return msg
 
     if (classOf[EntitySupport[_]].isAssignableFrom(actionClass)) {
       // search up model's class hierarchy
-      val entityClass = mapping.action.action.asInstanceOf[EntitySupport[_]].entityClass
+      val entityClass = action.action.asInstanceOf[EntitySupport[_]].entityClass
       if (entityClass != null) {
         val entityPrefix = entityClass.getSimpleName + "."
         if (Strings.capitalize(key).startsWith(entityPrefix)) {
-          msg = getMessage(entityClass.getName, locale, key.substring(entityPrefix.length))
+          msg = getPropertyMessage(entityClass, key.substring(entityPrefix.length))
         }
-        if (msg.isEmpty) msg = getPackageMessage(entityClass, key, checked)
         if (msg.isDefined) return msg
       }
     }
-
     // see if it's a child property
-    var idx = key.indexOf(".")
+    val idx = key.indexOf(".")
     if (idx > 0) {
-      var prop = key.substring(0, idx)
-      val obj = context.attribute[Any](prop)
-      if (null != obj && !prop.equals("action")) {
-        var aClass: Class[_] = obj.getClass
-        var newKey = key
-        var goOn = true
-        while (null != aClass && goOn && msg.isEmpty) {
-          msg = getPackageMessage(aClass, newKey, checked)
-          if (msg.isEmpty) {
-            val nextIdx = newKey.indexOf(".", idx + 1)
-            if (nextIdx == -1) {
-              goOn = false
-            } else {
-              prop = newKey.substring(idx + 1, nextIdx)
-              newKey = newKey.substring(idx + 1)
-              idx = nextIdx
-              aClass = if (Strings.isNotEmpty(prop)) Properties.getType(aClass, prop) else null
-            }
-          }
+      val first = key.substring(0, idx)
+      val obj = context.attribute[Any](first)
+      if (null != obj) {
+        msg = getPropertyMessage(obj.getClass, key.substring(idx + 1))
+      }
+    }
+    msg
+  }
+
+  private def getPropertyMessage(clazz: Class[_], key: String): Option[String] = {
+    var aClass = clazz
+    var newKey = key
+    var goOn = true
+    var msg: Option[String] = None
+    var idx = -1
+    while (null != aClass && goOn && msg.isEmpty) {
+      msg = new ClassTextFinder(locale, registry).find(aClass, newKey)
+      if (msg.isEmpty) {
+        val nextIdx = newKey.indexOf(".", idx + 1)
+        if (nextIdx == -1) {
+          goOn = false
+        } else {
+          val prop = newKey.substring(idx + 1, nextIdx)
+          newKey = newKey.substring(nextIdx + 1)
+          idx = nextIdx
+          aClass = if (Strings.isNotEmpty(prop)) Properties.getType(aClass, prop) else null
         }
       }
     }
-    registry.getDefaultText(key, locale)
+    msg
   }
 
-  private def getPackageMessage(clazz: Class[_], key: String, checked: mutable.Set[String]): Option[String] = {
-    var msg: Option[String] = None
-    var baseName = clazz.getName
-    while (baseName.lastIndexOf('.') != -1 && msg.isEmpty) {
-      baseName = baseName.substring(0, baseName.lastIndexOf('.'))
-      if (!checked.contains(baseName)) {
-        msg = getMessage(baseName + ".package", locale, key)
-        if (msg.isDefined) return msg
-        checked += baseName
-      }
-    }
-    None
-  }
-
-  /**
-   * Gets the message from the named resource bundle.
-   */
-  private def getMessage(bundleName: String, locale: ju.Locale, key: String): Option[String] = {
-    registry.load(locale, bundleName).get(key)
-  }
 }

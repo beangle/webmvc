@@ -63,15 +63,15 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
   def isPage(data: Object) = data.isInstanceOf[Page[_]]
 
   def text(name: String): String = {
-    context.textProvider(name, name)
+    context.textResource(name, name)
   }
 
   def text(name: String, arg0: Object): String = {
-    context.textProvider(name, name, arg0)
+    context.textResource(name, name, arg0)
   }
 
   def text(name: String, arg0: Object, arg1: Object): String = {
-    context.textProvider(name, name, arg0, arg1)
+    context.textResource(name, name, arg0, arg1)
   }
 
   def isAjax: Boolean = {

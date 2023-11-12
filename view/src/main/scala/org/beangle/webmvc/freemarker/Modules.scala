@@ -18,7 +18,7 @@
 package org.beangle.webmvc.freemarker
 
 import org.beangle.cdi.bind.BindModule
-import org.beangle.commons.text.i18n.{DefaultTextBundleRegistry, DefaultTextFormater}
+import org.beangle.commons.text.i18n.{DefaultTextBundleLoader, DefaultTextFormatter}
 import org.beangle.template.freemarker.DefaultTagTemplateEngine
 import org.beangle.webmvc.context.impl.ParamLocaleResolver
 import org.beangle.webmvc.view.i18n.ActionTextResourceProvider
@@ -31,9 +31,10 @@ object DefaultModule extends BindModule {
     bind("mvc.TagLibraryProvider.default", classOf[ContainerTagLibraryProvider])
     //i18n
     bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
-    bind("mvc.TextFormatter.default", classOf[DefaultTextFormater])
-    bind("mvc.TextBundleRegistry.default", classOf[DefaultTextBundleRegistry])
       .property("reloadable", devEnabled)
+
+    bind("mvc.TextFormatter.default", classOf[DefaultTextFormatter])
+    bind("mvc.TextBundleLoader.default", classOf[DefaultTextBundleLoader])
     bind("mvc.ActionContextInitializer.component", classOf[ComponentContextInitializer])
     bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
     bind("mvc.Taglibrary.b", classOf[BeangleTagLibrary])

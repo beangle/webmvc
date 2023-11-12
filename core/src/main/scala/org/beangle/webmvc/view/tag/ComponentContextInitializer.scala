@@ -17,7 +17,7 @@
 
 package org.beangle.webmvc.view.tag
 
-import org.beangle.commons.text.i18n.TextProvider
+import org.beangle.commons.text.i18n.TextResource
 import org.beangle.template.api.{ComponentContext, IndexableIdGenerator, TagTemplateEngine, TemplateEngine}
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.dispatch.ActionUriRender
@@ -32,17 +32,17 @@ class ComponentContextInitializer extends ActionContextInitializer {
 
   override def init(context: ActionContext): Unit = {
     val locale = localeResolver.resolve(context.request)
-    val textProvider = textResourceProvider.getTextResource(locale).asInstanceOf[TextProvider]
+    val textResource = textResourceProvider.getTextResource(locale,context.handler)
 
     val req = context.request
     val queryString = req.getQueryString
     val fullpath = if (null == queryString) req.getRequestURI else req.getRequestURI + queryString
     val idGenerator = new IndexableIdGenerator(String.valueOf(Math.abs(fullpath.hashCode)))
     val services = Map("uriRender" -> uriRender)
-    val cc = new ComponentContext(templateEngine, idGenerator, textProvider, services)
+    val cc = new ComponentContext(templateEngine, idGenerator, textResource, services)
 
     context.locale = locale
-    context.textProvider = textProvider
+    context.textResource = textResource
     context.stash("_beangle_webmvc_component_context", cc)
   }
 }

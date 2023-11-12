@@ -49,9 +49,9 @@ class DefaultRouteProvider extends RouteProvider with Logging {
         am.mappings foreach {
           case (_, mapping) =>
             val handler = new MappingHandler(mapping, invokerBuilder.build(am.action, mapping), viewManager, responseCache)
-            results += new Route(mapping.httpMethod, mapping.url, handler)
+            results += Route(mapping.httpMethod, mapping.url, handler)
             stripTailIndex(mapping.url) foreach { short =>
-              results += new Route(mapping.httpMethod, short, handler)
+              results += Route(mapping.httpMethod, short, handler)
             }
         }
     }

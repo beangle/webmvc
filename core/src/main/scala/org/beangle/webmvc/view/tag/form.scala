@@ -78,8 +78,8 @@ class Form(context: ComponentContext) extends ActionClosingUIBean(context) {
   }
 
   /**
-   * Required element by id
-   */
+    * Required element by id
+    */
   def addRequire(id: String): Unit = this.addCheck(id, "require().match('notBlank')")
 
   def addCheck(id: String, check: String): Unit = {
@@ -377,7 +377,9 @@ class Select(context: ComponentContext) extends ActionClosingUIBean(context) {
         case tuple: (_, _) => tuple._1
         case _ =>
           if (Primitives.isWrapperType(value.getClass)) value
-          else Properties.get[Any](value, keyName)
+          else {
+            if keyName == "key" then value else Properties.get[Any](value, keyName)
+          }
       }
       k match {
         case null => emptyValues += value
