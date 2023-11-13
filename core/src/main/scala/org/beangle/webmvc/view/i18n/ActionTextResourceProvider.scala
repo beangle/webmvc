@@ -38,6 +38,7 @@ class ActionTextResourceProvider(loader: TextBundleLoader, formatter: TextFormat
 
   override def init(): Unit = {
     registry.addDefaults(Strings.split(defaults, ",").toIndexedSeq: _*)
+    registry.loader = this.loader
   }
 
   override def getTextResource(locale: ju.Locale, handler: Handler): TextResource = {
