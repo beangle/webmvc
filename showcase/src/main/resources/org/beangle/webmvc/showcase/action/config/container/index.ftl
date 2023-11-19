@@ -13,11 +13,6 @@
     <li>${m.class.name}</li>
   [/#list]
 </ul>
-<h4> Reconfig Locations</h4>
-<ul>
-    <li>${container.reconfigLocations!}</li>
-</ul>
-<h4>
 
 </h4>
 [#assign caption]
