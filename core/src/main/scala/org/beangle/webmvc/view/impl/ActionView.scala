@@ -17,24 +17,24 @@
 
 package org.beangle.webmvc.view.impl
 
-import java.net.URLEncoder
-
 import jakarta.servlet.http.HttpServletRequest
-import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
+import org.beangle.commons.lang.{Charsets, Strings}
 import org.beangle.commons.net.http.HttpMethods
-import org.beangle.web.action.{To, ToClass}
 import org.beangle.web.action.annotation.view
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.view.{ActionView, ForwardActionView, RedirectActionView, View}
+import org.beangle.web.action.{To, ToClass}
 import org.beangle.webmvc.config.{Configurer, RouteMapping}
 import org.beangle.webmvc.view.{TypeViewBuilder, ViewRender}
+
+import java.net.URLEncoder
 
 @description("前向调转视图构建者")
 class ForwardActionViewBuilder extends TypeViewBuilder {
 
   override def build(view: view): View = {
-    new ForwardActionView(To(view.location,null))
+    new ForwardActionView(To(view.location, null))
   }
 
   override def supportViewType: String = {
@@ -46,7 +46,7 @@ class ForwardActionViewBuilder extends TypeViewBuilder {
 class RedirectActionViewBuilder extends TypeViewBuilder {
 
   override def build(view: view): View = {
-    new RedirectActionView(To(view.location,null))
+    new RedirectActionView(To(view.location, null))
   }
 
   override def supportViewType: String = {
@@ -107,8 +107,9 @@ class RedirectActionViewRender(val configurer: Configurer) extends ViewRender {
       Strings.split(redirectParams, "&") foreach { pair =>
         val v = Strings.substringAfter(pair, "=")
         if (Strings.isNotBlank(v)) {
-          rpsb.append(Strings.substringBefore(pair, "=")).append('=')
-          rpsb.append(URLEncoder.encode(v, "utf-8"))
+          val key = URLEncoder.encode(Strings.substringBefore(pair, "="), Charsets.UTF_8)
+          rpsb.append(key).append('=')
+          rpsb.append(URLEncoder.encode(v, Charsets.UTF_8))
           rpsb.append('&')
         }
       }

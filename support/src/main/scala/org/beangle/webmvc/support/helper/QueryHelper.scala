@@ -28,9 +28,11 @@ import org.beangle.data.model.meta.SingularProperty
 import org.beangle.web.action.context.{ActionContext, Params}
 import org.beangle.web.servlet.util.CookieUtils
 
+import java.net.URLEncoder
 import java.text.{ParseException, SimpleDateFormat}
 import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
 import java.util as ju
+import scala.collection.mutable
 
 object QueryHelper extends Logging {
 
@@ -55,12 +57,12 @@ object QueryHelper extends Logging {
   }
 
   /**
-    * 提取中的条件
-    *
-    * @param clazz              实体类型
-    * @param prefix             参数中的前缀（不包含最后的.）
-    * @param exclusiveAttrNames 排除属性列表(prefix.attr1,prefix.attr2)
-    */
+   * 提取中的条件
+   *
+   * @param clazz              实体类型
+   * @param prefix             参数中的前缀（不包含最后的.）
+   * @param exclusiveAttrNames 排除属性列表(prefix.attr1,prefix.attr2)
+   */
   def extractConditions(clazz: Class[_], prefix: String, exclusiveAttrNames: String): List[Condition] = {
     var entity: Entity[_] = null
     var newClazz: Class[_] = clazz
@@ -71,7 +73,7 @@ object QueryHelper extends Logging {
     } catch {
       case _: Exception => throw new RuntimeException("[RequestUtil.extractConditions]: error in in initialize " + clazz)
     }
-    val conditions = new collection.mutable.ListBuffer[Condition]()
+    val conditions = new mutable.ListBuffer[Condition]
     val params = Params.sub(prefix, exclusiveAttrNames)
     val paramIter = params.iterator
     while (paramIter.hasNext) {
@@ -81,14 +83,42 @@ object QueryHelper extends Logging {
       if (null != value) {
         val strValue = if value.getClass.isArray then value.asInstanceOf[Array[Any]].mkString(",") else value.toString
         if (Strings.isNotBlank(strValue)) {
-          val vt = PopulateHelper.populator.init(entity, entityType, attr)
-          if (null != vt && vt._2.isInstanceOf[SingularProperty]) {
-            conditions += Conditions.parse(s"$prefix.$attr", strValue, vt._2.clazz)
+          if (attr.endsWith("}")) {
+            val attrs = splitAttrs(attr)
+            val locals = new mutable.ListBuffer[Condition]
+            attrs.foreach { attr1 =>
+              val vt = PopulateHelper.populator.init(entity, entityType, attr1)
+              if null != vt && vt._2.isInstanceOf[SingularProperty] then
+                locals += Conditions.parse(s"$prefix.$attr1", strValue, vt._2.clazz)
+            }
+            if locals.size == 1 then
+              conditions += locals.head
+            else if locals.size > 1 then
+              val orContent = locals.map(x => x.content).mkString(" or ")
+              val orCond = new Condition(orContent)
+              orCond.params ++= locals.flatMap(x => x.params)
+              conditions += orCond
+          } else {
+            val vt = PopulateHelper.populator.init(entity, entityType, attr)
+            if null != vt && vt._2.isInstanceOf[SingularProperty] then
+              conditions += Conditions.parse(s"$prefix.$attr", strValue, vt._2.clazz)
           }
         }
       }
     }
     conditions.toList
+  }
+
+  private def splitAttrs(attr: String): Seq[String] = {
+    if attr.endsWith("}") then
+      val head = Strings.substringBefore(attr, "{")
+      if Strings.isEmpty(head) && attr.charAt(0) != '{' then
+        List(attr)
+      else
+        val subAttrs = Strings.split(Strings.substringBetween(attr, "{", "}"), ',')
+        subAttrs.map(x => head + x).toSeq
+    else
+      List(attr)
   }
 
   private def getAll(params: collection.Map[String, Any], attr: String): List[Any] = {
@@ -113,26 +143,26 @@ object QueryHelper extends Logging {
   }
 
   /**
-    * 把entity alias的别名的参数转换成条件.<br>
-    *
-    * @param entityQuery        查询构建器
-    * @param exclusiveAttrNames 以entityQuery中alias开头的属性串
-    */
+   * 把entity alias的别名的参数转换成条件.<br>
+   *
+   * @param entityQuery        查询构建器
+   * @param exclusiveAttrNames 以entityQuery中alias开头的属性串
+   */
   def populate(builder: OqlBuilder[_]): this.type = {
     builder.where(extractConditions(builder.entityClass, builder.alias, null))
     this
   }
 
   /**
-    * 从的参数或者cookie中(参数优先)取得分页信息
-    */
+   * 从的参数或者cookie中(参数优先)取得分页信息
+   */
   def pageLimit: PageLimit = {
     new PageLimit(pageIndex, pageSize)
   }
 
   /**
-    * 获得请求中的页码
-    */
+   * 获得请求中的页码
+   */
   def pageIndex: Int = {
     val pageIndex = Params.getInt(PageParam) match {
       case Some(p) => p
@@ -142,8 +172,8 @@ object QueryHelper extends Logging {
   }
 
   /**
-    * 获得请求中的页长
-    */
+   * 获得请求中的页长
+   */
   def pageSize: Int = {
     var pageSize = Params.get(PageSizeParam).orElse(Params.get("page[size]")).getOrElse("")
     var pagesize = Page.DefaultPageSize
@@ -184,14 +214,14 @@ object QueryHelper extends Logging {
   }
 
   /**
-    * 增加日期区间查询条件
-    *
-    * @param query       查询构建器
-    * @param alias       别名
-    * @param attr        时间限制属性
-    * @param beginOnName 开始的属性名字(全名)
-    * @param endOnName   结束的属性名字(全名)
-    */
+   * 增加日期区间查询条件
+   *
+   * @param query       查询构建器
+   * @param alias       别名
+   * @param attr        时间限制属性
+   * @param beginOnName 开始的属性名字(全名)
+   * @param endOnName   结束的属性名字(全名)
+   */
   def dateBetween(query: OqlBuilder[_], alias: String, attr: String, beginOnName: String,
                   endOnName: String): Unit = {
     val stime = Params.get(beginOnName)

@@ -29,8 +29,6 @@ import org.beangle.webmvc.execution.MappingHandler
 @description("根据uri相对地址反向生成绝对地址")
 class DefaultActionUriRender extends ActionUriRender {
 
-  val render = new UrlRender
-
   var configurer: Configurer = _
 
   override def render(uri: String): String = {
