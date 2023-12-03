@@ -362,6 +362,7 @@ class Select(context: ComponentContext) extends ActionClosingUIBean(context) {
           }
       }
     }
+    if ("true" == multiple && width == null) width = "400px" //防止ajaxchosen引起宽度异常问题
     if (null != href) href = render(href)
   }
 
