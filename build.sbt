@@ -2,7 +2,7 @@ import org.beangle.parent.Dependencies._
 import org.beangle.parent.Settings._
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.9.21-SNAPSHOT"
+ThisBuild / version := "0.9.21"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -23,12 +23,12 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
-val bg_commons_ver = "5.6.6"
-val bg_data_ver = "5.7.8"
-val bg_cdi_ver = "0.6.0"
-val bg_cache_ver = "0.1.5"
-val bg_template_ver = "0.1.8"
-val bg_web_ver = "0.4.8"
+val bg_commons_ver = "5.6.8"
+val bg_data_ver = "5.7.11"
+val bg_cdi_ver = "0.6.1"
+val bg_web_ver = "0.4.9"
+val bg_cache_ver = "0.1.6"
+val bg_template_ver = "0.1.9"
 
 val bg_commons_core = "org.beangle.commons" %% "beangle-commons-core" % bg_commons_ver
 val bg_commons_text = "org.beangle.commons" %% "beangle-commons-text" % bg_commons_ver
@@ -48,7 +48,6 @@ val bg_web_servlet = "org.beangle.web" %% "beangle-web-servlet" % bg_web_ver
 
 val commonDeps = Seq(bg_commons_core, bg_commons_text, javassist, logback_classic % "test", logback_core % "test",
   scalatest, bg_web_action, bg_web_servlet)
-val itext = Seq(itextpdf % "optional", itext_asian % "optional", itext_xmlworker % "optional")
 
 lazy val root = (project in file("."))
   .settings()
@@ -73,7 +72,6 @@ lazy val support = (project in file("support"))
     name := "beangle-webmvc-support",
     common,
     libraryDependencies ++= commonDeps,
-    libraryDependencies ++= itext,
     libraryDependencies ++= Seq(bg_data_transfer % "optional", bg_data_orm % "optional", bg_commons_text, bg_cdi_spring),
   ).dependsOn(core)
 

@@ -39,14 +39,14 @@ class ParamLocaleResolver extends LocaleResolver {
       if (null == session_locale) {
         locale = session.getAttribute(SessionAttribute).asInstanceOf[ju.Locale]
       } else {
-        locale = Locales.toLocale(session_locale)
+        locale = Locales.of(session_locale)
         // save it in session
         session.setAttribute(SessionAttribute, locale)
       }
     }
     // get request locale
     val request_locale = request.getParameter(RequestParameter)
-    if (null != request_locale) locale = Locales.toLocale(request_locale)
+    if (null != request_locale) locale = Locales.of(request_locale)
 
     if (null == locale) locale = request.getLocale
     locale

@@ -25,10 +25,10 @@ import org.beangle.commons.logging.Logging
 import org.beangle.data.dao.{Condition, Conditions, OqlBuilder}
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.SingularProperty
+import org.beangle.data.model.pojo.TemporalOn
 import org.beangle.web.action.context.{ActionContext, Params}
 import org.beangle.web.servlet.util.CookieUtils
 
-import java.net.URLEncoder
 import java.text.{ParseException, SimpleDateFormat}
 import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
 import java.util as ju
@@ -43,12 +43,6 @@ object QueryHelper extends Logging {
   val RESERVED_NULL = true
 
   private val keySeparators = Set(',', '，', ';', '；')
-
-  @deprecated
-  def populateConditions(builder: OqlBuilder[_]): this.type = {
-    builder.where(extractConditions(builder.entityClass, builder.alias, null))
-    this
-  }
 
   def populate(entityQuery: OqlBuilder[_], exclusiveAttrNames: String): this.type = {
     entityQuery.where(extractConditions(entityQuery.entityClass, entityQuery.alias,
@@ -145,8 +139,7 @@ object QueryHelper extends Logging {
   /**
    * 把entity alias的别名的参数转换成条件.<br>
    *
-   * @param entityQuery        查询构建器
-   * @param exclusiveAttrNames 以entityQuery中alias开头的属性串
+   * @param builder 查询构建器
    */
   def populate(builder: OqlBuilder[_]): this.type = {
     builder.where(extractConditions(builder.entityClass, builder.alias, null))
@@ -202,17 +195,6 @@ object QueryHelper extends Logging {
     this
   }
 
-  @deprecated("Using dateBetween")
-  def addDateIntervalCondition(query: OqlBuilder[_], attr: String, beginOnName: String, endOnName: String): Unit = {
-    dateBetween(query, query.alias, attr, beginOnName, endOnName)
-  }
-
-  @deprecated("Using dateBetween")
-  def addDateIntervalCondition(query: OqlBuilder[_], alias: String, attr: String, beginOnName: String,
-                               endOnName: String): Unit = {
-    dateBetween(query, alias, attr, beginOnName, endOnName)
-  }
-
   /**
    * 增加日期区间查询条件
    *
@@ -222,8 +204,7 @@ object QueryHelper extends Logging {
    * @param beginOnName 开始的属性名字(全名)
    * @param endOnName   结束的属性名字(全名)
    */
-  def dateBetween(query: OqlBuilder[_], alias: String, attr: String, beginOnName: String,
-                  endOnName: String): Unit = {
+  def dateBetween(query: OqlBuilder[_], alias: String, attr: String, beginOnName: String, endOnName: String): Unit = {
     val stime = Params.get(beginOnName)
     val etime = Params.get(endOnName)
     val df = new SimpleDateFormat("yyyy-MM-dd")
@@ -268,6 +249,21 @@ object QueryHelper extends Logging {
           }
         case None =>
           between(query, objAttr, sdate, edate)
+      }
+    }
+  }
+
+
+  def addActive[T <: TemporalOn](builder: OqlBuilder[T], active: Option[Boolean]): Unit = {
+    active.foreach { active =>
+      if (active) {
+        builder.where(
+          builder.alias + ".beginOn <= :now and (" + builder.alias + ".endOn is null or " + builder.alias + ".endOn >= :now)",
+          LocalDate.now())
+      } else {
+        builder.where(
+          "not (" + builder.alias + ".beginOn <= :now and (" + builder.alias + ".endOn is null or " + builder.alias + ".endOn >= :now))",
+          LocalDate.now())
       }
     }
   }
