@@ -204,7 +204,7 @@ object QueryHelper extends Logging {
    * @param beginOnName 开始的属性名字(全名)
    * @param endOnName   结束的属性名字(全名)
    */
-  def dateBetween(query: OqlBuilder[_], alias: String, attr: String, beginOnName: String, endOnName: String): Unit = {
+  def dateBetween(query: OqlBuilder[_], alias: String, attr: String, beginOnName: String, endOnName: String): this.type = {
     val stime = Params.get(beginOnName)
     val etime = Params.get(endOnName)
     val df = new SimpleDateFormat("yyyy-MM-dd")
@@ -251,10 +251,11 @@ object QueryHelper extends Logging {
           between(query, objAttr, sdate, edate)
       }
     }
+    this
   }
 
 
-  def addActive[T <: TemporalOn](builder: OqlBuilder[T], active: Option[Boolean]): Unit = {
+  def addActive[T <: TemporalOn](builder: OqlBuilder[T], active: Option[Boolean]): this.type = {
     active.foreach { active =>
       if (active) {
         builder.where(
@@ -266,6 +267,7 @@ object QueryHelper extends Logging {
           LocalDate.now())
       }
     }
+    this
   }
 
   private def between(query: OqlBuilder[_], path: String, sdate: Option[AnyRef], edate: Option[AnyRef]): Unit = {
