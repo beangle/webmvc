@@ -17,15 +17,13 @@
 
 package org.beangle.webmvc.support.helper
 
-import java.io.{InputStreamReader, LineNumberReader}
-
 import jakarta.servlet.http.Part
 import org.beangle.commons.lang.Strings
 import org.beangle.data.transfer.Format
-import org.beangle.data.transfer.csv.CsvItemReader
-import org.beangle.data.transfer.excel.ExcelItemReader
-import org.beangle.data.transfer.io.Reader
+import org.beangle.data.transfer.importer.{CsvReader, ExcelReader, Reader}
 import org.beangle.web.action.context.ActionContext
+
+import java.io.{InputStreamReader, LineNumberReader}
 
 object ImportHelper {
 
@@ -49,10 +47,10 @@ object ImportHelper {
     }
     val format = Format.valueOf(ext)
     if (format.equals(Format.Xls) || format.equals(Format.Xlsx)) {
-      new ExcelItemReader(is, 0, format)
+      new ExcelReader(is, 0, format)
     } else {
       val reader = new LineNumberReader(new InputStreamReader(is))
-      new CsvItemReader(reader)
+      new CsvReader(reader)
     }
   }
 }
