@@ -25,9 +25,9 @@ ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
 val bg_commons_ver = "5.6.10"
 val bg_data_ver = "5.8.0"
-val bg_cdi_ver = "0.6.1"
-val bg_web_ver = "0.4.9"
-val bg_cache_ver = "0.1.6"
+val bg_cdi_ver = "0.6.2"
+val bg_web_ver = "0.4.10"
+val bg_cache_ver = "0.1.7"
 val bg_template_ver = "0.1.10"
 
 val bg_commons_core = "org.beangle.commons" %% "beangle-commons-core" % bg_commons_ver
