@@ -103,6 +103,11 @@ object QueryHelper extends Logging {
     conditions.toList
   }
 
+  /** split entity.{p1,p2,p3} into entity.p1, entity.p2, entity.p3
+   *
+   * @param attr
+   * @return
+   */
   private def splitAttrs(attr: String): Seq[String] = {
     if attr.endsWith("}") then
       val head = Strings.substringBefore(attr, "{")
