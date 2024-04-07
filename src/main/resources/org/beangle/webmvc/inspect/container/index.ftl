@@ -10,7 +10,7 @@
 <h4> Modules</h4>
 <ul>
   [#list container.modules?sort as m]
-    <li>${m.class.name}</li>
+    <li>${m.className}</li>
   [/#list]
 </ul>
 

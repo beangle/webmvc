@@ -10,12 +10,12 @@
     <url path="${profile.urlPath}" suffix="${profile.urlSuffix}"  style="${profile.urlStyle}" />
     <interceptors>
       [#list profile.interceptors as interceptor]
-      <interceptor name="${interceptor.class.name}"/>
+      <interceptor name="${interceptor.className}"/>
       [/#list]
     </interceptors>
     <decorators>
       [#list profile.decorators as decorator]
-      <decorator name="${decorator.class.name}"/>
+      <decorator name="${decorator.className}"/>
       [/#list]
     </decorators>
   </profile>

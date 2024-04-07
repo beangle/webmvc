@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <mvc>
   <profile name="inspect" package="org.beangle.webmvc.inspect">
-    <url path="/" suffix=""  style="seo" />
+    <url path="/inspect" suffix=""  style="seo" />
   </profile>
 
   <static>

@@ -18,16 +18,16 @@
   <tbody>
     <tr>
        <td>Object Wrapper</td>
-       <td>${config.objectWrapper.class.name}</td>
+       <td>${config.objectWrapper.className}</td>
     </tr>
     <tr>
        <td>Template Loader</td>
-       <td>${config.templateLoader.class.name}(${templatePath})</td>
+       <td>${config.templateLoader.className}(${templatePath})</td>
     </tr>
     <tr>
        <td>Cache Storage</td>
        <td>
-       ${config.cacheStorage.class.name}[#if properties?contains("cache_storage")](${properties["cache_storage"]})[/#if]
+       ${config.cacheStorage.className}[#if properties?contains("cache_storage")](${properties["cache_storage"]})[/#if]
        </td>
     </tr>
     <tr>

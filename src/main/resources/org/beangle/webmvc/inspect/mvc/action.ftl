@@ -36,7 +36,7 @@
       [#list mapping.views?keys as viewName]
         <tr>
          <td>${viewName}</td>
-         <td>${mapping.views[viewName].class.name}</td>
+         <td>${mapping.views[viewName].className}</td>
          <td>${mapping.views[viewName].location}</td>
         </tr>
       [/#list]
