@@ -20,9 +20,9 @@ package org.beangle.webmvc.inspect
 import org.beangle.web.action.support.ActionSupport
 import org.beangle.web.action.view.View
 
-class IndexAction extends ActionSupport{
+class IndexAction extends ActionSupport {
 
   def index(): View = {
-    forward()
+    redirect(to(classOf[MvcAction], "index"), "success")
   }
 }

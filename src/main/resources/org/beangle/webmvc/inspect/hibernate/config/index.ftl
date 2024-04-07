@@ -16,7 +16,7 @@
 </ul>
 
 <h4>Configurations & Settings</h4>
-<table class="table table-striped">
+<table class="table table-sm table-striped">
   <thead>
     <th>Object</th>
     <th>Value</th>

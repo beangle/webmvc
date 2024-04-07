@@ -12,7 +12,7 @@ title: {{Title}}
 
 ${b.base}下共计${actionNames?size}个服务，如下表:
 
-<table class="table table-bordered table-striped table-condensed">
+<table class="table table-bordered table-sm table-striped table-condensed">
   <tr><th>序号</th><th>名称</th><th>描述</th></tr>
   [#list actionNames as name]
   <tr><td>${name_index+1}</td><td>[#if name?length!=0]<a href="#action${name?replace("/","_")}">${name}</a>[/#if]</td><td>${descriptions.get(name)!}</td></tr>
@@ -24,7 +24,7 @@ ${b.base}下共计${actionNames?size}个服务，如下表:
 
 <h4 id="action${name?replace("/","_")}">${name_index+1} ${b.base}${name} ${descriptions.get(name)!}</h4>
 
-<table class="table table-bordered table-striped table-condensed">
+<table class="table table-bordered table-sm table-striped table-condensed">
  <tr><th>序号</th><th>名称</th><th>HTTP方法</th><th>参数(*为必须)</th><th>描述</th></tr>
  [#list config.mappings?keys as mappingkey]
  [#assign mapping = config.mappings.get(mappingkey)/]

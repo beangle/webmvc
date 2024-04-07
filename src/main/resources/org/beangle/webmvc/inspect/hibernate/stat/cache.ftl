@@ -1,6 +1,6 @@
 [#ftl]
 [@b.head/]
-  <table class="table table-striped">
+  <table class="table table-sm table-striped">
     <thead>
     <tr>
       <th width="30%">缓存区域</th>

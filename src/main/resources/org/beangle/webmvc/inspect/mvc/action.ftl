@@ -9,7 +9,7 @@
 
 [@b.tabs]
   [@b.tab label="Mappings"]
-    <table width="100%" class="table">
+    <table width="100%" class="table table-sm">
       <thead>
         <tr>
           <th width="10%">Method</th>
@@ -31,7 +31,7 @@
     </table>
   [/@]
   [@b.tab label="Views"]
-      <table width="100%" class="table">
+      <table width="100%" class="table table-sm">
       <tr><th>Name</th><th>Type</th><th>location</th></tr>
       [#list mapping.views?keys as viewName]
         <tr>
@@ -43,7 +43,7 @@
     </table>
   [/@]
   [@b.tab label="Properties"]
-  <table width="100%" class="table">
+  <table width="100%" class="table table-sm">
         <thead>
         <tr><th>Name</th><th>Type</th></tr>
         </thead>

@@ -1,6 +1,6 @@
 [@b.head/]
+<div class="container">
 [#include "../nav.ftl"/]
-<div class="container-fluid">
 <h4> Config Locations</h4>
 <ul>
   [#list configLocations as url]
@@ -8,7 +8,7 @@
   [/#list]
 </ul>
 <h4>Configurations & Settings</h4>
-<table class="table  table-striped">
+<table class="table table-sm table-striped">
   <thead>
     <tr>
       <th>Object</th>

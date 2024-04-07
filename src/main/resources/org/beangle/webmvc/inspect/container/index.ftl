@@ -1,6 +1,6 @@
 [@b.head/]
+<div class="container">
 [#include "../nav.ftl"/]
-<div class="container-fluid">
 <h4> Modules Locations[#if container.parent??](parent is [@b.a  href="!index?parent=true"]ROOT[/@])[/#if]</h4>
 <ul>
   [#list container.moduleLocations as ml]
@@ -18,7 +18,7 @@
 [#assign caption]
    [#if container.parent??]Beans in Web Container[#else]Beans in ROOT Container[/#if]
 [/#assign]
-[@b.grid items=beanNames?sort var="beanName" caption=caption style="table-layout:fixed"]
+[@b.grid items=beanNames?sort var="beanName" caption=caption class="border-1px border-colored"]
   [@b.row]
     [@b.col title="Index" width="5%"]
       [#assign className=(container.getType(beanName).name)!""/]

@@ -1,8 +1,8 @@
 [@b.head/]
+<div class="container">
 [#include "../nav.ftl"/]
-<div class="container-fluid">
 <h4>Initializers Support By BootstrapListener</h4>
-<table class="table  table-striped">
+<table class="table table-sm table-striped">
   <thead>
     <th>Initializer</th>
     <th>URL</th>

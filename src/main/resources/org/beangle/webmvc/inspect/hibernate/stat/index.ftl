@@ -8,7 +8,7 @@
   Deactivation: ${(deactivation?string("dd.MM.yy HH:mm:ss"))!}<br/>
   Active duration:[#if duration??] ${((duration/1000)?floor)!}s[/#if]
   [#if generalStatistics?size>0]
-  <table class="table">
+  <table class="table table-sm">
     <tr>
       <th class="c bd1 bg1">Connects:</th>
       <td>${generalStatistics[0]}</td>
