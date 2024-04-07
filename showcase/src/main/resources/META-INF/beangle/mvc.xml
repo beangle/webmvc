@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<mvc>
-  <profile name="showcase" package="org.beangle.webmvc.showcase.action">
-    <url path="/" suffix=""  style="seo" />
-    <interceptors>
-      <interceptor name="web.Interceptor.cors"/>
-    </interceptors>
-  </profile>
-</mvc>

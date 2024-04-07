@@ -1,8 +1,8 @@
-import org.beangle.parent.Dependencies._
-import org.beangle.parent.Settings._
+import org.beangle.parent.Dependencies.*
+import org.beangle.parent.Settings.*
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.9.24-SNAPSHOT"
+ThisBuild / version := "0.9.24"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -23,64 +23,21 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
-val bg_commons_ver = "5.6.10"
-val bg_data_ver = "5.8.0"
-val bg_cdi_ver = "0.6.2"
-val bg_web_ver = "0.4.10"
-val bg_cache_ver = "0.1.7"
-val bg_template_ver = "0.1.10"
-
-val bg_commons_core = "org.beangle.commons" %% "beangle-commons-core" % bg_commons_ver
-val bg_commons_text = "org.beangle.commons" %% "beangle-commons-text" % bg_commons_ver
-
-val bg_data_orm = "org.beangle.data" %% "beangle-data-orm" % bg_data_ver
-val bg_data_transfer = "org.beangle.data" %% "beangle-data-transfer" % bg_data_ver
-
-val bg_cdi_api = "org.beangle.cdi" %% "beangle-cdi-api" % bg_cdi_ver
-val bg_cdi_spring = "org.beangle.cdi" %% "beangle-cdi-spring" % bg_cdi_ver
-
-val bg_cache_api = "org.beangle.cache" %% "beangle-cache-api" % bg_cache_ver
-val bg_template_api = "org.beangle.template" %% "beangle-template-api" % bg_template_ver
-val bg_template_freemarker = "org.beangle.template" %% "beangle-template-freemarker" % bg_template_ver
-
-val bg_web_action = "org.beangle.web" %% "beangle-web-action" % bg_web_ver
-val bg_web_servlet = "org.beangle.web" %% "beangle-web-servlet" % bg_web_ver
-
-val commonDeps = Seq(bg_commons_core, bg_commons_text, javassist, logback_classic % "test", logback_core % "test",
-  scalatest, bg_web_action, bg_web_servlet)
+val bg_commons = "org.beangle.commons" % "beangle-commons" % "5.6.15"
+val bg_model = "org.beangle.data" % "beangle-model" % "5.8.9"
+val bg_cache = "org.beangle.cache" % "beangle-cache" % "0.1.8"
+val bg_template = "org.beangle.template" % "beangle-template" % "0.1.12"
+val bg_web = "org.beangle.web" % "beangle-web" % "0.4.11"
+val bg_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.3.3"
+val bg_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.6.5"
 
 lazy val root = (project in file("."))
-  .settings()
-  .aggregate(core, view, support, showcase)
-
-lazy val core = (project in file("core"))
   .settings(
-    name := "beangle-webmvc-core",
+    name := "beangle-webmvc",
     common,
-    libraryDependencies ++= (commonDeps ++ Seq(bg_commons_text, javassist, bg_cache_api, bg_cdi_api, bg_template_api, scalaxml))
+    libraryDependencies ++= Seq(logback_classic % "test", scalatest),
+    libraryDependencies ++= Seq(bg_commons, bg_web, javassist, bg_cache, bg_cdi, bg_template, scalaxml),
+    libraryDependencies ++= Seq(freemarker % "optional", hibernate_core % "optional"),
+    libraryDependencies ++= Seq(spring_context % "optional", spring_beans % "optional"),
+    libraryDependencies ++= Seq(bg_model % "optional", bg_doc_transfer % "optional")
   )
-
-lazy val view = (project in file("view"))
-  .settings(
-    name := "beangle-webmvc-view",
-    common,
-    libraryDependencies ++= (commonDeps ++ Seq(bg_template_freemarker))
-  ).dependsOn(core)
-
-lazy val support = (project in file("support"))
-  .settings(
-    name := "beangle-webmvc-support",
-    common,
-    libraryDependencies ++= commonDeps,
-    libraryDependencies ++= Seq(bg_data_transfer % "optional", bg_data_orm % "optional", bg_commons_text, bg_cdi_spring),
-  ).dependsOn(core)
-
-lazy val showcase = (project in file("showcase"))
-  .settings(
-    name := "beangle-webmvc-showcase",
-    common,
-    libraryDependencies ++= commonDeps,
-    libraryDependencies ++= Seq(bg_template_freemarker, bg_data_transfer, bg_data_orm)
-  ).dependsOn(core, support, view)
-
-publish / skip := true

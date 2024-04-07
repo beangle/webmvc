@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<cdi>
-  <container>
-    <module class="org.beangle.webmvc.SecurityModule"/>
-    <module class="org.beangle.webmvc.DefaultModule"/>
-    <module class="org.beangle.webmvc.DevModule"/>
-  </container>
-</cdi>
