@@ -158,7 +158,7 @@ class Checkboxes(context: ComponentContext) extends UIBean(context) {
   var label: String = _
   var items: Object = _
   var checkboxes: Array[Checkbox] = _
-  var value1: Object = _
+  var values: Object = _
   var comment: String = _
   var required: String = _
   var min: Object = _
@@ -198,7 +198,7 @@ class Checkboxes(context: ComponentContext) extends UIBean(context) {
         + maxValue + "项')")
     }
 
-    val selected = Boxes.convertValues(this.value1)
+    val selected = Boxes.convertValues(this.values)
     for (key <- keys) {
       checkboxes(i) = new Checkbox(context)
       checkboxes(i).title = datas(key)
