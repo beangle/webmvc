@@ -17,13 +17,12 @@
 
 package org.beangle.webmvc.config.impl
 
-import java.net.URL
-
 import org.beangle.commons.bean.Properties.{copy, get}
 import org.beangle.commons.lang.ClassLoaders
 import org.beangle.commons.lang.annotation.description
 import org.beangle.webmvc.config.{ProfileConfig, ProfileProvider}
 
+import java.net.URL
 import scala.xml.{Node, XML}
 
 @description("基于xml的配置提供者")
@@ -120,13 +119,13 @@ class XmlProfileProvider extends ProfileProvider {
     if ((elem \ xmlAttribute).nonEmpty) {
       copy(profile, propertyName, (elem \ xmlAttribute).text.intern)
     } else {
-      copy(profile, propertyName, get(defaultProfile, propertyName))
+      copy(profile, propertyName, get[Any](defaultProfile, propertyName))
     }
   }
 
   private def copyDefaultProperties(profile: ProfileConfig, properties: String*): Unit = {
     properties foreach { propertyName =>
-      copy(profile, propertyName, get(defaultProfile, propertyName))
+      copy(profile, propertyName, get[Any](defaultProfile, propertyName))
     }
   }
 }

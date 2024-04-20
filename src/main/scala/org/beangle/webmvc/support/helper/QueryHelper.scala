@@ -259,7 +259,6 @@ object QueryHelper extends Logging {
     this
   }
 
-
   def addActive[T <: TemporalOn](builder: OqlBuilder[T], active: Option[Boolean]): this.type = {
     active.foreach { active =>
       if (active) {

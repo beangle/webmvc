@@ -19,14 +19,12 @@ package org.beangle.webmvc.view.tag
 
 import org.beangle.commons.bean.Properties
 import org.beangle.commons.lang.functor.{NotEmpty, NotZero}
-import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.dispatch.ActionUriRender
-import org.beangle.webmvc.execution.MappingHandler
 
 class Rest(uriRender: ActionUriRender) {
 
   def save_url(obj: AnyRef): String = {
-    val id: Any = Properties.get(obj, "id")
+    val id = Properties.get[Any](obj, "id")
     if (isValid(id)) {
       uriRender.render("!update?id=" + id)
     } else {
@@ -35,12 +33,12 @@ class Rest(uriRender: ActionUriRender) {
   }
 
   def info_url(obj: AnyRef): String = {
-    val id: Any = Properties.get(obj, "id")
+    val id = Properties.get[Any](obj, "id")
     uriRender.render("!info?id=" + id)
   }
 
   def save(obj: AnyRef): String = {
-    val id: Any = Properties.get(obj, "id")
+    val id = Properties.get[Any](obj, "id")
     if (isValid(id)) {
       "!update?id=" + id
     } else {
@@ -49,7 +47,7 @@ class Rest(uriRender: ActionUriRender) {
   }
 
   def info(obj: AnyRef): String = {
-    val id: Any = Properties.get(obj, "id")
+    val id = Properties.get[Any](obj, "id")
     "!info?id=" + id
   }
 

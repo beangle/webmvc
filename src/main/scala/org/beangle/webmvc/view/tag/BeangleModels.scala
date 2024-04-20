@@ -118,7 +118,7 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   def textfields: Tag = get(classOf[Textfields])
 
-  def hairline:Tag = get(classOf[HairLine])
+  def hairline: Tag = get(classOf[HairLine])
 
   def date: Tag = get(classOf[Date])
 
@@ -162,4 +162,5 @@ class BeangleModels(context: ComponentContext, request: HttpServletRequest) exte
 
   def card_footer: Tag = get(classOf[CardFooter])
 
+  def esign: Tag = get(classOf[Esign])
 }

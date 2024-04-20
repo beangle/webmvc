@@ -78,8 +78,8 @@ class Form(context: ComponentContext) extends ActionClosingUIBean(context) {
   }
 
   /**
-    * Required element by id
-    */
+   * Required element by id
+   */
   def addRequire(id: String): Unit = this.addCheck(id, "require().match('notBlank')")
 
   def addCheck(id: String, check: String): Unit = {
@@ -209,6 +209,10 @@ class AbstractTextBean(context: ComponentContext) extends ClosingUIBean(context)
     val myform = findAncestor(classOf[Form])
     if ("true".equals(required)) myform.addRequire(id)
     if (null != check) myform.addCheck(id, check)
+  }
+
+  def hidden: Boolean = {
+    parameters.getOrElse("style", "").toString.contains("display:none")
   }
 }
 

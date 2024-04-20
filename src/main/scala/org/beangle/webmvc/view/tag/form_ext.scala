@@ -175,8 +175,8 @@ class Checkboxes(context: ComponentContext) extends UIBean(context) {
     checkboxes = new Array[Checkbox](keys.size)
     var i = 0
     val myform = findAncestor(classOf[Form])
-    if (required == "true" && min == null) {
-      min = "1"
+    if (min == null) {
+      if (required == "true") min = "1" else min = "0"
     }
     if (null == max) {
       max = checkboxes.length.toString
