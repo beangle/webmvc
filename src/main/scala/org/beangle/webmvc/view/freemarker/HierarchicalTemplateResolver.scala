@@ -18,7 +18,7 @@
 package org.beangle.webmvc.view.freemarker
 
 import org.beangle.commons.lang.annotation.description
-import org.beangle.template.freemarker.Configurer as FreemarkerConfigurer
+import org.beangle.template.freemarker.{ProfileTemplateLoader, Configurer as FreemarkerConfigurer}
 import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.view.{TemplatePathMapper, TemplateResolver}
 
@@ -40,8 +40,17 @@ class HierarchicalTemplateResolver(freemarkerConfigurer: FreemarkerConfigurer, t
       val buf = new StringBuilder
       buf.append(templatePathMapper.map(superClass.getName, viewName, profile))
       buf.append(suffix)
-      path = buf.toString
-      found = exists(path)
+      ProfileTemplateLoader.getProfile match
+        case None =>
+          path = buf.toString
+          found = exists(path)
+        case Some(templateProfile) =>
+          path = templateProfile + buf.toString
+          found = exists(path)
+          if (!found) {
+            path = buf.toString
+            found = exists(path)
+          }
       superClass = superClass.getSuperclass
       !found && !superClass.equals(classOf[Object]) && !superClass.isPrimitive
     } do ()

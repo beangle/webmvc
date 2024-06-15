@@ -20,7 +20,6 @@ package org.beangle.webmvc.view.freemarker
 import freemarker.cache.{MultiTemplateLoader, TemplateLoader}
 import freemarker.template.ObjectWrapper
 import org.beangle.commons.lang.Strings.{split, substringAfter}
-import org.beangle.data.orm.Jpas
 import org.beangle.data.orm.hibernate.HibernateProxyResolver
 import org.beangle.template.freemarker.{Configurer, ProfileTemplateLoader}
 import org.beangle.web.servlet.context.ServletContextHolder
@@ -34,7 +33,7 @@ class ContextFreemarkerConfigurer extends Configurer {
     val wrapper = new ContextObjectWrapper()
     wrapper.setUseCache(false)
     //FIXME hard code,but Jpas.proxyResolver is so late for initialization.
-    wrapper.proxyResolver= HibernateProxyResolver
+    wrapper.proxyResolver = HibernateProxyResolver
     wrapper
   }
 
