@@ -123,7 +123,7 @@ class Reset(context: ComponentContext) extends UIBean(context) {
 
 }
 
-class Submit(context: ComponentContext) extends ActionUIBean(context) {
+class Submit(context: ComponentContext) extends ActionClosingUIBean(context) {
   var formId: String = _
   var onsubmit: String = _
   var action: String = _

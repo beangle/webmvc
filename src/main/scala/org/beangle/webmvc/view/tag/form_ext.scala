@@ -102,15 +102,17 @@ object Boxes {
       case iter: java.lang.Iterable[_] =>
         (for (obj <- asScala(iter)) yield Properties.get[Object](obj, "id")).toSet.map(_.toString)
       case iter: Iterable[_] =>
-        (for (obj <- iter) yield Properties.get[Object](obj, "id")).toSet.map(_.toString)
+        (for (obj <- iter) yield findKey(obj)).toSet
       case arry: Array[Object] => arry.toSet.map(_.toString)
       case str: String => if (Strings.isNotBlank(str)) Strings.split(str).toSet else Set.empty
-      case obj: Object =>
-        val clzzName = obj.getClass.getName
-        if clzzName.startsWith("java.") || clzzName.startsWith("scala.") then
-          Set(String.valueOf(obj))
-        else Set(Properties.get[Object](obj, "id").toString)
+      case obj: Object => Set(findKey(obj))
     }
+  }
+
+  private def findKey(obj: Any): String = {
+    val clzzName = obj.getClass.getName
+    if clzzName.startsWith("java.") || clzzName.startsWith("scala.") then String.valueOf(obj)
+    else Properties.get[Object](obj, "id").toString
   }
 
 }

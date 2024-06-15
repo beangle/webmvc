@@ -19,12 +19,12 @@ package org.beangle.webmvc.view.tag
 
 import org.beangle.commons.collection.page.Page
 import org.beangle.commons.lang.{Objects, Strings}
-import org.beangle.web.action.context.ActionContext
 import org.beangle.commons.text.escape.XmlEscaper
-import org.beangle.template.api.{UIBean,ClosingUIBean,ComponentContext,IterableUIBean,Themes}
+import org.beangle.template.api.{ClosingUIBean, ComponentContext, IterableUIBean, Themes}
+import org.beangle.web.action.context.ActionContext
 
 import java.io.Writer
-import java.{util => ju}
+import java.util as ju
 import scala.jdk.javaapi.CollectionConverters.asScala
 
 object Grid {
@@ -104,7 +104,7 @@ object Grid {
     var row: Row = _
     var sortable: String = _
     var filterable: String = _
-    var escape:String=_
+    var escape: String = _
 
     override def start(writer: Writer): Boolean = {
       row = findAncestor(classOf[Row])
@@ -119,7 +119,7 @@ object Grid {
           if (Strings.isNotEmpty(body)) {
             writer.append(body)
           } else if (null != property) {
-            writer.append(if(escape=="true")XmlEscaper.escape(this.value) else this.value )
+            writer.append(if (escape == "true") XmlEscaper.escape(this.value) else this.value)
           }
           writer.append("</td>")
         } catch {
@@ -228,7 +228,7 @@ object Grid {
 
 class Grid(context: ComponentContext) extends ClosingUIBean(context) {
 
-  import Grid._
+  import Grid.*
 
   val cols = new collection.mutable.ListBuffer[Col]
   val colTitles = new collection.mutable.HashSet[Object]
@@ -258,7 +258,7 @@ class Grid(context: ComponentContext) extends ClosingUIBean(context) {
     items match {
       case p: Page[_] => p.size < p.pageSize
       case c: ju.Collection[_] => c.isEmpty
-      case s: Seq[_] => s.isEmpty
+      case s: collection.Seq[_] => s.isEmpty
     }
   }
 
