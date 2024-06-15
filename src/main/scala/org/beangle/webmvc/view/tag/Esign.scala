@@ -23,4 +23,10 @@ class Esign(context: ComponentContext) extends AbstractTextBean(context) {
   var lineWidth: String = "5"
   var height: String = "300"
   var width: String = "800"
+
+  override def evaluateParams(): Unit = {
+    super.evaluateParams()
+    val f = findAncestor(classOf[Form])
+    f.addCheck(s"sign.generate().then(function(res){ document.getElementById('${this.id}').value = res}).catch(function(err){alert(err)});")
+  }
 }

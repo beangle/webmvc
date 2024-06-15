@@ -21,6 +21,7 @@ canvas {
 </style>
 <script>
   function Esign(canvas,options){
+    this.options= options;
     this.canvas=canvas;
     this.width = options.width || 800;
     this.height = options.height || 300;
@@ -51,16 +52,25 @@ canvas {
       return this.canvas.getBoundingClientRect()
     }
     this.resizeHandler = function(){
+      this.width = this.options.width || 800;
+      this.height = this.options.height || 300;
+      if(this.width > document.body.clientWidth){
+        this.width = document.body.clientWidth;
+      }
+      if(this.height > document.body.clientHeight){
+        this.height = document.body.clientHeight;
+      }
       this.canvas.style.width = this.width + "px"
-      var realw = parseFloat(window.getComputedStyle(canvas).width);
+      //var realw = parseFloat(window.getComputedStyle(canvas).width);
       this.canvas.style.height = this.ratio() * realw + "px";
-      this.canvasTxt = this.canvas.getContext('2d');
-      this.canvasTxt.scale(1 * this.sratio, 1 * this.sratio);
-      this.sratio = realw / this.width;
-      this.canvasTxt.scale(1 / this.sratio, 1 / this.sratio);
+      //this.canvasTxt = this.canvas.getContext('2d');
+      //this.canvasTxt.scale(1 * this.sratio, 1 * this.sratio);
+      //this.sratio = realw / this.width;
+      //this.canvasTxt.scale(1 / this.sratio, 1 / this.sratio);
     }
     //mounting
     this.mount = function(){
+      this.resizeHandler();
       this.canvas.height = this.height;
       this.canvas.width = this.width;
       this.canvas.style.background = this.myBg();
@@ -68,6 +78,7 @@ canvas {
       document.addEventListener("mouseup", function(){
         t.isDrawing = false;
       });
+      window.addEventListener('resize', function(){t.resizeHandler();});
       //for pc
       this.canvas.addEventListener("mousedown",function(e){
         e.preventDefault();
@@ -89,36 +100,38 @@ canvas {
       //for mobile
       this.canvas.addEventListener("touchstart",function(e) {
         e.preventDefault();
+        e.stopPropagation();
         t.hasDrew = true;
         if (e.touches.length === 1) {
           var loc = {
-            x: e.targetTouches[0].clientX - this.canvas.getBoundingClientRect().left,
-            y: e.targetTouches[0].clientY - this.canvas.getBoundingClientRect().top
+            x: e.targetTouches[0].clientX - t.canvas.getBoundingClientRect().left,
+            y: e.targetTouches[0].clientY - t.canvas.getBoundingClientRect().top
           }
           t.drawStart(loc);
         }
       });
       this.canvas.addEventListener("touchmove",function (e) {
         e.preventDefault();
+        e.stopPropagation();
         if (e.touches.length === 1) {
           var loc = {
-            x: e.targetTouches[0].clientX - this.canvas.getBoundingClientRect().left,
-            y: e.targetTouches[0].clientY - this.canvas.getBoundingClientRect().top
+            x: e.targetTouches[0].clientX - t.canvas.getBoundingClientRect().left,
+            y: e.targetTouches[0].clientY - t.canvas.getBoundingClientRect().top
           }
           t.drawMove(loc);
         }
       });
       this.canvas.addEventListener("touchend", function (e) {
         e.preventDefault();
+        e.stopPropagation();
         if (e.touches.length === 1) {
           var loc = {
-            x: e.targetTouches[0].clientX - this.canvas.getBoundingClientRect().left,
-            y: e.targetTouches[0].clientY - this.canvas.getBoundingClientRect().top
+            x: e.targetTouches[0].clientX - t.canvas.getBoundingClientRect().left,
+            y: e.targetTouches[0].clientY - t.canvas.getBoundingClientRect().top
           }
           t.drawEnd(loc);
         }
       });
-      this.resizeHandler();
     }
     // 绘制
     this.drawStart = function(loc) {
@@ -159,9 +172,6 @@ canvas {
       this.canvasTxt.closePath();
       this.points.push(loc);
       this.points.push({x: -1, y: -1});
-      if(this.onFinish){
-        this.onFinish();
-      }
     }
     this.clear = function () {
       this.canvasTxt.clearRect(0, 0, this.canvas.width, this.canvas.height)
@@ -233,9 +243,6 @@ canvas {
   options.height = ${tag.height};
   var sign = new Esign(document.getElementById("${tag.id}_canvas"),options);
   sign.mount();
-  sign.onFinish = function(){
-    this.generate().then(function(res){ document.getElementById('${tag.id}').value = res}).catch(function(err){alert(err)});
-  }
   document.getElementById('${tag.id}_clear').onclick = function(e){
     sign.clear();
     document.getElementById('${tag.id}').value="";
