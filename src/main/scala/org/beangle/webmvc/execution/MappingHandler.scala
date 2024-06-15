@@ -18,14 +18,17 @@
 package org.beangle.webmvc.execution
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
+import org.beangle.cdi.bind.profile
 import org.beangle.commons.activation.MediaType
 import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.annotation.description
+import org.beangle.template.freemarker.ProfileTemplateLoader
+import org.beangle.web.action.annotation.action
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.view.{PathView, View}
 import org.beangle.web.servlet.intercept.Interceptor
 import org.beangle.web.servlet.resource.PathResolver
-import org.beangle.webmvc.config.RouteMapping
+import org.beangle.webmvc.config.{ActionMapping, Profile, RouteMapping}
 import org.beangle.webmvc.view.impl.ViewManager
 
 import java.io.ByteArrayOutputStream
@@ -61,24 +64,12 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
           case null => null
           case PathView(path) =>
             val viewName = if (null == path) mapping.defaultView else path
-            action.views.get(viewName) match {
-              case Some(v) => v
-              case None =>
-                val profile = action.profile
-                viewManager.getResolver(profile.viewType) match {
-                  case Some(resolver) =>
-                    var i = 0
-                    val candidates = PathResolver.resolve(viewName)
-                    var newView: View = null
-                    while (i < candidates.length && null == newView) {
-                      newView = resolver.resolve(candidates(i), mapping)
-                      i += 1
-                    }
-                    require(null != newView, s"Cannot find view[$viewName] for ${action.clazz.getName}")
-                    newView
-                  case None =>
-                    throw new RuntimeException(s"Cannot find view of type [${profile.viewType}]'s resolver")
-                }
+            if (ProfileTemplateLoader.getProfile.isEmpty) {
+              action.views.get(viewName) match
+                case Some(v) => v
+                case None => resolveView(viewName, action)
+            } else {
+              resolveView(viewName, action)
             }
           case view: View => view
           case _ => null
@@ -128,6 +119,24 @@ class MappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     } finally {
       //FIXME process exception
       postHandle(interceptors, context, lastInterceptorIndex, request, response)
+    }
+  }
+
+  private def resolveView(viewName: String, action: ActionMapping): View = {
+    val profile = action.profile
+    viewManager.getResolver(profile.viewType) match {
+      case Some(resolver) =>
+        var i = 0
+        val candidates = PathResolver.resolve(viewName)
+        var newView: View = null
+        while (i < candidates.length && null == newView) {
+          newView = resolver.resolve(candidates(i), mapping)
+          i += 1
+        }
+        require(null != newView, s"Cannot find view[$viewName] for ${action.clazz.getName}")
+        newView
+      case None =>
+        throw new RuntimeException(s"Cannot find view of type [${profile.viewType}]'s resolver")
     }
   }
 
