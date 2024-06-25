@@ -22,8 +22,7 @@ import org.beangle.commons.lang.annotation.description
 import org.beangle.web.action.To
 import org.beangle.web.action.context.ActionContext
 import org.beangle.web.action.dispatch.ActionUriRender
-import org.beangle.web.servlet.url.UrlRender
-import org.beangle.webmvc.config.{Configurer, RouteMapping}
+import org.beangle.webmvc.config.Configurer
 import org.beangle.webmvc.execution.MappingHandler
 
 @description("根据uri相对地址反向生成绝对地址")
@@ -81,7 +80,7 @@ class DefaultActionUriRender extends ActionUriRender {
         actionName.append(struts.namespace).append('/').append(struts.name)
         configurer.getActionMapping(actionName.toString) match {
           case Some(cfg) => cfg.mappings(if (null == struts.method) cfg.profile.defaultMethod else struts.method)
-          case None => throw new RuntimeException(s"Cannot find $actionName mapping")
+          case None => throw new RuntimeException(s"Cannot render uri ${uri}")
         }
       }
     val tourl = mapping.toURL(params, context.params)
