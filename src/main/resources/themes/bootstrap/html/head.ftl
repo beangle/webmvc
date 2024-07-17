@@ -12,10 +12,11 @@
     <meta http-equiv="expires" content="0"/>
     <meta http-equiv="content-style-type" content="text/css"/>
     <meta http-equiv="content-script-type" content="text/javascript"/>
+    [#if tag.loadui]
     <link rel="icon" href="data:;base64,=">
     <base href="${b.base}/"/>
     ${b.static.load(["requirejs","jquery","beangle","bui"])}
-  <script type="text/javascript">
+    <script type="text/javascript">
     beangle.register("${b.static_base}/",{
       [#assign contents = b.static.module_contents/]
       [#list contents?keys?sort as k]
@@ -23,9 +24,12 @@
       [/#list]
     });
     bg.load(["jquery-form","bootstrap","font-awesome","adminlte"])
-  </script>
+    </script>
+    [#else]
+    ${b.static.load(["jquery","beangle"])}
+    [/#if]
   [@include_optional path="head_ext.ftl"/]
   ${tag.body}
  </head>
- <body class="text-sm">
+ <body[#if tag.smallText] class="text-sm"[/#if]>
 [/#if]

@@ -25,6 +25,7 @@ import java.io.Writer
 class Head(context: ComponentContext) extends ActionClosingUIBean(context) {
   var loadui = true
   var compressed = true
+  var smallText = true
 
   override def evaluateParams(): Unit = {
     val devMode = requestParameter("devMode")
