@@ -28,7 +28,7 @@ val bg_model = "org.beangle.data" % "beangle-model" % "5.8.11"
 val bg_cache = "org.beangle.cache" % "beangle-cache" % "0.1.9"
 val bg_template = "org.beangle.template" % "beangle-template" % "0.1.17"
 val bg_web = "org.beangle.web" % "beangle-web" % "0.4.12"
-val bg_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.3.5"
+val bg_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.0"
 val bg_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.6.7"
 
 lazy val root = (project in file("."))
