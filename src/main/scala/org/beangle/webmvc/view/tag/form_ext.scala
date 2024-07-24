@@ -88,6 +88,18 @@ object Boxes {
           itemMap.put(value, title)
         }
         (keys, itemMap)
+      case i: java.lang.Iterable[_] =>
+        val keys = new collection.mutable.ListBuffer[String]
+        val itemMap = new collection.mutable.HashMap[String, String]
+        val it = i.iterator()
+        while (it.hasNext) {
+          val obj = it.next()
+          val value = Properties.get[Object](obj, "id").toString
+          val title = Properties.get[String](obj, valueName)
+          keys += value
+          itemMap.put(value, title)
+        }
+        (keys, itemMap)
     }
   }
 
