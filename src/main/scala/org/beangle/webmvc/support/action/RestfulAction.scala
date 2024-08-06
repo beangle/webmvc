@@ -55,16 +55,16 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport,EntityAction[
   @mapping(value = "{id}/edit")
   def edit(@param("id") id: String): View = {
     val entity = getModel(id)
-    editSetting(entity)
     put(simpleEntityName, entity)
+    editSetting(entity)
     forward()
   }
 
   @mapping(value = "new", view = "new,form")
   def editNew(): View = {
     val entity = getEntity(entityClass, simpleEntityName)
-    editSetting(entity)
     put(simpleEntityName, entity)
+    editSetting(entity)
     forward()
   }
 

@@ -16,10 +16,12 @@
  */
 
 package org.beangle.webmvc.view.tag
+
 import org.beangle.template.api.ComponentContext
 
 class Editor(context: ComponentContext) extends Textarea(context) {
 
   var engine = "kindeditor"
 
+  var allowImageUpload: String = "false"
 }

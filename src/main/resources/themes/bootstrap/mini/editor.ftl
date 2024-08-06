@@ -6,11 +6,15 @@ beangle.load(["kindeditor"],function(){
    editor = KindEditor.create('#${tag.id}', {
     resizeType : 1,
     allowPreviewEmoticons : false,
+    [#if tag.allowImageUpload=="true"]
+    allowImageUpload : true,
+    [#else]
     allowImageUpload : false,
+    [/#if]
     allowFlashUpload:false,
     allowMediaUpload:false,
     allowFileUpload:false,
-    allowFileManager:false,
+    allowFileManager:true,
     loadStyleMode:false,
     afterBlur : function() {
       var html = editor.html();
@@ -19,12 +23,25 @@ beangle.load(["kindeditor"],function(){
       html = KindEditor.formatHtml(html, {
         table : ['border'],
         'td,th' : ['rowspan', 'colspan'],
-        'tr,tbody,thead':[]
+        'tr,tbody,thead':[],
+        p:['align'],
+        div:[],
+        a:[],
+        img:[],
+        'strong,em,i,u':[],
+        'blockquote':[],
+        'hr':[]
       });
       $('#${tag.id}').val(html);
       KindEditor.html('#${tag.id}',html);
     },
-    items:[]
+    [#if tag.allowImageUpload=="true"]
+    //afterUpload:function(){this.sync();},
+    uploadJson:'${b.url("!uploadImage")}',
+    items:['source','preview', 'wordpaste', 'indent', 'outdent', 'bold', 'italic', 'underline', 'removeformat', '|', 'image','table','fullscreen']
+    [#else]
+    items:['source','preview', 'wordpaste', 'indent', 'outdent', 'bold', 'italic', 'underline', 'removeformat', '|','table','fullscreen']
+    [/#if]
   });
 });
 </script>
