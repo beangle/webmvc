@@ -18,10 +18,18 @@
 package org.beangle.webmvc.view.tag
 
 import org.beangle.template.api.ComponentContext
+import org.beangle.web.action.dispatch.ActionUriRender
 
 class Editor(context: ComponentContext) extends Textarea(context) {
 
   var engine = "kindeditor"
 
-  var allowImageUpload: String = "false"
+  var uploadJson: String = _
+
+  override def evaluateParams(): Unit = {
+    super.evaluateParams()
+    if (null != uploadJson) {
+      uploadJson = context.services("uriRender").asInstanceOf[ActionUriRender].render(this.uploadJson)
+    }
+  }
 }

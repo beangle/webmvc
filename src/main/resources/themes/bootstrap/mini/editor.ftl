@@ -6,18 +6,20 @@ beangle.load(["kindeditor"],function(){
    editor = KindEditor.create('#${tag.id}', {
     resizeType : 1,
     allowPreviewEmoticons : false,
-    [#if tag.allowImageUpload=="true"]
+    [#if tag.uploadJson??]
     allowImageUpload : true,
+    allowFileUpload:true,
     [#else]
     allowImageUpload : false,
+    allowFileUpload:false,
+    allowFileManager:false,
     [/#if]
     allowFlashUpload:false,
     allowMediaUpload:false,
-    allowFileUpload:false,
-    allowFileManager:true,
     loadStyleMode:false,
     afterBlur : function() {
-      var html = editor.html();
+      var originHtml = editor.html();
+      var html = originHtml;
       html = html.replace(/(<script[^>]*>)([\s\S]*?)(<\/script>)/ig, '');
       html = html.replace(/(<style[^>]*>)([\s\S]*?)(<\/style>)/ig, '');
       html = KindEditor.formatHtml(html, {
@@ -27,17 +29,18 @@ beangle.load(["kindeditor"],function(){
         p:['align'],
         div:[],
         a:[],
-        img:[],
+        img:['src','width','height',''],
         'strong,em,i,u':[],
         'blockquote':[],
         'hr':[]
       });
       $('#${tag.id}').val(html);
-      KindEditor.html('#${tag.id}',html);
+      if(originHtml!=html){
+        KindEditor.html('#${tag.id}',html);
+      }
     },
-    [#if tag.allowImageUpload=="true"]
-    //afterUpload:function(){this.sync();},
-    uploadJson:'${b.url("!uploadImage")}',
+    [#if tag.uploadJson??]
+    uploadJson:'${tag.uploadJson}',
     items:['source','preview', 'wordpaste', 'indent', 'outdent', 'bold', 'italic', 'underline', 'removeformat', '|', 'image','table','fullscreen']
     [#else]
     items:['source','preview', 'wordpaste', 'indent', 'outdent', 'bold', 'italic', 'underline', 'removeformat', '|','table','fullscreen']
