@@ -19,9 +19,8 @@ package org.beangle.webmvc.support.spring
 
 import jakarta.servlet.{MultipartConfigElement, ServletContext}
 import org.beangle.commons.lang.SystemInfo
-import org.beangle.webmvc.dispatch.Dispatcher
-import org.beangle.cdi.spring.web.ContextListener
 import org.beangle.web.action.view.Static
+import org.beangle.webmvc.dispatch.Dispatcher
 
 class Initializer extends org.beangle.web.servlet.init.Initializer {
 
@@ -37,7 +36,7 @@ class Initializer extends org.beangle.web.servlet.init.Initializer {
     action.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))
   }
 
-  def initStaticBase(context: ServletContext):Unit={
+  def initStaticBase(context: ServletContext): Unit = {
     if (null == Static.Default.base) {
       val p = System.getProperty("beangle.webmvc.static_base")
       Static.Default.base = if (null == p) context.getContextPath + "/static" else p
