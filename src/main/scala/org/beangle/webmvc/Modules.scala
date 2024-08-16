@@ -64,7 +64,7 @@ object DefaultModule extends BindModule {
     bind("mvc.TextBundleLoader.default", classOf[DefaultTextBundleLoader])
     bind("mvc.ActionContextInitializer.component", classOf[ComponentContextInitializer])
     bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
-    bind("mvc.Taglibrary.b", classOf[BeangleTagLibrary])
+    bind("mvc.TagLibrary.b", classOf[BeangleTagLibrary])
 
     //dispatch
     bind("mvc.ActionUriRender.default", classOf[DefaultActionUriRender])
