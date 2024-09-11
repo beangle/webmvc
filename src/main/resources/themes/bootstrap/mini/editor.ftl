@@ -30,9 +30,12 @@ beangle.load(["kindeditor"],function(){
         div:[],
         a:[],
         img:['src','width','height',''],
-        'strong,em,i,u':[],
+        'strong,em,i,u,del':[],
         'blockquote':[],
-        'hr':[]
+        'hr':[],
+        'br':[],
+        'li,ul,ol':[],
+        'sup,sub':[]
       });
       $('#${tag.id}').val(html);
       if(originHtml!=html){
