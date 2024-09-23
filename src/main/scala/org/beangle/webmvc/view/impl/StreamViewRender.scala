@@ -36,8 +36,9 @@ class StreamViewRender extends ViewRender with Logging {
     val stream = view.asInstanceOf[StreamView]
     try {
       val response = context.response
-      response.setContentType(stream.contentType)
-      if !stream.contentType.startsWith("image/") then RequestUtils.setContentDisposition(response, stream.displayName)
+      val contentType =stream.contentType.toString
+      response.setContentType(contentType)
+      if !contentType.startsWith("image/") then RequestUtils.setContentDisposition(response, stream.displayName)
       stream.lastModified foreach { lm =>
         response.addDateHeader("Last-Modified", lm)
       }
