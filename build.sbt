@@ -2,7 +2,7 @@ import org.beangle.parent.Dependencies.*
 import org.beangle.parent.Settings.*
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.9.34-SNAPSHOT"
+ThisBuild / version := "0.9.34"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -23,13 +23,13 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
-val bg_commons = "org.beangle.commons" % "beangle-commons" % "5.6.18"
-val bg_model = "org.beangle.data" % "beangle-model" % "5.8.14"
-val bg_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.6.9"
-val bg_cache = "org.beangle.cache" % "beangle-cache" % "0.1.10"
-val bg_template = "org.beangle.template" % "beangle-template" % "0.1.19"
-val bg_web = "org.beangle.web" % "beangle-web" % "0.5.0"
-val bg_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.1"
+val bg_commons = "org.beangle.commons" % "beangle-commons" % "5.6.19"
+val bg_model = "org.beangle.data" % "beangle-model" % "5.8.15"
+val bg_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.6.10"
+val bg_cache = "org.beangle.cache" % "beangle-cache" % "0.1.11"
+val bg_template = "org.beangle.template" % "beangle-template" % "0.1.20"
+val bg_web = "org.beangle.web" % "beangle-web" % "0.5.1"
+val bg_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.2"
 
 lazy val root = (project in file("."))
   .settings(
