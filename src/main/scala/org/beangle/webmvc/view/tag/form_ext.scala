@@ -113,10 +113,13 @@ object Boxes {
       case null => Set.empty[String]
       case iter: java.lang.Iterable[_] =>
         (for (obj <- asScala(iter)) yield Properties.get[Object](obj, "id")).toSet.map(_.toString)
-      case iter: Iterable[_] =>
-        (for (obj <- iter) yield findKey(obj)).toSet
+      case iter: Iterable[_] => (for (obj <- iter) yield findKey(obj)).toSet
       case arry: Array[Object] => arry.toSet.map(_.toString)
-      case str: String => if (Strings.isNotBlank(str)) Strings.split(str).toSet else Set.empty
+      case str: String =>
+        if null == value then Set.empty
+        else {
+          if (Strings.isNotBlank(str)) Strings.split(str).toSet else Set(str)
+        }
       case obj: Object => Set(findKey(obj))
     }
   }
@@ -131,17 +134,12 @@ object Boxes {
 
 class Radios(context: ComponentContext) extends UIBean(context) {
   var name: String = _
-
   var label: String = _
-
   var items: Object = _
-
   var radios: Array[Radio] = _
-
   var value: Object = _
-
   var comment: String = _
-
+  var required: String = _
   var valueName = "name"
 
   override def evaluateParams(): Unit = {
@@ -162,8 +160,13 @@ class Radios(context: ComponentContext) extends UIBean(context) {
       radios(i).evaluateParams()
       i += 1
     }
-    if (null == this.value && radios.length > 0) this.value = radios(0).value
-    this.value = Radio.booleanize(this.value)
+    if (null != this.value) this.value = Radio.booleanize(this.value)
+    if (null == required) required = "true"
+    if ("true".equals(required)) {
+      val myform = findAncestor(classOf[Form])
+      if (null != myform)
+        myform.addCheck(id, "assert($(\"input[name='" + name + "']:checked\").length != 0,'必须勾选一项')")
+    }
   }
 }
 
