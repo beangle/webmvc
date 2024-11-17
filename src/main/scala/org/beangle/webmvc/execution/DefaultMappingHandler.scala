@@ -21,11 +21,11 @@ import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.activation.MediaType
 import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.annotation.description
+import org.beangle.web.servlet.intercept.Interceptor
+import org.beangle.web.servlet.resource.PathResolver
 import org.beangle.webmvc.config.{ActionMapping, RouteMapping}
 import org.beangle.webmvc.context.ActionContext
 import org.beangle.webmvc.view.{PathView, View, ViewManager}
-import org.beangle.web.servlet.intercept.Interceptor
-import org.beangle.web.servlet.resource.PathResolver
 
 import java.io.ByteArrayOutputStream
 
@@ -36,7 +36,7 @@ import java.io.ByteArrayOutputStream
 @description("缺省的调用处理器")
 class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
                             viewManager: ViewManager,
-                            responseCache: ResponseCache) extends ContextAwareHandler {
+                            responseCache: ResponseCache) extends MappingHandler, ContextAwareHandler {
 
   override def handle(request: HttpServletRequest, response: HttpServletResponse): Unit = {
     val action = mapping.action

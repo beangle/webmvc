@@ -24,7 +24,7 @@ import org.beangle.commons.lang.annotation.description
 import org.beangle.web.servlet.http.accept.ContentNegotiationManager
 
 @description("视图管理器")
-class DefaultViewManager extends Initializing {
+class DefaultViewManager extends ViewManager, Initializing {
 
   private var serializerMap: Map[String, Serializer] = Map.empty
   private var renderMap: Map[Class[_], ViewRender] = Map.empty
