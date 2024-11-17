@@ -17,13 +17,14 @@
 
 package org.beangle.webmvc.view.freemarker
 
-import java.io._
-import java.net.{MalformedURLException, URL}
 import freemarker.cache.TemplateLoader
-import freemarker.log.Logger
-import freemarker.template.utility.{NullArgumentException, StringUtil}
 import jakarta.servlet.ServletContext
+import org.beangle.commons.lang.Checks
+import org.beangle.commons.logging.Logging
 import org.beangle.template.freemarker.URLTemplateSource
+
+import java.io.*
+import java.net.{MalformedURLException, URL}
 
 /**
  * A {@link TemplateLoader} that uses streams reachable through {@link ServletContext# getResource ( String )} as its source
@@ -36,8 +37,8 @@ object WebappTemplateLoader {
   }
 
   def apply(servletContext: ServletContext, subdirPath: String): WebappTemplateLoader = {
-    NullArgumentException.check("servletContext", servletContext)
-    NullArgumentException.check("subdirPath", subdirPath)
+    Checks.notnull(servletContext)
+    Checks.notnull(subdirPath)
     var subDir = subdirPath.replace('\\', '/')
     if (!subDir.endsWith("/")) subDir += "/"
     if (!subDir.startsWith("/")) subDir = "/" + subDir
@@ -45,8 +46,7 @@ object WebappTemplateLoader {
   }
 }
 
-class WebappTemplateLoader(val servletContext: ServletContext, val subdirPath: String) extends TemplateLoader {
-  private val LOG = Logger.getLogger("freemarker.cache")
+class WebappTemplateLoader(val servletContext: ServletContext, val subdirPath: String) extends TemplateLoader, Logging {
   private val attemptFileAccess = (null != servletContext.getRealPath(subdirPath))
 
   @throws[IOException]
@@ -69,7 +69,7 @@ class WebappTemplateLoader(val servletContext: ServletContext, val subdirPath: S
     try url = servletContext.getResource(fullPath)
     catch {
       case e: MalformedURLException =>
-        LOG.warn("Could not retrieve resource " + StringUtil.jQuoteNoXSS(fullPath), e)
+        logger.warn("Could not retrieve resource " + fullPath, e)
         return null
     }
     if (url == null) null
@@ -103,8 +103,8 @@ class WebappTemplateLoader(val servletContext: ServletContext, val subdirPath: S
    * Show class name and some details that are useful in template-not-found errors.
    */
   override def toString: String = {
-    "(subdirPath=" + StringUtil.jQuote(subdirPath) + ", servletContext={contextPath=" +
-      StringUtil.jQuote(getContextPath) + ", displayName=" + StringUtil.jQuote(servletContext.getServletContextName) + "})"
+    "(subdirPath=" + subdirPath + ", servletContext={contextPath=" +
+      getContextPath + ", displayName=" + servletContext.getServletContextName + "})"
   }
 
   /** Gets the context path if we are on Servlet 2.5+, or else returns failure description string. */

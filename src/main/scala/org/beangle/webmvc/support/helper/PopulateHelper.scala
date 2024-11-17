@@ -17,14 +17,14 @@
 
 package org.beangle.webmvc.support.helper
 
-import org.beangle.cdi.Container
+import org.beangle.commons.cdi.Container
 import org.beangle.commons.lang.Strings
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.EntityType
 import org.beangle.data.model.util.ConvertPopulator
 import org.beangle.data.orm.Jpas
 import org.beangle.data.orm.hibernate.DomainFactory
-import org.beangle.web.action.context.Params
+import org.beangle.webmvc.context.Params
 
 object PopulateHelper {
 

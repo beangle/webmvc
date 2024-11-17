@@ -26,7 +26,7 @@ import org.beangle.data.dao.{Condition, Conditions, OqlBuilder}
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.SingularProperty
 import org.beangle.data.model.pojo.TemporalOn
-import org.beangle.web.action.context.{ActionContext, Params}
+import org.beangle.webmvc.context.{ActionContext, Params}
 import org.beangle.web.servlet.util.CookieUtils
 
 import java.text.{ParseException, SimpleDateFormat}

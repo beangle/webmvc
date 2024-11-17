@@ -21,8 +21,8 @@ import org.beangle.commons.collection.page.PageLimit
 import org.beangle.data.dao.{EntityDao, OqlBuilder}
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.EntityType
-import org.beangle.web.action.context.Params
-import org.beangle.web.action.support.EntitySupport
+import org.beangle.webmvc.context.Params
+import org.beangle.webmvc.support.EntitySupport
 import org.beangle.webmvc.support.helper.{PopulateHelper, QueryHelper}
 
 import java.io as jo
@@ -45,7 +45,7 @@ trait EntityAction[T <: Entity[_]] extends EntitySupport[T] {
     PopulateHelper.populate(obj, Params.sub(simpleName))
   }
 
-  protected final def populate[E <: Entity[_]](entity: E, params: collection.Map[String, Object]): E = {
+  protected final def populate[E <: Entity[_]](entity: E, params: collection.Map[String, Any]): E = {
     require(null != entity, "Cannot populate to null.")
     PopulateHelper.populate(entity, params)
   }

@@ -17,18 +17,16 @@
 
 package org.beangle.webmvc.execution
 
-import org.beangle.webmvc.config.Profile
-import org.beangle.webmvc.config.impl.DefaultActionMappingBuilder
-import org.beangle.webmvc.execution.impl.StaticMethodInvokerBuilder
+import org.beangle.webmvc.config.{DefaultActionMappingBuilder, Profile}
 import org.beangle.webmvc.execution.testaction.ShowcaseAction
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 class StaticMethodHandlerBuilderTest extends AnyFunSpec with Matchers {
   val builder = new StaticMethodInvokerBuilder()
   val mappingBuilder = new DefaultActionMappingBuilder
   mappingBuilder.viewScan = false
-  val profile = new Profile("test", "org.beangle.webmvc.execution.testaction")
+  val profile = new Profile("test", "org.beangle.webmvc.test")
   profile.matches(classOf[ShowcaseAction].getName)
 
   describe("StaticMethodHandlerBuilder") {

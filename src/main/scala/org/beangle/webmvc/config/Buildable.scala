@@ -19,10 +19,9 @@ package org.beangle.webmvc.config
 
 object Buildable {
   def build(objs: Any*): Unit = {
-    objs foreach { obj =>
-      obj match
-        case b: Buildable => b.build()
-        case _ =>
+    objs foreach {
+      case b: Buildable => b.build()
+      case _ =>
     }
   }
 }

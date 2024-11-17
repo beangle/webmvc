@@ -18,7 +18,7 @@
 package org.beangle.webmvc.view.tag
 
 import org.beangle.template.api.{ComponentContext, TagLibrary, TemplateEngine}
-import org.beangle.web.action.context.ActionContext
+import org.beangle.webmvc.context.ActionContext
 
 /**
   * @author chaostone

@@ -18,11 +18,8 @@
 package org.beangle.webmvc.view.freemarker
 
 import org.beangle.commons.lang.annotation.description
-import org.beangle.web.action.view.View
 import org.beangle.webmvc.config.RouteMapping
-import org.beangle.webmvc.view.{TemplateResolver, ViewResolver}
-
-import java.io.{FileNotFoundException, IOException}
+import org.beangle.webmvc.view.{TemplateResolver, View, ViewResolver}
 
 /**
  * @author chaostone

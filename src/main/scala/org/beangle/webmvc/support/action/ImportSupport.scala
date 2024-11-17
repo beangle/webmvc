@@ -20,8 +20,8 @@ package org.beangle.webmvc.support.action
 import org.beangle.data.model.Entity
 import org.beangle.doc.transfer.importer.listener.ForeignerListener
 import org.beangle.doc.transfer.importer.{DefaultEntityImporter, ImportResult, ImportSetting}
-import org.beangle.web.action.support.ActionSupport
-import org.beangle.web.action.view.View
+import org.beangle.webmvc.support.ActionSupport
+import org.beangle.webmvc.view.View
 import org.beangle.webmvc.support.helper.{ImportHelper, PopulateHelper}
 
 trait ImportSupport[T <: Entity[_]] {

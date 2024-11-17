@@ -50,8 +50,8 @@ object CORSRequestType {
 @description("支持跨域调用CORS的拦截器")
 class CorsInterceptor extends Interceptor with Initializing {
 
-  import CORSRequestType._
-  import CorsInterceptor._
+  import CORSRequestType.*
+  import CorsInterceptor.*
 
   var anyOriginAllowed: Boolean = _
   var allowedOrigins: Set[String] = Set(AnyOrigin)

@@ -18,29 +18,31 @@
 package org.beangle.webmvc.view.freemarker
 
 import org.beangle.commons.lang.annotation.description
-import org.beangle.template.freemarker.{ProfileTemplateLoader, Configurer as FreemarkerConfigurer}
-import org.beangle.webmvc.config.Configurer
+import org.beangle.template.api.DynaProfile
+import org.beangle.template.freemarker.Configurator as FreemarkerConfigurator
+import org.beangle.webmvc.config.Configurator
 import org.beangle.webmvc.view.{TemplatePathMapper, TemplateResolver}
 
 import java.io.{FileNotFoundException, IOException}
 
 /**
  * Find template in class hierarchy with configuration without caching.
- * It need a ViewPathMapper
+ * It's need a ViewPathMapper
  */
 @description("参考类层级模板查找器")
-class HierarchicalTemplateResolver(freemarkerConfigurer: FreemarkerConfigurer, templatePathMapper: TemplatePathMapper, configurer: Configurer) extends TemplateResolver {
+class HierarchicalTemplateResolver(freemarkerConfigurator: FreemarkerConfigurator, templatePathMapper: TemplatePathMapper,
+                                   configurator: Configurator) extends TemplateResolver {
 
   override def resolve(actionClass: Class[_], viewName: String, suffix: String): String = {
     var path: String = null
     var superClass = actionClass
     var found: Boolean = false
-    val profile = configurer.getProfile(actionClass.getName)
+    val profile = configurator.getProfile(actionClass.getName)
     while {
       val buf = new StringBuilder
       buf.append(templatePathMapper.map(superClass.getName, viewName, profile))
       buf.append(suffix)
-      ProfileTemplateLoader.getProfile match
+      DynaProfile.get match
         case None =>
           path = buf.toString
           found = exists(path)
@@ -58,7 +60,7 @@ class HierarchicalTemplateResolver(freemarkerConfigurer: FreemarkerConfigurer, t
   }
 
   override def exists(viewPath: String): Boolean = {
-    val freemarkerCfg = freemarkerConfigurer.config
+    val freemarkerCfg = freemarkerConfigurator.config
     try {
       freemarkerCfg.getTemplate(viewPath)
       true

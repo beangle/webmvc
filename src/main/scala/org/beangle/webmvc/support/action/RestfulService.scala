@@ -19,9 +19,9 @@ package org.beangle.webmvc.support.action
 
 import org.beangle.data.dao.EntityDao
 import org.beangle.data.model.Entity
-import org.beangle.web.action.annotation.{mapping, param, response}
-import org.beangle.web.action.context.Params
-import org.beangle.web.action.support.{ActionSupport, MimeSupport}
+import org.beangle.webmvc.annotation.{mapping, param, response}
+import org.beangle.webmvc.context.Params
+import org.beangle.webmvc.support.{ActionSupport, MimeSupport}
 
 class RestfulService[T <: Entity[_]] extends ActionSupport with EntityAction[T] with MimeSupport {
   var entityDao: EntityDao = _

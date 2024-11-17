@@ -17,13 +17,13 @@
 
 package org.beangle.webmvc.view.tag
 
-import org.beangle.cdi.{Container, ContainerListener}
+import org.beangle.commons.cdi.{Container, ContainerListener}
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
 import org.beangle.template.api.{TagLibrary, TagLibraryProvider}
 
 @description("所有标签库提供者")
-class ContainerTagLibraryProvider extends TagLibraryProvider with ContainerListener {
+class ContainerTagLibraryProvider extends TagLibraryProvider, ContainerListener {
 
   var tagLibraries: Map[String, TagLibrary] = Map.empty
 

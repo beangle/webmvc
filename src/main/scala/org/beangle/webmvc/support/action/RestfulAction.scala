@@ -17,20 +17,21 @@
 
 package org.beangle.webmvc.support.action
 
+import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.data.dao.EntityDao
 import org.beangle.data.model.Entity
 import org.beangle.data.model.pojo.Updated
-import org.beangle.web.action.annotation.{ignore, mapping, param}
-import org.beangle.web.action.context.{ActionContext, Params}
-import org.beangle.web.action.support.ActionSupport
-import org.beangle.web.action.view.View
+import org.beangle.webmvc.annotation.{ignore, mapping, param}
+import org.beangle.webmvc.context.{ActionContext, Params}
 import org.beangle.webmvc.execution.MappingHandler
+import org.beangle.webmvc.support.ActionSupport
+import org.beangle.webmvc.view.View
 import org.beangle.webmvc.support.helper.PopulateHelper
 
 import java.time.Instant
 
-abstract class RestfulAction[T <: Entity[_]] extends ActionSupport,EntityAction[T] {
+abstract class RestfulAction[T <: Entity[_]] extends ActionSupport, EntityAction[T], Logging {
   var entityDao: EntityDao = _
 
   def index(): View = {

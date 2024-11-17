@@ -18,13 +18,12 @@
 package org.beangle.webmvc.view.freemarker
 
 import org.beangle.commons.lang.annotation.description
-import org.beangle.web.action.annotation.view
-import org.beangle.web.action.view.View
-import org.beangle.webmvc.view.{LocatedView, TypeViewBuilder}
+import org.beangle.webmvc.annotation.view
+import org.beangle.webmvc.view.{TypeViewBuilder, View}
 
-class FreemarkerView(val location: String) extends LocatedView
+class FreemarkerView(val location: String) extends View
 
-@description("Freemaker视图构建器")
+@description("Freemarker视图构建器")
 class FreemarkerViewBuilder extends TypeViewBuilder {
 
   override def build(v: view): View = {

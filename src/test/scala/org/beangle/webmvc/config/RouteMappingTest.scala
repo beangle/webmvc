@@ -17,11 +17,11 @@
 
 package org.beangle.webmvc.config
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.funspec.AnyFunSpec
 import org.beangle.commons.net.http.HttpMethods
 import org.beangle.webmvc.context.Argument
-import org.beangle.web.action.view.View
+import org.beangle.webmvc.view.View
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 class RouteMappingTest extends AnyFunSpec with Matchers {
 

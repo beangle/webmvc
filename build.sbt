@@ -2,7 +2,7 @@ import org.beangle.parent.Dependencies.*
 import org.beangle.parent.Settings.*
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.9.36-SNAPSHOT"
+ThisBuild / version := "0.10.0"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -23,21 +23,22 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
-val bg_commons = "org.beangle.commons" % "beangle-commons" % "5.6.19"
-val bg_model = "org.beangle.data" % "beangle-model" % "5.8.15"
-val bg_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.6.10"
-val bg_cache = "org.beangle.cache" % "beangle-cache" % "0.1.11"
-val bg_template = "org.beangle.template" % "beangle-template" % "0.1.20"
-val bg_web = "org.beangle.web" % "beangle-web" % "0.5.1"
-val bg_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.2"
+val beangle_commons = "org.beangle.commons" % "beangle-commons" % "5.6.22"
+val beangle_web = "org.beangle.web" % "beangle-web" % "0.6.0"
+
+val beangle_model = "org.beangle.data" % "beangle-model" % "5.8.17"
+val beangle_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.7.0"
+val beangle_template = "org.beangle.template" % "beangle-template" % "0.1.21"
+val beangle_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.5"
 
 lazy val root = (project in file("."))
   .settings(
     name := "beangle-webmvc",
     common,
     libraryDependencies ++= Seq(logback_classic % "test", scalatest),
-    libraryDependencies ++= Seq(bg_commons, bg_web, javassist, bg_cache, bg_cdi, bg_template, scalaxml),
+    libraryDependencies ++= Seq(beangle_commons, beangle_web, javassist, scalaxml),
+    libraryDependencies ++= Seq(beangle_template % "optional", beangle_cdi % "optional"),
     libraryDependencies ++= Seq(freemarker % "optional", hibernate_core % "optional"),
     libraryDependencies ++= Seq(spring_context % "optional", spring_beans % "optional"),
-    libraryDependencies ++= Seq(bg_model % "optional", bg_doc_transfer % "optional")
+    libraryDependencies ++= Seq(beangle_model % "optional", beangle_doc_transfer % "optional")
   )

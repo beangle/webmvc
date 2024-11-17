@@ -21,23 +21,22 @@ import freemarker.template.{SimpleHash, Template}
 import jakarta.servlet.http.HttpServletResponse
 import org.beangle.commons.lang.annotation.description
 import org.beangle.template.api.ModelBuilder
-import org.beangle.template.freemarker.Configurer as FreemarkerConfigurer
-import org.beangle.web.action.context.ActionContext
-import org.beangle.web.action.view.View
-import org.beangle.web.servlet.util.RequestUtils
+import org.beangle.template.freemarker.Configurator as FreemarkerConfigurator
+import org.beangle.webmvc.context.ActionContext
 import org.beangle.webmvc.execution.MappingHandler
-import org.beangle.webmvc.view.{ViewRender, ViewResult}
+import org.beangle.webmvc.view.{View, ViewRender, ViewResult}
+import org.beangle.web.servlet.util.RequestUtils
 
 import java.io.StringWriter
 
 /** Freemarker视图渲染器
-  *
-  * @author chaostone
-  */
+ *
+ * @author chaostone
+ */
 @description("Freemarker视图渲染器")
-class FreemarkerViewRender(configurer: FreemarkerConfigurer, modelBuilder: ModelBuilder) extends ViewRender {
+class FreemarkerViewRender(configurator: FreemarkerConfigurator, modelBuilder: ModelBuilder) extends ViewRender {
 
-  private val config = configurer.config
+  private val config = configurator.config
 
   def render(view: View, context: ActionContext): Unit = {
     val freemarkerView = view.asInstanceOf[FreemarkerView]
@@ -46,13 +45,13 @@ class FreemarkerViewRender(configurer: FreemarkerConfigurer, modelBuilder: Model
     try {
       processTemplate(template, model, context.response)
     } finally {
-      configurer.cleanProfile()
+      configurator.cleanProfile()
     }
   }
 
   protected def processTemplate(template: Template, model: SimpleHash, response: HttpServletResponse): Unit = {
     var contentType = template.getCustomAttribute("content_type").asInstanceOf[String]
-    if (contentType == null) contentType = configurer.contentType
+    if (contentType == null) contentType = configurator.contentType
     val mapping = ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
     val decorators = mapping.action.profile.decorators
     if (decorators.isEmpty) {

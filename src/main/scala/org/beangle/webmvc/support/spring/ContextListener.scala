@@ -18,7 +18,7 @@
 package org.beangle.webmvc.support.spring
 
 import jakarta.servlet.{ServletContext, ServletContextEvent, ServletContextListener}
-import org.beangle.cdi.Container
+import org.beangle.commons.cdi.Container
 import org.beangle.cdi.spring.context.DefaultContextInitializer
 import org.beangle.commons.logging.Logging
 

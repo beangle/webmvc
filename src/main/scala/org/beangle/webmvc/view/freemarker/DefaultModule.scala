@@ -17,7 +17,7 @@
 
 package org.beangle.webmvc.view.freemarker
 
-import org.beangle.cdi.bind.BindModule
+import org.beangle.commons.cdi.BindModule
 import org.beangle.template.freemarker.DefaultTagTemplateEngine
 
 object DefaultModule extends BindModule {
@@ -28,7 +28,7 @@ object DefaultModule extends BindModule {
       .property("devMode", devEnabled)
 
     //template
-    bind("mvc.FreemarkerConfigurer.default", classOf[ContextFreemarkerConfigurer])
+    bind("mvc.FreemarkerConfigurer.default", classOf[ContextFreemarkerConfigurator])
       .property("devMode", devEnabled)
     bind("mvc.TemplateResolver.freemarker", classOf[HierarchicalTemplateResolver])
     bind("mvc.ViewResolver.freemarker", classOf[FreemarkerViewResolver])

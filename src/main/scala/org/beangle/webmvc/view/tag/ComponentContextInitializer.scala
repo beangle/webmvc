@@ -17,12 +17,10 @@
 
 package org.beangle.webmvc.view.tag
 
-import org.beangle.commons.text.i18n.TextResource
-import org.beangle.template.api.{ComponentContext, IndexableIdGenerator, TagTemplateEngine, TemplateEngine}
-import org.beangle.web.action.context.ActionContext
-import org.beangle.web.action.dispatch.ActionUriRender
-import org.beangle.webmvc.context.{ActionContextInitializer, LocaleResolver}
-import org.beangle.webmvc.view.i18n.ActionTextResourceProvider
+import org.beangle.template.api.{ComponentContext, IndexableIdGenerator, TagTemplateEngine}
+import org.beangle.webmvc.context.{ActionContext, ActionContextInitializer, LocaleResolver}
+import org.beangle.webmvc.dispatch.ActionUriRender
+import org.beangle.webmvc.i18n.ActionTextResourceProvider
 
 class ComponentContextInitializer extends ActionContextInitializer {
   var textResourceProvider: ActionTextResourceProvider = _
@@ -32,7 +30,7 @@ class ComponentContextInitializer extends ActionContextInitializer {
 
   override def init(context: ActionContext): Unit = {
     val locale = localeResolver.resolve(context.request)
-    val textResource = textResourceProvider.getTextResource(locale,context.handler)
+    val textResource = textResourceProvider.getTextResource(locale, context.handler)
 
     val req = context.request
     val queryString = req.getQueryString

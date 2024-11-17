@@ -17,17 +17,16 @@
 
 package org.beangle.webmvc.view.freemarker
 
-import freemarker.template.{Configuration, ObjectWrapper, SimpleHash}
-import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
+import freemarker.template.{Configuration, SimpleHash}
 import org.beangle.commons.lang.annotation.description
 import org.beangle.template.api.{ModelBuilder, TagLibraryProvider}
 import org.beangle.template.freemarker.ParametersHashModel
-import org.beangle.template.freemarker.Configurer as FreemarkerConfigurer
-import org.beangle.web.action.context.ActionContext
+import org.beangle.webmvc.context.ActionContext
+
 /**
  * @author chaostone
  */
-@description("Freemaker模型构建器")
+@description("Freemarker模型构建器")
 class FreemarkerModelBuilder(tagLibraryProvider: TagLibraryProvider) extends ModelBuilder {
   final val KEY_REQUEST_PARAMETERS = "Parameters"
   final val templateModelAttribute = ".freemarker.TemplateModel"

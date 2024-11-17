@@ -24,10 +24,10 @@ import org.beangle.data.dao.{LimitQuery, QueryPage}
 import org.beangle.data.model.Entity
 import org.beangle.doc.transfer.Format
 import org.beangle.doc.transfer.exporter.ExportContext
-import org.beangle.web.action.annotation.{ignore, mapping, response}
-import org.beangle.web.action.context.ActionContext
-import org.beangle.web.action.context.Params.*
-import org.beangle.web.action.view.{Status, View}
+import org.beangle.webmvc.annotation.{ignore, mapping, response}
+import org.beangle.webmvc.context.ActionContext
+import org.beangle.webmvc.context.Params.*
+import org.beangle.webmvc.view.{Status, View}
 import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.support.helper.PopulateHelper
 

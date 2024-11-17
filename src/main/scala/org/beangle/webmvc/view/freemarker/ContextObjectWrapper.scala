@@ -20,18 +20,19 @@ package org.beangle.webmvc.view.freemarker
 import freemarker.template.TemplateModel
 import org.beangle.commons.collection.IdentityCache
 import org.beangle.template.freemarker.BeangleObjectWrapper
-import org.beangle.web.action.context.ActionContext
+import org.beangle.webmvc.context.ActionContext
 
 class ContextObjectWrapper extends BeangleObjectWrapper {
+  private val modelName = "_TemplateModels"
 
   override def wrap(obj: AnyRef): TemplateModel = {
     if (null == obj) return null
     //FIXME need ab test
     val context = ActionContext.current
-    var models = context.stash[IdentityCache[AnyRef, TemplateModel]]("_TemplateModels")
+    var models = context.stash[IdentityCache[AnyRef, TemplateModel]](modelName)
     if (models == null) {
       models = new IdentityCache[AnyRef, TemplateModel]
-      context.stash("_TemplateModels", models)
+      context.stash(modelName, models)
     }
     val model = models.get(obj)
     if (null == model) {

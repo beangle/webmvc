@@ -19,27 +19,19 @@ package org.beangle.webmvc.dispatch
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import jakarta.servlet.{GenericServlet, ServletConfig, ServletRequest, ServletResponse}
-import org.beangle.cdi.Container
 import org.beangle.commons.lang.Strings
-import org.beangle.commons.logging.Logging
-import org.beangle.web.action.dispatch.RequestMapper
-import org.beangle.web.action.util.Resources
-import org.beangle.web.servlet.multipart.StandardMultipartResolver
-import org.beangle.web.servlet.util.RequestUtils
-import org.beangle.webmvc.config.{Buildable, Configurer}
+import org.beangle.webmvc.config.{Buildable, Configurator}
 import org.beangle.webmvc.context.ActionContextBuilder
 import org.beangle.webmvc.execution.ContextAwareHandler
+import org.beangle.webmvc.util.Resources
+import org.beangle.web.servlet.multipart.StandardMultipartResolver
+import org.beangle.web.servlet.util.RequestUtils
 
-class Dispatcher(configurer: Configurer, mapper: RequestMapper, actionContextBuilder: ActionContextBuilder)
-  extends GenericServlet with Logging {
+class Dispatcher(configurer: Configurator, mapper: RequestMapper, actionContextBuilder: ActionContextBuilder) extends GenericServlet {
 
   var defaultEncoding = "utf-8"
 
   var index: String = _
-
-  def this(container: Container) = {
-    this(container.getBean(classOf[Configurer]).get, container.getBean(classOf[RequestMapper]).get, container.getBean(classOf[ActionContextBuilder]).get)
-  }
 
   override def init(config: ServletConfig): Unit = {
     //1. build configuration and mapper

@@ -17,55 +17,30 @@
 
 package org.beangle.webmvc
 
-import org.beangle.cdi.bind.{BindModule, profile}
+import org.beangle.commons.cdi.{BindModule, profile}
 import org.beangle.commons.io.DefaultBinarySerializer
 import org.beangle.commons.text.i18n.{DefaultTextBundleLoader, DefaultTextFormatter}
-import org.beangle.web.action.dispatch.StaticResourceRouteProvider
 import org.beangle.web.servlet.http.accept.ContentNegotiationManagerFactory
-import org.beangle.webmvc.DefaultModule.bind
-import org.beangle.webmvc.config.impl.{DefaultActionMappingBuilder, DefaultConfigurer, XmlProfileProvider}
-import org.beangle.webmvc.context.impl.{ContainerActionFinder, DefaultActionContextBuilder, ParamLocaleResolver}
-import org.beangle.webmvc.dispatch.impl.{DefaultActionUriRender, DefaultRouteProvider, HierarchicalUrlMapper}
-import org.beangle.webmvc.execution.impl.{DynaMethodInvokerBuilder, MvcRequestConvertor, StaticMethodInvokerBuilder}
+import org.beangle.webmvc.config.{DefaultActionMappingBuilder, DefaultConfigurator, XmlProfileProvider}
+import org.beangle.webmvc.context.{DefaultActionContextBuilder, ParamLocaleResolver}
+import org.beangle.webmvc.dispatch.*
 import org.beangle.webmvc.execution.interceptors.CorsInterceptor
-import org.beangle.webmvc.view.i18n.ActionTextResourceProvider
-import org.beangle.webmvc.view.impl.*
-import org.beangle.webmvc.view.tag.{BeangleTagLibrary, ComponentContextInitializer, ContainerTagLibraryProvider}
+import org.beangle.webmvc.execution.{DynaMethodInvokerBuilder, StaticMethodInvokerBuilder}
+import org.beangle.webmvc.i18n.ActionTextResourceProvider
 
 object DefaultModule extends BindModule {
 
   protected override def binding(): Unit = {
     //config
     bind("mvc.ProfileProvider.default", classOf[XmlProfileProvider])
-    bind("mvc.Configurer.default", classOf[DefaultConfigurer])
+    bind("mvc.Configurator.default", classOf[DefaultConfigurator])
     bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder])
 
-    //template
-    bind("mvc.TemplatePathMapper.default", classOf[DefaultTemplatePathMapper])
-
-    //view
-    bind("mvc.ViewBuilder.default", classOf[DefaultViewBuilder])
-    bind("mvc.TypeViewBuilder.chain", classOf[ForwardActionViewBuilder])
-    bind("mvc.TypeViewBuilder.redirect", classOf[RedirectActionViewBuilder])
-    bind("mvc.ViewRender.chain", classOf[ForwardActionViewRender])
-    bind("mvc.ViewRender.redirect", classOf[RedirectActionViewRender])
-    bind("mvc.ViewRender.stream", classOf[StreamViewRender])
-    bind("mvc.ViewRender.status", classOf[StatusViewRender])
-    bind("mvc.ViewRender.raw", classOf[RawViewRender])
-
-    bind("mvc.ViewManager", classOf[ViewManager])
-
-    bind("mvc.TagLibraryProvider.default", classOf[ContainerTagLibraryProvider])
-    //i18n and tag
+    //i18n
     bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])
       .property("reloadable", devEnabled)
-
     bind("mvc.TextFormatter.default", classOf[DefaultTextFormatter])
     bind("mvc.TextBundleLoader.default", classOf[DefaultTextBundleLoader])
-    bind("mvc.ActionContextInitializer.component", classOf[ComponentContextInitializer])
-    bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
-    bind("mvc.TagLibrary.b", classOf[BeangleTagLibrary])
-
     //dispatch
     bind("mvc.ActionUriRender.default", classOf[DefaultActionUriRender])
     bind("mvc.RequestMapper.default", classOf[HierarchicalUrlMapper])
@@ -77,8 +52,8 @@ object DefaultModule extends BindModule {
     bind("mvc.InvokerBuilder.method", classOf[DynaMethodInvokerBuilder])
 
     //context
+    bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
     bind("mvc.ActionContextBuilder.default", classOf[DefaultActionContextBuilder])
-    bind("mvc.ActionFinder.default", classOf[ContainerActionFinder])
 
     //content
     bind(classOf[ContentNegotiationManagerFactory]).property("favorPathExtension", "true")
@@ -91,6 +66,29 @@ object DefaultModule extends BindModule {
     bind("Serializer.bin", DefaultBinarySerializer)
     //static
     bind(classOf[StaticResourceRouteProvider])
+  }
+}
+
+class ViewModule extends BindModule {
+
+  protected override def binding(): Unit = {
+    //view
+    import org.beangle.webmvc.view.*
+    bind("mvc.TemplatePathMapper.default", classOf[DefaultTemplatePathMapper])
+    bind("mvc.ViewBuilder.default", classOf[DefaultViewBuilder])
+    bind("mvc.TypeViewBuilder.chain", classOf[ForwardActionViewBuilder])
+    bind("mvc.TypeViewBuilder.redirectAction", classOf[RedirectActionViewBuilder])
+    bind("mvc.ViewRender.chain", classOf[ForwardActionViewRender])
+    bind("mvc.ViewRender.redirectAction", classOf[RedirectActionViewRender])
+    bind("mvc.ViewRender.stream", classOf[StreamViewRender])
+    bind("mvc.ViewRender.status", classOf[StatusViewRender])
+    bind("mvc.ViewRender.raw", classOf[RawViewRender])
+    bind("mvc.ViewManager.default", classOf[DefaultViewManager])
+    //tag
+    import org.beangle.webmvc.view.tag.*
+    bind("mvc.TagLibraryProvider.default", classOf[ContainerTagLibraryProvider])
+    bind("mvc.ActionContextInitializer.component", classOf[ComponentContextInitializer])
+    //bind("mvc.TagLibrary.b", classOf[BeangleTagLibrary])
   }
 }
 

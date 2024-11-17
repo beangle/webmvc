@@ -18,27 +18,25 @@
 package org.beangle.webmvc.execution
 
 import jakarta.servlet.http.HttpServletRequest
-import org.beangle.cache.{Cache, CacheManager}
-import org.beangle.commons.bean.Initializing
+import org.beangle.commons.cache.Cache
 import org.beangle.web.servlet.url.UrlBuilder
-import org.beangle.web.action.execution.CacheResult
 
-trait ResponseCache{
+trait ResponseCache {
   def put(request: HttpServletRequest, contentType: String, data: Array[Byte]): Unit
 
   def get(request: HttpServletRequest): Option[CacheResult]
 }
 
-object EmptyResponseCache extends ResponseCache{
-  def put(request: HttpServletRequest, contentType: String, data: Array[Byte]): Unit={
+object EmptyResponseCache extends ResponseCache {
+  def put(request: HttpServletRequest, contentType: String, data: Array[Byte]): Unit = {
   }
 
-  def get(request: HttpServletRequest): Option[CacheResult]={
+  def get(request: HttpServletRequest): Option[CacheResult] = {
     None
   }
 }
 
-class DefaultResponseCache(cache:Cache[String, CacheResult]) extends ResponseCache {
+class DefaultResponseCache(cache: Cache[String, CacheResult]) extends ResponseCache {
 
   override def put(request: HttpServletRequest, contentType: String, data: Array[Byte]): Unit = {
     cache.put(UrlBuilder(request).buildRequestUrl(), CacheResult(contentType, data))
