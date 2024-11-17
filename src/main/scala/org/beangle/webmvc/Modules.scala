@@ -19,6 +19,7 @@ package org.beangle.webmvc
 
 import org.beangle.commons.cdi.{BindModule, profile}
 import org.beangle.commons.io.DefaultBinarySerializer
+import org.beangle.commons.lang.ClassLoaders
 import org.beangle.commons.text.i18n.{DefaultTextBundleLoader, DefaultTextFormatter}
 import org.beangle.web.servlet.http.accept.ContentNegotiationManagerFactory
 import org.beangle.webmvc.config.{DefaultActionMappingBuilder, DefaultConfigurator, XmlProfileProvider}
@@ -85,10 +86,11 @@ class ViewModule extends BindModule {
     bind("mvc.ViewRender.raw", classOf[RawViewRender])
     bind("mvc.ViewManager.default", classOf[DefaultViewManager])
     //tag
-    import org.beangle.webmvc.view.tag.*
-    bind("mvc.TagLibraryProvider.default", classOf[ContainerTagLibraryProvider])
-    bind("mvc.ActionContextInitializer.component", classOf[ComponentContextInitializer])
-    //bind("mvc.TagLibrary.b", classOf[BeangleTagLibrary])
+    if (ClassLoaders.get("org.beangle.template.api.TagLibraryProvider").nonEmpty) {
+      import org.beangle.webmvc.view.tag.*
+      bind("mvc.TagLibraryProvider.default", classOf[ContainerTagLibraryProvider])
+      bind("mvc.ActionContextInitializer.component", classOf[ComponentContextInitializer])
+    }
   }
 }
 
