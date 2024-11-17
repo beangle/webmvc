@@ -18,7 +18,7 @@
 package org.beangle.webmvc.execution
 
 import org.beangle.webmvc.config.{DefaultActionMappingBuilder, Profile}
-import org.beangle.webmvc.execution.testaction.ShowcaseAction
+import org.beangle.webmvc.test.ShowcaseAction
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 

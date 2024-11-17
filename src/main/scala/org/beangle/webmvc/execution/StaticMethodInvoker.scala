@@ -26,6 +26,7 @@ import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.annotation.DefaultNone
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.context.Argument
+import org.beangle.webmvc.execution.invokers.Placeholder
 
 import java.lang.reflect.Method
 
@@ -38,7 +39,7 @@ class StaticMethodInvokerBuilder extends InvokerBuilder with Logging {
     val method = mapping.method
     val actionClassName = action.getClass.getName
     val invokerName = action.getClass.getSimpleName + "_" + method.getName + "_" + handlerCount
-    val invokerClassName = "org.beangle.webmvc.execution.invoker." + invokerName
+    val invokerClassName = "org.beangle.webmvc.execution.invokers." + invokerName
 
     val body = new CodeGenerator().gen(method, mapping, action)
     val pool = new ClassPool(true)
@@ -183,8 +184,4 @@ class CodeGenerator {
       if (argument.defaultValue != DefaultNone.value) s"v$idx=$q${argument.defaultValue}$q;" else ""
     }
   }
-}
-
-class Placeholder {
-
 }

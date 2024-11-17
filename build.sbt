@@ -35,7 +35,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "beangle-webmvc",
     common,
-    libraryDependencies ++= Seq(logback_classic % "test", scalatest),
+    libraryDependencies ++= Seq(logback_classic % "test", scalatest, mockito),
     libraryDependencies ++= Seq(beangle_commons, beangle_web, javassist, scalaxml),
     libraryDependencies ++= Seq(beangle_template % "optional", beangle_cdi % "optional"),
     libraryDependencies ++= Seq(freemarker % "optional", hibernate_core % "optional"),

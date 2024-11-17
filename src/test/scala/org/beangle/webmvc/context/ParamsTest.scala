@@ -23,8 +23,6 @@ import org.mockito.Mockito.mock
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.funspec.AnyFunSpec
 
-import scala.reflect.ClassTag
-
 class ParamsTest extends AnyFunSpec with Matchers {
 
   describe("Params") {
