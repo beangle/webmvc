@@ -28,7 +28,7 @@ object DefaultModule extends BindModule {
       .property("devMode", devEnabled)
 
     //template
-    bind("mvc.FreemarkerConfigurer.default", classOf[ContextFreemarkerConfigurator])
+    bind("mvc.FreemarkerConfigurator.default", classOf[ContextFreemarkerConfigurator])
       .property("devMode", devEnabled)
     bind("mvc.TemplateResolver.freemarker", classOf[HierarchicalTemplateResolver])
     bind("mvc.ViewResolver.freemarker", classOf[FreemarkerViewResolver])
