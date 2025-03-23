@@ -19,8 +19,9 @@ package org.beangle.webmvc.context
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.text.i18n.TextResource
+import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.context.ActionContext.{FlashKey, LocalKey, TextResourceKey}
-import org.beangle.webmvc.execution.Handler
+import org.beangle.webmvc.execution.{Handler, MappingHandler}
 
 import java.util as ju
 import scala.collection.mutable
@@ -103,4 +104,7 @@ final class ActionContext(val request: HttpServletRequest, val response: HttpSer
     stash.remove(FlashKey)
   }
 
+  def mapping: RouteMapping = {
+    handler.asInstanceOf[MappingHandler].mapping
+  }
 }

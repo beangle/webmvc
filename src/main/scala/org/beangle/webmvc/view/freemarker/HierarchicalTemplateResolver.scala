@@ -47,7 +47,7 @@ class HierarchicalTemplateResolver(freemarkerConfigurator: FreemarkerConfigurato
           path = buf.toString
           found = exists(path)
         case Some(templateProfile) =>
-          path = templateProfile + buf.toString
+          path = DynaProfile.concat(templateProfile, buf.toString)
           found = exists(path)
           if (!found) {
             path = buf.toString

@@ -23,11 +23,10 @@ import org.beangle.data.dao.EntityDao
 import org.beangle.data.model.Entity
 import org.beangle.data.model.pojo.Updated
 import org.beangle.webmvc.annotation.{ignore, mapping, param}
-import org.beangle.webmvc.context.{ActionContext, Params}
-import org.beangle.webmvc.execution.MappingHandler
+import org.beangle.webmvc.context.Params
 import org.beangle.webmvc.support.ActionSupport
-import org.beangle.webmvc.view.View
 import org.beangle.webmvc.support.helper.PopulateHelper
+import org.beangle.webmvc.view.View
 
 import java.time.Instant
 
@@ -120,13 +119,11 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport, EntityAction
       saveAndRedirect(entity)
     } catch {
       case e: Exception =>
-        val mapping = ActionContext.current.handler.asInstanceOf[MappingHandler].mapping
-        val redirectTo = mapping.method.getName match {
-          case "save" => "editNew"
-          case "update" => "edit"
-        }
-        logger.info("saveAndRedirect failure", e)
-        redirect(redirectTo, "info.save.failure")
+        logger.info("save entity failed", e)
+        addError("info.save.failure")
+        put(simpleEntityName, entity)
+        editSetting(entity)
+        forward(if entity.persisted then "form" else "new,form")
     }
   }
 

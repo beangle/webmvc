@@ -26,10 +26,10 @@ ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 val beangle_commons = "org.beangle.commons" % "beangle-commons" % "5.6.26"
 val beangle_web = "org.beangle.web" % "beangle-web" % "0.6.3"
 
-val beangle_model = "org.beangle.data" % "beangle-model" % "5.8.20"
+val beangle_model = "org.beangle.data" % "beangle-model" % "5.8.21"
 val beangle_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.7.2"
-val beangle_template = "org.beangle.template" % "beangle-template" % "0.1.23"
-val beangle_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.8"
+val beangle_template = "org.beangle.template" % "beangle-template" % "0.1.24-SNAPSHOT"
+val beangle_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.9"
 
 lazy val root = (project in file("."))
   .settings(
