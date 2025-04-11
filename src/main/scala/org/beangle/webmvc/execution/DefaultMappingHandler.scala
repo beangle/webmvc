@@ -21,6 +21,7 @@ import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.activation.MediaType
 import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.annotation.description
+import org.beangle.template.api.DynaProfile
 import org.beangle.web.servlet.intercept.Interceptor
 import org.beangle.web.servlet.resource.PathResolver
 import org.beangle.webmvc.config.{ActionMapping, RouteMapping}
@@ -60,9 +61,13 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
           case null => null
           case PathView(path) =>
             val viewName = if (null == path) mapping.defaultView else path
-            action.views.get(viewName) match
-              case Some(v) => v
-              case None => resolveView(viewName, action)
+            if (DynaProfile.get.nonEmpty) {
+              resolveView(viewName, action)
+            } else {
+              action.views.get(viewName) match
+                case Some(v) => v
+                case None => resolveView(viewName, action)
+            }
           case view: View => view
           case _ => null
         }
