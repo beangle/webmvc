@@ -17,11 +17,10 @@
 
 package org.beangle.webmvc.execution
 
-import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.Primitives
 import org.beangle.commons.lang.annotation.description
 import org.beangle.webmvc.config.RouteMapping
-import org.beangle.webmvc.context.{ActionContext, Params}
+import org.beangle.webmvc.context.{ActionContext, Argument, Params}
 
 class DynaMethodInvoker(val action: AnyRef, val mapping: RouteMapping) extends Invoker {
   private val method = mapping.method
@@ -31,30 +30,32 @@ class DynaMethodInvoker(val action: AnyRef, val mapping: RouteMapping) extends I
     if (0 == paramTypes.length) {
       method.invoke(action)
     } else {
-      val values = new Array[Object](paramTypes.length)
-      val context = ActionContext.current
-      val arguments = mapping.arguments
-      Range(0, paramTypes.length) foreach { i =>
-        val pt = paramTypes(i)
-        if (pt == classOf[HttpServletRequest]) values(i) = context.request
-        else if (pt == classOf[HttpServletResponse]) values(i) = context.response
-        else {
-          val ov = arguments(i).value(context)
-          val pValue = if (null != ov && !pt.isArray && ov.getClass.isArray) ov.asInstanceOf[Array[_]](0) else ov
-          if (Primitives.isWrapperType(pt)) {
-            Params.converter.convert(pValue, pt) foreach { v => values(i) = v.asInstanceOf[Object] }
-          } else {
-            if (pt.isPrimitive) {
-              Params.converter.convert(pValue, Primitives.wrap(pt)) foreach { v => values(i) = v.asInstanceOf[Object] }
-            } else {
-              Params.converter.convert(pValue, pt) foreach { v => values(i) = v.asInstanceOf[Object] }
-            }
-          }
-          if (arguments(i).required && null == values(i)) throw new RuntimeException(s"Cannot convert $pValue to ${pt.getName}")
-        }
-      }
+      val values = convert(ActionContext.current, mapping.arguments, paramTypes)
       method.invoke(action, values: _*)
     }
+  }
+
+  def convert(context: ActionContext, args: Array[Argument], paramTypes: Array[Class[_]]): Array[Object] = {
+    val values = new Array[Object](paramTypes.length)
+    Range(0, paramTypes.length) foreach { i =>
+      val pt = paramTypes(i)
+      var ov = args(i).value(context)
+      if (null != ov) {
+        //如果值是个数组，却不需要数组，则取第一个
+        if (!pt.isArray && ov.getClass.isArray) ov = ov.asInstanceOf[Array[Object]](0)
+        //进行类型转换
+        val targetType = if pt.isPrimitive then Primitives.wrap(pt) else pt
+        if (!targetType.isAssignableFrom(ov.getClass)) {
+          Params.converter.convert(ov, targetType) match {
+            case None => throw new RuntimeException(s"Cannot convert $ov to ${targetType.getName}")
+            case Some(cv) => ov = cv
+          }
+        }
+        values(i) = ov
+      }
+      if (args(i).required && null == values(i)) throw new RuntimeException(s"Cannot bind ${i} parameter to ${args(i).name}")
+    }
+    values
   }
 }
 

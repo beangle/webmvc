@@ -22,7 +22,14 @@ import org.beangle.webmvc.context.{ActionContext, Params}
 import java.time.{Instant, LocalDate, LocalDateTime}
 import scala.reflect.ClassTag
 
+/** 参数和属性存取支持类
+ */
 trait ParamSupport {
+
+  protected final def put(kvs: (String, Any)*): Unit = {
+    val ctx = ActionContext.current
+    kvs foreach { kv => ctx.attribute(kv._1, kv._2) }
+  }
 
   protected final def put(key: String, value: Any): Unit = {
     ActionContext.current.attribute(key, value)

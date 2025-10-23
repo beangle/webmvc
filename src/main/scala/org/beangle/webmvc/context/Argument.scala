@@ -18,8 +18,8 @@
 package org.beangle.webmvc.context
 
 import org.beangle.commons.lang.annotation.spi
-import org.beangle.webmvc.annotation.DefaultNone
 import org.beangle.web.servlet.util.CookieUtils
+import org.beangle.webmvc.annotation.DefaultNone
 
 @spi
 trait Argument {
@@ -36,8 +36,7 @@ trait Argument {
 abstract class AbstractArgument(val name: String, val required: Boolean, val defaultValue: String) extends Argument {
   def handleNone(): AnyRef = {
     if (required) {
-      if (defaultValue == DefaultNone.value) throw new IllegalArgumentException(s"Cannot  bind parameter to $name")
-      else defaultValue
+      if defaultValue == DefaultNone.value then throw new IllegalArgumentException(s"Cannot bind $name parameter.") else defaultValue
     } else {
       if (defaultValue == DefaultNone.value) null else defaultValue
     }

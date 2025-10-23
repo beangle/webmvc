@@ -25,8 +25,8 @@ import org.beangle.web.servlet.http.accept.ContentNegotiationManagerFactory
 import org.beangle.webmvc.config.{DefaultActionMappingBuilder, DefaultConfigurator, XmlProfileProvider}
 import org.beangle.webmvc.context.{DefaultActionContextBuilder, ParamLocaleResolver}
 import org.beangle.webmvc.dispatch.*
+import org.beangle.webmvc.execution.DynaMethodInvokerBuilder
 import org.beangle.webmvc.execution.interceptors.CorsInterceptor
-import org.beangle.webmvc.execution.{DynaMethodInvokerBuilder, StaticMethodInvokerBuilder}
 import org.beangle.webmvc.i18n.ActionTextResourceProvider
 
 object DefaultModule extends BindModule {
@@ -49,8 +49,7 @@ object DefaultModule extends BindModule {
 
     //execution
     bind("web.Interceptor.cors", classOf[CorsInterceptor])
-    bind("mvc.InvokerBuilder.default", classOf[StaticMethodInvokerBuilder])
-    bind("mvc.InvokerBuilder.method", classOf[DynaMethodInvokerBuilder])
+    bind("mvc.InvokerBuilder.default", classOf[DynaMethodInvokerBuilder])
 
     //context
     bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
@@ -98,6 +97,5 @@ class ViewModule extends BindModule {
 class DevModule extends BindModule {
   protected override def binding(): Unit = {
     bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder]).property("viewScan", "false")
-    bind("mvc.HandlerInvoker.method", classOf[DynaMethodInvokerBuilder]).primary()
   }
 }

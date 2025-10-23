@@ -51,6 +51,7 @@ trait EntityAction[T <: Entity[_]] extends EntitySupport[T] {
   }
 
   // query------------------------------------------------------
+
   /**
    * 从request的参数或者cookie中(参数优先)取得分页信息
    */
@@ -125,7 +126,8 @@ trait EntityAction[T <: Entity[_]] extends EntitySupport[T] {
   }
 
   protected def getModel(id: Any): T = {
-    getModel[T](entityDao.domain.getEntity(entityClass).get, id)
+    val et = entityDao.domain.getEntity(entityClass).get
+    getModel[T](et, id)
   }
 
   protected def getModel[E](entityType: EntityType, id: Any): E = {
@@ -133,6 +135,8 @@ trait EntityAction[T <: Entity[_]] extends EntitySupport[T] {
     Params.converter.convert(id, idType) match {
       case Some(rid) =>
         val classE = entityType.clazz.asInstanceOf[Class[Entity[jo.Serializable]]]
+        //如果是缓存的实体，需要先从缓冲中清除
+        if entityType.cacheable then entityDao.evict(classE, rid)
         entityDao.get(classE, rid.asInstanceOf[jo.Serializable]).asInstanceOf[E]
       case None => null.asInstanceOf[E]
     }

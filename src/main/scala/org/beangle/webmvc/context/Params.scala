@@ -24,11 +24,14 @@ import org.beangle.commons.lang.Strings.join
 
 import java.time.{Instant, LocalDate, LocalDateTime}
 import scala.collection.Map
-import scala.reflect.ClassTag
 
 object Params {
 
   val converter: MapConverter = new MapConverter(DefaultConversion.Instance)
+
+  def contains(attr: String): Boolean = {
+    ActionContext.current.params.contains(attr)
+  }
 
   def get(attr: String): Option[String] = {
     ActionContext.current.params.get(attr) match {
