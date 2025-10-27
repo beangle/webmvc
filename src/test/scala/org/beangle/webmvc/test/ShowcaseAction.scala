@@ -30,6 +30,7 @@ class ShowcaseAction extends RouteSupport {
   }
 
   def request(request: HttpServletRequest, response: HttpServletResponse): View = {
+    require(null != request && null != response)
     println("in Showcase request")
     Status.Ok
   }
@@ -51,6 +52,10 @@ class ShowcaseAction extends RouteSupport {
 
   @mapping("path/{id}")
   def path(id: Int, request: HttpServletRequest, @header("Accept") accept: String): View = {
+    require(null != accept)
+    require(null != request)
+    require(id > 0)
+
     println("in Showcase path")
     Status.Ok
   }
@@ -62,7 +67,13 @@ class ShowcaseAction extends RouteSupport {
   }
 
   @response
-  def ok(@param("n") n:String):Boolean={
+  @mapping("echoid")
+  def echoid(id: Long): String = {
+    "in Showcase echo id:" + id
+  }
+
+  @response
+  def ok(@param("n", false) n: String): Boolean = {
     true
   }
 }

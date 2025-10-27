@@ -35,12 +35,12 @@ class DefaultActionMappingBuilderTest extends AnyFunSpec with Matchers {
       profile.matches(classOf[ShowcaseAction].getName)
       val mappings = builder.build(new ShowcaseAction(), classOf[ShowcaseAction], profile).mappings
       assert(null != mappings)
-      assert(mappings.size == 8)
-      assert(mappings.get("string").isDefined)
-      assert(mappings.get("request").isDefined)
-      assert(mappings.get("param").isDefined)
-      assert(mappings.get("cookie").isDefined)
-      assert(mappings.get("header").isDefined)
+      assert(mappings.size == 9)
+      assert(mappings.contains("string"))
+      assert(mappings.contains("request"))
+      assert(mappings.contains("param"))
+      assert(mappings.contains("cookie"))
+      assert(mappings.contains("header"))
       assert(mappings("path").url.endsWith("/path/{id}"))
       assert(mappings("echofloat").url.endsWith("/echofloat/{num}"))
     }

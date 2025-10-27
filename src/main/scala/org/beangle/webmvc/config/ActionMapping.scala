@@ -25,7 +25,6 @@ import org.beangle.commons.lang.reflect.{BeanInfo, BeanInfos}
 import org.beangle.commons.logging.Logging
 import org.beangle.commons.net.http.HttpMethods.GET
 import org.beangle.webmvc.annotation.*
-import org.beangle.webmvc.config.*
 import org.beangle.webmvc.context.*
 import org.beangle.webmvc.view.{View, ViewBuilder, ViewManager}
 
@@ -74,6 +73,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
         val urlParamIdx = urlParams.map { case (p, i) => (i, p) }
         val urlPathNames = urlParamIdx.keySet.toList.sorted.map { i => urlParamIdx(i) }
 
+        // annotation[param_size][annotation_cnt]
         val annotationsList = if (null == annTuple) method.getParameterAnnotations else annTuple._2.getParameterAnnotations
 
         val parameterTypes = method.getParameterTypes
@@ -91,12 +91,10 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
             j += 1
           }
           if (argument == null) {
-            argument = if (parameterTypes(i).getName == "jakarta.servlet.http.HttpServletRequest") RequestArgument
-            else if (parameterTypes(i).getName == "jakarta.servlet.http.HttpServletResponse") ResponseArgument
-            else {
-              if (i < urlPathNames.length) new ParamArgument(urlPathNames(i), true, DefaultNone.value)
-              else null
-            }
+            argument =
+              if (parameterTypes(i).getName == "jakarta.servlet.http.HttpServletRequest") RequestArgument
+              else if (parameterTypes(i).getName == "jakarta.servlet.http.HttpServletResponse") ResponseArgument
+              else new ParamArgument(method.getParameters()(i).getName, true, DefaultNone.value)
           }
           argument
         }

@@ -20,10 +20,10 @@ package org.beangle.webmvc.context
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.Strings
 import org.mockito.Mockito.mock
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class ParamsTest extends AnyFunSpec with Matchers {
+class ParamsTest extends AnyFunSpec, Matchers {
 
   describe("Params") {
     it("getInt will ignore empty string") {
@@ -39,12 +39,12 @@ class ParamsTest extends AnyFunSpec with Matchers {
       assert(Params.getInt("y").isEmpty)
       assert(Params.getInt("z").contains(1))
 
-      println(ids("1,2,3",classOf[Int]))
+      println(ids("1,2,3", classOf[Int]))
       println(Long.MaxValue)
     }
   }
 
-  def ids[T](str:String,clazz:Class[T]):List[T]={
+  def ids[T](str: String, clazz: Class[T]): List[T] = {
     Params.converter.convert(Strings.split(str, ","), clazz).toList
   }
 }
