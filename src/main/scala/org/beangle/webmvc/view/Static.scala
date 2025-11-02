@@ -60,7 +60,7 @@ object Static {
     ClassLoaders.getResources("META-INF/beangle/mvc-default.xml") foreach { url =>
       rs.addResources(buildResource(url))
     }
-    ClassLoaders.getResources("META-INF/beangle/mvc.xml") foreach { url =>
+    ClassLoaders.getResources("META-INF/beangle.xml") foreach { url =>
       rs.addResources(buildResource(url))
     }
     rs
@@ -69,7 +69,7 @@ object Static {
   private def buildResource(url: URL): List[Resource] = {
     val xml = scala.xml.XML.load(url.openStream())
     val rss = Collections.newBuffer[Resource]
-    (xml \\ "static" \\ "bundle") foreach { e =>
+    (xml \ "mvc" \ "static" \ "bundle") foreach { e =>
       val bundle = new Resource((e \ "@name").text, (e \ "@version").text)
       val modules = Collections.newBuffer[Module]
       e \ "module" foreach { m =>
@@ -157,7 +157,7 @@ class Static {
           csses += this.css(m.bundle.name, css)
         }
         m.js foreach { js =>
-          scripts += script(m.bundle.name, js,false)
+          scripts += script(m.bundle.name, js, false)
         }
       }
     }

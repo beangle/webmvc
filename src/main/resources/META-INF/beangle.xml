@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<cdi>
-  <container>
+<beangle>
+  <cdi>
     <module class="org.beangle.webmvc.DefaultModule"/>
     <module class="org.beangle.webmvc.ViewModule"/>
     <module class="org.beangle.webmvc.DevModule"/>
-  </container>
-</cdi>
+  </cdi>
+</beangle>

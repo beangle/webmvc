@@ -36,11 +36,11 @@ class XmlProfileProvider extends ProfileProvider {
   private val defaultProfile = loadDefaultProfile()
 
   /**
-   * 初始化配置META-INF/beangle/mvc.xml
+   * 初始化配置META-INF/beangle.xml
    */
   def loadProfiles(): List[ProfileConfig] = {
     val profiles = new collection.mutable.ListBuffer[ProfileConfig]
-    ClassLoaders.getResources("META-INF/beangle/mvc.xml").foreach { url =>
+    ClassLoaders.getResources("META-INF/beangle.xml").foreach { url =>
       profiles ++= readXmlToProfiles(url)
     }
     profiles.toList
@@ -61,7 +61,7 @@ class XmlProfileProvider extends ProfileProvider {
 
   private def readXmlToProfiles(url: URL): Seq[ProfileConfig] = {
     val profiles = new collection.mutable.ListBuffer[ProfileConfig]
-    XML.load(url) \ "profile" foreach { profileElem =>
+    XML.load(url) \ "mvc" \ "profile" foreach { profileElem =>
       val name = (profileElem \ "@name").text
       val profile = new ProfileConfig(name, (profileElem \ "@package").text)
       val actionNodes = profileElem \ "action"
