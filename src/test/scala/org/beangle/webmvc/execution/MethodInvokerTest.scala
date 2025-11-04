@@ -30,7 +30,7 @@ class MethodInvokerTest extends AnyFunSpec, Matchers {
 
   val mappingBuilder = new DefaultActionMappingBuilder
   mappingBuilder.viewScan = false
-  val profile = new Profile("test", "org.beangle.webmvc.test")
+  val profile = new Profile("org.beangle.webmvc.test")
   profile.matches(classOf[ShowcaseAction].getName)
   val mappings = mappingBuilder.build(new ShowcaseAction(), classOf[ShowcaseAction], profile).mappings
   val params: Map[String, Any] = Map("id" -> 12345L)

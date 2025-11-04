@@ -17,19 +17,19 @@
 
 package org.beangle.webmvc.config
 
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 class ProfileTest extends AnyFunSpec with Matchers {
 
   describe("Profile") {
     it("compare") {
-      var child = new Profile("parent", "org.beangle.aa.bb.web.action")
-      var parent = new Profile("parent", "org.beangle.*.web.action")
+      var child = new Profile("org.beangle.aa.bb.web.action")
+      var parent = new Profile("org.beangle.*.web.action")
       assert(parent.compareTo(child) > 0)
 
-      child = new Profile("parent", "org.beangle.bb.web.action")
-      parent = new Profile("parent", "org.beangle.*.web.action")
+      child = new Profile("org.beangle.bb.web.action")
+      parent = new Profile("org.beangle.*.web.action")
       assert(parent.compareTo(child) > 0)
     }
   }

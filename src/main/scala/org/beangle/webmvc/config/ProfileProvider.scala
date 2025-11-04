@@ -40,14 +40,14 @@ class XmlProfileProvider extends ProfileProvider {
    */
   def loadProfiles(): List[ProfileConfig] = {
     val profiles = new collection.mutable.ListBuffer[ProfileConfig]
-    ClassLoaders.getResources("META-INF/beangle.xml").foreach { url =>
+    ClassLoaders.getResources("beangle.xml").foreach { url =>
       profiles ++= readXmlToProfiles(url)
     }
     profiles.toList
   }
 
   private def loadDefaultProfile(): ProfileConfig = {
-    val pc = new ProfileConfig("default", "*")
+    val pc = new ProfileConfig("*")
     pc.actionSuffix = "Action"
     pc.defaultMethod = "index"
     pc.viewPath = "/"
@@ -62,8 +62,7 @@ class XmlProfileProvider extends ProfileProvider {
   private def readXmlToProfiles(url: URL): Seq[ProfileConfig] = {
     val profiles = new collection.mutable.ListBuffer[ProfileConfig]
     XML.load(url) \ "mvc" \ "profile" foreach { profileElem =>
-      val name = (profileElem \ "@name").text
-      val profile = new ProfileConfig(name, (profileElem \ "@package").text)
+      val profile = new ProfileConfig((profileElem \ "@package").text)
       val actionNodes = profileElem \ "action"
       if (actionNodes.isEmpty) {
         copyDefaultProperties(profile, "actionSuffix", "defaultMethod")
@@ -98,7 +97,7 @@ class XmlProfileProvider extends ProfileProvider {
         }
       }
 
-      val interceptorNodes = profileElem \\ "interceptor"
+      val interceptorNodes = profileElem \ "interceptor"
       if (interceptorNodes.isEmpty) {
         copyDefaultProperties(profile, "interceptorNames")
       } else {
@@ -107,7 +106,7 @@ class XmlProfileProvider extends ProfileProvider {
         profile.interceptorNames = interceptors.toArray
       }
 
-      val decoratorNodes = profileElem \\ "decorator"
+      val decoratorNodes = profileElem \ "decorator"
       if (decoratorNodes.nonEmpty) {
         val decorators = new collection.mutable.ListBuffer[String]
         decoratorNodes foreach (elem => decorators += (elem \ "@name").text)

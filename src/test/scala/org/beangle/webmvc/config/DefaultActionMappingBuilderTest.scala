@@ -24,9 +24,9 @@ import org.scalatest.matchers.should.Matchers
 class DefaultActionMappingBuilderTest extends AnyFunSpec with Matchers {
   val builder = new DefaultActionMappingBuilder
   builder.viewScan = false
-  val profile = new Profile("test", "org.beangle.webmvc.test")
+  val profile = new Profile("org.beangle.webmvc.test")
 
-  val plurProfile = new ProfileConfig("test", "org.beangle.webmvc.test")
+  val plurProfile = new ProfileConfig("org.beangle.webmvc.test")
   plurProfile.urlStyle = "plur-seo"
   plurProfile.actionSuffix = "Action"
 

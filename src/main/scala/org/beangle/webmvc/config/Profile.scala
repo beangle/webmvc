@@ -19,8 +19,8 @@ package org.beangle.webmvc.config
 
 import org.beangle.commons.lang.Strings.{isEmpty, split, uncapitalize}
 import org.beangle.commons.lang.{Objects, Strings}
-import org.beangle.webmvc.view.ViewDecorator
 import org.beangle.web.servlet.intercept.Interceptor
+import org.beangle.webmvc.view.ViewDecorator
 
 import java.net.URL
 
@@ -94,8 +94,7 @@ object Profile {
  * name: 配置名
  * pattern :action所在的包,匹配action的唯一条件
  */
-final class Profile(val name: String,
-                    val pattern: String,
+final class Profile(val pattern: String,
                     val actionSuffix: String,
                     val defaultMethod: String,
                     val viewPath: String,
@@ -109,8 +108,8 @@ final class Profile(val name: String,
                     val decorators: Array[ViewDecorator],
                     val source: URL) extends Comparable[Profile] {
 
-  def this(name: String, pattern: String) = {
-    this(name, pattern, "Action", "index", "/", "full", ".ftl", "freemarker", "/", "seo", "", Array(), Array(), null)
+  def this(pattern: String) = {
+    this(pattern, "Action", "index", "/", "full", ".ftl", "freemarker", "/", "seo", "", Array(), Array(), null)
   }
 
   // 匹配缓存[className,matched_info]
@@ -157,7 +156,7 @@ final class Profile(val name: String,
   }
 
   override def toString: String = {
-    Objects.toStringBuilder(this).add("name", name).add("pattern", pattern)
+    Objects.toStringBuilder(this).add("pattern", pattern)
       .add("actionSuffix", actionSuffix).add("viewPath", viewPath)
       .add("viewPathStyle", viewPathStyle).add("viewSuffix", viewSuffix)
       .add("viewType", viewType).add("urlPath", urlPath)
@@ -166,7 +165,7 @@ final class Profile(val name: String,
   }
 }
 
-final class ProfileConfig(val name: String, val pattern: String) {
+final class ProfileConfig(val pattern: String) {
 
   // action类名后缀
   var actionSuffix: String = _
@@ -202,7 +201,7 @@ final class ProfileConfig(val name: String, val pattern: String) {
   var source: URL = _
 
   def mkProfile(interceptors: Array[Interceptor], decorators: Array[ViewDecorator]): Profile = {
-    new Profile(name, pattern, actionSuffix, defaultMethod, viewPath, viewPathStyle, viewSuffix, viewType, urlPath,
+    new Profile(pattern, actionSuffix, defaultMethod, viewPath, viewPathStyle, viewSuffix, viewType, urlPath,
       urlStyle, urlSuffix, interceptors, decorators, source)
   }
 }

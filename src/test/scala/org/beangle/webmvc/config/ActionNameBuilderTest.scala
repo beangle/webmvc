@@ -18,8 +18,8 @@
 package org.beangle.webmvc.config
 
 import org.beangle.webmvc.test.IndexAction
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 /**
  * @author chaostone
@@ -28,11 +28,11 @@ class ActionNameBuilderTest extends AnyFunSpec with Matchers {
 
   describe("ActionNameBuilder") {
     it("build indexmapping") {
-      val profile = new Profile("test", "org.beangle.webmvc.test")
+      val profile = new Profile("org.beangle.webmvc.test")
       profile.matches(classOf[IndexAction].getName)
       val result = ActionNameBuilder.build(classOf[IndexAction], profile)
-      assert(result._1 =="/")
-      assert(result._2 =="/")
+      assert(result._1 == "/")
+      assert(result._2 == "/")
     }
   }
 }

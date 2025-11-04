@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
 <beangle>
+  <web>
+    <initializer class="org.beangle.webmvc.support.spring.ContextInitializer"/>
+  </web>
+
   <cdi>
     <module class="org.beangle.webmvc.DefaultModule"/>
     <module class="org.beangle.webmvc.ViewModule"/>

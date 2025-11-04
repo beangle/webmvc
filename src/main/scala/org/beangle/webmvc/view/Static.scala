@@ -60,7 +60,7 @@ object Static {
     ClassLoaders.getResources("META-INF/beangle/mvc-default.xml") foreach { url =>
       rs.addResources(buildResource(url))
     }
-    ClassLoaders.getResources("META-INF/beangle.xml") foreach { url =>
+    ClassLoaders.getResources("beangle.xml") foreach { url =>
       rs.addResources(buildResource(url))
     }
     rs
