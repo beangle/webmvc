@@ -2,7 +2,7 @@ import org.beangle.parent.Dependencies.*
 import org.beangle.parent.Settings.*
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.12.1-SNAPSHOT"
+ThisBuild / version := "0.12.1"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -29,7 +29,7 @@ val beangle_web = "org.beangle.web" % "beangle-web" % "0.7.0"
 val beangle_model = "org.beangle.data" % "beangle-model" % "5.11.0"
 val beangle_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.8.1"
 val beangle_template = "org.beangle.template" % "beangle-template" % "0.2.0"
-val beangle_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.19"
+val beangle_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.20"
 
 lazy val root = (project in file("."))
   .settings(
