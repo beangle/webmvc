@@ -20,14 +20,14 @@ package org.beangle.webmvc.dispatch
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import jakarta.servlet.{GenericServlet, ServletConfig, ServletRequest, ServletResponse}
 import org.beangle.commons.lang.Strings
+import org.beangle.web.servlet.multipart.StandardMultipartResolver
+import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.config.{Buildable, Configurator}
 import org.beangle.webmvc.context.ActionContextBuilder
 import org.beangle.webmvc.execution.ContextAwareHandler
 import org.beangle.webmvc.util.Resources
-import org.beangle.web.servlet.multipart.StandardMultipartResolver
-import org.beangle.web.servlet.util.RequestUtils
 
-class Dispatcher(configurer: Configurator, mapper: RequestMapper, actionContextBuilder: ActionContextBuilder) extends GenericServlet {
+class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandler: ExceptionHandler, actionContextBuilder: ActionContextBuilder) extends GenericServlet {
 
   var defaultEncoding = "utf-8"
 
@@ -52,15 +52,19 @@ class Dispatcher(configurer: Configurator, mapper: RequestMapper, actionContextB
     mapper.resolve(servletPath, request) match {
       case Some(hh) =>
         val handler = hh.handler
-        if (handler.isInstanceOf[ContextAwareHandler]) {
-          actionContextBuilder.build(request, response, handler, hh.params)
-          try {
+        try {
+          if (handler.isInstanceOf[ContextAwareHandler]) {
+            actionContextBuilder.build(request, response, handler, hh.params)
+            try {
+              handler.handle(request, response)
+            } finally {
+              StandardMultipartResolver.cleanup(request)
+            }
+          } else {
             handler.handle(request, response)
-          } finally {
-            StandardMultipartResolver.cleanup(request)
           }
-        } else {
-          handler.handle(request, response)
+        } catch {
+          case e: Exception => exceptionHandler.handle(request, response, handler, e)
         }
       case None => handleUnknown(servletPath, request, response)
     }

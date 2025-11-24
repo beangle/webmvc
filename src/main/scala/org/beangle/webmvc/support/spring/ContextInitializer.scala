@@ -19,11 +19,11 @@ package org.beangle.webmvc.support.spring
 
 import jakarta.servlet.{MultipartConfigElement, ServletContext}
 import org.beangle.commons.lang.SystemInfo
+import org.beangle.web.servlet.init.Initializer
 import org.beangle.webmvc.config.Configurator
 import org.beangle.webmvc.context.ActionContextBuilder
-import org.beangle.webmvc.dispatch.{Dispatcher, RequestMapper}
+import org.beangle.webmvc.dispatch.{Dispatcher, ExceptionHandler, RequestMapper}
 import org.beangle.webmvc.view.Static
-import org.beangle.web.servlet.init.Initializer
 
 class ContextInitializer extends Initializer {
 
@@ -36,9 +36,10 @@ class ContextInitializer extends Initializer {
 
     val cfg = container.getBean(classOf[Configurator]).get
     val mapper = container.getBean(classOf[RequestMapper]).get
+    val exceptionHandler = container.getBean(classOf[ExceptionHandler]).get
     val ctxBuilder = container.getBean(classOf[ActionContextBuilder]).get
 
-    val action = sc.addServlet("Action", new Dispatcher(cfg, mapper, ctxBuilder))
+    val action = sc.addServlet("Action", new Dispatcher(cfg, mapper, exceptionHandler, ctxBuilder))
     action.addMapping("/*")
     action.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))
   }

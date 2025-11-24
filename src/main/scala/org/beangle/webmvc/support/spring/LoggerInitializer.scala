@@ -26,7 +26,7 @@ import org.beangle.commons.lang.{JVM, Strings}
 import org.beangle.web.servlet.init.Initializer
 import org.slf4j.LoggerFactory
 
-/** 如果是开发环境且项目中logback-dev.xml文件则采用这个文件。
+/** 如果是开发环境且项目中存在logback-dev.xml文件则采用这个文件。
  */
 class LoggerInitializer extends Initializer {
 

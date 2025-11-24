@@ -29,3 +29,5 @@ trait InvokerBuilder {
 trait Invoker {
   def invoke(): Any
 }
+
+class BindException(msg: String) extends RuntimeException(msg)

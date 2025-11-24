@@ -2,7 +2,7 @@ import org.beangle.parent.Dependencies.*
 import org.beangle.parent.Settings.*
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.12.2-SNAPSHOT"
+ThisBuild / version := "0.12.2"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -26,16 +26,16 @@ ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 val beangle_commons = "org.beangle.commons" % "beangle-commons" % "5.6.32"
 val beangle_web = "org.beangle.web" % "beangle-web" % "0.7.0"
 
-val beangle_model = "org.beangle.data" % "beangle-model" % "5.11.0"
-val beangle_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.8.1"
+val beangle_model = "org.beangle.data" % "beangle-model" % "5.11.1"
+val beangle_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.9.0"
 val beangle_template = "org.beangle.template" % "beangle-template" % "0.2.0"
-val beangle_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.20"
+val beangle_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.21"
 
 lazy val root = (project in file("."))
   .settings(
     name := "beangle-webmvc",
     common,
-    libraryDependencies ++= Seq(logback_classic, jcl_over_slf4j, jul_to_slf4j, scalatest, mockito),
+    libraryDependencies ++= Seq(logback_classic, jul_to_slf4j, scalatest, mockito),
     libraryDependencies ++= Seq(beangle_commons, beangle_web, scalaxml),
     libraryDependencies ++= Seq(beangle_template % "optional", beangle_cdi % "optional"),
     libraryDependencies ++= Seq(freemarker % "optional", hibernate_core % "optional"),

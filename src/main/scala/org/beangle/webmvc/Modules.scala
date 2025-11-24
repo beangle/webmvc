@@ -46,6 +46,7 @@ object DefaultModule extends BindModule {
     bind("mvc.ActionUriRender.default", classOf[DefaultActionUriRender])
     bind("mvc.RequestMapper.default", classOf[HierarchicalUrlMapper])
     bind("mvc.RouteProvider.default", classOf[DefaultRouteProvider])
+    bind("mvc.ExceptionHandler.defualt", classOf[DefaultExceptionHandler])
 
     //execution
     bind("web.Interceptor.cors", classOf[CorsInterceptor])

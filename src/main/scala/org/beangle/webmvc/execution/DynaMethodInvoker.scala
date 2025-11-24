@@ -22,16 +22,23 @@ import org.beangle.commons.lang.annotation.description
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.context.{ActionContext, Argument, Params}
 
+import java.lang.reflect.InvocationTargetException
+
 class DynaMethodInvoker(val action: AnyRef, val mapping: RouteMapping) extends Invoker {
   private val method = mapping.method
   private val paramTypes = method.getParameterTypes
 
   override def invoke(): Any = {
-    if (0 == paramTypes.length) {
-      method.invoke(action)
-    } else {
-      val values = convert(ActionContext.current, mapping.arguments, paramTypes)
-      method.invoke(action, values: _*)
+    try {
+      if (0 == paramTypes.length) {
+        method.invoke(action)
+      } else {
+        val values = convert(ActionContext.current, mapping.arguments, paramTypes)
+        method.invoke(action, values: _*)
+      }
+    } catch {
+      case ite: InvocationTargetException => throw ite.getCause
+      case ex: Exception => throw ex
     }
   }
 
@@ -46,14 +53,17 @@ class DynaMethodInvoker(val action: AnyRef, val mapping: RouteMapping) extends I
         //进行类型转换
         val targetType = if pt.isPrimitive then Primitives.wrap(pt) else pt
         if (!targetType.isAssignableFrom(ov.getClass)) {
-          Params.converter.convert(ov, targetType) match {
-            case None => throw new RuntimeException(s"Cannot convert $ov to ${targetType.getName}")
-            case Some(cv) => ov = cv
+          val rs = Params.converter.convert(ov, targetType)
+          rs match {
+            case None => throw new BindException(s"Cannot convert $ov to ${targetType.getName}")
+            case Some(cv) =>
+              if (cv eq null) throw new BindException(s"Cannot convert $ov to ${targetType.getName}")
+              else ov = cv
           }
         }
         values(i) = ov
       }
-      if (args(i).required && null == values(i)) throw new RuntimeException(s"Cannot bind ${i} parameter to ${args(i).name}")
+      if (args(i).required && null == values(i)) throw new BindException(s"Cannot bind ${i} parameter to ${args(i).name}")
     }
     values
   }
