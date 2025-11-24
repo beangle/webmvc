@@ -48,7 +48,7 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
   )
 
   override def init(): Unit = {
-    devMode = !devEnabled
+    devMode = devEnabled
   }
 
   def getErrorAttributes(request: HttpServletRequest, ex: Exception): collection.Map[String, Any] = {
@@ -137,15 +137,14 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
     html.append("  <style>")
     // 4. 内置极简 CSS 样式（保证页面可读性）
     html.append("   #error { font-family: sans-serif;margin: 2rem }")
-    html.append("   #error h1 { color: #dc3545 }")
+    html.append("   #error h4 { color: #dc3545;margin:0px; }")
     html.append("   #error p { margin:0.5em 0em }")
-    html.append("   .details { margin-top: 1rem; padding: 1rem; background-color: #f8f9fa; border-radius: 0.25rem }")
+    html.append("   .details { padding: 1rem; background-color: #f8f9fa; border-radius: 0.25rem }")
     html.append("   .trace { font-family: monospace;white-space: pre-wrap;word-break: break-all }")
     html.append("  </style>")
 
     // 5. 渲染核心错误信息（状态码 + 错误描述）
-    html.append("  <h1>White Error Page</h1>")
-    html.append("  <p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>")
+    html.append("  <h4>White Error Page</h4>")
     html.append("  <div class=\"details\">")
     html.append("    <p><strong>HTTP Status ").append(status).append("</strong> – ").append(error).append("</p>")
 
@@ -166,7 +165,7 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
       html.append("      <p><strong>Stack Trace:</strong></p>")
       html.append("      <pre class=\"trace\">")
       trace foreach { line =>
-        html.append(escapeXml(line)).append("") // 堆栈按行拼接
+        html.append(escapeXml(line)).append("\n") // 堆栈按行拼接
       }
       html.append("      </pre>")
     }
