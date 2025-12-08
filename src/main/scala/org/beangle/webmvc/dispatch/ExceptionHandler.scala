@@ -19,7 +19,7 @@ package org.beangle.webmvc.dispatch
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.bean.Initializing
-import org.beangle.commons.cdi.BindRegistry
+import org.beangle.commons.cdi.{BindRegistry, EnvProfile}
 import org.beangle.commons.collection.Collections
 import org.beangle.commons.lang.{JVM, Primitives, Strings}
 import org.beangle.commons.logging.Logging
@@ -48,7 +48,7 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
   )
 
   override def init(): Unit = {
-    devMode = devEnabled
+    devMode = EnvProfile.isDevMode
   }
 
   def getErrorAttributes(request: HttpServletRequest, ex: Exception): collection.Map[String, Any] = {
@@ -185,13 +185,6 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
     ex.printStackTrace(printWriter)
     printWriter.close()
     Strings.split(stringWriter.toString, "\n").filter(x => ignorePackages.forall(!x.contains(_)))
-  }
-
-  @deprecated("using EnvProfile.isDevMode")
-  final def devEnabled: Boolean = {
-    val profiles = System.getProperty(BindRegistry.ProfileProperty)
-    val enabled = null != profiles && Strings.split(profiles, ",").toSet.contains("dev")
-    enabled || JVM.isDebugMode
   }
 
   private def escapeXml(value: String): String = {

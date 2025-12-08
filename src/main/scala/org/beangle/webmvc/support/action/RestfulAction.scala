@@ -79,9 +79,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport, EntityAction
     try {
       removeAndRedirect(entities)
     } catch {
-      case e: Exception =>
-        logger.info("removeAndRedirect failure", e)
-        redirect("search", "info.delete.failure")
+      case e: Exception => redirect("search", "info.delete.failure")
     }
   }
 
@@ -119,7 +117,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport, EntityAction
       saveAndRedirect(entity)
     } catch {
       case e: Exception =>
-        logger.info("save entity failed", e)
+        logger.error("save entity failed", e)
         addError("info.save.failure")
         put(simpleEntityName, entity)
         editSetting(entity)
