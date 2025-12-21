@@ -2,7 +2,7 @@ import org.beangle.parent.Dependencies.*
 import org.beangle.parent.Settings.*
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.12.5-SNAPSHOT"
+ThisBuild / version := "0.13.0-SNAPSHOT"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -29,7 +29,7 @@ val beangle_web = "org.beangle.web" % "beangle-web" % "0.7.0"
 val beangle_model = "org.beangle.data" % "beangle-model" % "5.11.4"
 val beangle_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.9.0"
 val beangle_template = "org.beangle.template" % "beangle-template" % "0.2.1"
-val beangle_doc_transfer = "org.beangle.doc" % "beangle-doc-transfer" % "0.4.21"
+val beangle_transfer = "org.beangle.transfer" % "beangle-transfer" % "0.0.1-SNAPSHOT"
 
 lazy val root = (project in file("."))
   .settings(
@@ -40,5 +40,5 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(beangle_template % "optional", beangle_cdi % "optional"),
     libraryDependencies ++= Seq(freemarker % "optional", hibernate_core % "optional"),
     libraryDependencies ++= Seq(spring_context % "optional", spring_beans % "optional"),
-    libraryDependencies ++= Seq(beangle_model % "optional", beangle_doc_transfer % "optional")
+    libraryDependencies ++= Seq(beangle_model % "optional", beangle_transfer % "optional")
   )

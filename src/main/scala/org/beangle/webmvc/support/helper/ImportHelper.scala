@@ -19,8 +19,8 @@ package org.beangle.webmvc.support.helper
 
 import jakarta.servlet.http.Part
 import org.beangle.commons.lang.Strings
-import org.beangle.doc.transfer.Format
-import org.beangle.doc.transfer.importer.{CsvReader, ExcelReader, Reader}
+import org.beangle.transfer.Format
+import org.beangle.transfer.importer.{CsvReader, ExcelReader, Reader}
 import org.beangle.webmvc.context.ActionContext
 
 import java.io.{InputStreamReader, LineNumberReader}

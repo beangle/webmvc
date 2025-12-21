@@ -22,8 +22,8 @@ import org.beangle.commons.lang.{ClassLoaders, Strings}
 import org.beangle.commons.text.i18n.Messages
 import org.beangle.data.dao.{LimitQuery, QueryPage}
 import org.beangle.data.model.Entity
-import org.beangle.doc.transfer.Format
-import org.beangle.doc.transfer.exporter.ExportContext
+import org.beangle.transfer.Format
+import org.beangle.transfer.exporter.ExportContext
 import org.beangle.webmvc.annotation.{ignore, mapping, response}
 import org.beangle.webmvc.context.ActionContext
 import org.beangle.webmvc.context.Params.*

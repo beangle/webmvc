@@ -18,11 +18,11 @@
 package org.beangle.webmvc.support.action
 
 import org.beangle.data.model.Entity
-import org.beangle.doc.transfer.importer.listener.ForeignerListener
-import org.beangle.doc.transfer.importer.{DefaultEntityImporter, ImportResult, ImportSetting}
+import org.beangle.transfer.importer.listener.ForeignerListener
+import org.beangle.transfer.importer.{DefaultEntityImporter, ImportResult, ImportSetting}
 import org.beangle.webmvc.support.ActionSupport
-import org.beangle.webmvc.view.View
 import org.beangle.webmvc.support.helper.{ImportHelper, PopulateHelper}
+import org.beangle.webmvc.view.View
 
 trait ImportSupport[T <: Entity[_]] {
   self: ActionSupport with EntityAction[T] =>
@@ -37,27 +37,15 @@ trait ImportSupport[T <: Entity[_]] {
   def importData(): View = {
     val tr = new ImportResult()
     val setting = new ImportSetting
-    val entityClazz = this.entityDao.domain.getEntity(this.entityClass).get.clazz
-    val shortName = self.simpleEntityName
-    setting.entityClazz = entityClazz
-    setting.shortName = shortName
+    setting.domain = this.entityDao.domain
+    setting.populator = PopulateHelper.populator
     setting.reader = ImportHelper.buildReader()
+    val entityClazz = setting.domain.getEntity(this.entityClass).get.clazz
+    setting.addEntityClazz(entityClazz, self.simpleEntityName)
     configImport(setting)
-    if (null == setting.importer) {
-      val importer = new DefaultEntityImporter(setting.entityClazz, setting.shortName)
-      importer.stopOnError = setting.stopOnError
-      importer.domain = this.entityDao.domain
-      importer.populator = PopulateHelper.populator
-      setting.importer = importer
-      setting.listeners foreach importer.addListener
-    }
-
-    val importer = setting.importer
-    importer.reader = setting.reader
-    put("importer", importer)
+    val importer = DefaultEntityImporter(setting)
     put("importResult", tr)
-    if null == importer.reader then tr.addFailure("reading error", "Cannot build importer reader")
-    else importer.transfer(tr)
+    importer.transfer(tr)
     forward("/components/importData/result,result2")
   }
 

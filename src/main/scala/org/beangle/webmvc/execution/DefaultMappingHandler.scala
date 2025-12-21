@@ -54,7 +54,13 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     val lastInterceptorIndex = preHandle(interceptors, context, request, response)
     try {
       if (lastInterceptorIndex == interceptors.length - 1) {
-        val result = invoker.invoke()
+        var result: Any = null
+        try {
+          result = invoker.invoke()
+        } catch {
+          case e: ResultException => result = e.result
+          case e => throw e
+        }
         val flash = context.getFlash(false)
         if (null != flash) flash.writeNextToCookie()
         val view = result match {

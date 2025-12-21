@@ -15,17 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.beangle.webmvc.support
+package org.beangle.webmvc.execution
 
-import org.beangle.webmvc.execution.ResultException
-import org.beangle.webmvc.view.RawView
+class ResultException(val result: Any) extends RuntimeException(null, null, false, false) {
 
-abstract class ActionSupport extends RouteSupport, ParamSupport {
-  protected def raw(data: Any): RawView = {
-    RawView(data)
-  }
-
-  protected def error(result:Any):Unit={
-    throw new ResultException(result)
-  }
 }
