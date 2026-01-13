@@ -39,7 +39,7 @@ class MethodInvokerTest extends AnyFunSpec, Matchers {
 
   val response = mock(classOf[HttpServletResponse])
 
-  val ctx = new ActionContext(request, response, null, params)
+  val ctx = new ActionContext(request, response, null, params, List.empty)
   ActionContext.set(ctx)
 
   describe("MethodInvoker") {

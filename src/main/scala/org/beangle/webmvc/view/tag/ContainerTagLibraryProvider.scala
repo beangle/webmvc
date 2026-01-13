@@ -25,10 +25,10 @@ import org.beangle.template.api.{TagLibrary, TagLibraryProvider}
 @description("所有标签库提供者")
 class ContainerTagLibraryProvider extends TagLibraryProvider, ContainerListener {
 
-  var tagLibraries: Map[String, TagLibrary] = Map.empty
+  var libraries: Map[String, TagLibrary] = Map.empty
 
   override def onStarted(container: Container): Unit = {
-    tagLibraries = container.getBeans(classOf[TagLibrary]).map {
+    libraries = container.getBeans(classOf[TagLibrary]).map {
       case (key, library) =>
         val name = key
         if (name.contains(".")) (Strings.substringAfterLast(name, "."), library) else (name, library)

@@ -18,29 +18,27 @@
 package org.beangle.webmvc.view.tag
 
 import org.beangle.template.api.{ComponentContext, IndexableIdGenerator, TagTemplateEngine}
-import org.beangle.webmvc.context.{ActionContext, ActionContextInitializer, LocaleResolver}
+import org.beangle.webmvc.context.{ActionContext, ActionContextProperty}
 import org.beangle.webmvc.dispatch.ActionUriRender
-import org.beangle.webmvc.i18n.ActionTextResourceProvider
+import org.beangle.webmvc.view.tag.ComponentContextProperty.ComponentContextKey
 
-class ComponentContextInitializer extends ActionContextInitializer {
-  var textResourceProvider: ActionTextResourceProvider = _
-  var localeResolver: LocaleResolver = _
+object ComponentContextProperty {
+  val ComponentContextKey = "_beangle_webmvc_component_context"
+}
+
+class ComponentContextProperty extends ActionContextProperty {
   var uriRender: ActionUriRender = _
-  var templateEngine: TagTemplateEngine = _
+  var tagTemplateEngine: TagTemplateEngine = _
 
-  override def init(context: ActionContext): Unit = {
-    val locale = localeResolver.resolve(context.request)
-    val textResource = textResourceProvider.getTextResource(locale, context.handler)
-
+  override def get(context: ActionContext): Any = {
+    val textResource = context.textResource
     val req = context.request
     val queryString = req.getQueryString
     val fullpath = if (null == queryString) req.getRequestURI else req.getRequestURI + queryString
     val idGenerator = new IndexableIdGenerator(String.valueOf(Math.abs(fullpath.hashCode)))
     val services = Map("uriRender" -> uriRender)
-    val cc = new ComponentContext(templateEngine, idGenerator, textResource, services)
-
-    context.locale = locale
-    context.textResource = textResource
-    context.stash("_beangle_webmvc_component_context", cc)
+    new ComponentContext(tagTemplateEngine, idGenerator, textResource, services)
   }
+
+  override def name: String = ComponentContextKey
 }

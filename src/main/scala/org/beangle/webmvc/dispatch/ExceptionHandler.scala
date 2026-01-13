@@ -19,10 +19,11 @@ package org.beangle.webmvc.dispatch
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.bean.Initializing
-import org.beangle.commons.cdi.{BindRegistry, EnvProfile}
+import org.beangle.commons.cdi.EnvProfile
 import org.beangle.commons.collection.Collections
-import org.beangle.commons.lang.{JVM, Primitives, Strings}
+import org.beangle.commons.lang.{Primitives, Strings}
 import org.beangle.commons.logging.Logging
+import org.beangle.commons.text.escape.JavascriptEscaper
 import org.beangle.web.servlet.http.accept.ContentNegotiationManager
 import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.execution.{BindException, Handler}
@@ -57,9 +58,13 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
     attrs.put("status", 500)
     attrs.put("path", RequestUtils.getServletPath(request))
     if (null != ex) {
-      attrs.put("message", ex.getMessage)
-      attrs.put("exception", ex.getClass.getName)
-      attrs.put("trace", getStackTrace(ex))
+      var exp: Throwable = ex
+      if (ex.isInstanceOf[BindException] && null != ex.getCause) {
+        exp = ex.getCause
+      }
+      attrs.put("message", exp.getMessage)
+      attrs.put("exception", exp.getClass.getName)
+      attrs.put("trace", getStackTrace(exp))
     }
     attrs
   }
@@ -74,7 +79,7 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
         if (Primitives.isWrapperType(d.getClass) || d.getClass.isPrimitive) {
           String.valueOf(v)
         } else {
-          s"\"${d.toString.trim()}\""
+          s"\"${JavascriptEscaper.escape(d.toString.trim(), true)}\""
         }
     }
   }
@@ -179,7 +184,7 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
     html.toString()
   }
 
-  protected def getStackTrace(ex: Exception): Array[String] = {
+  protected def getStackTrace(ex: Throwable): Array[String] = {
     val stringWriter = new StringWriter()
     val printWriter = new PrintWriter(stringWriter)
     ex.printStackTrace(printWriter)
@@ -194,6 +199,7 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
 }
 
 class DefaultExceptionHandler extends AbstractExceptionHandler, Logging {
+
   def handle(request: HttpServletRequest, response: HttpServletResponse, handler: Handler, ex: Exception): Unit = {
     val attrs = getErrorAttributes(request, ex)
     response.setStatus(attrs.getOrElse("status", 500).asInstanceOf[Int])

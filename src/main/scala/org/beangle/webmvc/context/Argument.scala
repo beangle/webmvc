@@ -17,6 +17,8 @@
 
 package org.beangle.webmvc.context
 
+import org.beangle.commons.io.IOs
+import org.beangle.commons.lang.Charsets
 import org.beangle.commons.lang.annotation.spi
 import org.beangle.web.servlet.util.CookieUtils
 import org.beangle.webmvc.annotation.DefaultNone
@@ -77,6 +79,17 @@ class HeaderArgument(name: String, required: Boolean, defaultValue: String) exte
 
   override def toString: String = {
     "@header(" + name + ")" + (if (required) "*" else "") + (if (defaultValue == DefaultNone.value) "" else " " + defaultValue)
+  }
+}
+
+class BodyArgument(required: Boolean, defaultValue: String) extends AbstractArgument("body", required, defaultValue) {
+  override def value(context: ActionContext): AnyRef = {
+    val is = context.request.getInputStream
+    IOs.readString(is, Charsets.UTF_8)
+  }
+
+  override def toString: String = {
+    "@body" + (if (required) "*" else "") + (if (defaultValue == DefaultNone.value) "" else " " + defaultValue)
   }
 }
 

@@ -15,19 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.beangle.webmvc.execution
+package org.beangle.webmvc.annotation;
 
-import org.beangle.commons.lang.annotation.spi
-import org.beangle.webmvc.config.RouteMapping
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@spi
-trait InvokerBuilder {
-  def build(action: AnyRef, mapping: RouteMapping): Invoker
+@Target({ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface body {
+
+  boolean required() default true;
+
+  String defaultValue() default DefaultNone.value;
 }
-
-@spi
-trait Invoker {
-  def invoke(): Any
-}
-
-class BindException(msg: String, cause: Throwable = null) extends RuntimeException(msg, cause)

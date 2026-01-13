@@ -53,12 +53,16 @@ class DynaMethodInvoker(val action: AnyRef, val mapping: RouteMapping) extends I
         //进行类型转换
         val targetType = if pt.isPrimitive then Primitives.wrap(pt) else pt
         if (!targetType.isAssignableFrom(ov.getClass)) {
-          val rs = Params.converter.convert(ov, targetType)
-          rs match {
-            case None => throw new BindException(s"Cannot convert $ov to ${targetType.getName}")
-            case Some(cv) =>
-              if (cv eq null) throw new BindException(s"Cannot convert $ov to ${targetType.getName}")
-              else ov = cv
+          try {
+            val rs = Params.converter.convert(ov, targetType)
+            rs match {
+              case None => throw new BindException(s"Cannot convert $ov to ${targetType.getName}")
+              case Some(cv) =>
+                if (cv eq null) throw new BindException(s"Cannot convert $ov to ${targetType.getName}")
+                else ov = cv
+            }
+          } catch {
+            case e: Exception => throw new BindException(s"Cannot convert $ov to ${targetType.getName}", e)
           }
         }
         values(i) = ov

@@ -21,7 +21,6 @@ import org.beangle.commons.activation.MediaType
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.annotation.description
-import org.beangle.web.servlet.http.accept.ContentNegotiationManager
 
 @description("视图管理器")
 class DefaultViewManager extends ViewManager, Initializing {
@@ -29,8 +28,6 @@ class DefaultViewManager extends ViewManager, Initializing {
   private var serializerMap: Map[String, Serializer] = Map.empty
   private var renderMap: Map[Class[_], ViewRender] = Map.empty
   private var resolverMap: Map[String, ViewResolver] = Map.empty
-
-  var contentNegotiationManager: ContentNegotiationManager = _
 
   var viewRenders: List[ViewRender] = List.empty
   var viewResolvers: List[ViewResolver] = List.empty

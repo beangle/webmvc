@@ -20,7 +20,6 @@ package org.beangle.webmvc.view
 import org.beangle.commons.activation.MediaType
 import org.beangle.commons.io.Serializer
 import org.beangle.commons.lang.annotation.spi
-import org.beangle.web.servlet.http.accept.ContentNegotiationManager
 
 @spi
 trait ViewManager {
@@ -30,6 +29,4 @@ trait ViewManager {
   def getResolver(viewType: String): Option[ViewResolver]
 
   def getRender(viewClass: Class[_]): Option[ViewRender]
-
-  def contentNegotiationManager: ContentNegotiationManager
 }

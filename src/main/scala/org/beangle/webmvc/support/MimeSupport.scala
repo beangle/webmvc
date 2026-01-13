@@ -17,17 +17,16 @@
 
 package org.beangle.webmvc.support
 
-import org.beangle.web.servlet.http.accept.ContentNegotiationManager
+import org.beangle.commons.activation.MediaTypes
 import org.beangle.webmvc.context.ActionContext
 
 trait MimeSupport {
 
-  var contentNegotiationManager: ContentNegotiationManager = _
+  def isAcceptCsv: Boolean = {
+    ActionContext.current.acceptTypes.contains(MediaTypes.TextCsv)
+  }
 
-  def isRequestCsv: Boolean = {
-    if (null == contentNegotiationManager) false
-    else {
-      contentNegotiationManager.resolve(ActionContext.current.request).exists(_.primaryType == "text/csv")
-    }
+  def isAcceptJsonApi: Boolean = {
+    ActionContext.current.acceptTypes.contains(MediaTypes.ApplicationJsonApi)
   }
 }

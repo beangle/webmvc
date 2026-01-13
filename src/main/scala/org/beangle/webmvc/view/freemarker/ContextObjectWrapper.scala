@@ -29,11 +29,7 @@ class ContextObjectWrapper extends BeangleObjectWrapper {
     if (null == obj) return null
     //FIXME need ab test
     val context = ActionContext.current
-    var models = context.stash[IdentityCache[AnyRef, TemplateModel]](modelName)
-    if (models == null) {
-      models = new IdentityCache[AnyRef, TemplateModel]
-      context.stash(modelName, models)
-    }
+    val models = context.stash(modelName, new IdentityCache[AnyRef, TemplateModel])
     val model = models.get(obj)
     if (null == model) {
       val supModel = super.wrap(obj)

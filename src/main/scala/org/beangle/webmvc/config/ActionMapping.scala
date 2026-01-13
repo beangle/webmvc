@@ -86,6 +86,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
               case p: param => new ParamArgument(p.value, p.required || parameterTypes(i).isPrimitive, p.defaultValue)
               case c: cookie => new CookieArgument(c.value, c.required || parameterTypes(i).isPrimitive, c.defaultValue)
               case h: header => new HeaderArgument(h.value, h.required || parameterTypes(i).isPrimitive, h.defaultValue)
+              case b: body => new BodyArgument(b.required || parameterTypes(i).isPrimitive, b.defaultValue)
               case _ => null
             }
             j += 1

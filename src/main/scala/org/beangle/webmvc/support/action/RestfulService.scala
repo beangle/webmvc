@@ -23,7 +23,7 @@ import org.beangle.webmvc.annotation.{mapping, param, response}
 import org.beangle.webmvc.context.Params
 import org.beangle.webmvc.support.{ActionSupport, MimeSupport}
 
-class RestfulService[T <: Entity[_]] extends ActionSupport with EntityAction[T] with MimeSupport {
+class RestfulService[T <: Entity[_]] extends ActionSupport, EntityAction[T], MimeSupport {
   var entityDao: EntityDao = _
 
   @response

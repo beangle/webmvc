@@ -84,37 +84,35 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
             case None => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
           }
         } else if (null != result) {
-          if (null != viewManager.contentNegotiationManager) {
-            val mimeTypes = viewManager.contentNegotiationManager.resolve(request).iterator
-            var serializer: Serializer = null
-            var mimeType: MediaType = null
-            while (mimeTypes.hasNext && serializer == null) {
-              mimeType = mimeTypes.next()
-              serializer = viewManager.getSerializer(mimeType)
+          val mimeTypes = context.acceptTypes.iterator
+          var serializer: Serializer = null
+          var mimeType: MediaType = null
+          while (mimeTypes.hasNext && serializer == null) {
+            mimeType = mimeTypes.next()
+            serializer = viewManager.getSerializer(mimeType)
+          }
+          if (null == serializer) {
+            response.setCharacterEncoding("UTF-8")
+            response.getWriter.write(result.toString)
+          } else {
+            response.setCharacterEncoding("UTF-8")
+            val contentType = mimeType.toString + "; charset=UTF-8"
+            val params = new collection.mutable.HashMap[String, Any]
+            val enm = request.getAttributeNames
+            while (enm.hasMoreElements) {
+              val attr = enm.nextElement()
+              params.put(attr, request.getAttribute(attr))
             }
-            if (null == serializer) {
-              response.setCharacterEncoding("UTF-8")
-              response.getWriter.write(result.toString)
-            } else {
-              response.setCharacterEncoding("UTF-8")
-              val contentType = mimeType.toString + "; charset=UTF-8"
-              val params = new collection.mutable.HashMap[String, Any]
-              val enm = request.getAttributeNames
-              while (enm.hasMoreElements) {
-                val attr = enm.nextElement()
-                params.put(attr, request.getAttribute(attr))
-              }
-              params ++= context.params
-              val os = new ByteArrayOutputStream
-              serializer.serialize(result.asInstanceOf[AnyRef], os, params.toMap)
-              val bytes = os.toByteArray
+            params ++= context.params
+            val os = new ByteArrayOutputStream
+            serializer.serialize(result.asInstanceOf[AnyRef], os, params.toMap)
+            val bytes = os.toByteArray
 
-              if (context.handler.asInstanceOf[MappingHandler].mapping.cacheable) {
-                responseCache.put(request, contentType, bytes)
-                writeToResponse(response, contentType, bytes, Some(15))
-              } else {
-                writeToResponse(response, contentType, bytes, None)
-              }
+            if (context.handler.asInstanceOf[MappingHandler].mapping.cacheable) {
+              responseCache.put(request, contentType, bytes)
+              writeToResponse(response, contentType, bytes, Some(15))
+            } else {
+              writeToResponse(response, contentType, bytes, None)
             }
           }
         }

@@ -27,7 +27,8 @@ import org.beangle.webmvc.context.ActionContextBuilder
 import org.beangle.webmvc.execution.ContextAwareHandler
 import org.beangle.webmvc.util.Resources
 
-class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandler: ExceptionHandler, actionContextBuilder: ActionContextBuilder) extends GenericServlet {
+class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandler: ExceptionHandler,
+                 actionContextBuilder: ActionContextBuilder) extends GenericServlet {
 
   var defaultEncoding = "utf-8"
 

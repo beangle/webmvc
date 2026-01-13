@@ -17,23 +17,30 @@
 
 package org.beangle.webmvc.support.spring
 
-import jakarta.servlet.{MultipartConfigElement, ServletContext}
-import org.beangle.commons.lang.SystemInfo
+import jakarta.servlet.{MultipartConfigElement, ServletContext, ServletContextEvent, ServletContextListener}
+import org.beangle.cdi.spring.context.ContextInitializer as SpringContextInitializer
+import org.beangle.commons.cdi.Container
+import org.beangle.commons.lang.{Objects, SystemInfo}
 import org.beangle.web.servlet.init.Initializer
 import org.beangle.webmvc.config.Configurator
 import org.beangle.webmvc.context.ActionContextBuilder
 import org.beangle.webmvc.dispatch.{Dispatcher, ExceptionHandler, RequestMapper}
 import org.beangle.webmvc.view.Static
 
-class ContextInitializer extends Initializer {
+class ContextInitializer extends Initializer, ServletContextListener {
+
+  private var initializer: SpringContextInitializer = _
+
+  private def loadContainer(sc: ServletContext): Container = {
+    val contextConfigLocation = Objects.nvl(sc.getInitParameter("contextConfigLocation"), "classpath:spring-context.xml")
+    val contextClassName = sc.getInitParameter("contextClassName")
+    this.initializer = SpringContextInitializer(contextConfigLocation, contextClassName)
+    this.initializer.init()
+  }
 
   override def onStartup(sc: ServletContext): Unit = {
     initStaticBase(sc)
-
-    val ctxListener = new ContextListener
-    val container = ctxListener.loadContainer(sc)
-    addListener(ctxListener)
-
+    val container = loadContainer(sc)
     val cfg = container.getBean(classOf[Configurator]).get
     val mapper = container.getBean(classOf[RequestMapper]).get
     val exceptionHandler = container.getBean(classOf[ExceptionHandler]).get
@@ -42,6 +49,7 @@ class ContextInitializer extends Initializer {
     val action = sc.addServlet("Action", new Dispatcher(cfg, mapper, exceptionHandler, ctxBuilder))
     action.addMapping("/*")
     action.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))
+    addListener(this)
   }
 
   def initStaticBase(context: ServletContext): Unit = {
@@ -49,5 +57,12 @@ class ContextInitializer extends Initializer {
       val p = System.getProperty("beangle.webmvc.static_base")
       Static.Default.base = if (null == p) context.getContextPath + "/static" else p
     }
+  }
+
+  override def contextInitialized(sce: ServletContextEvent): Unit = {
+  }
+
+  override def contextDestroyed(sce: ServletContextEvent): Unit = {
+    if null != initializer then initializer.close()
   }
 }

@@ -17,16 +17,16 @@
 
 package org.beangle.webmvc.view.tag
 
-import org.beangle.template.api.{ComponentContext, TagLibrary, TemplateEngine}
+import org.beangle.template.api.{ComponentContext, TagLibrary}
 import org.beangle.webmvc.context.ActionContext
 
 /**
-  * @author chaostone
-  */
+ * @author chaostone
+ */
 abstract class AbstractTagLibrary extends TagLibrary {
 
-  protected final def getComponentContext(): ComponentContext = {
-    ActionContext.current.stash[ComponentContext]("_beangle_webmvc_component_context")
+  protected final def componentContext: ComponentContext = {
+    ActionContext.current.getProperty[ComponentContext](ComponentContextProperty.ComponentContextKey).get
   }
 
 }

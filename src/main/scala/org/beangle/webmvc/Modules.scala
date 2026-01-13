@@ -23,7 +23,7 @@ import org.beangle.commons.lang.ClassLoaders
 import org.beangle.commons.text.i18n.{DefaultTextBundleLoader, DefaultTextFormatter}
 import org.beangle.web.servlet.http.accept.ContentNegotiationManagerFactory
 import org.beangle.webmvc.config.{DefaultActionMappingBuilder, DefaultConfigurator, XmlProfileProvider}
-import org.beangle.webmvc.context.{DefaultActionContextBuilder, ParamLocaleResolver}
+import org.beangle.webmvc.context.*
 import org.beangle.webmvc.dispatch.*
 import org.beangle.webmvc.execution.DynaMethodInvokerBuilder
 import org.beangle.webmvc.execution.interceptors.CorsInterceptor
@@ -55,11 +55,14 @@ object DefaultModule extends BindModule {
     //context
     bind("mvc.LocaleResolver.default", classOf[ParamLocaleResolver])
     bind("mvc.ActionContextBuilder.default", classOf[DefaultActionContextBuilder])
+    bind("mvc.ActionContextProperty.locale", classOf[LocaleContextProperty])
+    bind("mvc.ActionContextProperty.textResource", classOf[TextResourceContextProperty])
+    bind("mvc.ActionContextProperty.acceptType", classOf[AcceptTypeContextProperty])
 
     //content
     bind(classOf[ContentNegotiationManagerFactory]).property("favorPathExtension", "true")
       .property("favorParameter", "true").property("parameterName", "format")
-      .property("ignoreAcceptHeader", "true")
+      .property("ignoreAcceptHeader", "false")
 
     //security
     bind("web.RequestConvertor.mvc", classOf[MvcRequestConvertor])
@@ -89,7 +92,7 @@ class ViewModule extends BindModule {
     if (ClassLoaders.get("org.beangle.template.api.TagLibraryProvider").nonEmpty) {
       import org.beangle.webmvc.view.tag.*
       bind("mvc.TagLibraryProvider.default", classOf[ContainerTagLibraryProvider])
-      bind("mvc.ActionContextInitializer.component", classOf[ComponentContextInitializer])
+      bind("mvc.ActionContextProperty.component", classOf[ComponentContextProperty])
     }
   }
 }

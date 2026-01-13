@@ -19,8 +19,8 @@ package org.beangle.webmvc.context
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.annotation.{description, spi}
-import org.beangle.webmvc.execution.Handler
 import org.beangle.web.servlet.multipart.StandardMultipartResolver
+import org.beangle.webmvc.execution.Handler
 
 @spi
 trait ActionContextBuilder {
@@ -28,16 +28,11 @@ trait ActionContextBuilder {
             params: collection.Map[String, Any]): ActionContext
 }
 
-@spi
-trait ActionContextInitializer {
-  def init(context: ActionContext): Unit
-}
-
 /**
  * @author chaostone
  */
 @description("缺省的ActionContext构建器")
-class DefaultActionContextBuilder(initializers: List[ActionContextInitializer]) extends ActionContextBuilder {
+class DefaultActionContextBuilder(properties: List[ActionContextProperty]) extends ActionContextBuilder {
 
   override def build(request: HttpServletRequest, response: HttpServletResponse,
                      handler: Handler, params2: collection.Map[String, Any]): ActionContext = {
@@ -56,10 +51,6 @@ class DefaultActionContextBuilder(initializers: List[ActionContextInitializer]) 
     }
 
     params ++= params2
-
-    val context = new ActionContext(request, response, handler, params)
-    ActionContext.set(context)
-    initializers foreach { i => i.init(context) }
-    context
+    ActionContext.set(new ActionContext(request, response, handler, params, properties))
   }
 }
