@@ -105,11 +105,10 @@ final class Profile(val pattern: String,
                     val urlStyle: String,
                     val urlSuffix: String,
                     val interceptors: Array[Interceptor],
-                    val decorators: Array[ViewDecorator],
-                    val source: URL) extends Comparable[Profile] {
+                    val decorators: Array[ViewDecorator]) extends Comparable[Profile] {
 
   def this(pattern: String) = {
-    this(pattern, "Action", "index", "/", "full", ".ftl", "freemarker", "/", "seo", "", Array(), Array(), null)
+    this(pattern, "Action", "index", "/", "full", ".ftl", "freemarker", "/", "seo", "", Array(), Array())
   }
 
   // 匹配缓存[className,matched_info]
@@ -198,10 +197,8 @@ final class ProfileConfig(val pattern: String) {
 
   var decoratorNames: Array[String] = Array()
 
-  var source: URL = _
-
   def mkProfile(interceptors: Array[Interceptor], decorators: Array[ViewDecorator]): Profile = {
     new Profile(pattern, actionSuffix, defaultMethod, viewPath, viewPathStyle, viewSuffix, viewType, urlPath,
-      urlStyle, urlSuffix, interceptors, decorators, source)
+      urlStyle, urlSuffix, interceptors, decorators)
   }
 }

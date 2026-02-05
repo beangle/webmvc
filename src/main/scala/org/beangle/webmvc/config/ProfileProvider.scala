@@ -18,11 +18,12 @@
 package org.beangle.webmvc.config
 
 import org.beangle.commons.bean.Properties.{copy, get}
+import org.beangle.commons.config.XmlConfigs
 import org.beangle.commons.lang.ClassLoaders
 import org.beangle.commons.lang.annotation.{description, spi}
+import org.beangle.commons.xml.{Element, Node}
 
 import java.net.URL
-import scala.xml.{Node, XML}
 
 @spi
 trait ProfileProvider {
@@ -35,13 +36,15 @@ class XmlProfileProvider extends ProfileProvider {
 
   private val defaultProfile = loadDefaultProfile()
 
+  var configLocation:String="classpath*:beangle.xml"
+
   /**
-   * 初始化配置META-INF/beangle.xml
+   * 初始化配置META-INF/
    */
   def loadProfiles(): List[ProfileConfig] = {
     val profiles = new collection.mutable.ListBuffer[ProfileConfig]
-    ClassLoaders.getResources("beangle.xml").foreach { url =>
-      profiles ++= readXmlToProfiles(url)
+    XmlConfigs.load(configLocation) \ "mvc" foreach { elem =>
+      profiles ++= readXmlToProfiles(elem)
     }
     profiles.toList
   }
@@ -59,9 +62,9 @@ class XmlProfileProvider extends ProfileProvider {
     pc
   }
 
-  private def readXmlToProfiles(url: URL): Seq[ProfileConfig] = {
+  private def readXmlToProfiles(elem: Node): Seq[ProfileConfig] = {
     val profiles = new collection.mutable.ListBuffer[ProfileConfig]
-    XML.load(url) \ "mvc" \ "profile" foreach { profileElem =>
+    elem \ "profile" foreach { profileElem =>
       val profile = new ProfileConfig((profileElem \ "@package").text)
       val actionNodes = profileElem \ "action"
       if (actionNodes.isEmpty) {
@@ -112,7 +115,6 @@ class XmlProfileProvider extends ProfileProvider {
         decoratorNodes foreach (elem => decorators += (elem \ "@name").text)
         profile.decoratorNames = decorators.toArray
       }
-      profile.source = url
       profiles += profile
     }
     profiles.toSeq

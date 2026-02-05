@@ -18,11 +18,15 @@
 package org.beangle.webmvc.view
 
 import org.beangle.commons.collection.Collections
+import org.beangle.commons.config.XmlConfigs
 import org.beangle.commons.lang.{ClassLoaders, Strings}
+import org.beangle.commons.xml.{Document, Node}
 
 import java.net.URL
 
 object Static {
+
+  private val defaultConfigLocation = "classpath*:beangle.xml"
 
   class Resource(val name: String, val version: String) {
     var modules: Seq[Module] = _
@@ -58,18 +62,19 @@ object Static {
   def buildDefault(): Static = {
     val rs = new Static
     ClassLoaders.getResources("META-INF/beangle/mvc-default.xml") foreach { url =>
-      rs.addResources(buildResource(url))
+      (Document.parse(url) \ "mvc") foreach { mvc =>
+        rs.addResources(buildResource(mvc))
+      }
     }
-    ClassLoaders.getResources("beangle.xml") foreach { url =>
-      rs.addResources(buildResource(url))
+    (XmlConfigs.load(defaultConfigLocation) \ "mvc") foreach { mvc =>
+      rs.addResources(buildResource(mvc))
     }
     rs
   }
 
-  private def buildResource(url: URL): List[Resource] = {
-    val xml = scala.xml.XML.load(url.openStream())
+  private def buildResource(mvc: Node): List[Resource] = {
     val rss = Collections.newBuffer[Resource]
-    (xml \ "mvc" \ "static" \ "bundle") foreach { e =>
+    (mvc \ "static" \ "bundle") foreach { e =>
       val bundle = new Resource((e \ "@name").text, (e \ "@version").text)
       val modules = Collections.newBuffer[Module]
       e \ "module" foreach { m =>

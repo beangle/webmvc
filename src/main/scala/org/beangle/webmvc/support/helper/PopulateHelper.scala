@@ -28,7 +28,7 @@ import org.beangle.webmvc.context.Params
 
 object PopulateHelper {
 
-  private val domain = Container.get("web").getBean(classOf[DomainFactory]).head.result
+  private val domain = Container.get("ROOT").getBean(classOf[DomainFactory]).head.getObject
 
   var populator = new ConvertPopulator
 
