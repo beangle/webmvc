@@ -19,13 +19,13 @@ package org.beangle.webmvc.dispatch
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.bean.Initializing
-import org.beangle.commons.cdi.EnvProfile
 import org.beangle.commons.collection.Collections
+import org.beangle.commons.config.Enviroment
 import org.beangle.commons.lang.{Primitives, Strings}
-import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.escape.JavascriptEscaper
 import org.beangle.web.servlet.http.accept.ContentNegotiationManager
 import org.beangle.web.servlet.util.RequestUtils
+import org.beangle.webmvc.MvcLogger
 import org.beangle.webmvc.execution.{BindException, Handler}
 
 import java.io.{PrintWriter, StringWriter}
@@ -49,7 +49,7 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
   )
 
   override def init(): Unit = {
-    devMode = EnvProfile.isDevMode
+    devMode = Enviroment.isDevMode
   }
 
   def getErrorAttributes(request: HttpServletRequest, ex: Exception): collection.Map[String, Any] = {
@@ -198,7 +198,7 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
   }
 }
 
-class DefaultExceptionHandler extends AbstractExceptionHandler, Logging {
+class DefaultExceptionHandler extends AbstractExceptionHandler {
 
   def handle(request: HttpServletRequest, response: HttpServletResponse, handler: Handler, ex: Exception): Unit = {
     val attrs = getErrorAttributes(request, ex)
@@ -221,7 +221,7 @@ class DefaultExceptionHandler extends AbstractExceptionHandler, Logging {
 
   private def logError(attrs: collection.Map[String, Any], ex: Exception): Unit = {
     attrs.get("trace") foreach { trace =>
-      logger.error(trace.asInstanceOf[Array[String]].mkString("\n"))
+      MvcLogger.error(trace.asInstanceOf[Array[String]].mkString("\n"))
     }
   }
 

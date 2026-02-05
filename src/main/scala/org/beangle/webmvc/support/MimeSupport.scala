@@ -23,10 +23,10 @@ import org.beangle.webmvc.context.ActionContext
 trait MimeSupport {
 
   def isAcceptCsv: Boolean = {
-    ActionContext.current.acceptTypes.contains(MediaTypes.TextCsv)
+    ActionContext.current.acceptTypes.contains(MediaTypes.csv)
   }
 
   def isAcceptJsonApi: Boolean = {
-    ActionContext.current.acceptTypes.contains(MediaTypes.ApplicationJsonApi)
+    ActionContext.current.acceptTypes.contains(MediaTypes.jsonApi)
   }
 }

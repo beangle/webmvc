@@ -17,12 +17,13 @@
 
 package org.beangle.webmvc
 
-import org.beangle.commons.cdi.{BindModule, profile}
+import org.beangle.commons.cdi.BindModule
+import org.beangle.commons.config.profile
 import org.beangle.commons.io.DefaultBinarySerializer
 import org.beangle.commons.lang.ClassLoaders
 import org.beangle.commons.text.i18n.{DefaultTextBundleLoader, DefaultTextFormatter}
 import org.beangle.web.servlet.http.accept.ContentNegotiationManagerFactory
-import org.beangle.webmvc.config.{DefaultActionMappingBuilder, DefaultConfigurator, XmlProfileProvider}
+import org.beangle.webmvc.config.{ActionMappingBuilder, DefaultActionMappingBuilder, DefaultConfigurator, XmlProfileProvider}
 import org.beangle.webmvc.context.*
 import org.beangle.webmvc.dispatch.*
 import org.beangle.webmvc.execution.DynaMethodInvokerBuilder
@@ -36,6 +37,7 @@ object DefaultModule extends BindModule {
     bind("mvc.ProfileProvider.default", classOf[XmlProfileProvider])
     bind("mvc.Configurator.default", classOf[DefaultConfigurator])
     bind("mvc.ActionMappingBuilder.default", classOf[DefaultActionMappingBuilder])
+      .onMissing(classOf[ActionMappingBuilder])
 
     //i18n
     bind("mvc.TextResourceProvider.default", classOf[ActionTextResourceProvider])

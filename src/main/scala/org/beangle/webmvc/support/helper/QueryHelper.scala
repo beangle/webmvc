@@ -21,20 +21,19 @@ import org.beangle.commons.collection.Order
 import org.beangle.commons.collection.page.{Page, PageLimit}
 import org.beangle.commons.lang.reflect.{BeanInfos, Reflections}
 import org.beangle.commons.lang.{Numbers, Strings}
-import org.beangle.commons.logging.Logging
 import org.beangle.data.dao.{Condition, Conditions, OqlBuilder}
 import org.beangle.data.model.Entity
 import org.beangle.data.model.meta.SingularProperty
 import org.beangle.data.model.pojo.TemporalOn
-import org.beangle.webmvc.context.{ActionContext, Params}
 import org.beangle.web.servlet.util.CookieUtils
+import org.beangle.webmvc.context.{ActionContext, Params}
 
 import java.text.{ParseException, SimpleDateFormat}
 import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
 import java.util as ju
 import scala.collection.mutable
 
-object QueryHelper extends Logging {
+object QueryHelper {
 
   val PageParam = "pageIndex"
 

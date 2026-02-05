@@ -20,7 +20,6 @@ package org.beangle.webmvc.dispatch
 import org.beangle.commons.collection.Collections
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.lang.annotation.description
-import org.beangle.commons.logging.Logging
 import org.beangle.webmvc.config.Configurator
 import org.beangle.webmvc.execution.{DefaultMappingHandler, EmptyResponseCache, InvokerBuilder, ResponseCache}
 import org.beangle.webmvc.view.ViewManager
@@ -31,7 +30,7 @@ import scala.collection.mutable
  * @author chaostone
  */
 @description("缺省的路由提供者")
-class DefaultRouteProvider extends RouteProvider with Logging {
+class DefaultRouteProvider extends RouteProvider {
 
   var configurator: Configurator = _
 

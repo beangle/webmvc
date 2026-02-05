@@ -15,20 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.beangle.webmvc.view.tag
+package org.beangle.webmvc
 
-import org.beangle.commons.lang.Strings
-import org.beangle.commons.lang.annotation.description
-import org.beangle.template.api.{TagLibrary, TagLibraryProvider}
+import org.beangle.commons.logging.{Logger, slf4j}
 
-@description("所有标签库提供者")
-class ContainerTagLibraryProvider(libs: Map[String, TagLibrary]) extends TagLibraryProvider {
-
-  val libraries: Map[String, TagLibrary] = build(libs)
-
-  def build(libs: Map[String, TagLibrary]): Map[String, TagLibrary] = {
-    libs.map { case (name, library) =>
-      (if name.contains(".") then Strings.substringAfterLast(name, ".") else name, library)
-    }
-  }
-}
+object MvcLogger extends Logger(slf4j("org.beangle.webmvc"))

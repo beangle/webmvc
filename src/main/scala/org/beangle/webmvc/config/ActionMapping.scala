@@ -22,8 +22,8 @@ import org.beangle.commons.lang.Strings.isNotEmpty
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.reflect.Reflections.{getAnnotation, isAnnotationPresent}
 import org.beangle.commons.lang.reflect.{BeanInfo, BeanInfos}
-import org.beangle.commons.logging.Logging
 import org.beangle.commons.net.http.HttpMethods.GET
+import org.beangle.webmvc.MvcLogger
 import org.beangle.webmvc.annotation.*
 import org.beangle.webmvc.context.*
 import org.beangle.webmvc.view.{View, ViewBuilder, ViewManager}
@@ -41,7 +41,7 @@ class ActionMapping(val action: AnyRef, val clazz: Class[_], val name: String, v
 }
 
 @description("缺省的ActionMapping构建器")
-class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
+class DefaultActionMappingBuilder extends ActionMappingBuilder {
 
   var viewBuilder: ViewBuilder = _
 
@@ -112,7 +112,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
             val mapping = RouteMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
             mappings.put(method.getName, mapping)
           } else {
-            logger.warn(s"Only support one method, but $mappingMethods found")
+            MvcLogger.warn(s"Only support one method, but $mappingMethods found")
           }
         } else {
           //ignore arguments contain  all null
@@ -123,7 +123,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder with Logging {
       }
     }
     config.mappings = mappings.toMap
-    if config.mappings.isEmpty then logger.warn(s"Cannot find any method in ${clazz.getName}")
+    if config.mappings.isEmpty then MvcLogger.warn(s"Cannot find any method in ${clazz.getName}")
     config
   }
 

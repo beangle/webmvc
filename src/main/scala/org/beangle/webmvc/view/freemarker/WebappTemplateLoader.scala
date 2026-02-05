@@ -20,8 +20,8 @@ package org.beangle.webmvc.view.freemarker
 import freemarker.cache.TemplateLoader
 import jakarta.servlet.ServletContext
 import org.beangle.commons.lang.Checks
-import org.beangle.commons.logging.Logging
 import org.beangle.template.freemarker.URLTemplateSource
+import org.beangle.webmvc.MvcLogger
 
 import java.io.*
 import java.net.{MalformedURLException, URL}
@@ -46,7 +46,7 @@ object WebappTemplateLoader {
   }
 }
 
-class WebappTemplateLoader(val servletContext: ServletContext, val subdirPath: String) extends TemplateLoader, Logging {
+class WebappTemplateLoader(val servletContext: ServletContext, val subdirPath: String) extends TemplateLoader {
   private val attemptFileAccess = (null != servletContext.getRealPath(subdirPath))
 
   @throws[IOException]
@@ -69,7 +69,7 @@ class WebappTemplateLoader(val servletContext: ServletContext, val subdirPath: S
     try url = servletContext.getResource(fullPath)
     catch {
       case e: MalformedURLException =>
-        logger.warn("Could not retrieve resource " + fullPath, e)
+        MvcLogger.warn("Could not retrieve resource " + fullPath, e)
         return null
     }
     if (url == null) null

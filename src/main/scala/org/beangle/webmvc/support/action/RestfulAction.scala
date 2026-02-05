@@ -17,11 +17,11 @@
 
 package org.beangle.webmvc.support.action
 
-import org.beangle.commons.logging.Logging
 import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.data.dao.EntityDao
 import org.beangle.data.model.Entity
 import org.beangle.data.model.pojo.Updated
+import org.beangle.webmvc.MvcLogger
 import org.beangle.webmvc.annotation.{ignore, mapping, param}
 import org.beangle.webmvc.context.Params
 import org.beangle.webmvc.support.ActionSupport
@@ -30,7 +30,7 @@ import org.beangle.webmvc.view.View
 
 import java.time.Instant
 
-abstract class RestfulAction[T <: Entity[_]] extends ActionSupport, EntityAction[T], Logging {
+abstract class RestfulAction[T <: Entity[_]] extends ActionSupport, EntityAction[T] {
   var entityDao: EntityDao = _
 
   def index(): View = {
@@ -117,7 +117,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport, EntityAction
       saveAndRedirect(entity)
     } catch {
       case e: Exception =>
-        logger.error("save entity failed", e)
+        MvcLogger.error("save entity failed", e)
         addError("info.save.failure")
         put(simpleEntityName, entity)
         editSetting(entity)

@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <beangle>
   <web>
-    <initializer class="org.beangle.webmvc.support.spring.LoggerInitializer"/>
-    <initializer class="org.beangle.webmvc.support.spring.ContextInitializer"/>
+    <initializer class="org.beangle.webmvc.init.WebmvcInitializer"/>
   </web>
 
   <cdi>

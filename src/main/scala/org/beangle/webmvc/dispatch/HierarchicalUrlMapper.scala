@@ -21,7 +21,6 @@ import jakarta.servlet.http.HttpServletRequest
 import org.beangle.commons.lang.Strings.split
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.{Arrays, Strings}
-import org.beangle.commons.logging.Logging
 import org.beangle.commons.net.http.HttpMethods.{GET, POST}
 import org.beangle.webmvc.config.{Buildable, Path, RouteMapping}
 import org.beangle.webmvc.execution.Handler
@@ -29,7 +28,7 @@ import org.beangle.webmvc.execution.Handler
 import java.lang as jl
 
 @description("支持层级的url映射器")
-class HierarchicalUrlMapper extends RequestMapper, Buildable, Logging {
+class HierarchicalUrlMapper extends RequestMapper, Buildable {
 
   private val hierarchicalMappings = new HierarchicalMappings
 

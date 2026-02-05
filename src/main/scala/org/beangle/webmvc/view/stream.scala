@@ -60,7 +60,7 @@ object Stream {
   }
 
   private def decideContentType(fileName: String): MediaType = {
-    MediaTypes.get(substringAfterLast(fileName, "."), MediaTypes.ApplicationOctetStream)
+    MediaTypes.get(substringAfterLast(fileName, "."), MediaTypes.stream)
   }
 
   private def getAttachName(fileName: String, display: String = null): String = {

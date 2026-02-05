@@ -20,12 +20,12 @@ package org.beangle.webmvc.config
 import org.beangle.commons.cdi.Container
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.time.Stopwatch
-import org.beangle.commons.logging.Logging
-import org.beangle.webmvc.view.ViewDecorator
 import org.beangle.web.servlet.intercept.Interceptor
+import org.beangle.webmvc.MvcLogger
+import org.beangle.webmvc.view.ViewDecorator
 
 @description("缺省配置器")
-class DefaultConfigurator(profileProvider: ProfileProvider, container: Container) extends Configurator, Logging {
+class DefaultConfigurator(profileProvider: ProfileProvider, container: Container) extends Configurator {
 
   private val class2Profiles = new collection.mutable.HashMap[String, Profile]
 
@@ -69,7 +69,7 @@ class DefaultConfigurator(profileProvider: ProfileProvider, container: Container
     }
     actionMappings = mutableActionMappings.toMap
     classMappings = mutableClassMappings.toMap
-    logger.info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in $watch.")
+    MvcLogger.info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in $watch.")
   }
 
   override def getProfile(className: String): Profile = {
@@ -79,7 +79,7 @@ class DefaultConfigurator(profileProvider: ProfileProvider, container: Container
       case Some(p) =>
         class2Profiles.put(className, p)
         matched = p
-        logger.debug(s"$className match profile:$p")
+        MvcLogger.debug(s"$className match profile:$p")
       case None =>
     }
     matched
@@ -105,9 +105,10 @@ class ContainerActionFinder(val container: Container) extends ActionFinder {
 
   override def actions(actionTest: ActionFinder.Test): Seq[Object] = {
     val actions = new collection.mutable.ListBuffer[Object]
-    container.keys foreach { name =>
-      val bean: Object = container.getBean(name).get
-      if (actionTest.apply(bean.getClass)) actions += bean
+    container.beanTypes foreach { (name, clazz) =>
+      if (actionTest.apply(clazz)) {
+        actions ++= container.getBean[Object](name)
+      }
     }
     actions.toSeq
   }
