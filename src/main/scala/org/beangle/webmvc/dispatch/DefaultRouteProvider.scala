@@ -38,7 +38,7 @@ class DefaultRouteProvider extends RouteProvider {
 
   var viewManager: ViewManager = _
 
-  var responseCache: ResponseCache = EmptyResponseCache
+  var responseCache: Option[ResponseCache] = None
 
   override def routes: Iterable[Route] = {
     val results = new collection.mutable.ArrayBuffer[Route]
@@ -46,7 +46,8 @@ class DefaultRouteProvider extends RouteProvider {
       case (_, am) =>
         am.mappings foreach {
           case (_, mapping) =>
-            val handler = new DefaultMappingHandler(mapping, invokerBuilder.build(am.action, mapping), viewManager, responseCache)
+            val cache = responseCache.getOrElse(EmptyResponseCache)
+            val handler = new DefaultMappingHandler(mapping, invokerBuilder.build(am.action, mapping), viewManager, cache)
             results += Route(mapping.httpMethod, mapping.url, handler)
             stripTailIndex(mapping.url) foreach { short =>
               results += Route(mapping.httpMethod, short, handler)

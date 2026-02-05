@@ -2,7 +2,7 @@ import org.beangle.parent.Dependencies.*
 import org.beangle.parent.Settings.*
 
 ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.13.2-SNAPSHOT"
+ThisBuild / version := "0.13.2"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -23,12 +23,12 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
-val beangle_commons = "org.beangle.commons" % "beangle-commons" % "6.0.0-SNAPSHOT"
-val beangle_web = "org.beangle.web" % "beangle-web" % "0.7.3-SNAPSHOT"
-val beangle_model = "org.beangle.data" % "beangle-model" % "5.11.7-SNAPSHOT"
-val beangle_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.10.0-SNAPSHOT"
-val beangle_template = "org.beangle.template" % "beangle-template" % "0.2.4-SNAPSHOT"
-val beangle_transfer = "org.beangle.transfer" % "beangle-transfer" % "0.0.4-SNAPSHOT"
+val beangle_commons = "org.beangle.commons" % "beangle-commons" % "6.0.0"
+val beangle_web = "org.beangle.web" % "beangle-web" % "0.7.3"
+val beangle_model = "org.beangle.data" % "beangle-model" % "5.11.7"
+val beangle_cdi = "org.beangle.cdi" % "beangle-cdi" % "0.10.0"
+val beangle_template = "org.beangle.template" % "beangle-template" % "0.2.4"
+val beangle_transfer = "org.beangle.transfer" % "beangle-transfer" % "0.0.4"
 
 lazy val root = (project in file("."))
   .settings(

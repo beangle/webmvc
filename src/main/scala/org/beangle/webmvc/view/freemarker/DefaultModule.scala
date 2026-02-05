@@ -19,10 +19,13 @@ package org.beangle.webmvc.view.freemarker
 
 import org.beangle.commons.cdi.BindModule
 import org.beangle.template.freemarker.DefaultTagTemplateEngine
+import org.beangle.webmvc.view.tag.{ComponentContextProperty, ContainerTagLibraryProvider}
 
 object DefaultModule extends BindModule {
 
   protected override def binding(): Unit = {
+    bind("mvc.TagLibraryProvider.default", classOf[ContainerTagLibraryProvider])
+    bind("mvc.ActionContextProperty.component", classOf[ComponentContextProperty])
     //config
     bind("mvc.TagTemplateEngine.freemarker", classOf[DefaultTagTemplateEngine])
       .property("devMode", devEnabled)

@@ -32,14 +32,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class WebmvcInitializer extends Initializer {
 
   override def onStartup(sc: ServletContext): Unit = {
-    println("thread name "+Thread.currentThread().getName)
     initStaticBase(sc)
 
     given ec: ExecutionContext = ExecutionContext.fromExecutor(Executors.newVirtualThreadPerTaskExecutor())
 
     //异步执行，等待重启初始化完成
     Future {
-      println("thread name "+Thread.currentThread().getName)
       val container = Container.getOrAwait("ROOT")
       val cfg = container.getBean(classOf[Configurator]).get
       val mapper = container.getBean(classOf[RequestMapper]).get

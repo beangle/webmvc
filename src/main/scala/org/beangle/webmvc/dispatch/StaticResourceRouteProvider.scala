@@ -22,17 +22,17 @@ import org.beangle.commons.bean.Initializing
 import org.beangle.commons.io.ClasspathResourceLoader
 import org.beangle.commons.lang.Strings.substringAfter
 import org.beangle.commons.net.http.HttpMethods.GET
-import org.beangle.webmvc.dispatch.{Route, RouteProvider}
-import org.beangle.webmvc.execution.Handler
 import org.beangle.web.servlet.resource.ResourceProcessor
 import org.beangle.web.servlet.resource.filter.HeaderFilter
+import org.beangle.webmvc.dispatch.{Route, RouteProvider}
+import org.beangle.webmvc.execution.Handler
 
 /**
  * @author chaostone
  */
-class StaticResourceRouteProvider extends RouteProvider with Initializing {
+class StaticResourceRouteProvider extends RouteProvider, Initializing {
   var patterns: Array[String] = Array("/static/{path*}")
-  var processor: ResourceProcessor = _
+  private var processor: ResourceProcessor = _
   private var handler: StaticResourceHandler = _
 
   def routes: Iterable[Route] = {

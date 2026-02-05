@@ -22,8 +22,6 @@ import org.beangle.commons.config.XmlConfigs
 import org.beangle.commons.lang.{ClassLoaders, Strings}
 import org.beangle.commons.xml.{Document, Node}
 
-import java.net.URL
-
 object Static {
 
   private val defaultConfigLocation = "classpath*:beangle.xml"
@@ -61,7 +59,7 @@ object Static {
 
   def buildDefault(): Static = {
     val rs = new Static
-    ClassLoaders.getResources("META-INF/beangle/mvc-default.xml") foreach { url =>
+    ClassLoaders.getResource("META-INF/beangle/mvc-default.xml") foreach { url =>
       (Document.parse(url) \ "mvc") foreach { mvc =>
         rs.addResources(buildResource(mvc))
       }
