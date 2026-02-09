@@ -25,7 +25,7 @@ import org.beangle.commons.lang.{Primitives, Strings}
 import org.beangle.commons.text.escape.JavascriptEscaper
 import org.beangle.web.servlet.http.accept.ContentNegotiationManager
 import org.beangle.web.servlet.util.RequestUtils
-import org.beangle.webmvc.MvcLogger
+import org.beangle.webmvc.Logger
 import org.beangle.webmvc.execution.{BindException, Handler}
 
 import java.io.{PrintWriter, StringWriter}
@@ -221,7 +221,7 @@ class DefaultExceptionHandler extends AbstractExceptionHandler {
 
   private def logError(attrs: collection.Map[String, Any], ex: Exception): Unit = {
     attrs.get("trace") foreach { trace =>
-      MvcLogger.error(trace.asInstanceOf[Array[String]].mkString("\n"))
+      Logger.error(trace.asInstanceOf[Array[String]].mkString("\n"))
     }
   }
 

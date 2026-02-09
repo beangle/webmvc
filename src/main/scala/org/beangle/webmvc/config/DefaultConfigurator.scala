@@ -21,7 +21,7 @@ import org.beangle.commons.cdi.Container
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.web.servlet.intercept.Interceptor
-import org.beangle.webmvc.MvcLogger
+import org.beangle.webmvc.Logger
 import org.beangle.webmvc.view.ViewDecorator
 
 @description("缺省配置器")
@@ -69,7 +69,7 @@ class DefaultConfigurator(profileProvider: ProfileProvider, container: Container
     }
     actionMappings = mutableActionMappings.toMap
     classMappings = mutableClassMappings.toMap
-    MvcLogger.info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in $watch.")
+    Logger.info(s"Action scan completed,create $actionCount actions($mappingCount mappings) in $watch.")
   }
 
   override def getProfile(className: String): Profile = {
@@ -79,7 +79,7 @@ class DefaultConfigurator(profileProvider: ProfileProvider, container: Container
       case Some(p) =>
         class2Profiles.put(className, p)
         matched = p
-        MvcLogger.debug(s"$className match profile:$p")
+        Logger.debug(s"$className match profile:$p")
       case None =>
     }
     matched

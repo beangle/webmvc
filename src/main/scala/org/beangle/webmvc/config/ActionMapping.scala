@@ -23,7 +23,7 @@ import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.reflect.Reflections.{getAnnotation, isAnnotationPresent}
 import org.beangle.commons.lang.reflect.{BeanInfo, BeanInfos}
 import org.beangle.commons.net.http.HttpMethods.GET
-import org.beangle.webmvc.MvcLogger
+import org.beangle.webmvc.Logger
 import org.beangle.webmvc.annotation.*
 import org.beangle.webmvc.context.*
 import org.beangle.webmvc.view.{View, ViewBuilder, ViewManager}
@@ -112,7 +112,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
             val mapping = RouteMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
             mappings.put(method.getName, mapping)
           } else {
-            MvcLogger.warn(s"Only support one method, but $mappingMethods found")
+            Logger.warn(s"Only support one method, but $mappingMethods found")
           }
         } else {
           //ignore arguments contain  all null
@@ -123,7 +123,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
       }
     }
     config.mappings = mappings.toMap
-    if config.mappings.isEmpty then MvcLogger.warn(s"Cannot find any method in ${clazz.getName}")
+    if config.mappings.isEmpty then Logger.warn(s"Cannot find any method in ${clazz.getName}")
     config
   }
 

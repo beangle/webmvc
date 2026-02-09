@@ -21,32 +21,29 @@ import jakarta.servlet.{MultipartConfigElement, ServletContext}
 import org.beangle.commons.cdi.Container
 import org.beangle.commons.lang.SystemInfo
 import org.beangle.web.servlet.init.Initializer
+import org.beangle.webmvc.Logger
 import org.beangle.webmvc.config.Configurator
 import org.beangle.webmvc.context.ActionContextBuilder
 import org.beangle.webmvc.dispatch.{Dispatcher, ExceptionHandler, RequestMapper}
 import org.beangle.webmvc.view.Static
-
-import java.util.concurrent.Executors
-import scala.concurrent.{ExecutionContext, Future}
 
 class WebmvcInitializer extends Initializer {
 
   override def onStartup(sc: ServletContext): Unit = {
     initStaticBase(sc)
 
-    given ec: ExecutionContext = ExecutionContext.fromExecutor(Executors.newVirtualThreadPerTaskExecutor())
+    Container.get("web").orElse(Container.root) match {
+      case None =>
+        Logger.error("Cannot find web or ROOT container")
+      case Some(container) =>
+        val cfg = container.getBean(classOf[Configurator]).get
+        val mapper = container.getBean(classOf[RequestMapper]).get
+        val exceptionHandler = container.getBean(classOf[ExceptionHandler]).get
+        val ctxBuilder = container.getBean(classOf[ActionContextBuilder]).get
 
-    //异步执行，等待重启初始化完成
-    Future {
-      val container = Container.getOrAwait("ROOT")
-      val cfg = container.getBean(classOf[Configurator]).get
-      val mapper = container.getBean(classOf[RequestMapper]).get
-      val exceptionHandler = container.getBean(classOf[ExceptionHandler]).get
-      val ctxBuilder = container.getBean(classOf[ActionContextBuilder]).get
-
-      val action = sc.addServlet("Action", new Dispatcher(cfg, mapper, exceptionHandler, ctxBuilder))
-      action.addMapping("/*")
-      action.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))
+        val action = sc.addServlet("Action", new Dispatcher(cfg, mapper, exceptionHandler, ctxBuilder))
+        action.addMapping("/*")
+        action.setMultipartConfig(new MultipartConfigElement(SystemInfo.tmpDir))
     }
   }
 

@@ -24,11 +24,11 @@ import org.beangle.data.model.meta.EntityType
 import org.beangle.data.model.util.ConvertPopulator
 import org.beangle.data.orm.Jpas
 import org.beangle.data.orm.hibernate.DomainFactory
-import org.beangle.webmvc.context.Params
+import org.beangle.webmvc.context.{Params, WebContainer}
 
 object PopulateHelper {
 
-  private val domain = Container.get("ROOT").getBean(classOf[DomainFactory]).head.getObject
+  private val domain = WebContainer.get.getBean(classOf[DomainFactory]).head.getObject
 
   var populator = new ConvertPopulator
 

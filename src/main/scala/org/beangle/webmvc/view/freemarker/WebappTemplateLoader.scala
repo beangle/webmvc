@@ -21,7 +21,7 @@ import freemarker.cache.TemplateLoader
 import jakarta.servlet.ServletContext
 import org.beangle.commons.lang.Checks
 import org.beangle.template.freemarker.URLTemplateSource
-import org.beangle.webmvc.MvcLogger
+import org.beangle.webmvc.Logger
 
 import java.io.*
 import java.net.{MalformedURLException, URL}
@@ -69,7 +69,7 @@ class WebappTemplateLoader(val servletContext: ServletContext, val subdirPath: S
     try url = servletContext.getResource(fullPath)
     catch {
       case e: MalformedURLException =>
-        MvcLogger.warn("Could not retrieve resource " + fullPath, e)
+        Logger.warn("Could not retrieve resource " + fullPath, e)
         return null
     }
     if (url == null) null

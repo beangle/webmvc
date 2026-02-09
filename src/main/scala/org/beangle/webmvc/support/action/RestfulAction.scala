@@ -21,7 +21,7 @@ import org.beangle.commons.text.inflector.en.EnNounPluralizer
 import org.beangle.data.dao.EntityDao
 import org.beangle.data.model.Entity
 import org.beangle.data.model.pojo.Updated
-import org.beangle.webmvc.MvcLogger
+import org.beangle.webmvc.Logger
 import org.beangle.webmvc.annotation.{ignore, mapping, param}
 import org.beangle.webmvc.context.Params
 import org.beangle.webmvc.support.ActionSupport
@@ -117,7 +117,7 @@ abstract class RestfulAction[T <: Entity[_]] extends ActionSupport, EntityAction
       saveAndRedirect(entity)
     } catch {
       case e: Exception =>
-        MvcLogger.error("save entity failed", e)
+        Logger.error("save entity failed", e)
         addError("info.save.failure")
         put(simpleEntityName, entity)
         editSetting(entity)

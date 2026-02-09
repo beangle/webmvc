@@ -17,6 +17,6 @@
 
 package org.beangle.webmvc
 
-import org.beangle.commons.logging.{Logger, slf4j}
+import org.beangle.commons.logging.{Logger as CLogger, slf4j}
 
-object MvcLogger extends Logger(slf4j("org.beangle.webmvc"))
+private[webmvc] object Logger extends CLogger(slf4j("org.beangle.webmvc"))
