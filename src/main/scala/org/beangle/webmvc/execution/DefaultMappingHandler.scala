@@ -58,7 +58,9 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
         try {
           result = invoker.invoke()
         } catch {
-          case e: ResultException => result = e.result
+          case e: ResultException =>
+            response.setStatus(500)
+            result = e.result
           case e => throw e
         }
         val flash = context.getFlash(false)
