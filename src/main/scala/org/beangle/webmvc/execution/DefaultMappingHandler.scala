@@ -59,7 +59,7 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
           result = invoker.invoke()
         } catch {
           case e: ResultException =>
-            response.setStatus(500)
+            response.setStatus(e.code)
             result = e.result
           case e => throw e
         }

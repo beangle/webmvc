@@ -25,7 +25,12 @@ abstract class ActionSupport extends RouteSupport, ParamSupport {
     RawView(data)
   }
 
-  protected def error(result:Any):Unit={
-    throw new ResultException(result)
+  protected def error[T](result: Any): T = {
+    throw new ResultException(500, result)
   }
+
+  protected def error[T](code: Int, result: Any): T = {
+    throw new ResultException(code, result)
+  }
+
 }

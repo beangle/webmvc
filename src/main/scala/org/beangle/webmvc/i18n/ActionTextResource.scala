@@ -60,9 +60,9 @@ class ActionTextResource(context: ActionContext, action: ActionMapping, locale: 
     var msg = new ClassTextFinder(locale, registry).find(actionClass, key)
     if (msg.isDefined) return msg
 
-    if (classOf[EntitySupport[_]].isAssignableFrom(actionClass)) {
+    if (classOf[EntitySupport].isAssignableFrom(actionClass)) {
       // search up model's class hierarchy
-      val entityClass = action.action.asInstanceOf[EntitySupport[_]].entityClass
+      val entityClass = action.action.asInstanceOf[EntitySupport].entityClass
       if (entityClass != null) {
         val entityPrefix = entityClass.getSimpleName + "."
         if (Strings.capitalize(key).startsWith(entityPrefix)) {

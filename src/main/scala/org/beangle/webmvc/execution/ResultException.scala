@@ -17,6 +17,6 @@
 
 package org.beangle.webmvc.execution
 
-class ResultException(val result: Any) extends RuntimeException(null, null, false, false) {
+class ResultException(val code: Int, val result: Any) extends RuntimeException(null, null, false, false) {
 
 }

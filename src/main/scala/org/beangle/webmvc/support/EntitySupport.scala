@@ -22,16 +22,7 @@ import org.beangle.commons.lang.annotation.noreflect
 import org.beangle.commons.lang.reflect.Reflections
 import org.beangle.webmvc.annotation.ignore
 
-trait EntitySupport[T] {
-  @noreflect
-  val entityClass: Class[T] = {
-    val tClass = Reflections.getGenericParamTypes(getClass, classOf[EntitySupport[_]]).get("T")
-    if (tClass.isEmpty) throw new RuntimeException(s"Cannot guess entity type from ${this.getClass.getName}")
-    else tClass.get.asInstanceOf[Class[T]]
-  }
+trait EntitySupport {
 
-  @ignore
-  protected def simpleEntityName: String = {
-    Strings.uncapitalize(Strings.substringAfterLast(entityClass.getName, "."))
-  }
+  def entityClass: Class[_]
 }
