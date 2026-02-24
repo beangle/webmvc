@@ -40,29 +40,30 @@ class MethodInvokerTest extends AnyFunSpec, Matchers {
   val response = mock(classOf[HttpServletResponse])
 
   val ctx = new ActionContext(request, response, null, params, List.empty)
-  ActionContext.set(ctx)
 
   describe("MethodInvoker") {
     val action = new ShowcaseAction
     val builder = new DynaMethodInvokerBuilder
     it("invoke method") {
-      var invoker = builder.build(action, mappings("string"))
-      assert(invoker.invoke() == PathView(null))
+      ActionContext.runWith(ctx) {
+        var invoker = builder.build(action, mappings("string"))
+        assert(invoker.invoke() == PathView(null))
 
-      invoker = builder.build(action, mappings("param"))
-      assert(invoker.invoke() == Status.Ok)
+        invoker = builder.build(action, mappings("param"))
+        assert(invoker.invoke() == Status.Ok)
 
-      invoker = builder.build(action, mappings("request"))
-      assert(invoker.invoke() == Status.Ok)
+        invoker = builder.build(action, mappings("request"))
+        assert(invoker.invoke() == Status.Ok)
 
-      invoker = builder.build(action, mappings("path"))
-      assert(invoker.invoke() == Status.Ok)
+        invoker = builder.build(action, mappings("path"))
+        assert(invoker.invoke() == Status.Ok)
 
-      invoker = builder.build(action, mappings("echoid"))
-      assert(invoker.invoke() == "in Showcase echo id:12345")
+        invoker = builder.build(action, mappings("echoid"))
+        assert(invoker.invoke() == "in Showcase echo id:12345")
 
-      invoker = builder.build(action, mappings("ok"))
-      assert(invoker.invoke() == true)
+        invoker = builder.build(action, mappings("ok"))
+        assert(invoker.invoke() == true)
+      }
     }
   }
 }

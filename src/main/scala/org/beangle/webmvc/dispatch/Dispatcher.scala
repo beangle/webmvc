@@ -23,7 +23,7 @@ import org.beangle.commons.lang.Strings
 import org.beangle.web.servlet.multipart.StandardMultipartResolver
 import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.config.{Buildable, Configurator}
-import org.beangle.webmvc.context.ActionContextBuilder
+import org.beangle.webmvc.context.{ActionContext, ActionContextBuilder}
 import org.beangle.webmvc.execution.ContextAwareHandler
 import org.beangle.webmvc.util.Resources
 
@@ -55,11 +55,13 @@ class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandl
         val handler = hh.handler
         try {
           if (handler.isInstanceOf[ContextAwareHandler]) {
-            actionContextBuilder.build(request, response, handler, hh.params)
-            try {
-              handler.handle(request, response)
-            } finally {
-              StandardMultipartResolver.cleanup(request)
+            val ctx = actionContextBuilder.build(request, response, handler, hh.params)
+            ActionContext.runWith(ctx) {
+              try {
+                handler.handle(request, response)
+              } finally {
+                StandardMultipartResolver.cleanup(request)
+              }
             }
           } else {
             handler.handle(request, response)

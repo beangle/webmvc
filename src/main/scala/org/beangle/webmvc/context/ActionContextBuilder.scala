@@ -51,6 +51,6 @@ class DefaultActionContextBuilder(properties: List[ActionContextProperty]) exten
     }
 
     params ++= params2
-    ActionContext.set(new ActionContext(request, response, handler, params, properties))
+    new ActionContext(request, response, handler, params, properties)
   }
 }

@@ -24,19 +24,20 @@ import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.context.ActionContext.*
 import org.beangle.webmvc.execution.{Handler, MappingHandler}
 
+import java.lang.ScopedValue
 import java.util as ju
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
 object ActionContext {
-  private val contexts = new ThreadLocal[ActionContext]
+  private val contextScope: ScopedValue[ActionContext] = ScopedValue.newInstance()
 
-  def set(newer: ActionContext): ActionContext = {
-    contexts.set(newer)
-    newer
+  /** Execute body with the given context as the current ActionContext. */
+  def runWith[A](context: ActionContext)(body: => A): A = {
+    ScopedValue.where(contextScope, context).call(() => body)
   }
 
-  def current: ActionContext = contexts.get()
+  def current: ActionContext = contextScope.get()
 
   val LocalKey = "_beangle_web_local"
   val FlashKey = "_beangle_web_flash"
