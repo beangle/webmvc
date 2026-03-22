@@ -17,12 +17,12 @@
 
 package org.beangle.webmvc.view
 
-import jakarta.servlet.http.HttpServletResponse._
+import jakarta.servlet.http.HttpServletResponse.*
 
 object Status {
 
   def apply(code: Int): View = {
-    new StatusView(code)
+    StatusView(code, null)
   }
 
   val Ok: View = this (SC_OK)
@@ -36,4 +36,4 @@ object Status {
   val Forbidden: View = this (SC_FORBIDDEN)
 }
 
-class StatusView(val code: Int) extends View
+case class StatusView(status: Int, body: Any) extends View

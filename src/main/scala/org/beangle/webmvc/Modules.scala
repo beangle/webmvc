@@ -85,9 +85,6 @@ class ViewModule extends BindModule {
     bind("mvc.TypeViewBuilder.redirectAction", classOf[RedirectActionViewBuilder])
     bind("mvc.ViewRender.chain", classOf[ForwardActionViewRender])
     bind("mvc.ViewRender.redirectAction", classOf[RedirectActionViewRender])
-    bind("mvc.ViewRender.stream", classOf[StreamViewRender])
-    bind("mvc.ViewRender.status", classOf[StatusViewRender])
-    bind("mvc.ViewRender.raw", classOf[RawViewRender])
     bind("mvc.ViewManager.default", classOf[DefaultViewManager])
   }
 }

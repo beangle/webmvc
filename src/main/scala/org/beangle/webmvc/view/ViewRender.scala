@@ -18,9 +18,9 @@
 package org.beangle.webmvc.view
 
 import org.beangle.commons.io.IOs
-import org.beangle.commons.lang.annotation.{description, spi}
-import org.beangle.webmvc.context.ActionContext
+import org.beangle.commons.lang.annotation.spi
 import org.beangle.web.servlet.util.RequestUtils
+import org.beangle.webmvc.context.ActionContext
 
 @spi
 trait ViewRender {
@@ -29,14 +29,9 @@ trait ViewRender {
   def render(view: View, context: ActionContext): Unit
 }
 
-@description("原始数据渲染者")
-class RawViewRender extends ViewRender {
-  override def supportViewClass: Class[_] = {
-    classOf[RawView]
-  }
-
-  override def render(view: View, context: ActionContext): Unit = {
-    val data = view.asInstanceOf[RawView].data
+object RawViewRender {
+  def render(view: RawView, context: ActionContext): Unit = {
+    val data = view.data
     val res = context.response
     if (data.getClass.isArray && data.getClass.getComponentType == classOf[Byte]) {
       res.getOutputStream.write(data.asInstanceOf[Array[Byte]])
@@ -47,26 +42,9 @@ class RawViewRender extends ViewRender {
   }
 }
 
-@description("HTTP状态渲染者")
-class StatusViewRender extends ViewRender {
-  override def supportViewClass: Class[_] = {
-    classOf[StatusView]
-  }
+object StreamViewRender {
 
-  override def render(view: View, context: ActionContext): Unit = {
-    context.response.setStatus(view.asInstanceOf[StatusView].code)
-  }
-}
-
-@description("流视图渲染者")
-class StreamViewRender extends ViewRender {
-
-  override def supportViewClass: Class[_] = {
-    classOf[StreamView]
-  }
-
-  override def render(view: View, context: ActionContext): Unit = {
-    val stream = view.asInstanceOf[StreamView]
+  def render(stream: StreamView, context: ActionContext): Unit = {
     val response = context.response
     try {
       val contentType = stream.contentType.toString

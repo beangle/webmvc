@@ -18,9 +18,9 @@
 package org.beangle.webmvc.support
 
 import org.beangle.commons.lang.Strings
+import org.beangle.webmvc.*
 import org.beangle.webmvc.annotation.ignore
 import org.beangle.webmvc.view.{ForwardActionView, PathView, RedirectActionView, View}
-import org.beangle.webmvc.*
 
 trait RouteSupport extends MessageSupport {
 
@@ -96,6 +96,11 @@ trait RouteSupport extends MessageSupport {
   @ignore
   protected final def redirect(method: String, params: String, message: String): View = {
     redirect(to(this, method, params), message)
+  }
+
+  @ignore
+  protected final def redirect(action: To): View = {
+    new RedirectActionView(action)
   }
 
   @ignore

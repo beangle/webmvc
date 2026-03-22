@@ -18,9 +18,18 @@
 package org.beangle.webmvc.support
 
 import org.beangle.webmvc.execution.ResultException
-import org.beangle.webmvc.view.RawView
+import org.beangle.webmvc.view.{StatusView, RawView}
 
 abstract class ActionSupport extends RouteSupport, ParamSupport {
+
+  protected def ok(body: Any): StatusView = {
+    StatusView(200, body)
+  }
+
+  protected def ok(code: Int, body: Any): StatusView = {
+    StatusView(code, body)
+  }
+
   protected def raw(data: Any): RawView = {
     RawView(data)
   }

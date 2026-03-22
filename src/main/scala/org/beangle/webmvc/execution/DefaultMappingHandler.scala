@@ -26,7 +26,7 @@ import org.beangle.web.servlet.intercept.Interceptor
 import org.beangle.web.servlet.resource.PathResolver
 import org.beangle.webmvc.config.{ActionMapping, RouteMapping}
 import org.beangle.webmvc.context.ActionContext
-import org.beangle.webmvc.view.{PathView, View, ViewManager}
+import org.beangle.webmvc.view.*
 
 import java.io.ByteArrayOutputStream
 
@@ -58,26 +58,33 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
         try {
           result = invoker.invoke()
         } catch {
-          case e: ResultException =>
-            response.setStatus(e.code)
-            result = e.result
+          case e: ResultException => result = StatusView(e.code, e.result)
           case e => throw e
         }
         val flash = context.getFlash(false)
         if (null != flash) flash.writeNextToCookie()
-        val view = result match {
-          case null => null
-          case PathView(path) =>
-            val viewName = if (null == path) mapping.defaultView else path
-            if (DynaProfile.get.nonEmpty) {
-              resolveView(viewName, action)
-            } else {
-              action.views.get(viewName) match
-                case Some(v) => v
-                case None => resolveView(viewName, action)
+
+        var view: View = null
+        result match {
+          case v: View =>
+            // 按照最有可能的顺序进行罗列
+            v match {
+              case PathView(path) =>
+                val viewName = if (null == path) mapping.defaultView else path
+                view =
+                  if (DynaProfile.get.nonEmpty) {
+                    resolveView(viewName, action)
+                  } else {
+                    action.views.get(viewName) match
+                      case Some(v) => v
+                      case None => resolveView(viewName, action)
+                  }
+              case dv: StatusView => response.setStatus(dv.status); result = dv.body
+              case sv: StreamView => StreamViewRender.render(sv, context); result = null
+              case rv: RawView => RawViewRender.render(rv, context); result = null
+              case _ => view = v
             }
-          case view: View => view
-          case _ => null
+          case _ =>
         }
 
         if (null != view) {
