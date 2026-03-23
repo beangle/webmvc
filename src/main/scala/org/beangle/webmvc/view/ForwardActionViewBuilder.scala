@@ -25,7 +25,7 @@ import org.beangle.webmvc.annotation.view
 class ForwardActionViewBuilder extends TypeViewBuilder {
 
   override def build(view: view): View = {
-    new ForwardActionView(To(view.location, null))
+    new ForwardActionView(To(view.location, Map.empty))
   }
 
   override def supportViewType: String = {

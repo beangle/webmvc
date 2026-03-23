@@ -29,25 +29,27 @@ object To {
     new ToClass(obj.getClass, method)
   }
 
-  def apply(clazz: Class[_], method: String, params: String): ToClass = {
+  def apply(clazz: Class[_], method: String, params: collection.Map[String, Any]): ToClass = {
     new ToClass(clazz, method).params(params)
   }
 
-  def apply(obj: Object, method: String, params: String): ToClass = {
+  def apply(obj: Object, method: String, params: collection.Map[String, Any]): ToClass = {
     new ToClass(obj.getClass, method).params(params)
   }
 
-  def apply(uri: String, params: String): ToURI = {
+  def apply(uri: String, params: collection.Map[String, Any]): ToURI = {
     val idx = indexOfURI(uri)
     val rs = ToURI(idx.uri)
     rs.suffix(idx.suffix)
-    rs.params(params)
+    if (null != params) {
+      rs.params(params)
+    }
     rs.params(idx.queryString)
   }
 
-  def apply(url: String): To = {
-    require(url.startsWith("http:") || url.startsWith("https:"))
-    new ToURL(url)
+  def url(u: String): ToURL = {
+    assert(u.startsWith("http:") || u.startsWith("https:"))
+    ToURL(u)
   }
 
   /**
@@ -110,11 +112,12 @@ trait ToBuilder extends To {
     this
   }
 
-  def params(newParams: collection.Map[String, String]): this.type = {
-    parameters ++= newParams
+  def params(newParams: collection.Map[String, Any]): this.type = {
+    parameters ++= newParams.map(x => (x._1, x._2.toString))
     this
   }
 
+  @deprecated("using params with k,v")
   def params(paramStr: String): this.type = {
     if (Strings.isNotEmpty(paramStr)) {
       val paramPairs = Strings.split(paramStr, "&")

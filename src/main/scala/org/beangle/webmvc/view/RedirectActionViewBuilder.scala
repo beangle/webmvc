@@ -25,7 +25,7 @@ import org.beangle.webmvc.annotation.view
 class RedirectActionViewBuilder extends TypeViewBuilder {
 
   override def build(view: view): View = {
-    new RedirectActionView(To(view.location, null))
+    new RedirectActionView(To(view.location, Map.empty))
   }
 
   override def supportViewType: String = {

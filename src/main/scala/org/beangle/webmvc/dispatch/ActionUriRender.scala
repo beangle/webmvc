@@ -50,7 +50,7 @@ class DefaultActionUriRender extends ActionUriRender {
     var suffix: String = null
     val mapping =
       if (uri.charAt(0) == '!') {
-        val touri = To(uri, null)
+        val touri = To(uri, Map.empty)
         suffix = touri.suffix
         params = touri.parameters
         router.action.mappings(touri.uri.substring(1))

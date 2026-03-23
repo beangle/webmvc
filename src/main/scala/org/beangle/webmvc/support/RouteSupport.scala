@@ -55,7 +55,7 @@ trait RouteSupport extends MessageSupport {
   }
 
   @ignore
-  protected final def to(obj: Object, method: String, params: String): ToClass = {
+  protected final def to(obj: Object, method: String, params: collection.Map[String, Any]): ToClass = {
     new ToClass(obj.getClass, method).params(params)
   }
 
@@ -65,21 +65,21 @@ trait RouteSupport extends MessageSupport {
   }
 
   @ignore
-  protected final def to(clazz: Class[_], method: String, params: String): ToClass = {
+  protected final def to(clazz: Class[_], method: String, params: collection.Map[String, Any]): ToClass = {
     new ToClass(clazz, method).params(params)
   }
 
   @ignore
-  protected final def to(uri: String, params: String): ToURI = {
+  protected final def to(uri: String, params: Map[String, Any]): ToURI = {
     To(uri, params)
   }
 
   @ignore
   protected final def to(uri: String): To = {
     if (uri.startsWith("http:") || uri.startsWith("https:")) {
-      To(uri)
+      To.url(uri)
     } else {
-      To(uri, null)
+      To(uri, Map.empty)
     }
   }
 
@@ -94,7 +94,7 @@ trait RouteSupport extends MessageSupport {
   }
 
   @ignore
-  protected final def redirect(method: String, params: String, message: String): View = {
+  protected final def redirect(method: String, params: collection.Map[String,Any], message: String): View = {
     redirect(to(this, method, params), message)
   }
 

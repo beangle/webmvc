@@ -25,22 +25,22 @@ class ToTest extends AnyFunSpec with Matchers {
 
   describe("ToBuilder") {
     it("correct analysis uri") {
-      var touri = To("/a/b/c.html?p1=1&p2=2", null)
+      var touri = To("/a/b/c.html?p1=1&p2=2", Map.empty)
       assert(touri.suffix == ".html")
       assert(touri.uri == "/a/b/c")
       assert(touri.parameters.size == 2)
 
-      touri = To("/a/b.c/d.xml?p1=1", null)
+      touri = To("/a/b.c/d.xml?p1=1", Map.empty)
       assert(touri.suffix == ".xml")
       assert(touri.uri == "/a/b.c/d")
       assert(touri.parameters.size == 1)
 
-      touri = To("!info?orderBy=user.code", null)
+      touri = To("!info?orderBy=user.code", Map.empty)
       assert(touri.suffix == null)
       assert(touri.uri == "!info")
       assert(touri.parameters.size == 1)
 
-      touri = To("a.b/c?p1=1", null)
+      touri = To("a.b/c?p1=1", Map.empty)
       assert(touri.suffix == null)
       assert(touri.uri == "a.b/c")
       assert(touri.parameters.size == 1)
