@@ -53,9 +53,10 @@ class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandl
     mapper.resolve(servletPath, request) match {
       case Some(hh) =>
         val handler = hh.handler
+        var ctx: ActionContext = null
         try {
           if (handler.isInstanceOf[ContextAwareHandler]) {
-            val ctx = actionContextBuilder.build(request, response, handler, hh.params)
+            ctx = actionContextBuilder.build(request, response, handler, hh.params)
             ActionContext.runWith(ctx) {
               try {
                 handler.handle(request, response)
@@ -67,7 +68,14 @@ class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandl
             handler.handle(request, response)
           }
         } catch {
-          case e: Exception => exceptionHandler.handle(request, response, handler, e)
+          case e: Exception =>
+            if (null == ctx) {
+              exceptionHandler.handle(request, response, handler, e)
+            } else {
+              ActionContext.runWith(ctx) {
+                exceptionHandler.handle(request, response, handler, e)
+              }
+            }
         }
       case None => handleUnknown(servletPath, request, response)
     }

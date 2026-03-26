@@ -26,6 +26,7 @@ import org.beangle.webmvc.execution.{Handler, MappingHandler}
 
 import java.lang.ScopedValue
 import java.util as ju
+import java.util.concurrent.atomic.AtomicReference
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
@@ -34,7 +35,12 @@ object ActionContext {
 
   /** Execute body with the given context as the current ActionContext. */
   def runWith[A](context: ActionContext)(body: => A): A = {
-    ScopedValue.where(contextScope, context).call(() => body)
+    val result = AtomicReference[A]
+    //dont using call,for it was changed in JDK25
+    ScopedValue.where(contextScope, context).run { () =>
+      result.set(body)
+    }
+    result.get
   }
 
   def current: ActionContext = contextScope.get()
