@@ -73,7 +73,15 @@ object Static {
   private def buildResource(mvc: Node): List[Resource] = {
     val rss = Collections.newBuffer[Resource]
     (mvc \ "static" \ "bundle") foreach { e =>
-      val bundle = new Resource((e \ "@name").text, (e \ "@version").text)
+      var version = (e \ "@version").text
+      if (version.startsWith("${") && version.endsWith("}")) {
+        val v2 = System.getProperty(Strings.substringBetween(version, "${", "}"))
+        if (v2 == null) {
+          throw new RuntimeException(s"Cannot find system property ${version}")
+        }
+        version = v2
+      }
+      val bundle = new Resource((e \ "@name").text, version)
       val modules = Collections.newBuffer[Module]
       e \ "module" foreach { m =>
 
