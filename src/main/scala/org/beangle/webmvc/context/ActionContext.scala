@@ -19,6 +19,7 @@ package org.beangle.webmvc.context
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.activation.MediaType
+import org.beangle.commons.lang.ScopedContext
 import org.beangle.commons.text.i18n.TextResource
 import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.context.ActionContext.*
@@ -31,19 +32,9 @@ import scala.collection.mutable
 import scala.reflect.ClassTag
 
 object ActionContext {
-  private val contextScope: ScopedValue[ActionContext] = ScopedValue.newInstance()
+  val key = ScopedContext.Key[ActionContext]("beangle.webmvc.action-context")
 
-  /** Execute body with the given context as the current ActionContext. */
-  def runWith[A](context: ActionContext)(body: => A): A = {
-    val result = AtomicReference[A]
-    //dont using call,for it was changed in JDK25
-    ScopedValue.where(contextScope, context).run { () =>
-      result.set(body)
-    }
-    result.get
-  }
-
-  def current: ActionContext = contextScope.get()
+  def current: ActionContext = ScopedContext.get(key).get
 
   val LocalKey = "_beangle_web_local"
   val FlashKey = "_beangle_web_flash"

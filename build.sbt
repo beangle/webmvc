@@ -23,7 +23,7 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
-val beangle_commons = "org.beangle.commons" % "beangle-commons" % "6.0.17"
+val beangle_commons = "org.beangle.commons" % "beangle-commons" % "6.1.0-SNAPSHOT"
 val beangle_web = "org.beangle.web" % "beangle-web" % "0.7.6"
 val beangle_template = "org.beangle.template" % "beangle-template" % "0.2.5"
 

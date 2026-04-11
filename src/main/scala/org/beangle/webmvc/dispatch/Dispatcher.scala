@@ -19,7 +19,7 @@ package org.beangle.webmvc.dispatch
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import jakarta.servlet.{GenericServlet, ServletConfig, ServletRequest, ServletResponse}
-import org.beangle.commons.lang.Strings
+import org.beangle.commons.lang.{ScopedContext, Strings}
 import org.beangle.web.servlet.multipart.StandardMultipartResolver
 import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.config.{Buildable, Configurator}
@@ -57,7 +57,7 @@ class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandl
         try {
           if (handler.isInstanceOf[ContextAwareHandler]) {
             ctx = actionContextBuilder.build(request, response, handler, hh.params)
-            ActionContext.runWith(ctx) {
+            ScopedContext.runWith(ActionContext.key -> ctx) {
               try {
                 handler.handle(request, response)
               } finally {
@@ -72,7 +72,7 @@ class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandl
             if (null == ctx) {
               exceptionHandler.handle(request, response, handler, e)
             } else {
-              ActionContext.runWith(ctx) {
+              ScopedContext.runWith(ActionContext.key -> ctx) {
                 exceptionHandler.handle(request, response, handler, e)
               }
             }
