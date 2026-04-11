@@ -18,7 +18,7 @@
 package org.beangle.webmvc.context
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
-import org.beangle.commons.lang.Strings
+import org.beangle.commons.lang.{ScopedContext, Strings}
 import org.mockito.Mockito.mock
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -33,7 +33,7 @@ class ParamsTest extends AnyFunSpec, Matchers {
       val response = mock(classOf[HttpServletResponse])
 
       val context = new ActionContext(request, response, null, params, List.empty)
-      ActionContext.runWith(context) {
+      ScopedContext.runWith(ActionContext.key -> context) {
         assert(Params.getInt("x").isEmpty)
         assert(Params.getInt("y").isEmpty)
         assert(Params.getInt("z").contains(1))

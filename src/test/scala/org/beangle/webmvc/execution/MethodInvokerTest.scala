@@ -18,6 +18,7 @@
 package org.beangle.webmvc.execution
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
+import org.beangle.commons.lang.ScopedContext
 import org.beangle.webmvc.config.{DefaultActionMappingBuilder, Profile}
 import org.beangle.webmvc.context.ActionContext
 import org.beangle.webmvc.test.ShowcaseAction
@@ -45,7 +46,7 @@ class MethodInvokerTest extends AnyFunSpec, Matchers {
     val action = new ShowcaseAction
     val builder = new DynaMethodInvokerBuilder
     it("invoke method") {
-      ActionContext.runWith(ctx) {
+      ScopedContext.runWith(ActionContext.key -> ctx) {
         var invoker = builder.build(action, mappings("string"))
         assert(invoker.invoke() == PathView(null))
 
