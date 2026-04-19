@@ -24,7 +24,6 @@ import org.beangle.web.servlet.multipart.StandardMultipartResolver
 import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.config.{Buildable, Configurator}
 import org.beangle.webmvc.context.{ActionContext, ActionContextBuilder}
-import org.beangle.webmvc.execution.ContextAwareHandler
 import org.beangle.webmvc.util.Resources
 
 class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandler: ExceptionHandler,
@@ -53,29 +52,15 @@ class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandl
     mapper.resolve(servletPath, request) match {
       case Some(hh) =>
         val handler = hh.handler
-        var ctx: ActionContext = null
-        try {
-          if (handler.isInstanceOf[ContextAwareHandler]) {
-            ctx = actionContextBuilder.build(request, response, handler, hh.params)
-            ScopedContext.runWith(ActionContext.key -> ctx) {
-              try {
-                handler.handle(request, response)
-              } finally {
-                StandardMultipartResolver.cleanup(request)
-              }
-            }
-          } else {
+        val ctx = actionContextBuilder.build(request, response, handler, hh.params)
+        ScopedContext.runWith(ActionContext.key -> ctx) {
+          try {
             handler.handle(request, response)
+          } catch {
+            case e: Exception => exceptionHandler.handle(request, response, handler, e)
+          } finally {
+            if ctx.multipart then StandardMultipartResolver.cleanup(request)
           }
-        } catch {
-          case e: Exception =>
-            if (null == ctx) {
-              exceptionHandler.handle(request, response, handler, e)
-            } else {
-              ScopedContext.runWith(ActionContext.key -> ctx) {
-                exceptionHandler.handle(request, response, handler, e)
-              }
-            }
         }
       case None => handleUnknown(servletPath, request, response)
     }

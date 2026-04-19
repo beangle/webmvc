@@ -46,11 +46,13 @@ class DefaultActionContextBuilder(properties: List[ActionContextProperty]) exten
       else params.put(paramEntry.getKey, values)
     }
 
+    var multipart = false
     if (StandardMultipartResolver.isMultipart(request)) {
+      multipart = true
       params ++= StandardMultipartResolver.resolve(request)
     }
 
     params ++= params2
-    new ActionContext(request, response, handler, params, properties)
+    new ActionContext(request, response, handler, params, multipart, properties)
   }
 }

@@ -26,8 +26,6 @@ trait Handler {
   def handle(request: HttpServletRequest, response: HttpServletResponse): Unit
 }
 
-trait ContextAwareHandler extends Handler
-
-trait MappingHandler extends ContextAwareHandler {
+trait MappingHandler extends Handler {
   def mapping: RouteMapping
 }

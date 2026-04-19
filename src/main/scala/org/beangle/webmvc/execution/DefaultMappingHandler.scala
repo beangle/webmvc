@@ -37,7 +37,7 @@ import java.io.ByteArrayOutputStream
 @description("缺省的调用处理器")
 class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
                             viewManager: ViewManager,
-                            responseCache: ResponseCache) extends MappingHandler, ContextAwareHandler {
+                            responseCache: ResponseCache) extends MappingHandler {
 
   override def handle(request: HttpServletRequest, response: HttpServletResponse): Unit = {
     val action = mapping.action

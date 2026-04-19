@@ -25,9 +25,7 @@ import org.beangle.webmvc.config.RouteMapping
 import org.beangle.webmvc.context.ActionContext.*
 import org.beangle.webmvc.execution.{Handler, MappingHandler}
 
-import java.lang.ScopedValue
 import java.util as ju
-import java.util.concurrent.atomic.AtomicReference
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
@@ -43,7 +41,7 @@ object ActionContext {
 }
 
 final class ActionContext(val request: HttpServletRequest, val response: HttpServletResponse,
-                          val handler: Handler, val params: collection.Map[String, Any],
+                          val handler: Handler, val params: collection.Map[String, Any], val multipart: Boolean,
                           private val properties: List[ActionContextProperty]) {
 
   private val stash = new mutable.HashMap[String, Any]
