@@ -32,7 +32,7 @@ class ParamsTest extends AnyFunSpec, Matchers {
       val request = mock(classOf[HttpServletRequest])
       val response = mock(classOf[HttpServletResponse])
 
-      val context = new ActionContext(request, response, null, params, List.empty)
+      val context = new ActionContext(request, response, null, params, false, List.empty)
       ScopedContext.runWith(ActionContext.key -> context) {
         assert(Params.getInt("x").isEmpty)
         assert(Params.getInt("y").isEmpty)
