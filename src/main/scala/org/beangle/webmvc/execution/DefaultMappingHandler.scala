@@ -44,7 +44,7 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     if (mapping.cacheable) {
       responseCache.get(request) match {
         case Some(cr) =>
-          writeToResponse(response, cr.contentType, cr.data, Some(15))
+          writeToResponse(response, cr.contentType, cr.data,15)
           return
         case None =>
       }
@@ -100,11 +100,12 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
             mimeType = mimeTypes.next()
             serializer = viewManager.getSerializer(mimeType)
           }
+
+          response.setCharacterEncoding("UTF-8")
+
           if (null == serializer) {
-            response.setCharacterEncoding("UTF-8")
             response.getWriter.write(result.toString)
           } else {
-            response.setCharacterEncoding("UTF-8")
             val contentType = mimeType.toString + "; charset=UTF-8"
             val params = new collection.mutable.HashMap[String, Any]
             val enm = request.getAttributeNames
@@ -119,9 +120,9 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
 
             if (context.handler.asInstanceOf[MappingHandler].mapping.cacheable) {
               responseCache.put(request, contentType, bytes)
-              writeToResponse(response, contentType, bytes, Some(15))
+              writeToResponse(response, contentType, bytes, 15)
             } else {
-              writeToResponse(response, contentType, bytes, None)
+              writeToResponse(response, contentType, bytes, 0)
             }
           }
         }
@@ -150,15 +151,15 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     }
   }
 
-  private def writeToResponse(res: HttpServletResponse, contentType: String, data: Array[Byte], maxAgeSecond: Option[Int]): Unit = {
+  private def writeToResponse(res: HttpServletResponse, contentType: String, data: Array[Byte], maxAgeSecond: Int): Unit = {
     res.setContentType(contentType)
     res.setContentLength(data.length)
-    maxAgeSecond foreach { maxAge =>
-      if (maxAge <= 0) {
-        res.addHeader("Cache-Control", "no-store")
-      } else {
-        res.addHeader("Cache-Control", s"public,s-maxage=${maxAge}")
-      }
+    if (maxAgeSecond <= 0) {
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
+      res.setHeader("Pragma", "no-cache"); // 兼容 HTTP/1.0
+      res.setHeader("Expires", "0"); // 兼容 HTTP/1.0
+    } else {
+      res.addHeader("Cache-Control", s"public,s-maxage=${maxAgeSecond}")
     }
     res.getOutputStream.write(data)
   }

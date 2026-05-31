@@ -59,7 +59,7 @@ class CorsInterceptor extends Interceptor with Initializing {
   var allowedHeaders: Set[String] = Set("X-Requested-With", "Content-Type", "Accept", "Origin")
   var exposedHeaders: Set[String] = Set.empty[String]
   var preflightMaxAge: Int = 1800 //30min
-  var allowCredentials = false
+  var allowCredentials = true
   var chainPreflight = true
 
   def init(): Unit = {
@@ -89,7 +89,10 @@ class CorsInterceptor extends Interceptor with Initializing {
   private def handleSimpleCors(req: HttpServletRequest, res: HttpServletResponse, origin: String): Boolean = {
     if (anyOriginAllowed && !allowCredentials) res.addHeader(AllowOriginHeader, AnyOrigin)
     else res.addHeader(AllowOriginHeader, origin)
-    if (allowCredentials) res.setHeader(AllowCredentialsHeader, "true")
+    if (allowCredentials) {
+      res.setHeader(AllowCredentialsHeader, "true")
+      res.setHeader("Vary", "Origin")
+    }
     if (exposedHeaders.nonEmpty) res.setHeader(ExposeHeadersHeader, exposedHeaders.mkString(","))
     true
   }

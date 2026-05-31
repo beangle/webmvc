@@ -18,9 +18,11 @@
 package org.beangle.webmvc.dispatch
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
+import org.beangle.commons.activation.MediaTypes
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.collection.Collections
 import org.beangle.commons.config.Enviroment
+import org.beangle.commons.json.JsonObject
 import org.beangle.commons.lang.{Primitives, Strings}
 import org.beangle.commons.text.escape.JavascriptEscaper
 import org.beangle.web.servlet.http.accept.ContentNegotiationManager
@@ -94,6 +96,19 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
     sb.append("}")
     sb.toString()
   }
+
+  protected def toJsonApi(attrs: collection.Map[String, Any]): String = {
+    val error = new JsonObject()
+    error.add("status", 500)
+    error.add("title", attrs.getOrElse("message", "unknown error"))
+    attrs.foreach { case (k, v) =>
+      if k != "trace" || devMode then error.add(k, v)
+    }
+    val rs = new JsonObject()
+    rs.add("errors", List(error))
+    rs.toString
+  }
+
 
   private def xmlValue(v: Any): String = {
     v match {
@@ -208,11 +223,13 @@ class DefaultExceptionHandler extends AbstractExceptionHandler {
       logError(attrs, ex)
       report(attrs, ex)
     }
-    val mediaType = contentNegotiationManager.resolve(request).headOption.map(_.toString).getOrElse("text/html")
-    response.setContentType(mediaType)
-    if (mediaType.contains("json")) {
+    val mediaType = contentNegotiationManager.resolve(request).headOption.getOrElse(MediaTypes.html)
+    response.setContentType(mediaType.toString)
+    if (mediaType == MediaTypes.jsonApi) {
+      response.getWriter.write(toJsonApi(attrs))
+    } else if (mediaType == MediaTypes.json) {
       response.getWriter.write(toJson(attrs))
-    } else if (mediaType.contains("xml")) {
+    } else if (mediaType == MediaTypes.xml) {
       response.getWriter.write(toXml(attrs))
     } else {
       response.getWriter.write(toHtml(attrs, request))
