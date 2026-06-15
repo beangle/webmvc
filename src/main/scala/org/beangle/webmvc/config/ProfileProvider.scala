@@ -36,14 +36,15 @@ class XmlProfileProvider extends ProfileProvider {
 
   private val defaultProfile = loadDefaultProfile()
 
-  var configLocation:String="classpath*:beangle.xml"
+  var xmlConfigs: XmlConfigs = _
+  var configLocation: String = "classpath*:beangle.xml"
 
   /**
    * 初始化配置META-INF/
    */
   def loadProfiles(): List[ProfileConfig] = {
     val profiles = new collection.mutable.ListBuffer[ProfileConfig]
-    XmlConfigs.load(configLocation) \ "mvc" foreach { elem =>
+    xmlConfigs.load(configLocation) \ "mvc" foreach { elem =>
       profiles ++= readXmlToProfiles(elem)
     }
     profiles.toList

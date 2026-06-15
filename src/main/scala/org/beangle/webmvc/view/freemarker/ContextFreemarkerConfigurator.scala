@@ -19,14 +19,16 @@ package org.beangle.webmvc.view.freemarker
 
 import freemarker.cache.{MultiTemplateLoader, TemplateLoader}
 import freemarker.template.ObjectWrapper
+import jakarta.servlet.ServletContext
 import org.beangle.commons.lang.Strings.{split, substringAfter}
 import org.beangle.template.freemarker.{Configurator, ProfileTemplateLoader}
-import org.beangle.web.servlet.context.ServletContextHolder
 
 /**
  * @author chaostone
  */
 class ContextFreemarkerConfigurator extends Configurator {
+
+  var servletContext: ServletContext = _
 
   override def createObjectWrapper(props: Map[String, String]): ObjectWrapper = {
     val wrapper = new ContextObjectWrapper()
@@ -35,7 +37,6 @@ class ContextFreemarkerConfigurator extends Configurator {
   }
 
   protected override def detectTemplatePath(props: Map[String, String]): String = {
-    if null == templatePath then templatePath = ServletContextHolder.context.getInitParameter("templatePath")
     if null == templatePath then templatePath = props.getOrElse("template_path", "class://")
     if null == templatePath then templatePath = "class://"
     templatePath
@@ -46,7 +47,7 @@ class ContextFreemarkerConfigurator extends Configurator {
     val loaders = new collection.mutable.ListBuffer[TemplateLoader]
     for (path <- paths) {
       if (path.startsWith("webapp://")) {
-        loaders += new WebappTemplateLoader(ServletContextHolder.context, substringAfter(path, "webapp://"))
+        loaders += new WebappTemplateLoader(servletContext, substringAfter(path, "webapp://"))
       } else {
         loaders += super.buildLoader(path)
       }

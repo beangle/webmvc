@@ -1,9 +1,5 @@
 <?xml version="1.0"?>
 <beangle>
-  <web>
-    <initializer class="org.beangle.webmvc.init.WebmvcInitializer"/>
-  </web>
-
   <cdi>
     <module class="org.beangle.webmvc.DefaultModule"/>
     <module class="org.beangle.webmvc.ViewModule"/>

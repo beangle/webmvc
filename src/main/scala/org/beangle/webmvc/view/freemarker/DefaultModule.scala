@@ -28,11 +28,8 @@ object DefaultModule extends BindModule {
     bind("mvc.ActionContextProperty.component", classOf[ComponentContextProperty])
     //config
     bind("mvc.TagTemplateEngine.freemarker", classOf[DefaultTagTemplateEngine])
-      .property("devMode", devEnabled)
-
     //template
     bind("mvc.FreemarkerConfigurator.default", classOf[ContextFreemarkerConfigurator])
-      .property("devMode", devEnabled)
     bind("mvc.TemplateResolver.freemarker", classOf[HierarchicalTemplateResolver])
     bind("mvc.ViewResolver.freemarker", classOf[FreemarkerViewResolver])
     bind("mvc.ViewRender.freemarker", classOf[FreemarkerViewRender])

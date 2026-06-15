@@ -15,16 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.beangle.webmvc.view
+package org.beangle.webmvc.asset
 
 import org.beangle.commons.collection.Collections
-import org.beangle.commons.config.XmlConfigs
-import org.beangle.commons.lang.{ClassLoaders, Strings}
-import org.beangle.commons.xml.{Document, Node}
+import org.beangle.commons.lang.Strings
 
 object Static {
-
-  private val defaultConfigLocation = "classpath*:beangle.xml"
 
   class Resource(val name: String, val version: String) {
     var modules: Seq[Module] = _
@@ -55,58 +51,13 @@ object Static {
     }
   }
 
-  val Default: Static = buildDefault()
-
-  def buildDefault(): Static = {
-    val rs = new Static
-    ClassLoaders.getResource("META-INF/beangle/mvc-default.xml") foreach { url =>
-      (Document.parse(url) \ "mvc") foreach { mvc =>
-        rs.addResources(buildResource(mvc))
-      }
-    }
-    (XmlConfigs.load(defaultConfigLocation) \ "mvc") foreach { mvc =>
-      rs.addResources(buildResource(mvc))
-    }
-    rs
-  }
-
-  private def buildResource(mvc: Node): List[Resource] = {
-    val rss = Collections.newBuffer[Resource]
-    (mvc \ "static" \ "bundle") foreach { e =>
-      var version = (e \ "@version").text
-      if (version.startsWith("${") && version.endsWith("}")) {
-        val v2 = System.getProperty(Strings.substringBetween(version, "${", "}"))
-        if (v2 == null) {
-          throw new RuntimeException(s"Cannot find system property ${version}")
-        }
-        version = v2
-      }
-      val bundle = new Resource((e \ "@name").text, version)
-      val modules = Collections.newBuffer[Module]
-      e \ "module" foreach { m =>
-
-        var js: Option[String] = None
-        (m \ "@js") foreach { jsele =>
-          js = Some(jsele.text)
-        }
-        val css = (m \ "@css").text
-        val depends = (m \ "@depends").text
-        modules += Module(bundle, (m \ "@name").text, js, Strings.split(css), Strings.split(depends))
-      }
-      bundle.modules = modules.toList
-      rss += bundle
-    }
-    rss.toList
-  }
 }
 
-class Static {
+class Static(val base: String) {
 
   import Static.Resource
 
   private val registry = Collections.newMap[String, Resource]
-
-  var base: String = _
 
   var modules: Map[String, Static.Module] = Map.empty
 
@@ -159,11 +110,10 @@ class Static {
   }
 
   def load(moduleNames: java.util.List[String]): String = {
-    val modules = Static.Default.modules
     val csses = Collections.newBuffer[String]
     val scripts = Collections.newBuffer[String]
     scala.jdk.javaapi.CollectionConverters.asScala(moduleNames).foreach { moduleName =>
-      modules.get(moduleName) foreach { m =>
+      this.modules.get(moduleName) foreach { m =>
         m.css foreach { css =>
           csses += this.css(m.bundle.name, css)
         }
@@ -182,10 +132,10 @@ class Static {
 
   def module_contents: collection.Map[String, String] = {
     val contents = Collections.newMap[String, String]
-    val modules = Static.Default.modules
-    modules foreach { case (n, m) =>
+    this.modules foreach { case (n, m) =>
       contents += n -> m.toString
     }
     contents
   }
+
 }

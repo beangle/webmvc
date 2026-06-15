@@ -43,7 +43,7 @@ object Resources {
         notfound(response, path)
       } else {
         val ext = substringAfterLast(url.getFile, ".")
-        if (isNotEmpty(ext)) MediaTypes.get(ext) foreach (m => response.setContentType(m.toString))
+        if (isNotEmpty(ext)) MediaTypes.Defaults.get(ext) foreach (m => response.setContentType(m.toString))
         IOs.copy(is, response.getOutputStream)
       }
     }

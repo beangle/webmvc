@@ -18,6 +18,7 @@
 package org.beangle.webmvc.view.tag
 
 import org.beangle.template.api.{ComponentContext, IndexableIdGenerator, TagTemplateEngine}
+import org.beangle.webmvc.asset.Static
 import org.beangle.webmvc.context.{ActionContext, ActionContextProperty}
 import org.beangle.webmvc.dispatch.ActionUriRender
 import org.beangle.webmvc.view.tag.ComponentContextProperty.ComponentContextKey
@@ -29,6 +30,7 @@ object ComponentContextProperty {
 class ComponentContextProperty extends ActionContextProperty {
   var uriRender: ActionUriRender = _
   var tagTemplateEngine: TagTemplateEngine = _
+  var staticResoruce: Static = _
 
   override def get(context: ActionContext): Any = {
     val textResource = context.textResource
@@ -36,7 +38,7 @@ class ComponentContextProperty extends ActionContextProperty {
     val queryString = req.getQueryString
     val fullpath = if (null == queryString) req.getRequestURI else req.getRequestURI + queryString
     val idGenerator = new IndexableIdGenerator(String.valueOf(Math.abs(fullpath.hashCode)))
-    val services = Map("uriRender" -> uriRender)
+    val services = Map("uriRender" -> uriRender, "static" -> staticResoruce)
     new ComponentContext(tagTemplateEngine, idGenerator, textResource, services)
   }
 

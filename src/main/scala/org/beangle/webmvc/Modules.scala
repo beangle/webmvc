@@ -22,6 +22,7 @@ import org.beangle.commons.config.profile
 import org.beangle.commons.io.DefaultBinarySerializer
 import org.beangle.commons.text.i18n.{DefaultTextBundleLoader, DefaultTextFormatter}
 import org.beangle.web.servlet.http.accept.ContentNegotiationManagerFactory
+import org.beangle.webmvc.asset.{StaticFactory, StaticResourceRouteProvider}
 import org.beangle.webmvc.config.{ActionMappingBuilder, DefaultActionMappingBuilder, DefaultConfigurator, XmlProfileProvider}
 import org.beangle.webmvc.context.*
 import org.beangle.webmvc.dispatch.*
@@ -68,9 +69,11 @@ object DefaultModule extends BindModule {
     //security
     bind("web.RequestConvertor.mvc", classOf[MvcRequestConvertor])
 
-    bind("Serializer.bin", DefaultBinarySerializer)
+    bind("Serializer.bin", new DefaultBinarySerializer)
+
     //static
     bind(classOf[StaticResourceRouteProvider])
+    bind(classOf[StaticFactory]).property("base",$("beangle.webmvc.static_base:-"))
   }
 }
 

@@ -109,7 +109,6 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
     rs.toString
   }
 
-
   private def xmlValue(v: Any): String = {
     v match {
       case null => ""
