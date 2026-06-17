@@ -21,7 +21,7 @@ import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.activation.MediaTypes
 import org.beangle.commons.bean.Initializing
 import org.beangle.commons.collection.Collections
-import org.beangle.commons.config.Enviroment
+import org.beangle.commons.config.Environment
 import org.beangle.commons.json.JsonObject
 import org.beangle.commons.lang.{Primitives, Strings}
 import org.beangle.commons.text.escape.JavascriptEscaper
@@ -51,7 +51,7 @@ abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
   )
 
   override def init(): Unit = {
-    devMode = Enviroment.isDevMode
+    devMode = Environment.isDevMode
   }
 
   def getErrorAttributes(request: HttpServletRequest, ex: Exception): collection.Map[String, Any] = {

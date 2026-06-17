@@ -23,9 +23,9 @@ ThisBuild / developers := List(
 ThisBuild / description := "The Beangle WebMVC Library"
 ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
 
-val beangle_commons = "org.beangle.commons" % "beangle-commons" % "6.2.0"
+val beangle_commons = "org.beangle.commons" % "beangle-commons" % "6.2.1"
 val beangle_web = "org.beangle.web" % "beangle-web" % "0.7.8"
-val beangle_template = "org.beangle.template" % "beangle-template" % "0.2.7"
+val beangle_template = "org.beangle.template" % "beangle-template" % "0.2.8"
 
 lazy val root = (project in file("."))
   .settings(
