@@ -25,5 +25,5 @@ trait RequestMapper {
 
   def resolve(uri: String, request: HttpServletRequest): Option[HandlerHolder]
 
-  def resolve(uri: String): Option[HandlerHolder]
+  def resolve(uri: String, method: String): Option[HandlerHolder]
 }

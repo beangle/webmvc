@@ -48,9 +48,9 @@ class DefaultRouteProvider extends RouteProvider {
           case (_, mapping) =>
             val cache = responseCache.getOrElse(EmptyResponseCache)
             val handler = new DefaultMappingHandler(mapping, invokerBuilder.build(am.action, mapping), viewManager, cache)
-            results += Route(mapping.httpMethod, mapping.url, handler)
+            results += Route(mapping.httpMethods, mapping.url, handler)
             stripTailIndex(mapping.url) foreach { short =>
-              results += Route(mapping.httpMethod, short, handler)
+              results += Route(mapping.httpMethods, short, handler)
             }
         }
     }

@@ -49,13 +49,13 @@ object RouteMapping {
     }
   }
 
-  def apply(httpMethod: String, action: ActionMapping, method: Method, name: String,
+  def apply(httpMethods: Set[String], action: ActionMapping, method: Method, name: String,
             arguments: Array[Argument], urlParams: Map[String, Integer], defaultView: String): RouteMapping = {
-    new RouteMapping(httpMethod, action, method, actionUrl(action, name), arguments, urlParams, defaultView, isCacheMethod(method))
+    new RouteMapping(httpMethods, action, method, actionUrl(action, name), arguments, urlParams, defaultView, isCacheMethod(method))
   }
 }
 
-class RouteMapping private(val httpMethod: String, val action: ActionMapping, val method: Method, val url: String,
+class RouteMapping private(val httpMethods: Set[String], val action: ActionMapping, val method: Method, val url: String,
                            val arguments: Array[Argument], val urlParams: Map[String, Integer], val defaultView: String,
                            val cacheable: Boolean) {
 
@@ -75,13 +75,13 @@ class RouteMapping private(val httpMethod: String, val action: ActionMapping, va
   }
 
   override def toString: String = {
-    (if (null == httpMethod) "*" else httpMethod) + " " + url + " " + action.clazz.getName + "." +
+    (if (null == httpMethods) "*" else httpMethods.mkString(",")) + " " + url + " " + action.clazz.getName + "." +
       method.getName + "(" + join(arguments, ",") + ")"
   }
 
   def toURL(paramMaps: collection.Map[String, Any]*): ToURI = {
     val ua = new ToURI(fill(paramMaps: _*))
-    RouteMapping.BrowserUnsupported.get(this.httpMethod) foreach { m =>
+    RouteMapping.BrowserUnsupported.get(this.httpMethods.head) foreach { m =>
       ua.param(RouteMapping.MethodParam, m)
     }
     ua

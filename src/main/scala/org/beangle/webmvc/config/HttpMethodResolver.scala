@@ -15,20 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.beangle.webmvc.annotation;
+package org.beangle.webmvc.config
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.beangle.commons.lang.Strings
+import org.beangle.commons.net.http.HttpMethods.*
 
-@Target({ ElementType.METHOD })
-@Retention(RetentionPolicy.RUNTIME)
-public @interface mapping {
+object HttpMethodResolver {
 
-  String value() default "";
+  private val methods = Map("get" -> GET, "post" -> POST, "head" -> HEAD, "options" -> OPTIONS,
+    "patch" -> "PATCH",
+    "put" -> PUT, "delete" -> DELETE, "trace" -> TRACE)
 
-  String methods() default "get,post";
+  def resolve(method: String): Option[String] = {
+    methods.get(method.toLowerCase())
+  }
 
-  String view() default "";
+  def resolveMulti(methods: String): Set[String] = {
+    Strings.split(methods, ",").flatMap(m => HttpMethodResolver.resolve(m)).toSet
+  }
 }

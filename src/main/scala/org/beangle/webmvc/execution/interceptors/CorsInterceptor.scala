@@ -37,7 +37,6 @@ object CorsInterceptor {
 
   val AnyOrigin = "*"
   val ComplexHttpMethods: Set[String] = Set("PUT", "DELETE", "TRACE", "CONNECT")
-  val SimpleHttpContentTypes: Set[String] = Set("application/x-www-form-urlencoded", "multipart/form-data", "text/plain")
 }
 
 object CORSRequestType {
@@ -55,12 +54,12 @@ class CorsInterceptor extends Interceptor with Initializing {
 
   var anyOriginAllowed: Boolean = _
   var allowedOrigins: Set[String] = Set(AnyOrigin)
-  var allowedMethods: Set[String] = Set("GET", "POST", "HEAD", "OPTIONS")
-  var allowedHeaders: Set[String] = Set("X-Requested-With", "Content-Type", "Accept", "Origin")
+  var allowedMethods: Set[String] = Set("GET", "POST", "HEAD", "OPTIONS", "PATCH")
+  var allowedHeaders: Set[String] = Set("x-requested-with", "content-type", "accept", "origin")
   var exposedHeaders: Set[String] = Set.empty[String]
   var preflightMaxAge: Int = 1800 //30min
   var allowCredentials = true
-  var chainPreflight = true
+  var chainPreflight = false
 
   def init(): Unit = {
     anyOriginAllowed = allowedOrigins.contains(AnyOrigin)
@@ -98,7 +97,6 @@ class CorsInterceptor extends Interceptor with Initializing {
   }
 
   private def handlePreflightCors(req: HttpServletRequest, res: HttpServletResponse, origin: String): Boolean = {
-    if (!allowedMethods.contains(req.getHeader(RequestMethodHeader))) return false
     val headersAllowed = areHeadersAllowed(req)
     if (!headersAllowed) return false
     res.setHeader(AllowOriginHeader, origin)
@@ -106,27 +104,27 @@ class CorsInterceptor extends Interceptor with Initializing {
     if (preflightMaxAge > 0) res.setHeader(MaxAgeHeader, String.valueOf(preflightMaxAge))
     res.setHeader(AllowMethodsHeader, allowedMethods.mkString(","))
     res.setHeader(AllowHeadersHeader, allowedHeaders.mkString(","))
+    res.setStatus(204)
     chainPreflight
   }
 
   private def areHeadersAllowed(req: HttpServletRequest): Boolean = {
     val accessControlRequestHeaders = req.getHeader(RequestHeadersHeader)
-    (accessControlRequestHeaders == null) || accessControlRequestHeaders.split(",").toSet.subsetOf(allowedHeaders)
+    (accessControlRequestHeaders == null) || accessControlRequestHeaders.toLowerCase().split(",").toSet.subsetOf(allowedHeaders)
   }
 
   private def checkRequestType(origin: String, req: HttpServletRequest): Int = {
     if (isOriginAllowed(origin)) {
-      val method = req.getMethod
+      val method = getRequestMethod(req)
       if (allowedMethods.contains(method)) {
         if ("OPTIONS".equals(method)) {
-          val methodHeader = req.getHeader(RequestMethodHeader)
+          val methodHeader = getRequestMethodHeader(req)
           if (allowedMethods.contains(methodHeader)) PRE_FLIGHT else INVALID_CORS
         } else if ("GET" == method || "HEAD" == method) {
           SIMPLE
-        } else if ("POST" == method) {
+        } else if ("POST" == method || "PATCH" == method) {
           val contentType = req.getContentType
-          if (contentType != null) if (SimpleHttpContentTypes.contains(contentType.toLowerCase.trim)) SIMPLE else ACTUAL
-          else INVALID_CORS
+          if (contentType != null) ACTUAL else INVALID_CORS
         } else if (ComplexHttpMethods.contains(method)) {
           ACTUAL
         } else {
@@ -139,5 +137,13 @@ class CorsInterceptor extends Interceptor with Initializing {
   private def isOriginAllowed(origin: String): Boolean = {
     if (anyOriginAllowed) origin.indexOf('%') == -1
     else allowedOrigins.contains(origin)
+  }
+
+  private def getRequestMethod(req: HttpServletRequest): String = {
+    req.getMethod.toUpperCase()
+  }
+
+  private def getRequestMethodHeader(req: HttpServletRequest): String = {
+    req.getHeader(RequestMethodHeader).toUpperCase()
   }
 }

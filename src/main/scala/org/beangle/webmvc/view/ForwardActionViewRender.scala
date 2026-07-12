@@ -40,12 +40,12 @@ class ForwardActionViewRender(val configurator: Configurator) extends ViewRender
       case ca: ToClass =>
         configurator.getRouteMapping(ca.clazz, ca.method) match {
           case Some(am) =>
-            if (am.httpMethod != HttpMethods.GET && am.httpMethod != HttpMethods.POST)
-              throw new RuntimeException(s"Cannot forward action mapping using ${am.httpMethod}")
+            if (!am.httpMethods.contains(HttpMethods.GET) && !am.httpMethods.contains(HttpMethods.POST))
+              throw new RuntimeException(s"Cannot forward action mapping using ${am.httpMethods.mkString(",")}")
             val ua = am.toURL(ca.parameters, ActionContext.current.params)
             ca.parameters --= am.urlParams.keys
             ua.params(ca.parameters)
-            if (am.httpMethod != request.getMethod) ua.param(RouteMapping.MethodParam, am.httpMethod)
+            if (!am.httpMethods.contains( request.getMethod)) ua.param(RouteMapping.MethodParam, am.httpMethods.head)
             ua.url
           case None => throw new RuntimeException(s"Cannot find action mapping for ${ca.clazz.getName} ${ca.method}")
         }

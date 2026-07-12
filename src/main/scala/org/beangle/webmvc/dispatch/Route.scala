@@ -20,9 +20,5 @@ package org.beangle.webmvc.dispatch
 import org.beangle.commons.net.http.HttpMethods
 import org.beangle.webmvc.execution.Handler
 
-case class Route(httpMethod: String, url: String, handler: Handler) {
-
-  def this(url: String, handler: Handler) = {
-    this(HttpMethods.GET, url, handler)
-  }
+case class Route(httpMethods: Set[String], url: String, handler: Handler) {
 }

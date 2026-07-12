@@ -75,7 +75,7 @@ class RedirectActionViewRender(val configurator: Configurator) extends ViewRende
       case ca: ToClass =>
         configurator.getRouteMapping(ca.clazz, ca.method) match {
           case Some(am) =>
-            if (am.httpMethod != HttpMethods.GET) throw new RuntimeException(s"Cannot redirect action mapping using ${am.httpMethod}")
+            if (!am.httpMethods.contains(HttpMethods.GET)) throw new RuntimeException(s"Cannot redirect action mapping using ${am.httpMethods.mkString(",")}")
             val ua = am.toURL(ca.parameters, ActionContext.current.params)
             ca.parameters --= am.urlParams.keys
             ua.params(ca.parameters)

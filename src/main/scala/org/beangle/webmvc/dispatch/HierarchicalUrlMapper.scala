@@ -38,28 +38,23 @@ class HierarchicalUrlMapper extends RequestMapper, Buildable {
 
   override def build(): Unit = {
     for (provider <- providers; r <- provider.routes) {
-      add(r.httpMethod, r.url, r.handler)
+      add(r.httpMethods, r.url, r.handler)
     }
   }
 
-  def add(httpMethod: String, url: String, handler: Handler): Unit = {
+  def add(httpMethods: Set[String], url: String, handler: Handler): Unit = {
     if (!url.contains("{")) {
-      directMappings.getOrElseUpdate(url, new HttpMethodMappings).methods.put(httpMethod, HandlerHolder(handler, Map.empty))
+      directMappings.getOrElseUpdate(url, new HttpMethodMappings).add(httpMethods, HandlerHolder(handler, Map.empty))
     } else {
-      hierarchicalMappings.add(httpMethod, url, HandlerHolder(handler, Path.parse(url)))
-    }
-  }
-
-  override def resolve(uri: String): Option[HandlerHolder] = {
-    directMappings.get(uri) match {
-      case Some(m) =>
-        val hh = m.get(POST)
-        if (hh.isEmpty) hierarchicalMappings.resolve(GET, uri) else hh
-      case None => None
+      hierarchicalMappings.add(httpMethods, url, HandlerHolder(handler, Path.parse(url)))
     }
   }
 
   override def resolve(uri: String, request: HttpServletRequest): Option[HandlerHolder] = {
+    resolve(uri, determineHttpMethod(request))
+  }
+
+  override def resolve(uri: String, httpMethod: String): Option[HandlerHolder] = {
     var bangIdx, dotIdx = -1
     val lastSlashIdx = uri.lastIndexOf('/')
     val sb = new jl.StringBuilder(uri.length + 10)
@@ -80,7 +75,6 @@ class HierarchicalUrlMapper extends RequestMapper, Buildable {
       if (bangIdx > 0) sb.setCharAt(bangIdx, '/')
     }
 
-    val httpMethod = determineHttpMethod(request)
     val finalUrl = sb.toString
     val directMapping = directMappings.get(finalUrl) match {
       case Some(dm) => dm.get(httpMethod)
@@ -103,14 +97,18 @@ class HttpMethodMappings {
   val methods = new collection.mutable.HashMap[String, HandlerHolder]
   var depth: Int = 0
 
+  def add(hmethods: Set[String], hh: HandlerHolder): Unit = {
+    hmethods foreach { m =>
+      methods.put(m, hh)
+    }
+  }
+
   def matchesDepth(test: Int): Boolean = {
     this.depth == test || this.depth == -1
   }
 
   def get(method: String): Option[HandlerHolder] = {
-    var result = methods.get(method)
-    if (result.isEmpty && method == POST) result = methods.get(GET)
-    result
+    methods.get(method)
   }
 }
 
@@ -139,11 +137,11 @@ class HierarchicalMappings {
     }
   }
 
-  def add(httpMethod: String, url: String, holder: HandlerHolder): Unit = {
-    add(httpMethod, 1, url, holder, this)
+  def add(httpMethods: Set[String], url: String, holder: HandlerHolder): Unit = {
+    add(httpMethods, 1, url, holder, this)
   }
 
-  private def add(httpMethod: String, depth: Int, pattern: String, holder: HandlerHolder, mappings: HierarchicalMappings): Unit = {
+  private def add(httpMethods: Set[String], depth: Int, pattern: String, holder: HandlerHolder, mappings: HierarchicalMappings): Unit = {
     val slashIndex = pattern.indexOf('/', 1)
     val head = if (-1 == slashIndex) pattern.substring(1) else pattern.substring(1, slashIndex)
     val headPattern = if (Path.isPattern(head)) "*" else head
@@ -151,7 +149,7 @@ class HierarchicalMappings {
 
     if (-1 == slashIndex) {
       val methodMappings = mappings.mappings.getOrElseUpdate(headPattern, new HttpMethodMappings)
-      methodMappings.methods.put(httpMethod, holder)
+      methodMappings.add(httpMethods, holder)
       if (Path.isTailPattern(head)) {
         assert(mappings.children.isEmpty || mappings.children("*") == mappings)
         mappings.children.put("*", mappings)
@@ -159,7 +157,7 @@ class HierarchicalMappings {
       methodMappings.depth = mydepth
     } else {
       val nextdepth = if (mydepth > 0) mydepth + 1 else mydepth
-      add(httpMethod, nextdepth, pattern.substring(slashIndex), holder, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
+      add(httpMethods, nextdepth, pattern.substring(slashIndex), holder, mappings.children.getOrElseUpdate(headPattern, new HierarchicalMappings))
     }
     mappings.tailRecursion = mappings.children.size == 1 && mappings.mappings.size == 1 && mappings.children.get("*").contains(mappings)
   }

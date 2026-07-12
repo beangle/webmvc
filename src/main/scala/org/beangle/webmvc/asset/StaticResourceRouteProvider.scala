@@ -36,7 +36,7 @@ class StaticResourceRouteProvider extends RouteProvider, Initializing {
   private var handler: StaticResourceHandler = _
 
   def routes: Iterable[Route] = {
-    patterns.map(pattern => Route(GET, pattern, handler)).toList
+    patterns.map(pattern => Route(Set(GET), pattern, handler)).toList
   }
 
   def init(): Unit = {

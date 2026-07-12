@@ -20,6 +20,7 @@ package org.beangle.webmvc.dispatch
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import jakarta.servlet.{GenericServlet, ServletConfig, ServletRequest, ServletResponse}
 import org.beangle.commons.lang.{ScopedContext, Strings}
+import org.beangle.commons.net.http.HttpMethods
 import org.beangle.web.servlet.multipart.StandardMultipartResolver
 import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.config.{Buildable, Configurator}
@@ -39,7 +40,7 @@ class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandl
     // 2. find index
     val indexFile = List("/index.html", "/index.htm", "/index.jsp") find (i => null != config.getServletContext.getResource(i))
     indexFile match {
-      case None => if (null != mapper.resolve("/index")) this.index = "/index"
+      case None => if (null != mapper.resolve("/index",HttpMethods.GET)) this.index = "/index"
       case Some(i) => this.index = i
     }
   }

@@ -22,7 +22,7 @@ import org.beangle.commons.lang.Strings.isNotEmpty
 import org.beangle.commons.lang.annotation.description
 import org.beangle.commons.lang.reflect.Reflections.{getAnnotation, isAnnotationPresent}
 import org.beangle.commons.lang.reflect.{BeanInfo, BeanInfos}
-import org.beangle.commons.net.http.HttpMethods.GET
+import org.beangle.commons.net.http.HttpMethods.{GET, POST}
 import org.beangle.webmvc.Logger
 import org.beangle.webmvc.annotation.*
 import org.beangle.webmvc.context.*
@@ -61,7 +61,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
       minfos.filter(m => isActionMethod(m, classInfo)) foreach { method =>
         val annTuple = getAnnotation(method, classOf[mapping])
         val ann = if (null == annTuple) null else annTuple._1
-        val httpMethod = if (null != ann && isNotEmpty(ann.method)) ann.method.toUpperCase.intern else GET
+        val httpMethods = if (null != ann && isNotEmpty(ann.methods)) HttpMethodResolver.resolveMulti(ann.methods) else Set(GET, POST)
         val name =
           if (null != ann) {
             if ann.value.startsWith("/") then ann.value.substring(1) else ann.value
@@ -109,7 +109,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
                 case _ => defaultView
               }
             }
-            val mapping = RouteMapping(httpMethod, config, method, name, arguments.toArray, urlParams, defaultView)
+            val mapping = RouteMapping(httpMethods, config, method, name, arguments.toArray, urlParams, defaultView)
             mappings.put(method.getName, mapping)
           } else {
             Logger.warn(s"Only support one method, but $mappingMethods found")
