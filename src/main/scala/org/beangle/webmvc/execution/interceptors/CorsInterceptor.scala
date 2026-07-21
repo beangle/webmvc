@@ -18,7 +18,6 @@
 package org.beangle.webmvc.execution.interceptors
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
-import org.beangle.commons.bean.Initializing
 import org.beangle.commons.lang.annotation.description
 import org.beangle.web.servlet.intercept.Interceptor
 
@@ -35,7 +34,6 @@ object CorsInterceptor {
   val AllowCredentialsHeader = "Access-Control-Allow-Credentials"
   val ExposeHeadersHeader = "Access-Control-Expose-Headers"
 
-  val AnyOrigin = "*"
   val ComplexHttpMethods: Set[String] = Set("PUT", "DELETE", "TRACE", "CONNECT")
 }
 
@@ -47,23 +45,19 @@ object CORSRequestType {
 }
 
 @description("支持跨域调用CORS的拦截器")
-class CorsInterceptor extends Interceptor with Initializing {
+class CorsInterceptor extends Interceptor {
 
   import CORSRequestType.*
   import CorsInterceptor.*
 
-  var anyOriginAllowed: Boolean = _
-  var allowedOrigins: Set[String] = Set(AnyOrigin)
+  /** Allowed values: full origins (`http://a.com`), or hosts (`localhost`, `127.0.0.1`). */
+  var allowedOrigins: Set[String] = Set("localhost", "127.0.0.1")
   var allowedMethods: Set[String] = Set("GET", "POST", "HEAD", "OPTIONS", "PATCH")
   var allowedHeaders: Set[String] = Set("x-requested-with", "content-type", "accept", "origin")
   var exposedHeaders: Set[String] = Set.empty[String]
   var preflightMaxAge: Int = 1800 //30min
   var allowCredentials = true
   var chainPreflight = false
-
-  def init(): Unit = {
-    anyOriginAllowed = allowedOrigins.contains(AnyOrigin)
-  }
 
   def preInvoke(req: HttpServletRequest, res: HttpServletResponse): Boolean = {
     val origin = req.getHeader(OriginHeader)
@@ -86,8 +80,7 @@ class CorsInterceptor extends Interceptor with Initializing {
   }
 
   private def handleSimpleCors(req: HttpServletRequest, res: HttpServletResponse, origin: String): Boolean = {
-    if (anyOriginAllowed && !allowCredentials) res.addHeader(AllowOriginHeader, AnyOrigin)
-    else res.addHeader(AllowOriginHeader, origin)
+    res.addHeader(AllowOriginHeader, origin)
     if (allowCredentials) {
       res.setHeader(AllowCredentialsHeader, "true")
       res.setHeader("Vary", "Origin")
@@ -135,8 +128,17 @@ class CorsInterceptor extends Interceptor with Initializing {
   }
 
   private def isOriginAllowed(origin: String): Boolean = {
-    if (anyOriginAllowed) origin.indexOf('%') == -1
-    else allowedOrigins.contains(origin)
+    if (origin.indexOf('%') != -1) false
+    else if (allowedOrigins.contains(origin)) true
+    else extractHost(origin).exists(host => allowedOrigins.contains(host))
+  }
+
+  private def extractHost(origin: String): Option[String] = {
+    try {
+      Option(java.net.URI.create(origin).getHost)
+    } catch {
+      case _: Exception => None
+    }
   }
 
   private def getRequestMethod(req: HttpServletRequest): String = {
