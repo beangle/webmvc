@@ -1,27 +1,27 @@
 import org.beangle.parent.Dependencies.*
 import org.beangle.parent.Settings.*
 
-ThisBuild / organization := "org.beangle.webmvc"
-ThisBuild / version := "0.15.1-SNAPSHOT"
+organization := "org.beangle.webmvc"
+version := "0.15.1-SNAPSHOT"
 
-ThisBuild / scmInfo := Some(
+scmInfo := Some(
   ScmInfo(
-    url("https://github.com/beangle/webmvc"),
+    uri("https://github.com/beangle/webmvc"),
     "scm:git@github.com:beangle/webmvc.git"
   )
 )
 
-ThisBuild / developers := List(
+developers := List(
   Developer(
     id = "chaostone",
     name = "Tihua Duan",
     email = "duantihua@gmail.com",
-    url = url("http://github.com/duantihua")
+    url = uri("http://github.com/duantihua")
   )
 )
 
-ThisBuild / description := "The Beangle WebMVC Library"
-ThisBuild / homepage := Some(url("https://beangle.github.io/webmvc/index.html"))
+description := "The Beangle WebMVC Library"
+homepage := Some(uri("https://beangle.github.io/webmvc/index.html"))
 
 val beangle_commons = "org.beangle.commons" % "beangle-commons" % "6.2.1"
 val beangle_web = "org.beangle.web" % "beangle-web" % "0.7.8"
