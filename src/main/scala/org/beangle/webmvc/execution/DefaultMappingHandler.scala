@@ -18,8 +18,9 @@
 package org.beangle.webmvc.execution
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
-import org.beangle.commons.activation.MediaType
+import org.beangle.commons.activation.{MediaType, MediaTypes}
 import org.beangle.commons.io.Serializer
+import org.beangle.commons.lang.Charsets
 import org.beangle.commons.lang.annotation.description
 import org.beangle.template.api.DynaProfile
 import org.beangle.web.servlet.intercept.Interceptor
@@ -31,8 +32,12 @@ import org.beangle.webmvc.view.*
 import java.io.ByteArrayOutputStream
 
 /**
- * 缺省的调用处理器
- * 负责调用Action,渲染结果
+ * 缺省的调用处理器：调用 Action，再按返回值渲染视图或写出响应体。
+ *
+ * 非 View 结果的写出策略：
+ * - Array[Byte]：视为已编码的二进制，直接写出，不查 Serializer，也不附加 charset
+ * - 其它类型：按 Accept 查找 Serializer；找不到则 toString 后按 UTF-8 写出
+ * - cacheable：本地响应缓存 + Cache-Control s-maxage（秒数见 RouteMapping.maxAge）
  */
 @description("缺省的调用处理器")
 class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
@@ -41,10 +46,11 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
 
   override def handle(request: HttpServletRequest, response: HttpServletResponse): Unit = {
     val action = mapping.action
+    // 可缓存映射优先读本地响应缓存
     if (mapping.cacheable) {
       responseCache.get(request) match {
         case Some(cr) =>
-          writeToResponse(response, cr.contentType, cr.data,15)
+          writeToResponse(response, cr.contentType, cr.data, mapping.maxAge)
           return
         case None =>
       }
@@ -67,7 +73,7 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
         var view: View = null
         result match {
           case v: View =>
-            // 按照最有可能的顺序进行罗列
+            // 按出现频率从高到低处理常见 View
             v match {
               case PathView(path) =>
                 val viewName = if (null == path) mapping.defaultView else path
@@ -93,37 +99,19 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
             case None => throw new RuntimeException(s"Cannot find render for ${view.getClass}")
           }
         } else if (null != result) {
-          val mimeTypes = context.acceptTypes.iterator
-          var serializer: Serializer = null
-          var mimeType: MediaType = null
-          while (mimeTypes.hasNext && serializer == null) {
-            mimeType = mimeTypes.next()
-            serializer = viewManager.getSerializer(mimeType)
+          // 统一编码为 (Content-Type, bytes)，便于缓存与写出共用
+          val (contentType, bytes) = result match {
+            case data: Array[Byte] =>
+              // 二进制已就绪：跳过 Serializer；Content-Type 取 Accept 首项，缺省 octet-stream
+              val ct = context.acceptTypes.headOption.map(_.toString).getOrElse(MediaTypes.stream.toString)
+              (ct, data)
+            case other => encodeResult(other, request, context)
           }
-
-          response.setCharacterEncoding("UTF-8")
-
-          if (null == serializer) {
-            response.getWriter.write(result.toString)
+          if (mapping.cacheable) {
+            responseCache.put(request, contentType, bytes)
+            writeToResponse(response, contentType, bytes, mapping.maxAge)
           } else {
-            val contentType = mimeType.toString + "; charset=UTF-8"
-            val params = new collection.mutable.HashMap[String, Any]
-            val enm = request.getAttributeNames
-            while (enm.hasMoreElements) {
-              val attr = enm.nextElement()
-              params.put(attr, request.getAttribute(attr))
-            }
-            params ++= context.params
-            val os = new ByteArrayOutputStream
-            serializer.serialize(result.asInstanceOf[AnyRef], os, params.toMap)
-            val bytes = os.toByteArray
-
-            if (context.handler.asInstanceOf[MappingHandler].mapping.cacheable) {
-              responseCache.put(request, contentType, bytes)
-              writeToResponse(response, contentType, bytes, 15)
-            } else {
-              writeToResponse(response, contentType, bytes, 0)
-            }
+            writeToResponse(response, contentType, bytes, 0)
           }
         }
       }
@@ -151,15 +139,53 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     }
   }
 
+  /** 按 Accept 选择 Serializer 编码；无可用 Serializer 时回退为 UTF-8 文本。 */
+  private def encodeResult(result: Any, request: HttpServletRequest, context: ActionContext): (String, Array[Byte]) = {
+    var serializer: Serializer = null
+    var mimeType: MediaType = null
+    val mimeTypes = context.acceptTypes.iterator
+    while (mimeTypes.hasNext && serializer == null) {
+      mimeType = mimeTypes.next()
+      serializer = viewManager.getSerializer(mimeType)
+    }
+    if (null != serializer) {
+      val params = new collection.mutable.HashMap[String, Any]
+      val enm = request.getAttributeNames
+      while (enm.hasMoreElements) {
+        val attr = enm.nextElement()
+        params.put(attr, request.getAttribute(attr))
+      }
+      params ++= context.params
+      val os = new ByteArrayOutputStream
+      serializer.serialize(result.asInstanceOf[AnyRef], os, params.toMap)
+      (contentTypeOf(mimeType), os.toByteArray)
+    } else {
+      // 无 Serializer：用 Accept 首项（或 text/plain）+ UTF-8 写出 toString
+      val ct = contentTypeOf(context.acceptTypes.headOption.getOrElse(MediaTypes.text))
+      (ct, result.toString.getBytes(Charsets.UTF_8))
+    }
+  }
+
+  /** 仅文本型 MIME 附加 charset=UTF-8；二进制类型保持裸 MIME，避免误导客户端。 */
+  private def contentTypeOf(mimeType: MediaType): String = {
+    val base = mimeType.toString
+    val textual = mimeType.primaryType == "text" ||
+      mimeType.subType.contains("json") ||
+      mimeType.subType.contains("xml") ||
+      mimeType.subType.contains("javascript")
+    if (textual) base + "; charset=UTF-8" else base
+  }
+
+  /** 写出响应体。maxAgeSecond>0 时设置 s-maxage，否则禁用缓存。 */
   private def writeToResponse(res: HttpServletResponse, contentType: String, data: Array[Byte], maxAgeSecond: Int): Unit = {
     res.setContentType(contentType)
     res.setContentLength(data.length)
     if (maxAgeSecond <= 0) {
-      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
-      res.setHeader("Pragma", "no-cache"); // 兼容 HTTP/1.0
-      res.setHeader("Expires", "0"); // 兼容 HTTP/1.0
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private")
+      res.setHeader("Pragma", "no-cache") // 兼容 HTTP/1.0
+      res.setHeader("Expires", "0") // 兼容 HTTP/1.0
     } else {
-      res.addHeader("Cache-Control", s"public,s-maxage=${maxAgeSecond}")
+      res.setHeader("Cache-Control", s"public,s-maxage=${maxAgeSecond}")
     }
     res.getOutputStream.write(data)
   }

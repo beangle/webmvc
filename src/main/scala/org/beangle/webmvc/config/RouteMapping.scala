@@ -19,7 +19,7 @@ package org.beangle.webmvc.config
 
 import org.beangle.commons.lang.Strings.{join, split}
 import org.beangle.webmvc.ToURI
-import org.beangle.webmvc.annotation.response
+import org.beangle.webmvc.annotation.{cache, response}
 import org.beangle.webmvc.context.Argument
 
 import java.lang.reflect.Method
@@ -27,6 +27,8 @@ import java.lang.reflect.Method
 object RouteMapping {
   final val DefaultMethod = "index"
   final val MethodParam = "_method"
+  /** @response(cacheable=true) 但未配置 @cache 时的默认缓存秒数 */
+  final val DefaultMaxAge = 15
 
   import org.beangle.commons.net.http.HttpMethods.{DELETE, HEAD, PUT}
 
@@ -40,24 +42,34 @@ object RouteMapping {
     }
   }
 
-  private def isCacheMethod(method: Method): Boolean = {
+  /**
+   * 缓存判定：优先 @cache —— 有 @cache 即强制缓存（maxAge 取其值），忽略 @response.cacheable；
+   * 否则回退到 @response(cacheable=true)，此时用默认缓存秒数。
+   */
+  private def cacheSetting(method: Method): (Boolean, Int) = {
     if (null == method) {
-      false
+      (false, 0)
     } else {
-      val res = method.getAnnotation(classOf[response])
-      if null == res then false else res.cacheable()
+      val ca = method.getAnnotation(classOf[cache])
+      if (null != ca) {
+        (true, ca.maxAge())
+      } else {
+        val res = method.getAnnotation(classOf[response])
+        if (null == res || !res.cacheable()) (false, 0) else (true, DefaultMaxAge)
+      }
     }
   }
 
   def apply(httpMethods: Set[String], action: ActionMapping, method: Method, name: String,
             arguments: Array[Argument], urlParams: Map[String, Integer], defaultView: String): RouteMapping = {
-    new RouteMapping(httpMethods, action, method, actionUrl(action, name), arguments, urlParams, defaultView, isCacheMethod(method))
+    val (cacheable, maxAge) = cacheSetting(method)
+    new RouteMapping(httpMethods, action, method, actionUrl(action, name), arguments, urlParams, defaultView, cacheable, maxAge)
   }
 }
 
 class RouteMapping private(val httpMethods: Set[String], val action: ActionMapping, val method: Method, val url: String,
                            val arguments: Array[Argument], val urlParams: Map[String, Integer], val defaultView: String,
-                           val cacheable: Boolean) {
+                           val cacheable: Boolean, val maxAge: Int) {
 
   def fill(paramMaps: collection.Map[String, Any]*): String = {
     if (urlParams.isEmpty) return url
