@@ -1,0 +1,2 @@
+# Webmvc library AOT hints
+org.beangle.webmvc.aot.WebmvcAotHints
