@@ -17,8 +17,19 @@
 
 package org.beangle.webmvc.i18n
 
+import org.beangle.commons.lang.reflect.Invokers
+
+import java.lang.invoke.{MethodHandles, VarHandle}
+
+/** 进程级 action 文本缓存：volatile 字段 + VarHandle CAS。
+ *  读多写少：读路径无锁（volatile load），写路径 CAS 重试合并，无 monitor（虚拟线程友好）。
+ *  键/值 intern 由调用方通过 common 决定（公共默认文本才 intern 复用）。
+ */
 class ActionTextCache {
-  private var caches: Map[Class[_], Map[String, String]] = Map.empty
+  @volatile private var caches: Map[Class[_], Map[String, String]] = Map.empty
+
+  private val CACHES: VarHandle =
+    Invokers.findVarHandle(MethodHandles.lookup(), classOf[ActionTextCache], "caches", classOf[Map[Class[_], Map[String, String]]])
 
   def getText(clazz: Class[_], key: String): Option[String] = {
     caches.get(clazz) match
@@ -27,13 +38,14 @@ class ActionTextCache {
   }
 
   def update(clazz: Class[_], key: String, value: String, common: Boolean): Unit = {
-    caches.get(clazz) match
-      case None =>
-        if common then caches += (clazz, Map(key.intern() -> value.intern()))
-        else caches += (clazz, Map(key -> value))
-      case Some(map) =>
-        if common then caches += (clazz, map + (key.intern() -> value.intern()))
-        else caches += (clazz, map + (key -> value))
-
+    val kv = if common then (key.intern(), value.intern()) else (key, value)
+    var done = false
+    while (!done) {
+      val old = caches
+      val merged = old.get(clazz) match
+        case Some(kvs) => old + (clazz -> (kvs + kv))
+        case None => old + (clazz -> Map(kv))
+      done = CACHES.compareAndSet(this, old, merged)
+    }
   }
 }

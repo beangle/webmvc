@@ -39,7 +39,6 @@ class FreemarkerModelBuilder(tagLibraryProvider: TagLibraryProvider) extends Mod
     val existed = request.getAttribute(templateModelAttribute).asInstanceOf[SimpleHash]
     if (null == existed) {
       val model = new SimpleHttpScopeHashModel(wrapper, request)
-      model.put("request", request)
       model.put(KEY_REQUEST_PARAMETERS, new ParametersHashModel(params, wrapper))
       tagLibraryProvider.libraries foreach {
         case (tagName, tag) =>

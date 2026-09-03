@@ -17,7 +17,7 @@
 
 package org.beangle.webmvc.aot
 
-import org.beangle.commons.aot.AotHintRegistrar
+import org.beangle.commons.aot.{AotHintRegistrar, AotPolicy}
 
 /** webmvc 的 GraalVM native-image 反射/资源提示。
   *
@@ -37,6 +37,12 @@ import org.beangle.commons.aot.AotHintRegistrar
 class WebmvcAotHints extends AotHintRegistrar {
 
   override def registering(): Unit = {
+    hints.registerType(classOf[org.beangle.webmvc.config.ProfileConfig])
+    // 模板模型类
+    hints.registerType(
+      classOf[org.beangle.webmvc.view.tag.CoreModels],
+      classOf[org.beangle.webmvc.asset.Static])
+    // 注解族
     hints.registerType(
       classOf[org.beangle.webmvc.annotation.action],
       classOf[org.beangle.webmvc.annotation.body],
@@ -48,7 +54,61 @@ class WebmvcAotHints extends AotHintRegistrar {
       classOf[org.beangle.webmvc.annotation.param],
       classOf[org.beangle.webmvc.annotation.response],
       classOf[org.beangle.webmvc.annotation.view],
-      classOf[org.beangle.webmvc.annotation.views]
-    )
+      classOf[org.beangle.webmvc.annotation.views])
+
+    // 配置与映射
+    hints.registerType(
+      classOf[org.beangle.webmvc.config.ActionMapping],
+      classOf[org.beangle.webmvc.config.ActionMappingBuilder],
+      classOf[org.beangle.webmvc.config.Buildable],
+      classOf[org.beangle.webmvc.config.Configurator],
+      classOf[org.beangle.webmvc.config.Profile],
+      classOf[org.beangle.webmvc.config.ProfileProvider])
+
+    // 请求调度
+    hints.registerType(
+      classOf[org.beangle.webmvc.dispatch.AbstractExceptionHandler],
+      classOf[org.beangle.webmvc.dispatch.ActionUriRender],
+      classOf[org.beangle.webmvc.dispatch.ExceptionHandler],
+      classOf[org.beangle.webmvc.dispatch.RequestMapper],
+      classOf[org.beangle.webmvc.dispatch.Route],
+      classOf[org.beangle.webmvc.dispatch.RouteProvider])
+
+    // 执行与拦截
+    hints.registerType(
+      classOf[org.beangle.webmvc.execution.InvokerBuilder],
+      classOf[org.beangle.webmvc.execution.ResponseCache])
+
+    // 视图
+    hints.registerType(
+      classOf[org.beangle.webmvc.view.TemplatePathMapper],
+      classOf[org.beangle.webmvc.view.TemplateResolver],
+      classOf[org.beangle.webmvc.view.TypeViewBuilder],
+      classOf[org.beangle.webmvc.view.ViewBuilder],
+      classOf[org.beangle.webmvc.view.ViewManager],
+      classOf[org.beangle.webmvc.view.ViewRender],
+      classOf[org.beangle.webmvc.view.ViewResolver])
+
+    // 支持类
+    hints.registerType(
+      classOf[org.beangle.webmvc.support.ActionSupport],
+      classOf[org.beangle.webmvc.support.EntitySupport],
+      classOf[org.beangle.webmvc.support.MessageSupport],
+      classOf[org.beangle.webmvc.support.ParamSupport],
+      classOf[org.beangle.webmvc.support.RouteSupport],
+      classOf[org.beangle.webmvc.support.ServletSupport])
+
+    // i18n
+    hints.registerType(
+      classOf[org.beangle.webmvc.i18n.ActionTextCache],
+      classOf[org.beangle.webmvc.i18n.TextResourceProvider])
+
+    // 上下文
+    hints.registerType(
+      classOf[org.beangle.webmvc.context.ActionContextProperty])
+
+    // 资源
+    hints.registerType(
+      classOf[org.beangle.webmvc.asset.StaticFactory])
   }
 }

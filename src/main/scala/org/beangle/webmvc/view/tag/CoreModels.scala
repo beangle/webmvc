@@ -21,9 +21,8 @@ import jakarta.servlet.http.HttpServletRequest
 import org.beangle.commons.collection.page.Page
 import org.beangle.commons.text.escape.JavascriptEscaper
 import org.beangle.template.api.{AbstractModels, ComponentContext}
-import org.beangle.webmvc.context.ActionContext
-import org.beangle.webmvc.dispatch.ActionUriRender
 import org.beangle.web.servlet.util.RequestUtils
+import org.beangle.webmvc.dispatch.ActionUriRender
 
 import java.io.StringWriter
 import java.util as ju
@@ -32,6 +31,10 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
 
   def url(url: String): String = {
     this.context.services("uriRender").asInstanceOf[ActionUriRender].render(url)
+  }
+
+  def requestURI: String = {
+    request.getRequestURI
   }
 
   def base: String = {
