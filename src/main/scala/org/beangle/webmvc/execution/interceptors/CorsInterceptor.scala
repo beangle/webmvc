@@ -35,6 +35,42 @@ object CorsInterceptor {
   val ExposeHeadersHeader = "Access-Control-Expose-Headers"
 
   val ComplexHttpMethods: Set[String] = Set("PUT", "DELETE", "TRACE", "CONNECT")
+
+  /** 判断是否为跨域请求。
+   *
+   * 无 `Origin` 头（如地址栏访问的 GET）不是跨域；有 `Origin` 时只比主机名，与
+   * `req.getServerName` 相同即为同源。不比端口和协议，以免反向代理场景误判，
+   * 同主机不同端口/协议的内网旁路由 `allowedOrigins` 白名单承担。
+   */
+  def isCorsRequest(req: HttpServletRequest): Boolean = {
+    val origin = req.getHeader(OriginHeader)
+    if (null == origin) false
+    else {
+      val serverName = req.getServerName
+      if (null == serverName || serverName.isEmpty) true // 取不到 serverName，交由白名单判定拒绝
+      else !isSameHost(origin, serverName)
+    }
+  }
+
+  /** 比较 `Origin`（形如 `scheme://host[:port]`，可缺 scheme）的主机名是否等于 serverName。
+   *
+   * 用字符串前缀匹配代替 URI 解析；匹配后须是结尾或分隔符，防止 `a.com.evil.com` 误判为 `a.com`。
+   */
+  private def isSameHost(origin: String, serverName: String): Boolean = {
+    val value = origin.trim
+    val schemeIdx = value.indexOf("://")
+    val hostStart = if (schemeIdx < 0) 0 else schemeIdx + 3
+    if (!value.regionMatches(true, hostStart, serverName, 0, serverName.length)) false
+    else {
+      val next = hostStart + serverName.length
+      // regionMatches 已保证 next <= value.length，此处兼作越界兜底
+      if (next >= value.length) true
+      else {
+        val c = value.charAt(next)
+        c == ':' || c == '/' || c == '?' || c == '#'
+      }
+    }
+  }
 }
 
 object CORSRequestType {
@@ -60,12 +96,15 @@ class CorsInterceptor extends Interceptor {
   var chainPreflight = false
 
   def preInvoke(req: HttpServletRequest, res: HttpServletResponse): Boolean = {
-    val origin = req.getHeader(OriginHeader)
-    if (origin == null) return true
-    checkRequestType(origin, req) match {
-      case SIMPLE | ACTUAL => handleSimpleCors(req, res, origin)
-      case PRE_FLIGHT => handlePreflightCors(req, res, origin)
-      case INVALID_CORS => handleInvalidCORS(res)
+    if (CorsInterceptor.isCorsRequest(req)) {
+      val origin = req.getHeader(OriginHeader)
+      checkRequestType(origin, req) match {
+        case SIMPLE | ACTUAL => handleSimpleCors(req, res, origin)
+        case PRE_FLIGHT => handlePreflightCors(req, res, origin)
+        case INVALID_CORS => handleInvalidCORS(res)
+      }
+    } else {
+      true
     }
   }
 
