@@ -50,7 +50,7 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     if (mapping.cacheable) {
       responseCache.get(request) match {
         case Some(cr) =>
-          writeToResponse(response, cr.contentType, cr.data, mapping.maxAge)
+          writeCachedToResponse(response, cr, mapping.maxAge)
           return
         case None =>
       }
@@ -108,7 +108,7 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
             case other => encodeResult(other, request, context)
           }
           if (mapping.cacheable) {
-            responseCache.put(request, contentType, bytes)
+            responseCache.put(request, CacheResult.of(response, contentType, bytes))
             writeToResponse(response, contentType, bytes, mapping.maxAge)
           } else {
             writeToResponse(response, contentType, bytes, 0)
@@ -176,18 +176,33 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
     if (textual) base + "; charset=UTF-8" else base
   }
 
-  /** 写出响应体。maxAgeSecond>0 时设置 s-maxage，否则禁用缓存。 */
+  /**
+   * 写出响应体，并补齐缓存指令。maxAgeSecond>0 时按声明式缓存设置 s-maxage，否则禁用缓存。
+   *
+   * 补齐而非改写：action 已自行设置的头（如 CacheControl.expiresAfter）保持不动，
+   * 否则 action 的缓存策略会被这里静默丢弃。
+   */
   private def writeToResponse(res: HttpServletResponse, contentType: String, data: Array[Byte], maxAgeSecond: Int): Unit = {
     res.setContentType(contentType)
     res.setContentLength(data.length)
     if (maxAgeSecond <= 0) {
-      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private")
-      res.setHeader("Pragma", "no-cache") // 兼容 HTTP/1.0
-      res.setHeader("Expires", "0") // 兼容 HTTP/1.0
+      setHeaderIfAbsent(res, "Cache-Control", "no-store, no-cache, must-revalidate, private")
+      setHeaderIfAbsent(res, "Pragma", "no-cache") // 兼容 HTTP/1.0
+      setHeaderIfAbsent(res, "Expires", "0") // 兼容 HTTP/1.0
     } else {
-      res.setHeader("Cache-Control", s"public,s-maxage=${maxAgeSecond}")
+      setHeaderIfAbsent(res, "Cache-Control", s"public,s-maxage=${maxAgeSecond}")
     }
     res.getOutputStream.write(data)
+  }
+
+  private def setHeaderIfAbsent(res: HttpServletResponse, name: String, value: String): Unit = {
+    if (null == res.getHeader(name)) res.setHeader(name, value)
+  }
+
+  /** 命中缓存：先重放缓存时 action 写入的响应头，再写出响应体。 */
+  private def writeCachedToResponse(res: HttpServletResponse, result: CacheResult, maxAgeSecond: Int): Unit = {
+    result.headers.foreach { case (name, value) => res.setHeader(name, value) }
+    writeToResponse(res, result.contentType, result.data, maxAgeSecond)
   }
 
   private def preHandle(interceptors: Array[Interceptor], context: ActionContext, request: HttpServletRequest, response: HttpServletResponse): Int = {

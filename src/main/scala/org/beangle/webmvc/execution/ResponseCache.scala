@@ -22,13 +22,13 @@ import org.beangle.commons.cache.Cache
 import org.beangle.web.servlet.url.UrlBuilder
 
 trait ResponseCache {
-  def put(request: HttpServletRequest, contentType: String, data: Array[Byte]): Unit
+  def put(request: HttpServletRequest, result: CacheResult): Unit
 
   def get(request: HttpServletRequest): Option[CacheResult]
 }
 
 object EmptyResponseCache extends ResponseCache {
-  def put(request: HttpServletRequest, contentType: String, data: Array[Byte]): Unit = {
+  def put(request: HttpServletRequest, result: CacheResult): Unit = {
   }
 
   def get(request: HttpServletRequest): Option[CacheResult] = {
@@ -38,8 +38,8 @@ object EmptyResponseCache extends ResponseCache {
 
 class DefaultResponseCache(cache: Cache[String, CacheResult]) extends ResponseCache {
 
-  override def put(request: HttpServletRequest, contentType: String, data: Array[Byte]): Unit = {
-    cache.put(UrlBuilder(request).buildRequestUrl(), CacheResult(contentType, data))
+  override def put(request: HttpServletRequest, result: CacheResult): Unit = {
+    cache.put(UrlBuilder(request).buildRequestUrl(), result)
   }
 
   override def get(request: HttpServletRequest): Option[CacheResult] = {

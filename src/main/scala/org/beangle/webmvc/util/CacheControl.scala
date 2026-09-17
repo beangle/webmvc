@@ -17,21 +17,29 @@
 
 package org.beangle.webmvc.util
 
-import java.{util => ju}
+import java.time.Duration
 
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.webmvc.context.ActionContext
 
 object CacheControl {
 
-  def expiresAfter(minutes: Int, response: HttpServletResponse = ActionContext.current.response): this.type = {
-    val cal = ju.Calendar.getInstance()
-    cal.add(ju.Calendar.MINUTE, minutes)
-    val expires = cal.getTimeInMillis
-    response.setDateHeader("Date", System.currentTimeMillis())
-    response.setDateHeader("Expires", expires)
-    response.setDateHeader("Retry-After", expires)
-    response.setHeader("Cache-Control", "max-age=3600, public")
+  /**
+   * 声明当前响应的缓存时长。
+   *
+   * Cache-Control 是 HTTP/1.1 的权威指令，Expires 只作为 HTTP/1.0 的兼容回退。
+   *
+   * @param duration  缓存时长，如 Duration.ofMinutes(5)、Duration.ofDays(4)
+   * @param shareable true 表示允许 CDN、代理等共享缓存保存（Cache-Control: public），
+   *                  适用于 logo、图片等与用户无关的资源；缺省 false（private），
+   *                  因为响应往往随用户身份变化，一旦进入共享缓存就会被其他用户命中
+   * @param response  响应对象
+   */
+  def expiresAfter(duration: Duration, shareable: Boolean = false,
+                   response: HttpServletResponse = ActionContext.current.response): this.type = {
+    val seconds = math.max(0L, duration.toSeconds)
+    response.setHeader("Cache-Control", (if (shareable) "public" else "private") + s", max-age=$seconds")
+    response.setDateHeader("Expires", System.currentTimeMillis() + seconds * 1000)
     this
   }
 
