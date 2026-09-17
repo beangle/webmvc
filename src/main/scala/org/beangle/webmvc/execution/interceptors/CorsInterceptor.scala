@@ -20,6 +20,7 @@ package org.beangle.webmvc.execution.interceptors
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.beangle.commons.lang.annotation.description
 import org.beangle.web.servlet.intercept.Interceptor
+import org.beangle.web.servlet.util.RequestUtils
 
 object CorsInterceptor {
   // Request headers
@@ -38,38 +39,19 @@ object CorsInterceptor {
 
   /** 判断是否为跨域请求。
    *
-   * 无 `Origin` 头（如地址栏访问的 GET）不是跨域；有 `Origin` 时只比主机名，与
-   * `req.getServerName` 相同即为同源。不比端口和协议，以免反向代理场景误判，
-   * 同主机不同端口/协议的内网旁路由 `allowedOrigins` 白名单承担。
+   * 与浏览器同源判定保持一致，比较 **scheme + host + port** 三者（与凭据如何传递无关）：
+   * 端口不同（如页面 `http://localhost:5173` 调用后端 `http://localhost`）浏览器视为跨域，
+   * 这里就必须按跨域处理，否则不会下发 `Access-Control-Allow-Origin`，浏览器只会报
+   * `CORS missing Allow Origin`。
+   *
+   * 做法：把请求自身还原成 origin（默认端口省略，见 `RequestUtils.getOrigin`），直接与 `Origin` 头比较。
+   * 浏览器发出的 `Origin` 一定带 scheme 且遵守默认端口省略规则，所以字符串比较既简单又准确。
+   * 反代下若只透传 `Host` 而不透传 `X-Forwarded-Proto/Port`，仍可能误判，需要代理补齐转发头。
    */
   def isCorsRequest(req: HttpServletRequest): Boolean = {
     val origin = req.getHeader(OriginHeader)
     if (null == origin) false
-    else {
-      val serverName = req.getServerName
-      if (null == serverName || serverName.isEmpty) true // 取不到 serverName，交由白名单判定拒绝
-      else !isSameHost(origin, serverName)
-    }
-  }
-
-  /** 比较 `Origin`（形如 `scheme://host[:port]`，可缺 scheme）的主机名是否等于 serverName。
-   *
-   * 用字符串前缀匹配代替 URI 解析；匹配后须是结尾或分隔符，防止 `a.com.evil.com` 误判为 `a.com`。
-   */
-  private def isSameHost(origin: String, serverName: String): Boolean = {
-    val value = origin.trim
-    val schemeIdx = value.indexOf("://")
-    val hostStart = if (schemeIdx < 0) 0 else schemeIdx + 3
-    if (!value.regionMatches(true, hostStart, serverName, 0, serverName.length)) false
-    else {
-      val next = hostStart + serverName.length
-      // regionMatches 已保证 next <= value.length，此处兼作越界兜底
-      if (next >= value.length) true
-      else {
-        val c = value.charAt(next)
-        c == ':' || c == '/' || c == '?' || c == '#'
-      }
-    }
+    else !RequestUtils.getOrigin(req).equalsIgnoreCase(origin.trim)
   }
 }
 
