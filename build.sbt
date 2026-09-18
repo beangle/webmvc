@@ -2,7 +2,7 @@ import org.beangle.parent.Dependencies.*
 import org.beangle.parent.Settings.*
 
 organization := "org.beangle.webmvc"
-version := "0.15.5-SNAPSHOT"
+version := "0.15.5"
 
 scmInfo := Some(
   ScmInfo(
