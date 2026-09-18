@@ -20,8 +20,8 @@ package org.beangle.webmvc.util
 import java.time.Duration
 
 import jakarta.servlet.http.HttpServletResponse
-import org.mockito.ArgumentMatchers.{anyLong, eq => eqTo}
-import org.mockito.Mockito.{mock, verify}
+import org.mockito.ArgumentMatchers.{anyLong, anyString, eq => eqTo}
+import org.mockito.Mockito.{mock, never, verify, when}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -44,6 +44,30 @@ class CacheControlTest extends AnyFunSpec, Matchers {
       val res = mock(classOf[HttpServletResponse])
       CacheControl.expiresAfter(Duration.ofMinutes(5), response = res)
       verify(res).setDateHeader(eqTo("Expires"), anyLong())
+    }
+  }
+
+  describe("CacheControl.fillIfAbsent") {
+    it("action 已声明 Cache-Control 时整套缓存指令都不再补") {
+      val res = mock(classOf[HttpServletResponse])
+      when(res.getHeader("Cache-Control")).thenReturn("private, max-age=300")
+      CacheControl.fillIfAbsent(res, 0)
+      verify(res, never()).setHeader(anyString(), anyString())
+      verify(res, never()).setDateHeader(anyString(), anyLong())
+    }
+
+    it("禁用缓存时补 no-store 三件套") {
+      val res = mock(classOf[HttpServletResponse])
+      CacheControl.fillIfAbsent(res, 0)
+      verify(res).setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private")
+      verify(res).setHeader("Pragma", "no-cache")
+      verify(res).setHeader("Expires", "0")
+    }
+
+    it("声明式缓存按秒数补 s-maxage") {
+      val res = mock(classOf[HttpServletResponse])
+      CacheControl.fillIfAbsent(res, 15)
+      verify(res).setHeader("Cache-Control", "public,s-maxage=15")
     }
   }
 }

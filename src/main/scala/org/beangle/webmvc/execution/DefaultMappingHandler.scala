@@ -27,6 +27,7 @@ import org.beangle.web.servlet.intercept.Interceptor
 import org.beangle.web.servlet.resource.PathResolver
 import org.beangle.webmvc.config.{ActionMapping, RouteMapping}
 import org.beangle.webmvc.context.ActionContext
+import org.beangle.webmvc.util.CacheControl
 import org.beangle.webmvc.view.*
 
 import java.io.ByteArrayOutputStream
@@ -179,24 +180,15 @@ class DefaultMappingHandler(val mapping: RouteMapping, val invoker: Invoker,
   /**
    * 写出响应体，并补齐缓存指令。maxAgeSecond>0 时按声明式缓存设置 s-maxage，否则禁用缓存。
    *
-   * 补齐而非改写：action 已自行设置的头（如 CacheControl.expiresAfter）保持不动，
+   * 补齐而非改写：action 已自行声明 Cache-Control 时，整套缓存指令都交给它
+   * （不再补 Pragma/Expires，它们与 no-store 是同一个决策），
    * 否则 action 的缓存策略会被这里静默丢弃。
    */
   private def writeToResponse(res: HttpServletResponse, contentType: String, data: Array[Byte], maxAgeSecond: Int): Unit = {
     res.setContentType(contentType)
     res.setContentLength(data.length)
-    if (maxAgeSecond <= 0) {
-      setHeaderIfAbsent(res, "Cache-Control", "no-store, no-cache, must-revalidate, private")
-      setHeaderIfAbsent(res, "Pragma", "no-cache") // 兼容 HTTP/1.0
-      setHeaderIfAbsent(res, "Expires", "0") // 兼容 HTTP/1.0
-    } else {
-      setHeaderIfAbsent(res, "Cache-Control", s"public,s-maxage=${maxAgeSecond}")
-    }
+    CacheControl.fillIfAbsent(res, maxAgeSecond)
     res.getOutputStream.write(data)
-  }
-
-  private def setHeaderIfAbsent(res: HttpServletResponse, name: String, value: String): Unit = {
-    if (null == res.getHeader(name)) res.setHeader(name, value)
   }
 
   /** 命中缓存：先重放缓存时 action 写入的响应头，再写出响应体。 */

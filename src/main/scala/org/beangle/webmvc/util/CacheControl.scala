@@ -44,6 +44,26 @@ object CacheControl {
   }
 
   /**
+   * 按声明式缓存补齐缓存指令；action 已自行设置 Cache-Control 时整套交给它，不再动 Pragma/Expires。
+   *
+   * Pragma/Expires 与 Cache-Control 是同一个决策（本来只为禁用缓存时的 HTTP/1.0 兼容），
+   * 单独补一个 Pragma: no-cache 会和 action 的 max-age 自相矛盾。
+   *
+   * @param maxAgeSecond 声明式缓存秒数，<=0 表示禁用缓存
+   */
+  private[webmvc] def fillIfAbsent(response: HttpServletResponse, maxAgeSecond: Int): Unit = {
+    if (null == response.getHeader("Cache-Control")) {
+      if (maxAgeSecond <= 0) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private")
+        response.setHeader("Pragma", "no-cache") // 兼容 HTTP/1.0
+        response.setHeader("Expires", "0") // 兼容 HTTP/1.0
+      } else {
+        response.setHeader("Cache-Control", s"public,s-maxage=$maxAgeSecond")
+      }
+    }
+  }
+
+  /**
    * return true if already has it's etag
    */
   def withEtag(etag: String, request: HttpServletRequest = ActionContext.current.request,
