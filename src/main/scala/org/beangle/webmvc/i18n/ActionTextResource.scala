@@ -55,7 +55,7 @@ class ActionTextResource(context: ActionContext, action: ActionMapping, locale: 
     msg
   }
 
-  private def find(actionClass: Class[_], key: String): Option[String] = {
+  private def find(actionClass: Class[?], key: String): Option[String] = {
     // search up class hierarchy
     var msg = new ClassTextFinder(locale, registry).find(actionClass, key)
     if (msg.isDefined) return msg
@@ -83,7 +83,7 @@ class ActionTextResource(context: ActionContext, action: ActionMapping, locale: 
     msg
   }
 
-  private def getPropertyMessage(clazz: Class[_], key: String): Option[String] = {
+  private def getPropertyMessage(clazz: Class[?], key: String): Option[String] = {
     var aClass = clazz
     var newKey = key
     var goOn = true

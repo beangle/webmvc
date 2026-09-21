@@ -25,7 +25,7 @@ import org.beangle.webmvc.config.RouteMapping
  */
 @spi
 trait ViewResolver {
-  def resolve(actionClass: Class[_], viewName: String, suffix: String): View
+  def resolve(actionClass: Class[?], viewName: String, suffix: String): View
 
   def resolve(viewName: String, mapping: RouteMapping): View
 

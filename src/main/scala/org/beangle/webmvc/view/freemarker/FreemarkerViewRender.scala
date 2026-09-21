@@ -76,7 +76,7 @@ class FreemarkerViewRender(configurator: FreemarkerConfigurator, modelBuilder: M
     }
   }
 
-  def supportViewClass: Class[_] = {
+  def supportViewClass: Class[?] = {
     classOf[FreemarkerView]
   }
 }

@@ -23,6 +23,7 @@ import org.beangle.commons.lang.time.Stopwatch
 import org.beangle.web.servlet.intercept.Interceptor
 import org.beangle.webmvc.Logger
 import org.beangle.webmvc.view.ViewDecorator
+import scala.compiletime.uninitialized
 
 @description("缺省配置器")
 class DefaultConfigurator(profileProvider: ProfileProvider, container: Container) extends Configurator {
@@ -30,9 +31,9 @@ class DefaultConfigurator(profileProvider: ProfileProvider, container: Container
   private val class2Profiles = new collection.mutable.HashMap[String, Profile]
 
   var actionMappings: Map[String, ActionMapping] = Map.empty
-  var classMappings: Map[Class[_], ActionMapping] = Map.empty
+  var classMappings: Map[Class[?], ActionMapping] = Map.empty
   var profiles: List[Profile] = Nil
-  var actionMappingBuilder: ActionMappingBuilder = _
+  var actionMappingBuilder: ActionMappingBuilder = uninitialized
 
   override def build(): Unit = {
     val watch = new Stopwatch(true)
@@ -55,7 +56,7 @@ class DefaultConfigurator(profileProvider: ProfileProvider, container: Container
 
     var actionCount, mappingCount = 0
     val mutableActionMappings = new collection.mutable.HashMap[String, ActionMapping]
-    val mutableClassMappings = new collection.mutable.HashMap[Class[_], ActionMapping]
+    val mutableClassMappings = new collection.mutable.HashMap[Class[?], ActionMapping]
     val actionFinder = new ContainerActionFinder(container)
     actionFinder.actions(new ActionFinder.Test(this)) foreach { bean =>
       val clazz = bean.getClass
@@ -85,7 +86,7 @@ class DefaultConfigurator(profileProvider: ProfileProvider, container: Container
     matched
   }
 
-  override def getRouteMapping(clazz: Class[_], method: String): Option[RouteMapping] = {
+  override def getRouteMapping(clazz: Class[?], method: String): Option[RouteMapping] = {
     classMappings.get(clazz) match {
       case Some(am) => am.mappings.get(method)
       case None => None

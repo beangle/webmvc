@@ -30,12 +30,13 @@ import org.beangle.webmvc.view.{View, ViewBuilder, ViewManager}
 
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
+import scala.compiletime.uninitialized
 
 /**
  * action mapping (namespace endwith /)
  * name is action fullname ,so it starts with /,and contains namespace
  */
-class ActionMapping(val action: AnyRef, val clazz: Class[_], val name: String, val namespace: String,
+class ActionMapping(val action: AnyRef, val clazz: Class[?], val name: String, val namespace: String,
                     val views: Map[String, View], val profile: Profile) {
   var mappings: Map[String, RouteMapping] = Map.empty
 }
@@ -43,13 +44,13 @@ class ActionMapping(val action: AnyRef, val clazz: Class[_], val name: String, v
 @description("缺省的ActionMapping构建器")
 class DefaultActionMappingBuilder extends ActionMappingBuilder {
 
-  var viewBuilder: ViewBuilder = _
+  var viewBuilder: ViewBuilder = uninitialized
 
   var viewScan = true
 
-  var viewManager: ViewManager = _
+  var viewManager: ViewManager = uninitialized
 
-  override def build(bean: AnyRef, clazz: Class[_], profile: Profile): ActionMapping = {
+  override def build(bean: AnyRef, clazz: Class[?], profile: Profile): ActionMapping = {
     val nameAndspace = ActionNameBuilder.build(clazz, profile)
     val actionName = nameAndspace._1
     val views = buildViews(clazz, profile)
@@ -165,7 +166,7 @@ class DefaultActionMappingBuilder extends ActionMappingBuilder {
     null == getAnnotation(method, classOf[response]) && classOf[View].isAssignableFrom(method.getReturnType)
   }
 
-  protected def buildViews(clazz: Class[_], profile: Profile): Map[String, View] = {
+  protected def buildViews(clazz: Class[?], profile: Profile): Map[String, View] = {
     if (!viewScan) return Map.empty
     val resolver = viewManager.getResolver(profile.viewType).orNull
     if (null == resolver) return Map.empty

@@ -24,15 +24,16 @@ import org.beangle.commons.config.XmlConfigs
 import org.beangle.commons.lang.Strings
 import org.beangle.commons.xml.Node
 import org.beangle.webmvc.asset.Static.{Module, Resource}
+import scala.compiletime.uninitialized
 
 class StaticFactory extends Factory[Static] {
   private val defaultConfigLocation = "classpath*:beangle.xml"
 
-  var configs: XmlConfigs = _
+  var configs: XmlConfigs = uninitialized
 
-  var base: String = _
+  var base: String = uninitialized
 
-  var sc: ServletContext = _
+  var sc: ServletContext = uninitialized
 
   override def getObject: Static = {
     if (Strings.isBlank(base) || base == "-") {

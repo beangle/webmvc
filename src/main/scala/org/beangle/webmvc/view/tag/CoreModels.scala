@@ -62,7 +62,7 @@ class CoreModels(context: ComponentContext, request: HttpServletRequest) extends
     sw.toString
   }
 
-  def isPage(data: Object) = data.isInstanceOf[Page[_]]
+  def isPage(data: Object) = data.isInstanceOf[Page[?]]
 
   def text(name: String): String = {
     context.textResource(name, name)

@@ -21,6 +21,7 @@ import org.beangle.commons.lang.annotation.spi
 import org.beangle.web.servlet.http.accept.ContentNegotiationManager
 import org.beangle.webmvc.context.ActionContext.{AcceptTypeKey, LocalKey, TextResourceKey}
 import org.beangle.webmvc.i18n.ActionTextResourceProvider
+import scala.compiletime.uninitialized
 
 @spi
 trait ActionContextProperty {
@@ -32,7 +33,7 @@ trait ActionContextProperty {
 /** 提供相应所需的Locale
  */
 class LocaleContextProperty extends ActionContextProperty {
-  var localeResolver: LocaleResolver = _
+  var localeResolver: LocaleResolver = uninitialized
 
   override def get(context: ActionContext): Any = {
     localeResolver.resolve(context.request)
@@ -44,7 +45,7 @@ class LocaleContextProperty extends ActionContextProperty {
 /** 提供国际化属性
  */
 class TextResourceContextProperty extends ActionContextProperty {
-  var textResourceProvider: ActionTextResourceProvider = _
+  var textResourceProvider: ActionTextResourceProvider = uninitialized
 
   override def get(context: ActionContext): Any = {
     textResourceProvider.getTextResource(context.locale, context.handler)
@@ -57,7 +58,7 @@ class TextResourceContextProperty extends ActionContextProperty {
  */
 class AcceptTypeContextProperty extends ActionContextProperty {
 
-  var contentNegotiationManager: ContentNegotiationManager = _
+  var contentNegotiationManager: ContentNegotiationManager = uninitialized
 
   override def get(context: ActionContext): Any = {
     contentNegotiationManager.resolve(context.request)

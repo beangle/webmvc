@@ -33,7 +33,7 @@ import java.io.{FileNotFoundException, IOException}
 class HierarchicalTemplateResolver(freemarkerConfigurator: FreemarkerConfigurator, templatePathMapper: TemplatePathMapper,
                                    configurator: Configurator) extends TemplateResolver {
 
-  override def resolve(actionClass: Class[_], viewName: String, suffix: String): String = {
+  override def resolve(actionClass: Class[?], viewName: String, suffix: String): String = {
     var path: String = null
     var superClass = actionClass
     var found: Boolean = false

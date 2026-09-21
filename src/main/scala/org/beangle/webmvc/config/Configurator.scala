@@ -25,7 +25,7 @@ trait Configurator extends Buildable {
 
   def actionMappings: Map[String, ActionMapping]
 
-  def getRouteMapping(clazz: Class[_], method: String): Option[RouteMapping]
+  def getRouteMapping(clazz: Class[?], method: String): Option[RouteMapping]
 
   def getActionMapping(name: String): Option[ActionMapping]
 }

@@ -27,7 +27,7 @@ import org.beangle.webmvc.{To, ToClass}
 @description("前向调转渲染者")
 class ForwardActionViewRender(val configurator: Configurator) extends ViewRender {
 
-  override def supportViewClass: Class[_] = {
+  override def supportViewClass: Class[?] = {
     classOf[ForwardActionView]
   }
 

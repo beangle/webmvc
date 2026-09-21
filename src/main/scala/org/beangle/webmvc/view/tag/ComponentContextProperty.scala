@@ -22,15 +22,16 @@ import org.beangle.webmvc.asset.Static
 import org.beangle.webmvc.context.{ActionContext, ActionContextProperty}
 import org.beangle.webmvc.dispatch.ActionUriRender
 import org.beangle.webmvc.view.tag.ComponentContextProperty.ComponentContextKey
+import scala.compiletime.uninitialized
 
 object ComponentContextProperty {
   val ComponentContextKey = "_beangle_webmvc_component_context"
 }
 
 class ComponentContextProperty extends ActionContextProperty {
-  var uriRender: ActionUriRender = _
-  var tagTemplateEngine: TagTemplateEngine = _
-  var staticResoruce: Static = _
+  var uriRender: ActionUriRender = uninitialized
+  var tagTemplateEngine: TagTemplateEngine = uninitialized
+  var staticResoruce: Static = uninitialized
 
   override def get(context: ActionContext): Any = {
     val textResource = context.textResource

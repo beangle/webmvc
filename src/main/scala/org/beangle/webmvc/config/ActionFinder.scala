@@ -28,8 +28,8 @@ object ActionFinder {
    * <li>In one of given profiles</li>
    * </ul>
    */
-  class Test(configurer: Configurator) extends Predicate[Class[_]] {
-    def apply(clazz: Class[_]): Boolean = {
+  class Test(configurer: Configurator) extends Predicate[Class[?]] {
+    def apply(clazz: Class[?]): Boolean = {
       null != configurer.getProfile(clazz.getName)
     }
   }

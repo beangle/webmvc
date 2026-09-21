@@ -26,14 +26,15 @@ import org.beangle.web.servlet.resource.ResourceProcessor
 import org.beangle.web.servlet.resource.filter.HeaderFilter
 import org.beangle.webmvc.dispatch.{Route, RouteProvider}
 import org.beangle.webmvc.execution.Handler
+import scala.compiletime.uninitialized
 
 /**
  * @author chaostone
  */
 class StaticResourceRouteProvider extends RouteProvider, Initializing {
   var patterns: Array[String] = Array("/static/{path*}")
-  private var processor: ResourceProcessor = _
-  private var handler: StaticResourceHandler = _
+  private var processor: ResourceProcessor = uninitialized
+  private var handler: StaticResourceHandler = uninitialized
 
   def routes: Iterable[Route] = {
     patterns.map(pattern => Route(Set(GET), pattern, handler)).toList

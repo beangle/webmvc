@@ -26,7 +26,7 @@ import org.beangle.commons.lang.annotation.description
 class DefaultViewManager extends ViewManager, Initializing {
 
   private var serializerMap: Map[String, Serializer] = Map.empty
-  private var renderMap: Map[Class[_], ViewRender] = Map.empty
+  private var renderMap: Map[Class[?], ViewRender] = Map.empty
   private var resolverMap: Map[String, ViewResolver] = Map.empty
 
   var viewRenders: List[ViewRender] = List.empty
@@ -34,7 +34,7 @@ class DefaultViewManager extends ViewManager, Initializing {
   var serializers: List[Serializer] = List.empty
 
   override def init(): Unit = {
-    val renderMaps = new collection.mutable.HashMap[Class[_], ViewRender]
+    val renderMaps = new collection.mutable.HashMap[Class[?], ViewRender]
     renderMap = viewRenders.map(x => (x.supportViewClass, x)).toMap
     resolverMap = viewResolvers.map(x => (x.supportViewType, x)).toMap
     val buf = new collection.mutable.HashMap[String, Serializer]
@@ -54,7 +54,7 @@ class DefaultViewManager extends ViewManager, Initializing {
     resolverMap.get(viewType)
   }
 
-  def getRender(clazz: Class[_]): Option[ViewRender] = {
+  def getRender(clazz: Class[?]): Option[ViewRender] = {
     renderMap.get(clazz)
   }
 }

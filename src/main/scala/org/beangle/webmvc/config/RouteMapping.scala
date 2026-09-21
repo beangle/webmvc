@@ -92,7 +92,7 @@ class RouteMapping private(val httpMethods: Set[String], val action: ActionMappi
   }
 
   def toURL(paramMaps: collection.Map[String, Any]*): ToURI = {
-    val ua = new ToURI(fill(paramMaps: _*))
+    val ua = new ToURI(fill(paramMaps*))
     RouteMapping.BrowserUnsupported.get(this.httpMethods.head) foreach { m =>
       ua.param(RouteMapping.MethodParam, m)
     }

@@ -23,6 +23,7 @@ import org.beangle.web.servlet.intercept.Interceptor
 import org.beangle.webmvc.view.ViewDecorator
 
 import java.net.URL
+import scala.compiletime.uninitialized
 
 object Profile {
 
@@ -119,14 +120,12 @@ final class Profile(val pattern: String,
    */
   def matches(className: String): Option[String] = {
     var result = matched.get(className)
-    if (result.isEmpty) {
-      if (className.endsWith(actionSuffix)) {
-        val newMatchInfo = Profile.matches(className, this.actionSuffix, pattern)
-        if (newMatchInfo.nonEmpty) {
-          matched.put(className, newMatchInfo.get)
-          result = newMatchInfo
-        }
-      } else None
+    if (result.isEmpty && className.endsWith(actionSuffix)) {
+      val newMatchInfo = Profile.matches(className, this.actionSuffix, pattern)
+      if (newMatchInfo.nonEmpty) {
+        matched.put(className, newMatchInfo.get)
+        result = newMatchInfo
+      }
     }
     result
   }
@@ -167,22 +166,22 @@ final class Profile(val pattern: String,
 final class ProfileConfig(val pattern: String) {
 
   // action类名后缀
-  var actionSuffix: String = _
+  var actionSuffix: String = uninitialized
 
   // 缺省的action中的方法
   var defaultMethod = "index"
 
   // 路径前缀
-  var viewPath: String = _
+  var viewPath: String = uninitialized
 
   // 路径模式
   var viewPathStyle = "full"
 
   // 路径后缀
-  var viewSuffix: String = _
+  var viewSuffix: String = uninitialized
 
   // View Type (freemarker chain)
-  var viewType: String = _
+  var viewType: String = uninitialized
 
   //end with /
   var urlPath = "/"
@@ -191,7 +190,7 @@ final class ProfileConfig(val pattern: String) {
   var urlStyle = "seo"
 
   /** URL的后缀 */
-  var urlSuffix: String = _
+  var urlSuffix: String = uninitialized
 
   var interceptorNames: Array[String] = Array()
 

@@ -26,18 +26,18 @@ import java.lang.invoke.{MethodHandles, VarHandle}
  *  键/值 intern 由调用方通过 common 决定（公共默认文本才 intern 复用）。
  */
 class ActionTextCache {
-  @volatile private var caches: Map[Class[_], Map[String, String]] = Map.empty
+  @volatile private var caches: Map[Class[?], Map[String, String]] = Map.empty
 
   private val CACHES: VarHandle =
-    Invokers.findVarHandle(MethodHandles.lookup(), classOf[ActionTextCache], "caches", classOf[Map[Class[_], Map[String, String]]])
+    Invokers.findVarHandle(MethodHandles.lookup(), classOf[ActionTextCache], "caches", classOf[Map[Class[?], Map[String, String]]])
 
-  def getText(clazz: Class[_], key: String): Option[String] = {
+  def getText(clazz: Class[?], key: String): Option[String] = {
     caches.get(clazz) match
       case None => None
       case Some(kvs) => kvs.get(key)
   }
 
-  def update(clazz: Class[_], key: String, value: String, common: Boolean): Unit = {
+  def update(clazz: Class[?], key: String, value: String, common: Boolean): Unit = {
     val kv = if common then (key.intern(), value.intern()) else (key, value)
     var done = false
     while (!done) {

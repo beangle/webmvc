@@ -28,5 +28,5 @@ trait ViewManager {
 
   def getResolver(viewType: String): Option[ViewResolver]
 
-  def getRender(viewClass: Class[_]): Option[ViewRender]
+  def getRender(viewClass: Class[?]): Option[ViewRender]
 }

@@ -34,7 +34,7 @@ class DynaMethodInvoker(val action: AnyRef, val mapping: RouteMapping) extends I
         method.invoke(action)
       } else {
         val values = convert(ActionContext.current, mapping.arguments, paramTypes)
-        method.invoke(action, values: _*)
+        method.invoke(action, values*)
       }
     } catch {
       case ite: InvocationTargetException => throw ite.getCause
@@ -42,7 +42,7 @@ class DynaMethodInvoker(val action: AnyRef, val mapping: RouteMapping) extends I
     }
   }
 
-  def convert(context: ActionContext, args: Array[Argument], paramTypes: Array[Class[_]]): Array[Object] = {
+  def convert(context: ActionContext, args: Array[Argument], paramTypes: Array[Class[?]]): Array[Object] = {
     val values = new Array[Object](paramTypes.length)
     Range(0, paramTypes.length) foreach { i =>
       val pt = paramTypes(i)

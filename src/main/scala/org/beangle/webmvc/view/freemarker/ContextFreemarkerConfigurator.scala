@@ -22,13 +22,14 @@ import freemarker.template.ObjectWrapper
 import jakarta.servlet.ServletContext
 import org.beangle.commons.lang.Strings.{split, substringAfter}
 import org.beangle.template.freemarker.{Configurator, ProfileTemplateLoader}
+import scala.compiletime.uninitialized
 
 /**
  * @author chaostone
  */
 class ContextFreemarkerConfigurator extends Configurator {
 
-  var servletContext: ServletContext = _
+  var servletContext: ServletContext = uninitialized
 
   override def createObjectWrapper(props: Map[String, String]): ObjectWrapper = {
     val wrapper = new ContextObjectWrapper()

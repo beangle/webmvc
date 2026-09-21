@@ -27,7 +27,7 @@ import org.beangle.webmvc.view.{TemplateResolver, View, ViewResolver}
 @description("Freemarker视图解析器")
 class FreemarkerViewResolver(templateResolver: TemplateResolver) extends ViewResolver {
 
-  def resolve(actionClass: Class[_], viewName: String, suffix: String): View = {
+  def resolve(actionClass: Class[?], viewName: String, suffix: String): View = {
     if viewName.charAt(0) == '/' then
       load(viewName + suffix)
     else

@@ -26,13 +26,14 @@ import org.beangle.web.servlet.util.RequestUtils
 import org.beangle.webmvc.config.{Buildable, Configurator}
 import org.beangle.webmvc.context.{ActionContext, ActionContextBuilder}
 import org.beangle.webmvc.util.Resources
+import scala.compiletime.uninitialized
 
 class Dispatcher(configurer: Configurator, mapper: RequestMapper, exceptionHandler: ExceptionHandler,
                  actionContextBuilder: ActionContextBuilder) extends GenericServlet {
 
   var defaultEncoding = "utf-8"
 
-  var index: String = _
+  var index: String = uninitialized
 
   override def init(config: ServletConfig): Unit = {
     //1. build configuration and mapper

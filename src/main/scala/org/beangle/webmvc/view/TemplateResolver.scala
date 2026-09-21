@@ -21,7 +21,7 @@ import org.beangle.commons.lang.annotation.spi
 
 @spi
 trait TemplateResolver {
-  def resolve(actionClass: Class[_], viewName: String, suffix: String): String
+  def resolve(actionClass: Class[?], viewName: String, suffix: String): String
 
   def exists(viewPath: String): Boolean
 }

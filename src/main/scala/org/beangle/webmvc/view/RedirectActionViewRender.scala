@@ -29,7 +29,7 @@ import java.net.URLEncoder
 @description("重定向调转渲染者")
 class RedirectActionViewRender(val configurator: Configurator) extends ViewRender {
 
-  override def supportViewClass: Class[_] = {
+  override def supportViewClass: Class[?] = {
     classOf[RedirectActionView]
   }
 

@@ -24,5 +24,5 @@ import org.beangle.webmvc.annotation.ignore
 
 trait EntitySupport {
 
-  def entityClass: Class[_]
+  def entityClass: Class[?]
 }

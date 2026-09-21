@@ -25,5 +25,5 @@ trait ActionMappingBuilder {
   /**
    * build mapping url  mapping(with httpmethod)
    */
-  def build(bean: AnyRef, clazz: Class[_], profile: Profile): ActionMapping
+  def build(bean: AnyRef, clazz: Class[?], profile: Profile): ActionMapping
 }

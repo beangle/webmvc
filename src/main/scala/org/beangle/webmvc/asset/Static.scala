@@ -19,11 +19,12 @@ package org.beangle.webmvc.asset
 
 import org.beangle.commons.collection.Collections
 import org.beangle.commons.lang.Strings
+import scala.compiletime.uninitialized
 
 object Static {
 
   class Resource(val name: String, val version: String) {
-    var modules: Seq[Module] = _
+    var modules: Seq[Module] = uninitialized
   }
 
   case class Module(bundle: Resource, name: String, js: Option[String], css: Array[String], depends: Array[String]) {

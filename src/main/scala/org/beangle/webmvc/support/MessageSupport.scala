@@ -34,7 +34,7 @@ trait MessageSupport {
   }
 
   protected final def getText(key: String, defaultValue: String, args: Any*): String = {
-    ActionContext.current.textResource.apply(key, defaultValue, args: _*)
+    ActionContext.current.textResource.apply(key, defaultValue, args*)
   }
 
   protected final def getTextInternal(msgKey: String, args: Any*): String = {
@@ -42,7 +42,7 @@ trait MessageSupport {
       null
     } else {
       if (Chars.isAsciiAlpha(msgKey.charAt(0)) && msgKey.indexOf('.') > 0) {
-        getText(msgKey, msgKey, args: _*)
+        getText(msgKey, msgKey, args*)
       } else {
         msgKey
       }
@@ -50,19 +50,19 @@ trait MessageSupport {
   }
 
   protected final def addMessage(msgKey: String, args: Any*): Unit = {
-    ActionContext.current.getFlash(true).appendNow(MessagesKey, getTextInternal(msgKey, args: _*))
+    ActionContext.current.getFlash(true).appendNow(MessagesKey, getTextInternal(msgKey, args*))
   }
 
   protected final def addError(msgKey: String, args: Any*): Unit = {
-    ActionContext.current.getFlash(true).appendNow(ErrorsKey, getTextInternal(msgKey, args: _*))
+    ActionContext.current.getFlash(true).appendNow(ErrorsKey, getTextInternal(msgKey, args*))
   }
 
   protected final def addFlashError(msgKey: String, args: Any*): Unit = {
-    ActionContext.current.getFlash(true).append(ErrorsKey, getTextInternal(msgKey, args: _*))
+    ActionContext.current.getFlash(true).append(ErrorsKey, getTextInternal(msgKey, args*))
   }
 
   protected final def addFlashMessage(msgKey: String, args: Any*): Unit = {
-    ActionContext.current.getFlash(true).append(MessagesKey, getTextInternal(msgKey, args: _*))
+    ActionContext.current.getFlash(true).append(MessagesKey, getTextInternal(msgKey, args*))
   }
 
   /** 获得action消息

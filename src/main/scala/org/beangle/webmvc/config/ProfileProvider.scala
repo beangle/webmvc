@@ -24,6 +24,7 @@ import org.beangle.commons.lang.annotation.{description, spi}
 import org.beangle.commons.xml.{Element, Node}
 
 import java.net.URL
+import scala.compiletime.uninitialized
 
 @spi
 trait ProfileProvider {
@@ -36,7 +37,7 @@ class XmlProfileProvider extends ProfileProvider {
 
   private val defaultProfile = loadDefaultProfile()
 
-  var xmlConfigs: XmlConfigs = _
+  var xmlConfigs: XmlConfigs = uninitialized
   var configLocation: String = "classpath*:beangle.xml"
 
   /**

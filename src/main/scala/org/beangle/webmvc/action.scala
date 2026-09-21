@@ -19,9 +19,10 @@ package org.beangle.webmvc
 
 import org.beangle.commons.lang.Strings
 import org.beangle.web.servlet.url.UrlBuilder
+import scala.compiletime.uninitialized
 
 object To {
-  def apply(clazz: Class[_], method: String = "index"): ToClass = {
+  def apply(clazz: Class[?], method: String = "index"): ToClass = {
     new ToClass(clazz, method)
   }
 
@@ -29,7 +30,7 @@ object To {
     new ToClass(obj.getClass, method)
   }
 
-  def apply(clazz: Class[_], method: String, params: collection.Map[String, Any]): ToClass = {
+  def apply(clazz: Class[?], method: String, params: collection.Map[String, Any]): ToClass = {
     new ToClass(clazz, method).params(params)
   }
 
@@ -44,7 +45,7 @@ object To {
     if (null != params) {
       rs.params(params)
     }
-    rs.params(idx.queryString)
+    rs.params(ToBuilder.parseParams(idx.queryString))
   }
 
   def url(u: String): ToURL = {
@@ -92,7 +93,7 @@ trait To {
 }
 
 trait ToBuilder extends To {
-  var suffix: String = _
+  var suffix: String = uninitialized
   val parameters = new collection.mutable.HashMap[String, String]
 
   def uri: String
@@ -117,21 +118,6 @@ trait ToBuilder extends To {
     this
   }
 
-  @deprecated("using params with k,v")
-  def params(paramStr: String): this.type = {
-    if (Strings.isNotEmpty(paramStr)) {
-      val paramPairs = Strings.split(paramStr, "&")
-      for (paramPair <- paramPairs) {
-        val key = Strings.substringBefore(paramPair, "=")
-        val value = Strings.substringAfter(paramPair, "=")
-        if (Strings.isNotEmpty(key) && Strings.isNotEmpty(value)) {
-          parameters.put(key, value)
-        }
-      }
-    }
-    this
-  }
-
   def url: String = {
     val buf = new StringBuilder(uri)
     if (null != suffix) buf.append(suffix)
@@ -142,8 +128,26 @@ trait ToBuilder extends To {
   }
 }
 
-class ToClass(val clazz: Class[_], val method: String) extends ToBuilder {
-  var uri: String = _
+object ToBuilder {
+
+  /** 解析 k=v&k2=v2 形式的参数串，忽略空 key/value。 */
+  def parseParams(paramStr: String): collection.Map[String, String] = {
+    val params = new collection.mutable.HashMap[String, String]
+    if (Strings.isNotEmpty(paramStr)) {
+      for (paramPair <- Strings.split(paramStr, "&")) {
+        val key = Strings.substringBefore(paramPair, "=")
+        val value = Strings.substringAfter(paramPair, "=")
+        if (Strings.isNotEmpty(key) && Strings.isNotEmpty(value)) {
+          params.put(key, value)
+        }
+      }
+    }
+    params
+  }
+}
+
+class ToClass(val clazz: Class[?], val method: String) extends ToBuilder {
+  var uri: String = uninitialized
 }
 
 class ToStruts(val namespace: String, val name: String, val method: String, val path: String = null)

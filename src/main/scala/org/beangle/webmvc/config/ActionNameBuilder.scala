@@ -29,7 +29,7 @@ object ActionNameBuilder {
    * <li>namespace start with / and DONOT ends with /(except only /)
    * <li>action name contains namespace and DONOT ends with /(except only /)
    */
-  def build(clazz: Class[_], profile: Profile): (String, String) = {
+  def build(clazz: Class[?], profile: Profile): (String, String) = {
     val className = clazz.getName
     val ann = clazz.getAnnotation(classOf[action])
     val nameBuilder = new StringBuilder()

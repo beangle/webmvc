@@ -24,6 +24,7 @@ import org.beangle.webmvc.config.Configurator
 import org.beangle.webmvc.context.ActionContext
 import org.beangle.webmvc.dispatch.ActionUriRender
 import org.beangle.webmvc.execution.MappingHandler
+import scala.compiletime.uninitialized
 
 trait ActionUriRender {
   def render(uri: String): String
@@ -32,7 +33,7 @@ trait ActionUriRender {
 @description("根据uri相对地址反向生成绝对地址")
 class DefaultActionUriRender extends ActionUriRender {
 
-  var configurer: Configurator = _
+  var configurer: Configurator = uninitialized
 
   override def render(uri: String): String = {
     if (Strings.isEmpty(uri)) {

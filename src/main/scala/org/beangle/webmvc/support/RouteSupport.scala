@@ -60,12 +60,12 @@ trait RouteSupport extends MessageSupport {
   }
 
   @ignore
-  protected final def to(clazz: Class[_], method: String): ToClass = {
+  protected final def to(clazz: Class[?], method: String): ToClass = {
     new ToClass(clazz, method)
   }
 
   @ignore
-  protected final def to(clazz: Class[_], method: String, params: collection.Map[String, Any]): ToClass = {
+  protected final def to(clazz: Class[?], method: String, params: collection.Map[String, Any]): ToClass = {
     new ToClass(clazz, method).params(params)
   }
 

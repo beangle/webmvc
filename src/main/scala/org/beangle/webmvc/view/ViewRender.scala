@@ -24,7 +24,7 @@ import org.beangle.webmvc.context.ActionContext
 
 @spi
 trait ViewRender {
-  def supportViewClass: Class[_]
+  def supportViewClass: Class[?]
 
   def render(view: View, context: ActionContext): Unit
 }

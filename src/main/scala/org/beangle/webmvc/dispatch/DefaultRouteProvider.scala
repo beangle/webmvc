@@ -25,6 +25,7 @@ import org.beangle.webmvc.execution.{DefaultMappingHandler, EmptyResponseCache, 
 import org.beangle.webmvc.view.ViewManager
 
 import scala.collection.mutable
+import scala.compiletime.uninitialized
 
 /**
  * @author chaostone
@@ -32,11 +33,11 @@ import scala.collection.mutable
 @description("缺省的路由提供者")
 class DefaultRouteProvider extends RouteProvider {
 
-  var configurator: Configurator = _
+  var configurator: Configurator = uninitialized
 
-  var invokerBuilder: InvokerBuilder = _
+  var invokerBuilder: InvokerBuilder = uninitialized
 
-  var viewManager: ViewManager = _
+  var viewManager: ViewManager = uninitialized
 
   var responseCache: Option[ResponseCache] = None
 

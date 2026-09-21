@@ -32,6 +32,7 @@ import org.beangle.webmvc.execution.{BindException, Handler}
 
 import java.io.{PrintWriter, StringWriter}
 import java.time.LocalDateTime
+import scala.compiletime.uninitialized
 
 trait ExceptionHandler {
 
@@ -40,9 +41,9 @@ trait ExceptionHandler {
 
 abstract class AbstractExceptionHandler extends ExceptionHandler, Initializing {
 
-  var contentNegotiationManager: ContentNegotiationManager = _
+  var contentNegotiationManager: ContentNegotiationManager = uninitialized
 
-  var devMode: Boolean = _
+  var devMode: Boolean = uninitialized
 
   var ignorePackages = Seq("at org.apache.tomcat.",
     "at org.apache.catalina.", "at org.apache.coyote.", "at java.base/", "...",

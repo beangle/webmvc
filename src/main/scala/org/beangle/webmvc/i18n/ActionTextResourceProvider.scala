@@ -26,18 +26,19 @@ import org.beangle.webmvc.execution.{Handler, MappingHandler}
 import org.beangle.webmvc.i18n.TextResourceProvider
 
 import java.util as ju
+import scala.compiletime.uninitialized
 
 @description("基于Action的文本资源提供者")
 class ActionTextResourceProvider(loader: TextBundleLoader, formatter: TextFormatter)
   extends TextResourceProvider with Initializing {
 
-  var reloadable: Boolean = _
+  var reloadable: Boolean = uninitialized
   var defaults: String = "beangle,application"
   private val registry = new DefaultTextBundleRegistry
   private val textCache = new ActionTextCache
 
   override def init(): Unit = {
-    registry.addDefaults(Strings.split(defaults, ",").toIndexedSeq: _*)
+    registry.addDefaults(Strings.split(defaults, ",").toIndexedSeq*)
     registry.loader = this.loader
   }
 
@@ -45,7 +46,7 @@ class ActionTextResourceProvider(loader: TextBundleLoader, formatter: TextFormat
     if reloadable then
       val newRegistry = new DefaultTextBundleRegistry
       newRegistry.loader = this.loader
-      newRegistry.addDefaults(Strings.split(defaults, ",").toIndexedSeq: _*)
+      newRegistry.addDefaults(Strings.split(defaults, ",").toIndexedSeq*)
       newResource(locale, newRegistry, handler, null)
     else
       newResource(locale, registry, handler, textCache)
